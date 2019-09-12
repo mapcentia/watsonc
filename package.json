@@ -1,0 +1,43 @@
+{
+  "name": "watsonc",
+  "version": "1.0.0",
+  "description": "The watsonc extension for Vidi",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sashuk/watsonc.git"
+  },
+  "dependencies": {
+    "@babel/cli": "^7.2.0",
+    "@babel/core": "^7.2.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.2.0",
+    "@babel/preset-env": "^7.2.0",
+    "@babel/preset-react": "^7.0.0",
+    "array-move": "^2.1.0",
+    "babel-eslint": "^10.0.1",
+    "babelify": "10",
+    "browserify": "^16.2.3",
+    "excel4node": "^1.7.2",
+    "exceljs": "^1.13.0",
+    "rc-slider": "^8.6.9",
+    "react-dnd": "^6.0.0",
+    "react-dnd-html5-backend": "^6.0.0",
+    "react-dnd-multi-backend": "^3.1.11",
+    "react-dnd-touch-backend": "^0.7.1",
+    "react-redux": "^6.0.1",
+    "react-sortable-hoc": "^1.8.3",
+    "react-tooltip": "^3.10.0"
+  },
+  "keywords": [
+    "Vidi"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sashuk/watsonc/issues"
+  },
+  "homepage": "https://github.com/sashuk/watsonc#readme"
+}
