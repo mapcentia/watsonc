@@ -1,4 +1,270 @@
 <style>
+
+    .rc-slider {
+        position: relative;
+        height: 14px;
+        padding: 5px 0;
+        width: 100%;
+        border-radius: 6px;
+        -ms-touch-action: none;
+        touch-action: none;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+    .rc-slider * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+    .rc-slider-rail {
+        position: absolute;
+        width: 100%;
+        background-color: #e9e9e9;
+        height: 4px;
+        border-radius: 6px;
+    }
+    .rc-slider-track {
+        position: absolute;
+        left: 0;
+        height: 4px;
+        border-radius: 6px;
+        background-color: rgb(0, 150, 136);
+    }
+    .rc-slider-handle {
+        position: absolute;
+        margin-left: -7px;
+        margin-top: -5px;
+        width: 14px;
+        height: 14px;
+        cursor: pointer;
+        cursor: -webkit-grab;
+        cursor: grab;
+        border-radius: 50%;
+        border: solid 2px rgb(0, 150, 136);
+        background-color: #fff;
+        -ms-touch-action: pan-x;
+        touch-action: pan-x;
+    }
+    .rc-slider-handle:focus {
+        border-color: rgb(0, 150, 136);
+        box-shadow: 0 0 0 5px rgb(0, 150, 136);
+        outline: none;
+    }
+    .rc-slider-handle-click-focused:focus {
+        border-color: rgb(0, 150, 136);
+        box-shadow: unset;
+    }
+    .rc-slider-handle:hover {
+        border-color: rgb(0, 150, 136);
+    }
+    .rc-slider-handle:active {
+        border-color: rgb(0, 150, 136);
+        box-shadow: 0 0 5px rgb(0, 150, 136);
+        cursor: -webkit-grabbing;
+        cursor: grabbing;
+    }
+    .rc-slider-mark {
+        position: absolute;
+        top: 18px;
+        left: 0;
+        width: 100%;
+        font-size: 12px;
+    }
+    .rc-slider-mark-text {
+        position: absolute;
+        display: inline-block;
+        vertical-align: middle;
+        text-align: center;
+        cursor: pointer;
+        color: #999;
+    }
+    .rc-slider-mark-text-active {
+        color: #666;
+    }
+    .rc-slider-step {
+        position: absolute;
+        width: 100%;
+        height: 4px;
+        background: transparent;
+    }
+    .rc-slider-dot {
+        position: absolute;
+        bottom: -2px;
+        margin-left: -4px;
+        width: 8px;
+        height: 8px;
+        border: 2px solid #e9e9e9;
+        background-color: #fff;
+        cursor: pointer;
+        border-radius: 50%;
+        vertical-align: middle;
+    }
+    .rc-slider-dot-active {
+        border-color: rgb(0, 150, 136);
+    }
+    .rc-slider-disabled {
+        background-color: #e9e9e9;
+    }
+    .rc-slider-disabled .rc-slider-track {
+        background-color: #ccc;
+    }
+    .rc-slider-disabled .rc-slider-handle,
+    .rc-slider-disabled .rc-slider-dot {
+        border-color: #ccc;
+        box-shadow: none;
+        background-color: #fff;
+        cursor: not-allowed;
+    }
+    .rc-slider-disabled .rc-slider-mark-text,
+    .rc-slider-disabled .rc-slider-dot {
+        cursor: not-allowed !important;
+    }
+    .rc-slider-vertical {
+        width: 14px;
+        height: 100%;
+        padding: 0 5px;
+    }
+    .rc-slider-vertical .rc-slider-rail {
+        height: 100%;
+        width: 4px;
+    }
+    .rc-slider-vertical .rc-slider-track {
+        left: 5px;
+        bottom: 0;
+        width: 4px;
+    }
+    .rc-slider-vertical .rc-slider-handle {
+        margin-left: -5px;
+        margin-bottom: -7px;
+        -ms-touch-action: pan-y;
+        touch-action: pan-y;
+    }
+    .rc-slider-vertical .rc-slider-mark {
+        top: 0;
+        left: 18px;
+        height: 100%;
+    }
+    .rc-slider-vertical .rc-slider-step {
+        height: 100%;
+        width: 4px;
+    }
+    .rc-slider-vertical .rc-slider-dot {
+        left: 2px;
+        margin-bottom: -4px;
+    }
+    .rc-slider-vertical .rc-slider-dot:first-child {
+        margin-bottom: -4px;
+    }
+    .rc-slider-vertical .rc-slider-dot:last-child {
+        margin-bottom: -4px;
+    }
+    .rc-slider-tooltip-zoom-down-enter,
+    .rc-slider-tooltip-zoom-down-appear {
+        animation-duration: .3s;
+        animation-fill-mode: both;
+        display: block !important;
+        animation-play-state: paused;
+    }
+    .rc-slider-tooltip-zoom-down-leave {
+        animation-duration: .3s;
+        animation-fill-mode: both;
+        display: block !important;
+        animation-play-state: paused;
+    }
+    .rc-slider-tooltip-zoom-down-enter.rc-slider-tooltip-zoom-down-enter-active,
+    .rc-slider-tooltip-zoom-down-appear.rc-slider-tooltip-zoom-down-appear-active {
+        animation-name: rcSliderTooltipZoomDownIn;
+        animation-play-state: running;
+    }
+    .rc-slider-tooltip-zoom-down-leave.rc-slider-tooltip-zoom-down-leave-active {
+        animation-name: rcSliderTooltipZoomDownOut;
+        animation-play-state: running;
+    }
+    .rc-slider-tooltip-zoom-down-enter,
+    .rc-slider-tooltip-zoom-down-appear {
+        transform: scale(0, 0);
+        animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .rc-slider-tooltip-zoom-down-leave {
+        animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+    }
+    @keyframes rcSliderTooltipZoomDownIn {
+        0% {
+            opacity: 0;
+            transform-origin: 50% 100%;
+            transform: scale(0, 0);
+        }
+        100% {
+            transform-origin: 50% 100%;
+            transform: scale(1, 1);
+        }
+    }
+    @keyframes rcSliderTooltipZoomDownOut {
+        0% {
+            transform-origin: 50% 100%;
+            transform: scale(1, 1);
+        }
+        100% {
+            opacity: 0;
+            transform-origin: 50% 100%;
+            transform: scale(0, 0);
+        }
+    }
+    .rc-slider-tooltip {
+        position: absolute;
+        left: -9999px;
+        top: -9999px;
+        visibility: visible;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+    .rc-slider-tooltip * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+    .rc-slider-tooltip-hidden {
+        display: none;
+    }
+    .rc-slider-tooltip-placement-top {
+        padding: 4px 0 8px 0;
+    }
+    .rc-slider-tooltip-inner {
+        padding: 6px 2px;
+        min-width: 24px;
+        height: 24px;
+        font-size: 12px;
+        line-height: 1;
+        color: #fff;
+        text-align: center;
+        text-decoration: none;
+        background-color: #6c6c6c;
+        border-radius: 6px;
+        box-shadow: 0 0 4px #d9d9d9;
+    }
+    .rc-slider-tooltip-arrow {
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-color: transparent;
+        border-style: solid;
+    }
+    .rc-slider-tooltip-placement-top .rc-slider-tooltip-arrow {
+        bottom: 4px;
+        left: 50%;
+        margin-left: -4px;
+        border-width: 4px 4px 0;
+        border-top-color: #6c6c6c;
+    }
+
+
+    .watsonc-layertree-header {
+        font-size: 24px;
+        color: rgb(16, 174, 140);
+    }
+
+    #layers {
+        display: none;
+    }
+
     .dropdown-submenu {
         position: relative;
         margin-right: 0;
@@ -325,14 +591,14 @@
 
     #floating-container-primary {
         position: absolute;
-        top: 68px;
+        top: 124px;
         right: 8px;
         width: 40px;
     }
 
     #floating-container-secondary {
         position: absolute;
-        top: 235px;
+        top: 316px;
         right: 8px;
         width: 40px;
     }
@@ -345,9 +611,9 @@
         margin-bottom: 8px;
     }
 
-    .leaflet-control-locate a, .leaflet-control-locate a:hover {
+    .leaflet-control-locate a, .leaflet-control-locate a:hover, .leaflet-control-locate .fa {
         border-radius: 50% !important;
-        font-size: 24px;
+        font-size: 18px;
         height: 40px;
         margin: auto;
         min-width: 40px;
@@ -358,6 +624,14 @@
         box-shadow: 0 1px 1.5px 0 rgba(0, 0, 0, 0.12), 0 1px 1px 0 rgba(0, 0, 0, 0.24);
         position: relative;
         line-height: 40px
+    }
+
+    #floating-container-primary a, #floating-container-secondary a {
+        background-color: white;
+    }
+
+    #floating-container-primary a:hover, #floating-container-secondary a:hover {
+        background-color: lightgray;
     }
 
     .leaflet-bar {
@@ -388,7 +662,7 @@
         background-color: #fff;
 
         border-radius: 2px;
-        max-height: 80%;
+        max-height: 90%;
 
     }
 
@@ -476,6 +750,7 @@
 
     #layer-slide {
         display: inline;
+        margin-top: 60px;
     }
 
     #vectorlayers .panel:first-child {
@@ -567,15 +842,7 @@
 
     @media (max-width: 1200px) {
 
-        #floating-container-primary {
-            top: 58px;
 
-        }
-
-        #floating-container-secondary {
-            top: 225px;
-
-        }
 
         .navbar-brand {
             height: 50px;
@@ -625,68 +892,347 @@
         height: auto !important;
     }
 
+    #watsonc-features-dialog {
+        z-index: 100000;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    #watsonc-features-dialog.dialog-bottom {
+        height: 80% !important;
+        right: auto;
+    }
+
+    .help-btn {
+        top: 79px !important;
+    }
+
+    #watsonc-features-dialog-form {
+        height: inherit;
+    }
+
+    .measurements-modal_left-column {
+        width: 50%;
+        display: inline-block;
+    }
+
+    .measurements-modal_right-column {
+        width: 50%;
+        display: inline-block;
+        padding-left: 20px;
+    }
+
+    .measurements-modal_scrollable {
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    #watsonc-features-dialog.dialog-bottom .modal-body {
+        max-height: 70vh !important;
+    }
+
+    .navbar, .navbar.navbar-default {
+        background-color: rgb(0, 150, 136);
+    }
+
+    .bottom-menu-panel {
+        width: 100%;
+        position: absolute;
+        bottom: 60px;
+    }
+
+    .fas-material-adapt {
+        margin-right: 17px;
+        padding: 2px;
+        border-radius: 50%;
+        width: 28px;
+        text-align: center;
+        font-size: 18px;
+        line-height: inherit;
+    }
+
+    li.active .fas-material-adapt {
+        background-color: #1380c4;
+        color: #fff;
+    }
+
+    #watsonc-plots-dialog-controls .modal-header-content {
+        position: relative; height: 30px;
+    }
+
+    #watsonc-plots-dialog-controls .modal-header-content__title {
+        position: absolute;
+    }
+
+    #watsonc-plots-dialog-controls .modal-header-content__controls {
+        position: absolute; left: calc(50% - 25px);
+    }
+
+    .watsonc-modal-tabs {
+        background-color: white;
+        border-bottom: 1px solid #10ae8c;
+    }
+    .watsonc-modal-tabs li {
+        background-color: #a6e0d3 !important;
+        color: black;
+    }
+    .watsonc-modal-tabs li.active {
+        background-color: #10ae8c !important;
+        color: white;
+    }
+    .custom-search.typeahead.tt-hint {
+        color: #aaaaaa;
+    }
+    .custom-search.typeahead.tt-input {
+        color: #666666;
+    }
+    .tt-dropdown-menu {
+        color: #666666;
+
+    }
+
+    .tt-hint, .tt-query, .typeahead {
+        height: 30px;
+        padding: 8px 12px;
+        font-size: 18px;
+        line-height: 20px;
+        margin-top: 11px;
+    }
+
+    #searchclear {
+        right: 22px;
+    }
+
+    #watsonc-plots-dialog-form .expand-more, #watsonc-plots-dialog-form .expand-half, #watsonc-plots-dialog-form .expand-less {
+        color: rgb(0, 150, 136);
+        cursor: pointer;
+    }
+
 </style>
 <!-- map -->
 <div id="pane">
 
+
+    <div id="search-ribbon" style="margin-top: 60px;">
+        <div id="search-border">
+            <i class="floatRight cursorPointer fa fa-reorder" title={{Show menu}}></i>
+        </div>
+        <div id="search-container">
+            <nav id="myNavmenu" class="navmenu navmenu-default navmenu-fixed-right offcanvas" role="navigation"
+                 data-autohide="false" data-recalc="true" style="overflow: hidden">
+
+                <div id="info-modal" class="slide-right">
+                    <div class="modal-header">
+                        <button type="button" class="close" aria-hidden="true" title={{Close}}>×</button>
+                        <h2 class="modal-title"></h2>
+                    </div>
+                    <div id="info-modal-body-wrapper">
+                        <div class="modal-body" id="info-modal-body"></div>
+                    </div>
+                </div>
+
+                <div id="module-container" class="slide-right" style="margin-top: 60px;">
+                    <div class="modal-header">
+                        <label style="margin-bottom: 0px; margin-top: 4px;" class="js-module-title"></label>
+                        <button type="button" class="close" aria-hidden="true" title={{Close}}>×</button>
+                        <h2 class="modal-title"></h2>
+                    </div>
+                    <div id="module-container-wrapper">
+                        <div class="modal-body" id="module-container-body">
+                            <!-- Tab panes -->
+                            <div class="tab-content main-content">
+                                <div role="tabpanel" class="tab-pane fade" id="data-source-and-types-selector-content"></div>
+
+                                <div role="tabpanel" class="tab-pane fade" id="state-snapshots-content">
+                                    <div class="form-group" id="state-snapshots" role="tablist"></div>
+                                </div>
+
+                                <div role="tabpanel" class="tab-pane fade" id="timeseries-content">
+                                    <div class="form-group" id="watsonc-timeseries" role="tablist"></div>
+                                </div>
+
+                                <div role="tabpanel" class="tab-pane fade" id="profile-drawing-content"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="navbar navbar-default">
+                    <div class="container-fluid">
+                        <div class="navbar-header">
+                            <a class="navbar-brand" href="javascript:void(0)"><i class="material-icons brand-icon">fullscreen</i>{{brandName}}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="side-panel">
+                    <div role="tabpanel">
+                        <!-- Nav tabs -->
+                        <ul class="" role="tablist" id="main-tabs">
+                            <li role="presentation">
+                                <a href="#data-source-and-types-selector-content" aria-controls="" data-module-id="data-source-and-types-selector" data-module-ignore-errors="true" role="tab" data-toggle="tab">
+                                    <i data-container="body" data-toggle="tooltip" data-placement="left" title="{{Data sources and -types}}" class="fas fa-database fas-material-adapt"></i>
+                                    <span class="module-title">{{Data sources and -types}}</span>
+                                </a>
+                            </li>
+
+                            <li role="presentation">
+                                <a href="#state-snapshots-content" aria-controls="" role="tab" data-toggle="tab">
+                                    <i data-container="body" data-toggle="tooltip" data-placement="left" title="{{Projects}}" class="material-icons">folder_open</i>
+                                    <span class="module-title">{{Projects}}</span>
+                                </a>
+                            </li>
+
+                            <hr/>
+
+                            <li>
+                                <a href="#timeseries-content" aria-controls="" role="tab" data-toggle="tab" data-module-id="timeseries" data-module-ignore-errors="true">
+                                    <i data-container="body" data-toggle="tooltip" data-placement="left" title="{{Timeseries}}" class="fas fa-chart-bar fas-material-adapt"></i>
+                                    <span class="module-title">{{Timeseries}}</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#profile-drawing-content" aria-controls="" role="tab" data-toggle="tab" data-module-title="{{Profiles}}" data-module-id="profile-drawing" data-module-ignore-errors="true">
+                                    <i data-container="body" data-toggle="tooltip" data-placement="left" title="{{Profiles}}" class="fas fa-chart-area fas-material-adapt"></i>
+                                    <span class="module-title">{{Profiles}}</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class="bottom-menu-panel" role="tablist">
+                            <hr>
+                            <li>
+                                <a href="#" id="btn-reset"><i class="material-icons">replay</i>{{Reset}}</a>
+                            </li>
+                            <li>
+                                <a href="https://admin.calypso.watsonc.dk/" target="_blank"><i class="material-icons">person</i>{{My profile}}</a>
+                            </li>
+                            <li>
+                                <a href="http://watsonc.dk" target="_blank">
+                                    <i class="material-icons">home</i>{{Main page}}
+                                </a>
+                            </li>
+                            <li>
+                                <a id="session" href="#" data-toggle="modal" data-target="#login-modal">
+                                    <i class="material-icons gc2-session-lock" aria-hidden="true"
+                                       style="display: none">lock</i>
+                                    <i class="material-icons gc2-session-unlock" aria-hidden="true">lock_open</i>
+                                    <span class="module-title">Log in</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+
+
     <div id="container">
+
         <div id="map"></div>
 
         <div id="floating-container-primary">
-            <a href="javascript:void(0)" id="zoom-in-btn" class="btn btn-default btn-fab btn-fab-mini"><i
-                    class="material-icons">add</i></a>
-            <a href="javascript:void(0)" id="zoom-default-btn" class="btn btn-default btn-fab btn-fab-mini"><i
-                    class="material-icons">home</i></a>
-            <a href="javascript:void(0)" id="zoom-out-btn" class="btn btn-default btn-fab btn-fab-mini"><i
-                    class="material-icons">remove</i></a>
+            <a href="javascript:void(0)" id="zoom-in-btn" class="btn btn-default btn-fab btn-fab-mini">
+                <i class="material-icons">add</i>
+            </a>
+            <a href="javascript:void(0)" id="zoom-default-btn" class="btn btn-default btn-fab btn-fab-mini">
+                <i class="material-icons">home</i>
+            </a>
+            <a href="javascript:void(0)" id="zoom-out-btn" class="btn btn-default btn-fab btn-fab-mini">
+                <i class="material-icons">remove</i>
+            </a>
+            <a href="javascript:void(0)" id="find-me-btn" class="btn btn-default btn-fab btn-fab-mini">
+                <i class="material-icons">location_on</i>
+            </a>
         </div>
 
-        <div id="floating-container-secondary">
+        <div id="floating-container-secondary" style="display: inline;">
             <div id="locale-btn"></div>
-            <a href="#base-layers-dialog" id="base-layers-btn"
-               class="btn btn-default btn-fab btn-fab-mini map-tool-btn"><i
-                    class="material-icons">layers</i></a>
-            <a href="#info-dialog" id="info-dialog-btn" data-module="info"
-               class="btn btn-default btn-fab btn-fab-mini map-tool-btn"><i
-                    class="material-icons">info</i></a>
-            <a href="#print-dialog" id="print-dialog-btn" data-module="print"
-               class="btn btn-default btn-fab btn-fab-mini map-tool-btn"><i
-                    class="material-icons">print</i></a>
-            <a href="#offline-map-dialog" id="offline-map-btn" data-module="offline-map"
-               class="btn btn-default btn-fab btn-fab-mini map-tool-btn"><i
-                    class="material-icons">save_alt</i></a>
+            <a href="#base-layers-dialog" id="base-layers-btn" class="btn btn-default btn-fab btn-fab-mini map-tool-btn" title="{{Layer}}">
+                <i class="material-icons">layers</i>
+            </a>
         </div>
-
     </div>
 
     <!-- Nav bar -->
     <nav class="navbar navbar-default navbar-fixed-top fade-then-dragging">
         <div class="container">
-            <div class="navbar-header">
-
-                <button type="button" class="navbar-toggle" id="burger-btn">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-
-                <!--<img class="navbar-brand" src="">--><a class="navbar-brand navbar-brand-text"
-                                                           href="#">{{brandName}}</a>
+            <div class="row">
+                <div class="col-xs-5">
+                    <div class="js-layer-slide-breadcrumbs">
+                        <button type="button" class="navbar-toggle" id="burger-btn">
+                            <i class="fa fa-database"></i> Vælg data
+                        </button>
+                    </div>
+                </div>
+                <div class="col-xs-2" style="text-align: center; top: 5px">
+                    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                        viewBox="0 0 321.2 93" style="enable-background:new 0 0 321.2 93; height: 40px;" xml:space="preserve">
+                        <style type="text/css">
+                            .st0{fill:#A0E0C5;}
+                            .st1{fill:#FFFFFF;}
+                        </style>
+                        <g>
+                            <g>
+                                <path class="st0" d="M274.9,17.3c5.9,1.2,11,5.5,13.2,11c1.3,3.2,1.8,6.9,4.3,9.2c2,1.8,4.9,2.3,7.5,1.6c2.6-0.7,4.8-2.5,6.3-4.7
+                                    c3.6-5.2,3.2-12.5,0-17.9c-3.2-5.4-9-9-15.2-10.6c-10.1-2.5-21.5,0.5-28.6,8.2c-1.4,1.5-2.6,3.2-3.6,5c-0.6,1,0.6,2.2,1.6,1.6
+                                    C264.5,18.4,270.5,16.4,274.9,17.3"/>
+                                <path class="st1" d="M313.6,54.9c-4.3-5.9-11.3-5.4-17.1-3.4c-4.4,1.5-8.5,3.8-13,4.7c-10.2,2.1-21.3-3.8-25.8-13.2
+                                    c-2.3-4.8-2.9-10.4-1.9-15.6c0.2-1.2-1.3-1.9-2.1-1c-6.7,8.3-9.9,19.4-8.2,30c2.2,13.3,12.1,25.1,24.8,29.5
+                                    c12.7,4.4,27.8,1.3,37.7-7.8c4.7-4.3,8.4-10.2,7.9-16.9C315.7,59,314.9,56.8,313.6,54.9"/>
+                            </g>
+                            <g>
+                                <path class="st1" d="M12.4,55.7c0,6.6,2.7,11.6,9.5,11.6c3.2,0,6.5-1.5,8.8-4.5c0.2-0.4,0.7-0.6,1.2-0.6c0.2,0,0.5,0.1,0.7,0.2
+                                    l3.1,1.9c0.4,0.3,0.6,0.7,0.6,1.2c0,0.3-0.1,0.6-0.2,0.8c-2.7,4.7-7.7,7.5-14.2,7.5c-10.5,0-16.6-7.5-16.6-18
+                                    c0-10.6,6.1-18.5,16.6-18.5c6.5,0,11.6,2.9,14.3,7.5c0.2,0.2,0.2,0.5,0.2,0.8c0,0.5-0.2,0.9-0.6,1.2l-3,1.9
+                                    c-0.2,0.1-0.5,0.2-0.7,0.2c-0.6,0-1-0.2-1.2-0.6c-2.2-3-5.5-4.5-8.8-4.5C15.1,43.6,12.4,49.3,12.4,55.7z"/>
+                                <path class="st1" d="M57.5,37.8c0.7,0,1.4,0.6,1.7,1.4l9.5,32.5c0,0.8-0.7,1.4-1.4,1.4h-4.2c-0.7,0-1.4-0.6-1.6-1.4l-1-4.1H46.9
+                                    l-1.1,4.1c-0.2,0.7-0.9,1.4-1.6,1.4H40c-0.7,0-1.4-0.6-1.4-1.4l9.5-32.5c0.2-0.8,0.9-1.4,1.7-1.4H57.5z M58.4,61.3l-4.7-16.5
+                                    l-4.8,16.5H58.4z"/>
+                                <path class="st1" d="M74.6,39.2c0-0.4,0.2-0.8,0.5-1.1c0.2-0.2,0.6-0.4,0.9-0.4h4.3c0.4,0,0.8,0.1,1.1,0.4c0.2,0.2,0.4,0.6,0.4,1
+                                    v27.2h14.4c0.4,0,0.8,0.2,1.1,0.5c0.2,0.2,0.3,0.6,0.3,0.9v4c0,0.4-0.1,0.7-0.4,0.9c-0.2,0.2-0.6,0.4-1,0.4H76
+                                    c-0.4,0-0.8-0.2-1.1-0.4c-0.2-0.2-0.4-0.6-0.4-1V39.2z"/>
+                                <path class="st1" d="M110.6,53l6.8-13.8c0.4-0.7,1.1-1.4,1.8-1.4h4.7c0.7,0,1.4,0.6,1.4,1.4L114.1,62v9.8c0,0.8-0.7,1.4-1.4,1.4
+                                    h-4.3c-0.7,0-1.4-0.6-1.4-1.4V62L95.7,39.2c0-0.8,0.7-1.4,1.4-1.4h4.7c0.7,0,1.4,0.7,1.8,1.4L110.6,53z"/>
+                                <path class="st1" d="M141.1,37.8c10.5,0,15.2,6.2,15.2,12.9v0.5c0,6.7-4.7,13.1-15.2,13.1h-4.9v7.3c0,0.8-0.7,1.4-1.4,1.4h-4.3
+                                    c-0.7,0-1.4-0.6-1.4-1.4V39.2c0-0.8,0.7-1.4,1.4-1.4H141.1z M136.3,44.1v13.7h4.9c7,0,8-3.3,8-6.6v-0.5c0-3.4-1.1-6.7-8-6.7H136.3
+                                    z"/>
+                                <path class="st1" d="M184.5,47.6h-4c-0.7,0-1.6-0.7-1.9-1.5c-1.2-2.4-3.8-2.6-7-2.6c-3.7,0-5.7,1.4-5.7,3.7
+                                    c0,5.5,21.2,4.5,21.2,15.6c0,8.5-6,11.1-13.9,11.1c-7.5,0-13.5-2.9-14.2-8.9c0-0.8,0.6-1.7,1.6-1.7h4c0.7,0,1.6,0.6,1.9,1.4
+                                    c1,2.3,4.2,2.9,6.8,2.9c3.2,0,6.8,0,6.8-4.3c0-6.1-21.2-4-21.2-15.9c0-6.2,4.9-10.1,12.8-10.1c7.7,0,13.7,2.8,14.5,8.7
+                                    C186.1,46.7,185.5,47.6,184.5,47.6z"/>
+                                <path class="st1" d="M190.2,55.7c0-10.6,6.1-18.5,16.5-18.5c10.5,0,16.5,7.9,16.5,18.5c0,10.6-6.1,18-16.5,18
+                                    C196.3,73.8,190.2,66.3,190.2,55.7z M216.1,55.7c0-6.5-2.5-12.3-9.4-12.3c-6.8,0-9.4,5.7-9.4,12.3c0,6.7,2.6,11.8,9.4,11.8
+                                    C213.6,67.5,216.1,62.4,216.1,55.7z"/>
+                            </g>
+                        </g>
+                    </svg>
+                </div>
+                <div class="col-xs-5">
+                    <div id="place-search">
+                        <div class="places">
+                            <input id="custom-search" class="custom-search typeahead" type="text"
+                                   placeholder="Adresse, matr. nr., DGU nr.">
+                            <span id="searchclear" class="glyphicon glyphicon-remove-circle"></span>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <div class="collapse navbar-collapse">
-
-            </div><!--/.nav-collapse -->
         </div>
     </nav>
 
     <div id="base-layers-dialog" class="dialog-bottom fade-then-dragging">
         <div class="modal-header">
-            <button type="button" class="close close-hide" aria-hidden="true"><i class="material-icons">close</i>
+            <button type="button" class="close close-hide" aria-hidden="true">
+                <i class="material-icons">close</i>
             </button>
-            <button type="button" class="close expand-more" aria-hidden="true"><i class="material-icons">expand_less</i>
+            <button type="button" class="close expand-more" aria-hidden="true">
+                <i class="material-icons">expand_less</i>
             </button>
-            <button type="button" class="close expand-less" aria-hidden="true"><i class="material-icons">expand_more</i>
+            <button type="button" class="close expand-less" aria-hidden="true">
+                <i class="material-icons">expand_more</i>
             </button>
             <h3 class="modal-title">Korttype</h3>
         </div>
@@ -700,11 +1246,11 @@
             <button type="button" class="close editor-attr-dialog__close-hide" data-module="editor" aria-hidden="true">
                 <i class="material-icons">close</i>
             </button>
-            <button type="button" class="close editor-attr-dialog__expand-more" aria-hidden="true"><i
-                    class="material-icons">expand_less</i>
+            <button type="button" class="close editor-attr-dialog__expand-more" aria-hidden="true">
+                <i class="material-icons">expand_less</i>
             </button>
-            <button type="button" class="close editor-attr-dialog__expand-less" aria-hidden="true"><i
-                    class="material-icons">expand_more</i>
+            <button type="button" class="close editor-attr-dialog__expand-less" aria-hidden="true">
+                <i class="material-icons">expand_more</i>
             </button>
             <h3 class="modal-title">Attributes</h3>
         </div>
@@ -715,12 +1261,11 @@
 
     <div id="watsonc-features-dialog" class="dialog-bottom fade-then-dragging dialog-bottom-wide">
         <div class="modal-header">
-            <button type="button" class="close close-hide" data-module="editor" aria-hidden="true"><i
-                    class="material-icons">close</i>
+            <button type="button" class="close close-hide" data-module="editor" aria-hidden="true" title={{Close}}>
+                <i class="material-icons">close</i>
             </button>
-            <button type="button" class="close expand-more" aria-hidden="true"><i class="material-icons">expand_less</i>
-            </button>
-            <button type="button" class="close expand-less" aria-hidden="true"><i class="material-icons">expand_more</i>
+            <button type="button" class="close expand-more" aria-hidden="true">
+                <i class="material-icons">expand_less</i>
             </button>
             <h3 class="modal-title">Watsonc extension</h3>
         </div>
@@ -728,6 +1273,8 @@
             <div class="form-group" id="watsonc-features-dialog-form"></div>
         </div>
     </div>
+
+    <div class="dialog-bottom fade-then-dragging dialog-bottom-wide" id="watsonc-plots-dialog-form"></div>
 
     <div id="offline-map-dialog" class="dialog-bottom fade-then-dragging">
         <div class="modal-header">
@@ -747,12 +1294,14 @@
 
     <div id="print-dialog" class="dialog-bottom fade-then-dragging">
         <div class="modal-header">
-            <button type="button" class="close close-hide" data-module="print" aria-hidden="true"><i
-                    class="material-icons">close</i>
+            <button type="button" class="close close-hide" data-module="print" aria-hidden="true" title={{Close}}>
+                <i class="material-icons">close</i>
             </button>
-            <button type="button" class="close expand-more" aria-hidden="true"><i class="material-icons">expand_less</i>
+            <button type="button" class="close expand-more" aria-hidden="true">
+                <i class="material-icons">expand_less</i>
             </button>
-            <button type="button" class="close expand-less" aria-hidden="true"><i class="material-icons">expand_more</i>
+            <button type="button" class="close expand-less" aria-hidden="true">
+                <i class="material-icons">expand_more</i>
             </button>
             <h3 class="modal-title">Print</h3>
         </div>
@@ -773,7 +1322,7 @@
                     <div class="btn-group" style="display: none">
                         <a target="_blank" href="javascript:void(0)" class="btn btn-primary btn-raised"
                            id="open-pdf">{{Open PDF}}</a>
-                        <a href="bootstrap-elements.html" data-target="#"
+                        <a href="bootstrap-elements.html"
                            class="btn btn-primary btn-raised dropdown-toggle" data-toggle="dropdown"><span
                                 class="caret"></span></a>
                         <ul class="dropdown-menu">
@@ -849,8 +1398,8 @@
 
     <div id="info-dialog" class="dialog-bottom fade-then-dragging dialog-bottom-wide">
         <div class="modal-header">
-            <button type="button" class="close close-hide" data-module="editor" aria-hidden="true"><i
-                    class="material-icons">close</i>
+            <button type="button" class="close close-hide" data-module="editor" aria-hidden="true" title={{Close}}>
+                <i class="material-icons">close</i>
             </button>
             <button type="button" class="close expand-more" aria-hidden="true"><i class="material-icons">expand_less</i>
             </button>
@@ -869,13 +1418,13 @@
     </div>
 
     <div id="layer-slide" class="slide-left fade-then-dragging">
-        <div class="modal-header">
+        <div class="modal-header" style="background-color: white;">
             <button type="button" class="close" aria-hidden="true">×</button>
             <h3 class="modal-title"></h3>
         </div>
-        <div id="layer-slide-body-wrapper">
-            <div class="modal-body">
-                <div class="form-group" id="watsonc-layers"></div>
+        <div id="layer-slide-body-wrapper" style="background-color: white;">
+            <div class="modal-body" style="background-color: white; height: calc(100vh - 110px);">
+                <div class="form-group" id="watsonc-layers" style="padding-top: 10px;"></div>
                 <div class="form-group" id="layers"></div>
             </div>
         </div>
@@ -883,7 +1432,7 @@
 
     <div id="info-modal-top" class="slide-left fade-then-dragging">
         <div class="modal-header">
-            <button type="button" class="close" aria-hidden="true">×</button>
+            <button type="button" class="close" aria-hidden="true" title={{Close}}>×</button>
             <h3 class="modal-title">Liste</h3>
         </div>
         <div id="info-modal-top-body-wrapper">
@@ -891,18 +1440,16 @@
             </div>
         </div>
     </div>
-
-
 </div>
-
 
 <!-- About Modal -->
 <div class="modal fade" id="about-modal" tabindex="-1" role="dialog" aria-labelledby="about-modalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" title={{Close}}>
+                    <span aria-hidden="true">&times;</span>
+                </button>
                 <h4 class="modal-title" id="about-modalLabel">{{About}}</h4>
             </div>
             <div class="modal-body">
@@ -920,8 +1467,8 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" title={{Close}}>
+                    <span aria-hidden="true">&times;</span></button>
                 <h3 class="modal-title" id="click-modalLabel"></h3>
             </div>
             <div class="modal-body">
@@ -935,12 +1482,13 @@
 </div>
 
 <!-- Login Modal -->
-<div class="modal fade" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="click-modalLabel">
+<div class="modal fade" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="click-modalLabel" style="z-index: 100000;">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" title={{Close}}>
+                    <span aria-hidden="true">&times;</span>
+                </button>
                 <h3 class="modal-title" id="login-modalLabel"></h3>
             </div>
             <div class="modal-body" id="login-modal-body">
@@ -952,84 +1500,15 @@
     </div>
 </div>
 
-<div id="search-ribbon">
-    <div id="search-border"><i class="floatRight cursorPointer fa fa-reorder"></i></div>
-    <div id="search-container">
-        <nav id="myNavmenu" class="navmenu navmenu-default navmenu-fixed-right offcanvas" role="navigation"
-             data-autohide="false" data-recalc="true" style="overflow: hidden">
 
-            <div id="info-modal" class="slide-right">
-                <div class="modal-header">
-                    <button type="button" class="close" aria-hidden="true">×</button>
-                    <h2 class="modal-title"></h2>
-                </div>
-                <div id="info-modal-body-wrapper">
-                    <div class="modal-body" id="info-modal-body"></div>
-                </div>
-            </div>
-
-            <div id="module-container" class="slide-right">
-                <div class="modal-header">
-                    <button type="button" class="close" aria-hidden="true">×</button>
-                    <h2 class="modal-title"></h2>
-                </div>
-                <div id="module-container-wrapper">
-                    <div class="modal-body" id="module-container-body">
-                        <!-- Tab panes -->
-                        <div class="tab-content main-content">
-                            <div role="tabpanel" class="tab-pane fade" id="state-snapshots-content">
-                                <div class="help-btn" onclick='javascript:$(this).next().html(`<div class="alert alert-dismissible alert-info" role="alert">
-                                    <button type="button" class="close" data-dismiss="alert">×</button>{{StateSnapshots
-                                        description}}
-                                    </div>`)'><i class="material-icons help-btn">help_outline</i></div>
-                                <div></div>
-                                <div class="form-group" id="state-snapshots" role="tablist"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="navbar navbar-default">
-                <div class="container-fluid">
-                    <div class="navbar-header">
-                        <a class="navbar-brand" href="javascript:void(0)"><i class="material-icons brand-icon">fullscreen</i>{{brandName}}
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div id="side-panel">
-                <div role="tabpanel">
-                    <!-- Nav tabs -->
-                    <ul class="" role="tablist" id="main-tabs">
-                        <li role="presentation"><a href="#state-snapshots-content" aria-controls="" role="tab"
-                                                   data-toggle="tab"><i data-container="body" data-toggle="tooltip"
-                                                                        data-placement="left"
-                                                                        title="{{State snapshots}}"
-                                                                        class="material-icons">camera</i><span
-                                class="module-title">{{State snapshots}}</a></li>
-                    </ul>
-                    <ul role="tablist">
-                        <hr>
-                        <li><a href="#" id="btn-reset"><i class="material-icons">replay</i>{{Reset}}</a></li>
-                        <li><a href="#" data-toggle="modal" data-target="#about-model"><i class="material-icons">question_answer</i>{{About}}
-                        </a></li>
-                        <li>
-                            <a id="session" href="#" data-toggle="modal" data-target="#login-modal">
-                                <i class="material-icons gc2-session-lock" aria-hidden="true"
-                                   style="display: none">lock</i>
-                                <i class="material-icons gc2-session-unlock" aria-hidden="true">lock_open</i>
-                                <span class="module-title">Log in</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </div>
+<div class="modal fade" tabindex="-1" role="dialog" id="watsonc-menu-dialog">
+    <div class="modal-dialog modal-lg" id="watsonc-intro-modal-placeholder" role="document"></div>
 </div>
 
+<div class="modal fade" tabindex="-1" role="dialog" id="watsonc-select-chemical-dialog">
+    <div class="modal-dialog" id="watsonc-select-chemical-dialog-placeholder" role="document"></div>
+</div>
 
-
-
+<div class="modal fade" tabindex="-1" role="dialog" id="watsonc-text-field-dialog">
+    <div class="modal-dialog" id="watsonc-text-field-dialog-placeholder" role="document"></div>
+</div>

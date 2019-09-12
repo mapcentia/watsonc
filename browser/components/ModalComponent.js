@@ -1,13 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { DragDropContextProvider } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
 
 import withDragDropContext from './withDragDropContext';
-import ModalMeasurementComponent from './ModalMeasurementComponent';
-import ModalPlotComponent from './ModalPlotComponent';
-import TitleFieldComponent from './../../../../browser/modules/shared/TitleFieldComponent';
-import SearchFieldComponent from './../../../../browser/modules/shared/SearchFieldComponent';
+import ModalFeatureComponent from './ModalFeatureComponent';
 
 /**
  * Creates borehole parameters display and visualization panel
@@ -15,11 +10,8 @@ import SearchFieldComponent from './../../../../browser/modules/shared/SearchFie
 class ModalComponent extends React.Component {
     constructor(props) {
         super(props);
-
         this.state = {
-            plots: this.props.initialPlots,
-            measurementsSearchTerm: ``,
-            plotsSearchTerm: ``
+            activeTabIndex: 0
         }
     }
 
@@ -27,197 +19,36 @@ class ModalComponent extends React.Component {
         this.setState({ plots });
     }
 
-    setMeasurementsSearchTerm(measurementsSearchTerm) {
-        this.setState({ measurementsSearchTerm });
-    }
-
-    setPlotsSearchTerm(plotsSearchTerm) {
-        this.setState({ plotsSearchTerm });
-    }
-
     render() {
-        let plottedProperties = [];
-        for (let key in this.props.feature.properties) {
-            try {
-                let data = JSON.parse(this.props.feature.properties[key]);
-                if (typeof data === `object` && data !== null && `boreholeno` in data && `unit` in data && `title` in data && `measurements` in data && `timeOfMeasurement` in data) {
-                    let isPlottableProperty = true;
-                    if (Array.isArray(data.measurements) === false) {
-                        data.measurements = JSON.parse(data.measurements);
-                    }
-
-                    // Checking if number of measurements corresponds to the number of time measurements for each intake
-                    data.measurements.map((measurements, intakeIndex) => {
-                        if (data.measurements[intakeIndex].length !== data.timeOfMeasurement[intakeIndex].length) {
-                            console.warn(`${data.title} property has not corresponding number of measurements and time measurements for intake ${intakeIndex + 1}`);
-                            isPlottableProperty = false;
-                        }
-                    });
-
-                    if (isPlottableProperty && [`minofbottom`, `maksoftop`].indexOf(key) === -1) {
-                        for (let i = 0; i < data.measurements.length; i++) {
-                            plottedProperties.push({
-                                key,
-                                intakeIndex: i,
-                                boreholeno: data.boreholeno,
-                                title: data.title
-                            });
-                        }
-                    }
-                }
-            } catch (e) {
-            }
-        }
-
-        // Preparing measurements
-        let measurementsText = __(`Data series`);
-        if (this.state.measurementsSearchTerm.length > 0) {
-            measurementsText = __(`Found data series`);
-        }
-
-        /**
-         * Creates measurement control
-         * 
-         * @returns {Boolean|Object}
-         */
-        const createMeasurementControl = (item, key) => {
-            let display = true;
-            if (this.state.measurementsSearchTerm.length > 0) {
-                if (item.title.toLowerCase().indexOf(this.state.measurementsSearchTerm.toLowerCase()) === -1) {
-                    display = false;
-                }
-            }
-
-            let control = false;
-            if (display) {
-                control = (<ModalMeasurementComponent
-                    key={key}
-                    onAddMeasurement={this.props.onAddMeasurement}
-                    gid={this.props.feature.properties.gid}
-                    itemKey={item.key}
-                    intakeIndex={item.intakeIndex}
-                    title={item.title}/>);
-            }
-
-            return control;
-        };
-
-        let propertiesControls = [];
-        if (Object.keys(this.props.categories).length > 0) {
-            let numberOfDisplayedCategories = 0;
-            for (let categoryName in this.props.categories) {
-                let measurementsThatBelongToCategory = Object.values(this.props.categories[categoryName]);
-                let measurementControls = [];
-                plottedProperties.map((item, index) => {
-                    if (measurementsThatBelongToCategory.indexOf(item.title) !== -1) {
-                        // Measurement is in current category
-                        let control = createMeasurementControl(item, ('measurement_' + index));
-                        plottedProperties.splice(index, 1);
-                        if (control) {
-                            measurementControls.push(control);
-                        }
-                    }
-                });
-
-                if (measurementControls.length > 0) {
-                    // Category has at least one displayed measurement
-                    numberOfDisplayedCategories++;
-                    propertiesControls.push(<div key={`category_` + numberOfDisplayedCategories}>
-                        <div><h5>{categoryName.trim()}</h5></div>
-                        <div>{measurementControls}</div>
-                    </div>);
-                }
-            }
-
-            // lacing uncategorized measurements in separate category
-            let uncategorizedMeasurementControls = [];
-            plottedProperties.map((item, index) => {
-                let control = createMeasurementControl(item, ('measurement_' + index));
-                plottedProperties.splice(index, 1);
-                if (control) {
-                    uncategorizedMeasurementControls.push(control);
-                }
+        let tabs = false;
+        if (this.props.features.length > 1) {
+            let tabControls = [];
+            this.props.features.map((item, index) => {
+                tabControls.push(<li key={`modal_tab_${index}`} className={index === this.state.activeTabIndex ? `active` : ``}>
+                    <a href="javascript:void(0)" onClick={() => { this.setState({activeTabIndex: index})}}>{item.properties.boreholeno}</a>
+                </li>);
             });
 
-            if (uncategorizedMeasurementControls.length > 0) {
-                // Category has at least one displayed measurement
-                numberOfDisplayedCategories++;
-                propertiesControls.push(<div key={`uncategorized_category_0`}>
-                    <div><h5>{__(`Uncategorized`)}</h5></div>
-                    <div>{uncategorizedMeasurementControls}</div>
-                </div>);
-            }
-        } else {
-            plottedProperties.map((item, index) => {
-                let control = createMeasurementControl(item, (`measurement_` + index));
-                if (control) {
-                    propertiesControls.push(control);
-                }
-            });
+            tabs = (<ul className="nav nav-tabs watsonc-modal-tabs" style={{marginBottom: `15px`}}>{tabControls}</ul>)
         }
 
-        // Preparing plots
-        let plotsText = __(`Plots`);
-        if (this.state.plotsSearchTerm.length > 0) {
-            plotsText = __(`Found plots`);
-        }
-
-        let plotsControls = (<p>{__(`No plots were created yet`)}</p>);
-        if (this.state.plots && this.state.plots.length > 0) {
-            plotsControls = [];
-            this.state.plots.map((plot) => {
-                let display = true;
-                if (this.state.plotsSearchTerm.length > 0) {
-                    if (plot.title.toLowerCase().indexOf(this.state.plotsSearchTerm.toLowerCase()) === -1) {
-                        display = false;
-                    }
-                }
-
-                if (display) {
-                    plotsControls.push(<ModalPlotComponent
-                        key={`plot_container_` + plot.id}
-                        plot={plot}
-                        onDeleteMeasurement={this.props.onDeleteMeasurement}
-                        dataSource={this.props.dataSource}/>);
-                }
-            });
-        }
-
-        return (<div>
-                <div className="container-fluid">
-                    <div className="row">
-                        <div className="col-md-6">
-                            <div>
-                                <div>{measurementsText}</div>
-                                <div className="form-group">
-                                    <SearchFieldComponent id="measurements-search-control" onSearch={this.setMeasurementsSearchTerm.bind(this)}/>
-                                </div>
-                            </div>
-                            <div>{propertiesControls}</div>
-                        </div>
-                        <div className="col-md-6">
-                            <div>
-                                <div>{plotsText}</div>
-                                <div style={{ display: `flex` }}>
-                                    <div className="form-group">
-                                        <SearchFieldComponent id="plots-search-control" onSearch={this.setPlotsSearchTerm.bind(this)}/>
-                                    </div>
-                                    <div className="form-group">
-                                        <TitleFieldComponent id="new-plot-control" onAdd={(title) => { this.props.onPlotAdd(title) }} type="userOwned" customStyle={{ width: `100%` }}/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>{plotsControls}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>);
+        return (<div style={{ height: `inherit` }}>
+            {tabs}
+            <div style={{ height: (tabs === false ? `inherit` : `calc(100% - 39px)`)}}>
+                <ModalFeatureComponent
+                    key={`item_${this.state.activeTabIndex}`}
+                    feature={this.props.features[this.state.activeTabIndex]}
+                    {...this.props}/>
+            </div>
+        </div>);
     }
 }
 
 ModalComponent.propTypes = {
     categories: PropTypes.object.isRequired,
-    feature: PropTypes.object.isRequired,
+    features: PropTypes.array.isRequired,
+    names: PropTypes.object.isRequired,
+    limits: PropTypes.object.isRequired,
     initialPlots: PropTypes.array.isRequired,
     onPlotAdd: PropTypes.func.isRequired,
     onAddMeasurement: PropTypes.func.isRequired,
