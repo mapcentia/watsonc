@@ -228,7 +228,7 @@ module.exports = module.exports = {
         });
 
         $.ajax({
-            url: '/api/sql/jupiter?q=SELECT * FROM codes.compunds&base64=false',
+            url: '/api/sql/jupiter?q=SELECT * FROM codes.compunds_view&base64=false',
             scriptCharset: "utf-8",
             success: function (response) {
                 if (`features` in response) {
