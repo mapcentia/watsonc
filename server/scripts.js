@@ -63,7 +63,8 @@ const profileScriptHandler = (req, res) => {
                 res.send({
                     status: `error`,
                     message: error,
-                    result: parsedData
+                    result: parsedData,
+                    process: pythonProcess.spawnargs
                 });
             }
         }
@@ -74,7 +75,9 @@ const profileScriptHandler = (req, res) => {
         res.status(400);
         res.send({
             status: `error`,
-            message: data.toString()
+            message: data.toString(),
+            process: pythonProcess.spawnargs
+
         });
     });
 };
