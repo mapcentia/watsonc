@@ -266,6 +266,7 @@ class DashboardComponent extends React.Component {
     }
 
     handleProfileClick(e) {
+        console.log(e.points[0].data.text);
         if (e && e.points && e.points.length === 1 && e.points[0].data && e.points[0].data.text) {
             if (e.points[0].data.text.indexOf(`DGU`) > -1) {
                 let boreholeNumber = false;
@@ -280,6 +281,7 @@ class DashboardComponent extends React.Component {
                     }
                 });
                 if (boreholeNumber !== false) {
+                    console.log(boreholeNumber);
                     this.props.onOpenBorehole(boreholeNumber);
                 }
             }
