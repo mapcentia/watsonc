@@ -267,15 +267,18 @@ class DashboardComponent extends React.Component {
 
     handleProfileClick(e) {
         if (e && e.points && e.points.length === 1 && e.points[0].data && e.points[0].data.text) {
-            if (e.points[0].data.text.indexOf(`Boring DGU`) > -1) {
+            if (e.points[0].data.text.indexOf(`DGU`) > -1) {
                 let boreholeNumber = false;
                 let lines = e.points[0].data.text.split(`<br>`);
                 lines.map(item => {
-                    if (item.indexOf(`Boring DGU`) > -1) {
-                        boreholeNumber = item.replace(`Boring DGU`, ``).trim();
+                    if (item.indexOf(`DGU`) > -1) {
+                        boreholeNumber = item.replace(`DGU`, ``)
+                            .replace(/>/g, ``)
+                            .replace(/</g, ``)
+                            .replace(/b/g, ``)
+                            .replace(/\//g, ``).trim();
                     }
                 });
-
                 if (boreholeNumber !== false) {
                     this.props.onOpenBorehole(boreholeNumber);
                 }
