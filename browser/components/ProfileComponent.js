@@ -28,6 +28,7 @@ class ProfileComponent extends React.Component {
                 t: 5,
                 pad: 1
             };
+            layoutCopy.autosize = true;
 
             plot = (<Plot
                 data={dataCopy}
