@@ -43,10 +43,10 @@ class MenuPanelPlotComponent extends React.Component {
                     if (Array.isArray(measurementData.measurements) === false) {
                         measurementData.measurements = JSON.parse(measurementData.measurements);
                     }
-
+                    let formatedDates = measurementData.timeOfMeasurement[intakeIndex].map(x => x.replace("T", " "));
                     data.push({
                         name: (`${feature.properties.boreholeno} - ${measurementData.title} (${measurementData.unit})`),
-                        x: measurementData.timeOfMeasurement[intakeIndex],
+                        x: formatedDates,
                         y: measurementData.measurements[intakeIndex],
                     });
                 } else if (measurementLocation.length === 4) {
