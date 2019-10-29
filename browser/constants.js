@@ -1,7 +1,6 @@
 const LAYER_NAMES = [
-    `v:chemicals.boreholes_time_series_with_chemicals`, // Jupiter stations
-    `chemicals.boreholes_time_series_without_chemicals`,
-    `v:sensor.sensordata_with_correction`, // Calypso stations
+    `v:chemicals.boreholes_time_series_without_chemicals`,
+    `v:sensor.sensordata_without_correction`, // Calypso stations
 ];
 
 const WATER_LEVEL_KEY = `watlevmsl`;

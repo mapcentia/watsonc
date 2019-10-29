@@ -86,7 +86,7 @@ const instersectionScriptHandler = (req, res) => {
     if (!config.gc2.host) throw new Error(`GC2 host has to be specified`);
 
     if (req.body.profile && req.body.profile.type) {
-        let table = `chemicals.boreholes_time_series_with_chemicals`;
+        let table = `chemicals.boreholes_time_series_without_chemicals`;
         let sql = `SELECT * FROM ${table} WHERE ST_Intersects(ST_Transform(ST_geomfromtext('${req.body.data}', 4326), 25832), the_geom)`;
     
         let url = config.gc2.host + `/api/v1/sql/jupiter`;

@@ -76,7 +76,7 @@ class MenuPanelPlotComponent extends React.Component {
             data
         }, {responseType: 'arraybuffer'}).then(response => {
             const filename = this.props.plotMeta.title.replace(/\s+/g, '_').toLowerCase() + '.xlsx';
-            const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+            const url = window.URL.createObjectURL(new Blob([response.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
 
             const link = document.createElement('a');
             link.href = url;
@@ -114,7 +114,7 @@ class MenuPanelPlotComponent extends React.Component {
                         let key = measurementLocation[1];
                         let intakeIndex = parseInt(measurementLocation[2]);
                         let createdAt = this.props.plotMeta.measurementsCachedData[measurementLocationRaw].created_at;
-
+                        console.log(feature.properties[key]);
                         let measurementData = JSON.parse(feature.properties[key]);
                         let localMinTime = measurementData.timeOfMeasurement[intakeIndex][0];
                         if (minTime === false) {
@@ -263,7 +263,9 @@ class MenuPanelPlotComponent extends React.Component {
                         href="javascript:void(0)"
                         disabled={data.length === 0}
                         title={__(`Download`) + ` ` + this.props.plotMeta.title}
-                        onClick={() => { this.download()}}
+                        onClick={() => {
+                            this.download()
+                        }}
                         style={{padding: `0px`, marginLeft: `10px`}}>
                         <i className="fa fa-download"></i> {__(`Download`)}</a>
                     <SortableHandleComponent title={this.props.plotMeta.title}/>
@@ -271,7 +273,9 @@ class MenuPanelPlotComponent extends React.Component {
                         className="btn"
                         href="javascript:void(0)"
                         title={__(`Remove`) + ` ` + this.props.plotMeta.title}
-                        onClick={() => { this.props.onDelete(this.props.plotMeta.id)}}
+                        onClick={() => {
+                            this.props.onDelete(this.props.plotMeta.id)
+                        }}
                         style={{padding: `0px`, marginLeft: `20px`}}>
                         <i className="fa fa-remove"></i> {__(`Remove`)}</a>
                 </div>

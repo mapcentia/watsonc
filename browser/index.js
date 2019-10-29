@@ -1,6 +1,6 @@
 'use strict';
 
-import { Provider } from 'react-redux';
+import {Provider} from 'react-redux';
 
 import PlotManager from './PlotManager';
 import ModalComponent from './components/ModalComponent';
@@ -9,10 +9,10 @@ import MenuTimeSeriesComponent from './components/MenuTimeSeriesComponent';
 import MenuDataSourceAndTypeSelectorComponent from './components/MenuDataSourceAndTypeSelectorComponent';
 import MenuProfilesComponent from './components/MenuProfilesComponent';
 import IntroModal from './components/IntroModal';
-import { LAYER_NAMES, WATER_LEVEL_KEY } from './constants';
+import {LAYER_NAMES, WATER_LEVEL_KEY} from './constants';
 
 import reduxStore from './redux/store';
-import { setAuthenticated } from './redux/actions';
+import {setAuthenticated} from './redux/actions';
 
 const symbolizer = require('./symbolizer');
 
@@ -82,15 +82,15 @@ const DATA_SOURCES = [{
     additionalKey: ``,
     title: __(`Jupiter drilling`)
 }, {
-    originalLayerKey: LAYER_NAMES[2],
+    originalLayerKey: LAYER_NAMES[1],
     additionalKey: `1`,
     title: __(`CALYPSO stations`)
 }, {
-    originalLayerKey: LAYER_NAMES[2],
+    originalLayerKey: LAYER_NAMES[1],
     additionalKey: `3`,
     title: __(`CALYPSO stations`)
 }, {
-    originalLayerKey: LAYER_NAMES[2],
+    originalLayerKey: LAYER_NAMES[1],
     additionalKey: `4`,
     title: __(`CALYPSO stations`)
 }];
@@ -187,45 +187,35 @@ module.exports = module.exports = {
             $(`[href="#watsonc-content"]`).trigger(`click`);
         });
 
-        backboneEvents.get().on(`startLoading:layers`, layerKey => {
-            if (cloud.get().getZoom() < 15 && layerKey === "v:chemicals.boreholes_time_series_with_chemicals") {
-                switchLayer.init("v:chemicals.boreholes_time_series_with_chemicals", false, true, false);
-
-                setTimeout(()=>{
-                    let applicationWideControls = $(`*[data-gc2-id="chemicals.boreholes_time_series_with_chemicals"]`);
-                    applicationWideControls.prop('checked', false);
-                }, 200);
-            }
-        });
-
-        cloud.get().on(`moveend`, () => {
-            if (cloud.get().getZoom() < 15) {
-                switchLayer.init("v:chemicals.boreholes_time_series_with_chemicals", false, true, false);
-
-                jquery.snackbar({
-                    id: "snackbar-watsonc",
-                    content: "<span id='conflict-progress'>" + __("Zoom tættere på for at aktivere data-funktionerne.") + "</span>",
-                    htmlAllowed: true,
-                    timeout: 1000000
-                });
-            } else {
-                setTimeout(function () {
-                    jquery("#snackbar-watsonc").snackbar("hide");
-                }, 200);
-
-                if ((previousZoom === 14 || (previousZoom === -1 && cloud.get().getZoom() === 15))
-                    || ((previousZoom < 15 || previousZoom === -1) && cloud.get().getZoom() >= 15)) {
-                    if (reduxStore.getState().global && reduxStore.getState().global.selectedLayers) {
-                        _self.onApplyLayersAndChemical({
-                            layers: reduxStore.getState().global.selectedLayers,
-                            chemical: reduxStore.getState().global.selectedChemical
-                        });
-                    }
-                }
-            }
-
-            previousZoom = cloud.get().getZoom();
-        });
+        // switchLayer.init("v:chemicals.boreholes_time_series_without_chemicals", true, true, false);
+        //
+        // cloud.get().on(`moveend`, () => {
+        //     if (cloud.get().getZoom() < 15) {
+        //
+        //         jquery.snackbar({
+        //             id: "snackbar-watsonc",
+        //             content: "<span id='conflict-progress'>" + __("Zoom tættere på for at aktivere data-funktionerne.") + "</span>",
+        //             htmlAllowed: true,
+        //             timeout: 1000000
+        //         });
+        //     } else {
+        //         setTimeout(function () {
+        //             jquery("#snackbar-watsonc").snackbar("hide");
+        //         }, 200);
+        //
+        //         if ((previousZoom === 14 || (previousZoom === -1 && cloud.get().getZoom() === 15))
+        //             || ((previousZoom < 15 || previousZoom === -1) && cloud.get().getZoom() >= 15)) {
+        //             if (reduxStore.getState().global && reduxStore.getState().global.selectedLayers) {
+        //                 _self.onApplyLayersAndChemical({
+        //                     layers: reduxStore.getState().global.selectedLayers,
+        //                     chemical: reduxStore.getState().global.selectedChemical
+        //                 });
+        //             }
+        //         }
+        //     }
+        //
+        //     previousZoom = cloud.get().getZoom();
+        // });
 
         $.ajax({
             url: '/api/sql/jupiter?q=SELECT * FROM codes.compunds_view&base64=false',
@@ -256,7 +246,7 @@ module.exports = module.exports = {
                     categoriesOverall = {};
                     categoriesOverall[LAYER_NAMES[0]] = categories;
                     categoriesOverall[LAYER_NAMES[0]]["Vandstand"] = {"0": WATER_LEVEL_KEY};
-                    categoriesOverall[LAYER_NAMES[2]] = {"Vandstand": {"0": WATER_LEVEL_KEY}};
+                    categoriesOverall[LAYER_NAMES[1]] = {"Vandstand": {"0": WATER_LEVEL_KEY}};
 
                     if (infoModalInstance) infoModalInstance.setCategories(categoriesOverall);
 
@@ -278,34 +268,35 @@ module.exports = module.exports = {
                     console.error(`Unable to request codes.compunds`);
                 }
             },
-            error: function () {}
-        });
-
-        backboneEvents.get().on("doneLoading:layers", e => {
-            if (e === LAYER_NAMES[0]) {
-                dataSource = [];
-                boreholesDataSource = layers.getMapLayers(false, LAYER_NAMES[0])[0].toGeoJSON().features;
-                dataSource = dataSource.concat(waterLevelDataSource);
-                dataSource = dataSource.concat(boreholesDataSource);
-                if (dashboardComponentInstance) dashboardComponentInstance.setDataSource(dataSource);
-            } else if (e === LAYER_NAMES[2]) {
-                dataSource = [];
-                waterLevelDataSource = layers.getMapLayers(false, LAYER_NAMES[2])[0].toGeoJSON().features;
-                dataSource = dataSource.concat(waterLevelDataSource);
-                dataSource = dataSource.concat(boreholesDataSource);
-                if (dashboardComponentInstance) dashboardComponentInstance.setDataSource(dataSource);
+            error: function () {
             }
         });
 
-        backboneEvents.get().on(`doneLoading:layers`, e => {
-            if ([LAYER_NAMES[0], LAYER_NAMES[2]].indexOf(e) > -1) {
-                if (dashboardComponentInstance) {
-                    let plots = dashboardComponentInstance.getPlots();
-                    plots = _self.syncPlotData(plots, e);
-                    dashboardComponentInstance.setPlots(plots);
-                }
-            }
-        });
+        // backboneEvents.get().on("doneLoading:layers", e => {
+        //     if (e === LAYER_NAMES[0]) {
+        //         dataSource = [];
+        //         boreholesDataSource = layers.getMapLayers(false, LAYER_NAMES[0])[0].toGeoJSON().features;
+        //         dataSource = dataSource.concat(waterLevelDataSource);
+        //         dataSource = dataSource.concat(boreholesDataSource);
+        //         if (dashboardComponentInstance) dashboardComponentInstance.setDataSource(dataSource);
+        //     } else if (e === LAYER_NAMES[1]) {
+        //         dataSource = [];
+        //         waterLevelDataSource = layers.getMapLayers(false, LAYER_NAMES[1])[0].toGeoJSON().features;
+        //         dataSource = dataSource.concat(waterLevelDataSource);
+        //         dataSource = dataSource.concat(boreholesDataSource);
+        //         if (dashboardComponentInstance) dashboardComponentInstance.setDataSource(dataSource);
+        //     }
+        // });
+
+        // backboneEvents.get().on(`doneLoading:layers`, e => {
+        //     if ([LAYER_NAMES[0], LAYER_NAMES[1]].indexOf(e) > -1) {
+        //         if (dashboardComponentInstance) {
+        //             let plots = dashboardComponentInstance.getPlots();
+        //             plots = _self.syncPlotData(plots, e);
+        //             dashboardComponentInstance.setPlots(plots);
+        //         }
+        //     }
+        // });
 
         state.getState().then(applicationState => {
             $(PLOTS_ID).attr(`style`, `
@@ -365,7 +356,7 @@ module.exports = module.exports = {
                         }
 
                         let titleAsLink = false;
-                        if (layerName.indexOf(`chemicals.boreholes_time_series_with_chemicals`) > -1) {
+                        if (layerName.indexOf(`chemicals.boreholes_time_series_without_chemicals`) > -1) {
                             titleAsLink = true;
                         }
 
@@ -377,10 +368,50 @@ module.exports = module.exports = {
                         });
 
                         if (clickedFeatureAlreadyDetected === false) intersectingFeatures.unshift(clickedFeature);
-                        _self.createModal(intersectingFeatures, false, titleAsLink);
-                        if (!dashboardComponentInstance) {
-                            throw new Error(`Unable to find the component instance`);
-                        }
+
+
+                        let boreholes = [];
+
+                        intersectingFeatures.map((feature) => {
+                            boreholes.push(feature.properties.boreholeno)
+                        });
+
+                        console.log(boreholes);
+
+                        // Lazy load features
+                        $.ajax({
+                            url: "/api/sql/jupiter?srs=25832&q=SELECT * FROM chemicals.boreholes_time_series_with_chemicals WHERE boreholeno in('" + boreholes.join("','") + "')",
+                            scriptCharset: "utf-8",
+                            success: function (response) {
+
+                                // if (e === LAYER_NAMES[0]) {
+                                    dataSource = [];
+                                    boreholesDataSource = response.features;
+                                    dataSource = dataSource.concat(waterLevelDataSource);
+                                    dataSource = dataSource.concat(boreholesDataSource);
+                                    if (dashboardComponentInstance) dashboardComponentInstance.setDataSource(dataSource);
+                                // } else if (e === LAYER_NAMES[1]) {
+                                //     dataSource = [];
+                                //     waterLevelDataSource = layers.getMapLayers(false, LAYER_NAMES[1])[0].toGeoJSON().features;
+                                //     dataSource = dataSource.concat(waterLevelDataSource);
+                                //     dataSource = dataSource.concat(boreholesDataSource);
+                                //     if (dashboardComponentInstance) dashboardComponentInstance.setDataSource(dataSource);
+                                // }
+
+
+                                _self.createModal(response.features, false, titleAsLink);
+                                if (!dashboardComponentInstance) {
+                                    throw new Error(`Unable to find the component instance`);
+                                }
+                            },
+                            error: function () {
+                            }
+                        });
+
+
+
+
+
                     });
                 }, "watsonc");
 
@@ -388,7 +419,7 @@ module.exports = module.exports = {
                 if (svgCirclePart) {
                     layerTree.setPointToLayer(layerName, (feature, latlng) => {
                         let renderIcon = true;
-                        if (layerName === LAYER_NAMES[2]) {
+                        if (layerName === LAYER_NAMES[1]) {
                             if (feature.properties.loctypeid &&
                                 (enabledLoctypeIds.indexOf(parseInt(feature.properties.loctypeid) + '') === -1 && enabledLoctypeIds.indexOf(parseInt(feature.properties.loctypeid)) === -1)) {
                                 renderIcon = false;
@@ -417,7 +448,7 @@ module.exports = module.exports = {
                                 watsoncStatus: `default`
                             });
 
-                            return L.marker(latlng, { icon });
+                            return L.marker(latlng, {icon});
                         } else {
                             return null;
                         }
@@ -436,9 +467,9 @@ module.exports = module.exports = {
                 });
 
                 // Activating specific layers if they have not been activated before
-                [LAYER_NAMES[1]].map(layerNameToEnable => {
+                [LAYER_NAMES[0]].map(layerNameToEnable => {
                     if (activeLayers.indexOf(layerNameToEnable) === -1) {
-                        switchLayer.init(layerNameToEnable, true, true, false);
+                        // switchLayer.init(layerNameToEnable, true, true, false);
                     }
                 });
             });
@@ -525,7 +556,7 @@ module.exports = module.exports = {
                                 onProfileHide={dashboardComponentInstance.handleHideProfile}/>
                         </Provider>, document.getElementById(`profile-drawing-content`));
 
-                        backboneEvents.get().on(`reset:all reset:profile-drawing off:all` , () => {
+                        backboneEvents.get().on(`reset:all reset:profile-drawing off:all`, () => {
                             window.menuProfilesComponentInstance.stopDrawing();
                         });
                     } catch (e) {
@@ -601,7 +632,7 @@ module.exports = module.exports = {
         let mapLayers = layers.getMapLayers();
         let boreholeIsInViewport = false;
         mapLayers.map(layer => {
-            if ([LAYER_NAMES[0], LAYER_NAMES[2]].indexOf(layer.id) > -1 && layer._layers) {
+            if ([LAYER_NAMES[0], LAYER_NAMES[1]].indexOf(layer.id) > -1 && layer._layers) {
                 for (let key in layer._layers) {
                     if (layer._layers[key].feature && layer._layers[key].feature.properties && layer._layers[key].feature.properties.boreholeno) {
                         if (layer._layers[key].feature.properties.boreholeno.trim() === boreholeIdentifier.trim()) {
@@ -650,19 +681,21 @@ module.exports = module.exports = {
             </span>
         </div>`);
 
-        $(searchBar).find('input').focus(function() {
+        $(searchBar).find('input').focus(function () {
             $(this).attr(`placeholder`, __(`Enter borehole, installation, station`) + '...');
             $(searchBar).animate({"max-width": `400px`});
         });
 
-        $(searchBar).find('input').blur(function() {
+        $(searchBar).find('input').blur(function () {
             $(this).attr(`placeholder`, __(`Search`) + '...');
             if ($(this).val() === ``) {
                 $(searchBar).animate({"max-width": `200px`});
             }
         });
 
-        $(searchBar).find('button').click(() => { alert(`Search button was clicked`); });
+        $(searchBar).find('button').click(() => {
+            alert(`Search button was clicked`);
+        });
     },
 
     buildBreadcrumbs(secondLevel = false, thirdLevel = false, isWaterLevel = false) {
@@ -687,22 +720,23 @@ module.exports = module.exports = {
     },
 
     onApplyLayersAndChemical: (parameters) => {
+        console.log(parameters);
         // Disabling vector layers
-        [LAYER_NAMES[0], LAYER_NAMES[2]].map(layerNameToEnable => {
+        [LAYER_NAMES[0], LAYER_NAMES[1]].map(layerNameToEnable => {
             switchLayer.init(layerNameToEnable, false);
         });
 
         let filteredLayers = [];
         enabledLoctypeIds = [];
         parameters.layers.map(layerName => {
-            if (layerName === LAYER_NAMES[0] && cloud.get().getZoom() >= 15 || layerName.indexOf(LAYER_NAMES[2]) === 0) {
-                if (layerName.indexOf(`#`) > -1) {
-                    if (filteredLayers.indexOf(layerName.split(`#`)[0]) === -1) filteredLayers.push(layerName.split(`#`)[0]);
-                    enabledLoctypeIds.push(layerName.split(`#`)[1]);
-                } else {
-                    if (filteredLayers.indexOf(layerName) === -1) filteredLayers.push(layerName);
-                }
+            // if (layerName.indexOf(LAYER_NAMES[1]) === 0) {
+            if (layerName.indexOf(`#`) > -1) {
+                if (filteredLayers.indexOf(layerName.split(`#`)[0]) === -1) filteredLayers.push(layerName.split(`#`)[0]);
+                enabledLoctypeIds.push(layerName.split(`#`)[1]);
+            } else {
+                if (filteredLayers.indexOf(layerName) === -1) filteredLayers.push(layerName);
             }
+            // }
         });
 
         backboneEvents.get().trigger(`${MODULE_NAME}:enabledLoctypeIdsChange`);
@@ -813,7 +847,7 @@ module.exports = module.exports = {
 
             let titles = [];
             features.map(item => {
-                let title =  utils.getMeasurementTitle(item);
+                let title = utils.getMeasurementTitle(item);
                 if (titleAsLink) {
                     let link = `http://data.geus.dk/JupiterWWW/borerapport.jsp?dgunr=${encodeURIComponent(item.properties.boreholeno)}`;
                     titles.push(`<a href="${link}" target="_blank" title="${title} @ data.geus.dk">${title}</a>`);
@@ -847,7 +881,9 @@ module.exports = module.exports = {
                             onDeleteMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex) => {
                                 dashboardComponentInstance.deleteMeasurement(plotId, featureGid, featureKey, featureIntakeIndex);
                             }}
-                            onPlotAdd={((newPlotTitle) => { dashboardComponentInstance.addPlot(newPlotTitle, true); })}/>, document.getElementById(FORM_FEATURE_CONTAINER_ID));
+                            onPlotAdd={((newPlotTitle) => {
+                                dashboardComponentInstance.addPlot(newPlotTitle, true);
+                            })}/>, document.getElementById(FORM_FEATURE_CONTAINER_ID));
                     }, 100);
                 } catch (e) {
                     console.error(e);
@@ -924,7 +960,7 @@ module.exports = module.exports = {
     highlightFeatures(participatingIds) {
         let mapLayers = layers.getMapLayers();
         mapLayers.map(layer => {
-            if ([LAYER_NAMES[0], LAYER_NAMES[2]].indexOf(layer.id) > -1 && layer._layers) {
+            if ([LAYER_NAMES[0], LAYER_NAMES[1]].indexOf(layer.id) > -1 && layer._layers) {
                 for (let key in layer._layers) {
                     let featureLayer = layer._layers[key];
                     if (featureLayer.feature && featureLayer.feature.properties && featureLayer.feature.properties.gid) {
@@ -1006,7 +1042,7 @@ module.exports = module.exports = {
 
                     zIndexOffset = 10000;
                 } else {
-                    if (storeId === LAYER_NAMES[2]) {
+                    if (storeId === LAYER_NAMES[1]) {
                         maxColor = latestColor = "#1380c4";
                         zIndexOffset = 10;
                     } else {
@@ -1050,7 +1086,7 @@ module.exports = module.exports = {
                                 if (layersToEnable.indexOf(layerName) === -1) layersToEnable.push(layerName);
                             }
 
-                            _self.buildBreadcrumbs(key, categoriesOverall[layerName][key][key2], layerName === LAYER_NAMES[2]);
+                            _self.buildBreadcrumbs(key, categoriesOverall[layerName][key][key2], layerName === LAYER_NAMES[1]);
                             break;
                         }
                     }
@@ -1067,7 +1103,7 @@ module.exports = module.exports = {
         };
 
         layerTree.setOnLoad(LAYER_NAMES[0], onLoadCallback, "watsonc");
-        layerTree.setOnLoad(LAYER_NAMES[2], onLoadCallback, "watsonc");
+        layerTree.setOnLoad(LAYER_NAMES[1], onLoadCallback, "watsonc");
 
         layersToEnable.map(layerName => {
             layerTree.reloadLayer(layerName);
