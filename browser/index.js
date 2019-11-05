@@ -74,6 +74,8 @@ let categories = {};
 let limits = {};
 let names = {};
 
+let currentRasterLayer = null;
+
 var jquery = require('jquery');
 require('snackbarjs');
 
@@ -376,27 +378,26 @@ module.exports = module.exports = {
                             boreholes.push(feature.properties.boreholeno)
                         });
 
-                        console.log(boreholes);
+                        let qLayer;
+                        if (layerName.indexOf(LAYER_NAMES[0]) > -1) {
+                            qLayer = "chemicals.boreholes_time_series_with_chemicals";
+                        } else {
+                            qLayer = "sensor.sensordata_with_correction";
+                        }
 
                         // Lazy load features
                         $.ajax({
-                            url: "/api/sql/jupiter?srs=25832&q=SELECT * FROM chemicals.boreholes_time_series_with_chemicals WHERE boreholeno in('" + boreholes.join("','") + "')",
+                            url: "/api/sql/jupiter?srs=25832&q=SELECT * FROM " + qLayer + " WHERE boreholeno in('" + boreholes.join("','") + "')",
                             scriptCharset: "utf-8",
                             success: function (response) {
 
-                                // if (e === LAYER_NAMES[0]) {
-                                    dataSource = [];
-                                    boreholesDataSource = response.features;
-                                    dataSource = dataSource.concat(waterLevelDataSource);
-                                    dataSource = dataSource.concat(boreholesDataSource);
-                                    if (dashboardComponentInstance) dashboardComponentInstance.setDataSource(dataSource);
-                                // } else if (e === LAYER_NAMES[1]) {
-                                //     dataSource = [];
-                                //     waterLevelDataSource = layers.getMapLayers(false, LAYER_NAMES[1])[0].toGeoJSON().features;
-                                //     dataSource = dataSource.concat(waterLevelDataSource);
-                                //     dataSource = dataSource.concat(boreholesDataSource);
-                                //     if (dashboardComponentInstance) dashboardComponentInstance.setDataSource(dataSource);
-                                // }
+                                dataSource = [];
+                                boreholesDataSource = response.features;
+                                dataSource = dataSource.concat(waterLevelDataSource);
+                                dataSource = dataSource.concat(boreholesDataSource);
+                                if (dashboardComponentInstance) {
+                                    dashboardComponentInstance.setDataSource(dataSource);
+                                }
 
 
                                 _self.createModal(response.features, false, titleAsLink);
@@ -407,9 +408,6 @@ module.exports = module.exports = {
                             error: function () {
                             }
                         });
-
-
-
 
 
                     });
@@ -424,6 +422,8 @@ module.exports = module.exports = {
                                 (enabledLoctypeIds.indexOf(parseInt(feature.properties.loctypeid) + '') === -1 && enabledLoctypeIds.indexOf(parseInt(feature.properties.loctypeid)) === -1)) {
                                 renderIcon = false;
                             }
+                        } else {
+                            return L.circleMarker(latlng);
                         }
 
                         if (renderIcon) {
@@ -721,25 +721,34 @@ module.exports = module.exports = {
 
     onApplyLayersAndChemical: (parameters) => {
         console.log(parameters);
-        // Disabling vector layers
-        [LAYER_NAMES[0], LAYER_NAMES[1]].map(layerNameToEnable => {
+
+        // Disabling all layers
+        layerTree.getActiveLayers().map(layerNameToEnable => {
             switchLayer.init(layerNameToEnable, false);
         });
+
+        // Enable raster layer
+        if (parameters.layers.indexOf(LAYER_NAMES[0]) > -1) {
+            let rasterToEnable = `system._${parameters.chemical}`;
+            currentRasterLayer = rasterToEnable;
+            switchLayer.init(rasterToEnable, true);
+        }
 
         let filteredLayers = [];
         enabledLoctypeIds = [];
         parameters.layers.map(layerName => {
-            // if (layerName.indexOf(LAYER_NAMES[1]) === 0) {
-            if (layerName.indexOf(`#`) > -1) {
-                if (filteredLayers.indexOf(layerName.split(`#`)[0]) === -1) filteredLayers.push(layerName.split(`#`)[0]);
-                enabledLoctypeIds.push(layerName.split(`#`)[1]);
-            } else {
-                if (filteredLayers.indexOf(layerName) === -1) filteredLayers.push(layerName);
+            if (layerName.indexOf(LAYER_NAMES[1]) === 0) {
+                if (layerName.indexOf(`#`) > -1) {
+                    if (filteredLayers.indexOf(layerName.split(`#`)[0]) === -1) filteredLayers.push(layerName.split(`#`)[0]);
+                    enabledLoctypeIds.push(layerName.split(`#`)[1]);
+                } else {
+                    if (filteredLayers.indexOf(layerName) === -1) filteredLayers.push(layerName);
+                }
             }
-            // }
         });
 
         backboneEvents.get().trigger(`${MODULE_NAME}:enabledLoctypeIdsChange`);
+
         if (parameters.chemical) {
             _self.enableChemical(parameters.chemical, filteredLayers);
         } else {
@@ -1002,73 +1011,20 @@ module.exports = module.exports = {
             });
         }
 
-        let chem = "_" + lastSelectedChemical;
         if (stores[storeId]) {
             stores[storeId].layer.eachLayer(function (layer) {
                 let feature = layer.feature;
-
-                let maxColor;
-                let latestColor;
-                let zIndexOffset;
-
-                let featureData = false;
-                if (chem in feature.properties) {
-                    featureData = feature.properties[chem];
-                } else if (lastSelectedChemical in feature.properties) {
-                    featureData = feature.properties[lastSelectedChemical];
-                }
-
-                let json;
-                try {
-                    json = JSON.parse(featureData);
-                } catch (e) {
-                    return L.circleMarker(layer.getLatLng());
-                }
-
-                if (featureData !== null && json) {
-                    let measurementData = evaluateMeasurement(json, limits, chem);
-                    maxColor = measurementData.maxColor;
-                    latestColor = measurementData.latestColor;
+                if ("maxvalue" in feature.properties && "latestvalue" in feature.properties) {
 
                     let html = [];
-                    for (let i = 0; i < measurementData.numberOfIntakes; i++) {
-                        html.push(`<b style="color: rgb(16, 174, 140)">${__(`Intake`)}: ${i + 1}</b><br>
-                        ${__(`Max`)}: ${measurementData.maxMeasurementIntakes[i] === false ? __(`n.d.`) : measurementData.maxMeasurementIntakes[i]}<br>
-                        ${__(`Latest`)}: ${measurementData.latestMeasurementIntakes[i] === false ? __(`n.d.`) : measurementData.latestMeasurementIntakes[i]}<br>`);
-                    }
+                    html.push(`
+                        ${__(`Max`)}: ${feature.properties.maxvalue}<br>
+                        ${__(`Latest`)}: ${feature.properties.latestvalue}<br>`);
 
-                    layer.bindTooltip(`<p><a target="_blank" href="https://data.geus.dk/JupiterWWW/borerapport.jsp?dgunr=${json.boreholeno}">${json.boreholeno}</a></p>
-                    <b style="color: rgb(16, 174, 140)">${names[lastSelectedChemical]} (${json.unit})</b><br>${html.join('<br>')}`);
+                    layer.bindTooltip(`<p><a target="_blank" href="https://data.geus.dk/JupiterWWW/borerapport.jsp?dgunr=${feature.properties.boreholeno}">${feature.properties.boreholeno}</a></p>
+                    <b style="color: rgb(16, 174, 140)">${names[lastSelectedChemical]})</b><br>${html.join('<br>')}`);
 
-                    zIndexOffset = 10000;
-                } else {
-                    if (storeId === LAYER_NAMES[1]) {
-                        maxColor = latestColor = "#1380c4";
-                        zIndexOffset = 10;
-                    } else {
-                        maxColor = latestColor = "#cccccc";
-                        zIndexOffset = 100;
-                    }
                 }
-
-                let highlighted = (participatingIds.indexOf(feature.properties.gid) > -1);
-                let localSvg = symbolizer.getSymbol(stores[storeId].layer.id, {
-                    online: feature.properties.status,
-                    shape: feature.properties.loctypeid,
-                    leftPartColor: maxColor,
-                    rightPartColor: latestColor,
-                    highlighted
-                });
-
-                let icon = L.icon({
-                    iconUrl: 'data:image/svg+xml;base64,' + btoa(localSvg),
-                    iconAnchor: [8, 33],
-                    popupAnchor: [15, 15],
-                    watsoncStatus: `default`
-                });
-
-                layer.setIcon(icon);
-                layer.setZIndexOffset(zIndexOffset);
             });
         }
     },
@@ -1077,13 +1033,20 @@ module.exports = module.exports = {
         if (!chemicalId) throw new Error(`Chemical identifier was not provided`);
 
         let layersToEnableWereProvided = (layersToEnable.length > 0);
+
         if (categoriesOverall) {
             for (let layerName in categoriesOverall) {
                 for (let key in categoriesOverall[layerName]) {
                     for (let key2 in categoriesOverall[layerName][key]) {
                         if (key2.toString() === chemicalId.toString() || categoriesOverall[layerName][key][key2] === chemicalId.toString()) {
                             if (layersToEnableWereProvided === false) {
-                                if (layersToEnable.indexOf(layerName) === -1) layersToEnable.push(layerName);
+                                if (layersToEnable.indexOf(layerName) === -1) {
+                                    layersToEnable.push(layerName);
+                                    console.log(layerName);
+
+                                }
+                                console.log(chemicalId);
+
                             }
 
                             _self.buildBreadcrumbs(key, categoriesOverall[layerName][key][key2], layerName === LAYER_NAMES[1]);
@@ -1093,6 +1056,15 @@ module.exports = module.exports = {
                 }
             }
         }
+
+        layerTree.applyFilters({
+            "system.all": {
+                match: "any", columns: [
+                    {fieldname: "compound", expression: "=", value: chemicalId, restriction: false}
+                ]
+
+            }
+        });
 
         lastSelectedChemical = chemicalId;
         backboneEvents.get().trigger(`${MODULE_NAME}:chemicalChange`);
@@ -1107,6 +1079,13 @@ module.exports = module.exports = {
 
         layersToEnable.map(layerName => {
             layerTree.reloadLayer(layerName);
+        });
+
+        layerTree.setStyle(LAYER_NAMES[0], {
+            "color": "#ffffff",
+            "weight": 0,
+            "opacity": 0.0,
+            "fillOpacity": 0.0
         });
 
         if (onComplete) onComplete();

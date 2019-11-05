@@ -1,5 +1,5 @@
 const LAYER_NAMES = [
-    `v:chemicals.boreholes_time_series_without_chemicals`,
+    `v:system.all`,
     `v:sensor.sensordata_without_correction`, // Calypso stations
 ];
 

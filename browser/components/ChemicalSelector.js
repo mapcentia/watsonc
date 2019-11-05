@@ -56,7 +56,7 @@ class ChemicalSelector extends React.Component {
     generateChemicalGroups(runId) {
         let chemicalGroupsForLayer = [];
         for (let layerName in this.props.categories) {
-            if (layerName === LAYER_NAMES[0]) {
+            if (layerName.indexOf(LAYER_NAMES[0]) > -1) {
                 for (let key in this.props.categories[layerName]) {
                     let chemicalsMarkup = [];
                     for (let key2 in this.props.categories[layerName][key]) {

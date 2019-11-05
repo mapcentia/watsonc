@@ -49,8 +49,8 @@ const SHAPE_DIAMOND = 3;
 const SHAPE_RAINDROP = 4;
 const SHAPE_TRIANGLE = 5;
 
-const ORANGE_FILL = `fill:#bf8c00;`
-const BLUE_FILL = `fill:#1380c4;`
+const ORANGE_FILL = `fill:#bf8c00;`;
+const BLUE_FILL = `fill:#1380c4;`;
 
 /**
  * Generates symbol
@@ -67,7 +67,7 @@ const getSymbol = (layerName, options) => {
     
     let leftPartColor = false;
     let rightPartColor = false;
-    if (layerName === LAYER_NAMES[0]) {
+    if (layerName.indexOf(LAYER_NAMES[0]) > -1) {
         leftPartColor = ORANGE_FILL;
         rightPartColor = ORANGE_FILL;
     } else {
