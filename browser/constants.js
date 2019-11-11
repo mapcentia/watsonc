@@ -3,7 +3,7 @@ const LAYER_NAMES = [
     `v:sensor.sensordata_without_correction`, // Calypso stations
 ];
 
-const WATER_LEVEL_KEY = `watlevmsl`;
+const WATER_LEVEL_KEY = `99999`;
 
 const SELECT_CHEMICAL_DIALOG_PREFIX = `watsonc-select-chemical-dialog`;
 

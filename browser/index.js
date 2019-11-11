@@ -737,14 +737,20 @@ module.exports = module.exports = {
         let filteredLayers = [];
         enabledLoctypeIds = [];
         parameters.layers.map(layerName => {
+            if (layerName.indexOf(LAYER_NAMES[0]) === 0) {
+                filteredLayers.push(layerName);
+            }
             if (layerName.indexOf(LAYER_NAMES[1]) === 0) {
                 if (layerName.indexOf(`#`) > -1) {
                     if (filteredLayers.indexOf(layerName.split(`#`)[0]) === -1) filteredLayers.push(layerName.split(`#`)[0]);
                     enabledLoctypeIds.push(layerName.split(`#`)[1]);
                 } else {
-                    if (filteredLayers.indexOf(layerName) === -1) filteredLayers.push(layerName);
+                    if (filteredLayers.indexOf(layerName) === -1) {
+                        filteredLayers.push(layerName);
+                    }
                 }
             }
+
         });
 
         backboneEvents.get().trigger(`${MODULE_NAME}:enabledLoctypeIdsChange`);
@@ -1022,7 +1028,7 @@ module.exports = module.exports = {
                         ${__(`Latest`)}: ${feature.properties.latestvalue}<br>`);
 
                     layer.bindTooltip(`<p><a target="_blank" href="https://data.geus.dk/JupiterWWW/borerapport.jsp?dgunr=${feature.properties.boreholeno}">${feature.properties.boreholeno}</a></p>
-                    <b style="color: rgb(16, 174, 140)">${names[lastSelectedChemical]})</b><br>${html.join('<br>')}`);
+                    <b style="color: rgb(16, 174, 140)">${names[lastSelectedChemical]}</b><br>${html.join('<br>')}`);
 
                 }
             });
