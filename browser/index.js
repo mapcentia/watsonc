@@ -394,7 +394,6 @@ module.exports = module.exports = {
 
                                 dataSource = [];
                                 boreholesDataSource = response.features;
-                                dataSource = dataSource.concat(waterLevelDataSource);
                                 dataSource = dataSource.concat(boreholesDataSource);
                                 if (dashboardComponentInstance) {
                                     dashboardComponentInstance.setDataSource(dataSource);
