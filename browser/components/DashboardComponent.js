@@ -591,7 +591,7 @@ class DashboardComponent extends React.Component {
             let plotWasUpdatedAtLeastOnce = false;
             plot.measurements.map(measurementIndex => {
                 let splitMeasurementIndex = measurementIndex.split(`:`);
-                if (splitMeasurementIndex.length !== 3 || splitMeasurementIndex.length !== 4) throw new Error(`Invalid measurement index`);
+                if (splitMeasurementIndex.length !== 3 && splitMeasurementIndex.length !== 4) throw new Error(`Invalid measurement index`);
                 let measurementData = false;
                 dataSource.map(item => {
                     if (item.properties.gid === parseInt(splitMeasurementIndex[0])) {
