@@ -189,7 +189,8 @@ module.exports = module.exports = {
             $(`[href="#watsonc-content"]`).trigger(`click`);
         });
 
-        // switchLayer.init("v:chemicals.boreholes_time_series_without_chemicals", true, true, false);
+        switchLayer.init(LAYER_NAMES[2], true, true, false);
+
         //
         // cloud.get().on(`moveend`, () => {
         //     if (cloud.get().getZoom() < 15) {
@@ -724,6 +725,7 @@ module.exports = module.exports = {
 
         // Disabling all layers
         layerTree.getActiveLayers().map(layerNameToEnable => {
+            if (layerNameToEnable !== LAYER_NAMES[2])
             switchLayer.init(layerNameToEnable, false);
         });
 

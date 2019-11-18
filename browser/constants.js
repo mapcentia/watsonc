@@ -1,6 +1,7 @@
 const LAYER_NAMES = [
     `v:system.all`,
     `v:sensor.sensordata_without_correction`, // Calypso stations
+    `chemicals.boreholes_time_series_without_chemicals`, // Raster layer with all boreholes
 ];
 
 const WATER_LEVEL_KEY = `99999`;
