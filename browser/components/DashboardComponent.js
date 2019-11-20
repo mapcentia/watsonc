@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Provider } from 'react-redux';
+import {Provider} from 'react-redux';
 import reduxStore from './../redux/store';
 
 import ReactTooltip from 'react-tooltip';
@@ -11,7 +11,7 @@ import TextFieldModal from './TextFieldModal';
 import SortablePlotComponent from './SortablePlotComponent';
 import SortableProfileComponent from './SortableProfileComponent';
 import SortablePlotsGridComponent from './SortablePlotsGridComponent';
-import { isNumber } from 'util';
+import {isNumber} from 'util';
 import arrayMove from 'array-move';
 
 const uuidv1 = require('uuid/v1');
@@ -86,7 +86,7 @@ class DashboardComponent extends React.Component {
     }
 
     componentWillMount() {
-        $(window).resize(function() {
+        $(window).resize(function () {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
                 _self.setState({lastUpdate: new Date()});
@@ -103,7 +103,7 @@ class DashboardComponent extends React.Component {
                         newDashboardItems.push(JSON.parse(JSON.stringify(item)));
                     }
                 });
-    
+
                 _self.setState({
                     profiles: [],
                     activeProfiles: [],
@@ -144,8 +144,13 @@ class DashboardComponent extends React.Component {
         });
     }
 
-    dehydratePlots(plots) { return this.plotManager.dehydratePlots(plots); }
-    hydratePlots(plots) { return this.plotManager.hydratePlots(plots); }
+    dehydratePlots(plots) {
+        return this.plotManager.dehydratePlots(plots);
+    }
+
+    hydratePlots(plots) {
+        return this.plotManager.hydratePlots(plots);
+    }
 
     getProfiles() {
         return JSON.parse(JSON.stringify(this.state.profiles));
@@ -176,7 +181,7 @@ class DashboardComponent extends React.Component {
                     activeProfiles: activeProfilesCopy
                 });
 
-                this.props.onActiveProfilesChange(activeProfilesCopy);                
+                this.props.onActiveProfilesChange(activeProfilesCopy);
             } else {
                 this.setState({profiles: profilesCopy});
             }
@@ -205,7 +210,7 @@ class DashboardComponent extends React.Component {
             const abortDataTypeChange = () => {
                 this.setState({createdProfileChemical: false});
                 $('#' + SELECT_CHEMICAL_DIALOG_PREFIX).modal('hide');
-            }
+            };
 
             const uniqueKey = uuidv1();
 
@@ -304,7 +309,7 @@ class DashboardComponent extends React.Component {
             if (profileWasDeleted === false) {
                 console.warn(`Profile ${profileKey} was deleted only from backend storage`);
             }
-   
+
             let dashboardItemsCopy = JSON.parse(JSON.stringify(this.state.dashboardItems));
             dashboardItemsCopy.map((item, index) => {
                 if (item.type === DASHBOARD_ITEM_PROFILE) {
@@ -384,7 +389,45 @@ class DashboardComponent extends React.Component {
             });
         });
 
-        this.setState({ plots, dashboardItems: dashboardItemsCopy});
+        this.setState({plots, dashboardItems: dashboardItemsCopy});
+    }
+
+    syncPlotData() {
+        let plots = this.state.dashboardItems.map((e) => {
+            return e.item;
+        });
+        let newPlots = plots;
+        let count = 0;
+        plots.forEach((e, i) => {
+            let obj = e.measurementsCachedData;
+            let shadowI = i;
+            if ('key' in e) {
+                count++;
+            } else if (Object.keys(obj).length === 0 && obj.constructor === Object) {
+                newPlots[shadowI] = e;
+                count++;
+            } else {
+                for (let key in obj) {
+                    if (obj.hasOwnProperty(key)) {
+                        let rel;
+                        rel = key.split(":")[1].startsWith("_") ? "chemicals.boreholes_time_series_with_chemicals" : "sensor.sensordata_with_correction";
+                        // Lazy load data and sync
+                        $.ajax({
+                            url: "/api/sql/jupiter?srs=25832&q=SELECT * FROM " + rel + " WHERE gid=" + key.split(":")[0],
+                            scriptCharset: "utf-8",
+                            success: (response) => {
+                                newPlots[shadowI].measurementsCachedData[key].data = response.features[0];
+                                count++;
+                                if (count === plots.length) {
+                                    console.log("All plots synced");
+                                    _self.setPlots(newPlots);
+                                }
+                            }
+                        })
+                    }
+                }
+            }
+        });
     }
 
     handleCreatePlot(title, activateOnCreate = false) {
@@ -399,7 +442,7 @@ class DashboardComponent extends React.Component {
             });
 
             if (activateOnCreate) {
-                let activePlotsCopy = JSON.parse(JSON.stringify(this.state.activePlots));                
+                let activePlotsCopy = JSON.parse(JSON.stringify(this.state.activePlots));
                 if (activePlotsCopy.indexOf(newPlot.id) === -1) activePlotsCopy.push(newPlot.id);
 
                 this.setState({
@@ -408,7 +451,7 @@ class DashboardComponent extends React.Component {
                     activePlots: activePlotsCopy
                 });
 
-                this.props.onActivePlotsChange(activePlotsCopy);                
+                this.props.onActivePlotsChange(activePlotsCopy);
             } else {
                 this.setState({
                     plots: plotsCopy,
@@ -428,7 +471,7 @@ class DashboardComponent extends React.Component {
         let activeProfilesCopy = JSON.parse(JSON.stringify(this.state.activeProfiles));
         if (activeProfilesCopy.indexOf(profileKey) > -1) activeProfilesCopy.splice(activeProfilesCopy.indexOf(profileKey), 1);
 
-        this.setState({ activeProfiles: activeProfilesCopy });
+        this.setState({activeProfiles: activeProfilesCopy});
         this.props.onActiveProfilesChange(activeProfilesCopy);
     }
 
@@ -438,7 +481,7 @@ class DashboardComponent extends React.Component {
         let activePlotsCopy = JSON.parse(JSON.stringify(this.state.activePlots));
         if (activePlotsCopy.indexOf(id) > -1) activePlotsCopy.splice(activePlotsCopy.indexOf(id), 1);
 
-        this.setState({ activePlots: activePlotsCopy });
+        this.setState({activePlots: activePlotsCopy});
         this.props.onActivePlotsChange(activePlotsCopy);
     }
 
@@ -470,7 +513,7 @@ class DashboardComponent extends React.Component {
                 if (plotWasDeleted === false) {
                     console.warn(`Plot ${id} was deleted only from backend storage`);
                 }
-        
+
                 this.setState({
                     plots: plotsCopy,
                     dashboardItems: dashboardItemsCopy
@@ -512,7 +555,7 @@ class DashboardComponent extends React.Component {
     }
 
     handleNewPlotNameChange(event) {
-        this.setState({ newPlotName: event.target.value});
+        this.setState({newPlotName: event.target.value});
     }
 
     _modifyAxes(plotId, gid, measurementKey, measurementIntakeIndex, action) {
@@ -539,7 +582,7 @@ class DashboardComponent extends React.Component {
                     correspondingPlot.measurements.push(measurementIndex);
                     correspondingPlot.measurementsCachedData[measurementIndex] = {
                         data: measurementData,
-                        created_at: currentTime.toISOString() 
+                        created_at: currentTime.toISOString()
                     }
                 } else {
                     throw new Error(`Unable to find data for measurement index ${measurementIndex}`);
@@ -604,7 +647,7 @@ class DashboardComponent extends React.Component {
                     var currentTime = new Date();
                     plots[index].measurementsCachedData[measurementIndex] = {
                         data: measurementData,
-                        created_at: currentTime.toISOString() 
+                        created_at: currentTime.toISOString()
                     };
 
                     plotWasUpdatedAtLeastOnce = true;
@@ -629,7 +672,7 @@ class DashboardComponent extends React.Component {
                 }
             });
 
-            this.setState({ dataSource, plots, dashboardItems: dashboardItemsCopy });
+            this.setState({dataSource, plots, dashboardItems: dashboardItemsCopy});
         }).catch(errors => {
             console.error(`Unable to update measurement data upon updating the data source`, errors);
         });
@@ -727,7 +770,10 @@ class DashboardComponent extends React.Component {
     }
 
     render() {
-        let plotsControls = (<p style={{textAlign: `center`, paddingTop: `20px`}}>{__(`No timeseries were created or set as active yet`)}</p>);
+        let plotsControls = (<p style={{
+            textAlign: `center`,
+            paddingTop: `20px`
+        }}>{__(`No timeseries were created or set as active yet`)}</p>);
 
         // Actualize elements location
         if (currentDisplay === DISPLAY_MIN) {
@@ -773,7 +819,8 @@ class DashboardComponent extends React.Component {
         });
 
         if (localPlotsControls.length > 0) {
-            plotsControls = (<SortablePlotsGridComponent axis="xy" onSortEnd={this.handlePlotSort} useDragHandle>{localPlotsControls}</SortablePlotsGridComponent>);
+            plotsControls = (
+                <SortablePlotsGridComponent axis="xy" onSortEnd={this.handlePlotSort} useDragHandle>{localPlotsControls}</SortablePlotsGridComponent>);
         }
 
         const setNoExpanded = () => {
@@ -834,7 +881,7 @@ class DashboardComponent extends React.Component {
                             style={{cursor: `pointer`}}
                             data-delay-show="500"
                             data-tip={__(`Click on the modal header to expand or minify the Dashboard`)}
-                            onClick={this.nextDisplayType.bind(this)} >
+                            onClick={this.nextDisplayType.bind(this)}>
                             {__(`Calypso dashboard`)}
                         </div>
                         <div
@@ -850,17 +897,29 @@ class DashboardComponent extends React.Component {
                             flexGrow: `1`,
                             textAlign: `right`
                         }}>
+                            <div className="btn-group" role="group" style={{margin: `0px`}}>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        _self.syncPlotData();
+                                    }}
+                                    className="btn btn-sm btn-primary btn-default">{__(`Sync med database`)}</button>
+                            </div>
                             <div className="btn-group btn-group-raised" role="group" style={{margin: `0px`}}>
                                 <button
                                     type="button"
                                     disabled={this.state.view === VIEW_MATRIX}
-                                    onClick={() => { this.setState({view: VIEW_MATRIX}); }}
+                                    onClick={() => {
+                                        this.setState({view: VIEW_MATRIX});
+                                    }}
                                     style={this.state.view === VIEW_MATRIX ? {color: `black`} : {}}
                                     className="btn btn-sm btn-primary btn-default">{__(`Matrix view`)}</button>
                                 <button
                                     type="button"
                                     disabled={this.state.view === VIEW_ROW}
-                                    onClick={() => { this.setState({view: VIEW_ROW}); }}
+                                    onClick={() => {
+                                        this.setState({view: VIEW_ROW});
+                                    }}
                                     style={this.state.view === VIEW_ROW ? {color: `black`} : {}}
                                     className="btn btn-sm btn-primary btn-default">{__(`Row view`)}</button>
                             </div>

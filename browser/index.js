@@ -189,6 +189,7 @@ module.exports = module.exports = {
             $(`[href="#watsonc-content"]`).trigger(`click`);
         });
 
+        // Turn on raster layer with all boreholes.
         switchLayer.init(LAYER_NAMES[2], true, true, false);
 
         //
@@ -725,7 +726,7 @@ module.exports = module.exports = {
         // Disabling all layers
         layerTree.getActiveLayers().map(layerNameToEnable => {
             if (layerNameToEnable !== LAYER_NAMES[2])
-            switchLayer.init(layerNameToEnable, false);
+                switchLayer.init(layerNameToEnable, false);
         });
 
         // Enable raster layer
@@ -802,47 +803,6 @@ module.exports = module.exports = {
             backdrop: `static`
         });
     },
-
-    /**
-     * Synchronizes plot data
-     *
-     * @param {Array}  plots    Plots
-     * @param {String} storeKey Vector store key to sync with
-     *
-     * @return {Array}
-     */
-    syncPlotData: (plots, storeKey) => {
-        if (Array.isArray(plots) && plots.length > 0) {
-            let stores = layerTree.getStores();
-            if (storeKey in stores && stores[storeKey].geoJSON && stores[storeKey].geoJSON.features.length > 0) {
-                plots.map(plot => {
-                    plot.measurements.map(measurement => {
-                        let parsedMeasurement = measurement.split(`:`);
-                        if (parsedMeasurement.length === 3) {
-                            let measurementId = parseInt(parsedMeasurement[0]);
-                            let measurementKey = parsedMeasurement[1];
-                            let intakeIndex = parseInt(parsedMeasurement[2]);
-
-                            let probablyStaleDataRaw = plot.measurementsCachedData[measurement].data.properties[measurementKey];
-
-                            stores[storeKey].geoJSON.features.map(feature => {
-                                if (feature.properties.gid === measurementId) {
-                                    if (probablyStaleDataRaw.length < feature.properties[measurementKey].length) {
-                                        // @todo Sync
-                                    }
-                                }
-                            });
-                        } else {
-                            console.error(`Unsupported measurement notation ${measurement}`);
-                        }
-                    });
-                });
-            }
-        }
-
-        return plots;
-    },
-
     createModal: (features, plots = false, titleAsLink = null) => {
         if (features === false) {
             if (lastFeatures) {
@@ -1050,12 +1010,9 @@ module.exports = module.exports = {
                                 if (layersToEnable.indexOf(layerName) === -1) {
                                     layersToEnable.push(layerName);
                                     console.log(layerName);
-
                                 }
                                 console.log(chemicalId);
-
                             }
-
                             _self.buildBreadcrumbs(key, categoriesOverall[layerName][key][key2], layerName === LAYER_NAMES[1]);
                             break;
                         }
@@ -1158,7 +1115,7 @@ module.exports = module.exports = {
 
                     resolve();
                 }
-            }
+            };
 
             if (plotsWereProvided) {
                 dashboardComponentInstance.hydratePlots(newState.plots).then(continueWithInitialization).catch(error => {

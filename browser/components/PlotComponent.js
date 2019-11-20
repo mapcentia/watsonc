@@ -114,7 +114,6 @@ class MenuPanelPlotComponent extends React.Component {
                         let key = measurementLocation[1];
                         let intakeIndex = parseInt(measurementLocation[2]);
                         let createdAt = this.props.plotMeta.measurementsCachedData[measurementLocationRaw].created_at;
-                        console.log(feature.properties[key]);
                         let measurementData = JSON.parse(feature.properties[key]);
                         let localMinTime = measurementData.timeOfMeasurement[intakeIndex][0];
                         if (minTime === false) {
