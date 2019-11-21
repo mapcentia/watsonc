@@ -897,13 +897,17 @@ module.exports = module.exports = {
 
     participatingIds(plot) {
         let participatingIds = [];
-        plot.measurements.map(measurement => {
-            let splitMeasurement = measurement.split(`:`);
-            if (splitMeasurement.length === 3) {
-                let id = parseInt(splitMeasurement[0]);
-                if (participatingIds.indexOf(id) === -1) participatingIds.push(id);
-            }
-        });
+        if ("measurements" in plot) {
+            plot.measurements.map(measurement => {
+                let splitMeasurement = measurement.split(`:`);
+                if (splitMeasurement.length === 3) {
+                    let id = parseInt(splitMeasurement[0]);
+                    if (participatingIds.indexOf(id) === -1) participatingIds.push(id);
+                }
+            });
+        } else {
+            participatingIds = [];
+        }
 
         return participatingIds;
     },

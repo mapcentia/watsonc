@@ -403,8 +403,8 @@ class DashboardComponent extends React.Component {
             let shadowI = i;
             if ('key' in e) {
                 count++;
-            } else if (Object.keys(obj).length === 0 && obj.constructor === Object) {
                 newPlots[shadowI] = e;
+            } else if (Object.keys(obj).length === 0 && obj.constructor === Object) {
                 count++;
             } else {
                 for (let key in obj) {
