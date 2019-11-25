@@ -76,8 +76,6 @@ let names = {};
 
 let currentRasterLayer = null;
 
-var jquery = require('jquery');
-require('snackbarjs');
 
 const DATA_SOURCES = [{
     originalLayerKey: LAYER_NAMES[0],
@@ -196,7 +194,7 @@ module.exports = module.exports = {
         // cloud.get().on(`moveend`, () => {
         //     if (cloud.get().getZoom() < 15) {
         //
-        //         jquery.snackbar({
+        //         $.snackbar({
         //             id: "snackbar-watsonc",
         //             content: "<span id='conflict-progress'>" + __("Zoom tættere på for at aktivere data-funktionerne.") + "</span>",
         //             htmlAllowed: true,
