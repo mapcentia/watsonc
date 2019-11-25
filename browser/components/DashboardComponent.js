@@ -227,7 +227,7 @@ class DashboardComponent extends React.Component {
                                             <TextFieldModal
                                                 title={__(`Enter the name of created profile`)}
                                                 onClickControl={(title) => {
-                                                    jquery.snackbar({
+                                                    $.snackbar({
                                                         id: "snackbar-watsonc",
                                                         content: "<span id='conflict-progress'>" + __("The profile with the new datatype is being created") + "</span>",
                                                         htmlAllowed: true,
