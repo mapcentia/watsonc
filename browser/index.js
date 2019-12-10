@@ -358,7 +358,8 @@ module.exports = module.exports = {
                         }
 
                         let titleAsLink = false;
-                        if (layerName.indexOf(`chemicals.boreholes_time_series_without_chemicals`) > -1) {
+                        console.log(layerName)
+                        if (layerName.indexOf(LAYER_NAMES[0]) > -1) {
                             titleAsLink = true;
                         }
 
