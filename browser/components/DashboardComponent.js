@@ -367,8 +367,14 @@ class DashboardComponent extends React.Component {
     }
 
     getActivePlots() {
-        return JSON.parse(JSON.stringify(this.state.activePlots));
+        let activePlots = this.state.plots.filter((item) => {
+            if (this.state.activePlots.indexOf(item.id) !== -1) {
+                return item;
+            }
+        });
+        return JSON.parse(JSON.stringify(activePlots));
     }
+
 
     addPlot(newPlotName, activateOnCreate = false) {
         this.handleCreatePlot(newPlotName, activateOnCreate);

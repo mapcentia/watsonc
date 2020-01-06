@@ -1066,11 +1066,19 @@ module.exports = module.exports = {
         }
     },
 
+    getExistingActivePlots: () => {
+        if (dashboardComponentInstance) {
+            return dashboardComponentInstance.getActivePlots();
+        } else {
+            throw new Error(`Unable to find the component instance`);
+        }
+    },
+
     /**
      * Returns current module state
      */
     getState: () => {
-        let plots = dashboardComponentInstance.dehydratePlots(_self.getExistingPlots());
+        let plots = dashboardComponentInstance.dehydratePlots(_self.getExistingActivePlots());
         return {
             plots,
             selectedChemical: lastSelectedChemical,
@@ -1091,6 +1099,9 @@ module.exports = module.exports = {
             const continueWithInitialization = (populatedPlots) => {
                 if (populatedPlots) {
                     dashboardComponentInstance.setPlots(populatedPlots);
+                    populatedPlots.map((item) => {
+                        dashboardComponentInstance.handleShowPlot(item.id);
+                    });
                 }
 
                 if (newState.enabledLoctypeIds && Array.isArray(newState.enabledLoctypeIds)) {
