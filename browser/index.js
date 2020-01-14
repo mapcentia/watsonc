@@ -129,6 +129,14 @@ module.exports = module.exports = {
             reduxStore.dispatch(setAuthenticated(authenticated));
         });
 
+        backboneEvents.get().on("ready:meta", function () {
+            console.log("Opening panels (Meta event)");
+            setTimeout(()=>{
+                $(".panel-title a").trigger("click");
+            }, 1000);
+
+        });
+
         $('#watsonc-plots-dialog-form').click(function () {
             $('#watsonc-plots-dialog-form').css('z-index', '1000');
 
@@ -187,37 +195,10 @@ module.exports = module.exports = {
             $(`[href="#watsonc-content"]`).trigger(`click`);
         });
 
+        $(".panel-title a").trigger("click");
+
         // Turn on raster layer with all boreholes.
         switchLayer.init(LAYER_NAMES[2], true, true, false);
-
-        //
-        // cloud.get().on(`moveend`, () => {
-        //     if (cloud.get().getZoom() < 15) {
-        //
-        //         $.snackbar({
-        //             id: "snackbar-watsonc",
-        //             content: "<span id='conflict-progress'>" + __("Zoom tættere på for at aktivere data-funktionerne.") + "</span>",
-        //             htmlAllowed: true,
-        //             timeout: 1000000
-        //         });
-        //     } else {
-        //         setTimeout(function () {
-        //             jquery("#snackbar-watsonc").snackbar("hide");
-        //         }, 200);
-        //
-        //         if ((previousZoom === 14 || (previousZoom === -1 && cloud.get().getZoom() === 15))
-        //             || ((previousZoom < 15 || previousZoom === -1) && cloud.get().getZoom() >= 15)) {
-        //             if (reduxStore.getState().global && reduxStore.getState().global.selectedLayers) {
-        //                 _self.onApplyLayersAndChemical({
-        //                     layers: reduxStore.getState().global.selectedLayers,
-        //                     chemical: reduxStore.getState().global.selectedChemical
-        //                 });
-        //             }
-        //         }
-        //     }
-        //
-        //     previousZoom = cloud.get().getZoom();
-        // });
 
         $.ajax({
             url: '/api/sql/jupiter?q=SELECT * FROM codes.compunds_view&base64=false',
@@ -273,32 +254,6 @@ module.exports = module.exports = {
             error: function () {
             }
         });
-
-        // backboneEvents.get().on("doneLoading:layers", e => {
-        //     if (e === LAYER_NAMES[0]) {
-        //         dataSource = [];
-        //         boreholesDataSource = layers.getMapLayers(false, LAYER_NAMES[0])[0].toGeoJSON().features;
-        //         dataSource = dataSource.concat(waterLevelDataSource);
-        //         dataSource = dataSource.concat(boreholesDataSource);
-        //         if (dashboardComponentInstance) dashboardComponentInstance.setDataSource(dataSource);
-        //     } else if (e === LAYER_NAMES[1]) {
-        //         dataSource = [];
-        //         waterLevelDataSource = layers.getMapLayers(false, LAYER_NAMES[1])[0].toGeoJSON().features;
-        //         dataSource = dataSource.concat(waterLevelDataSource);
-        //         dataSource = dataSource.concat(boreholesDataSource);
-        //         if (dashboardComponentInstance) dashboardComponentInstance.setDataSource(dataSource);
-        //     }
-        // });
-
-        // backboneEvents.get().on(`doneLoading:layers`, e => {
-        //     if ([LAYER_NAMES[0], LAYER_NAMES[1]].indexOf(e) > -1) {
-        //         if (dashboardComponentInstance) {
-        //             let plots = dashboardComponentInstance.getPlots();
-        //             plots = _self.syncPlotData(plots, e);
-        //             dashboardComponentInstance.setPlots(plots);
-        //         }
-        //     }
-        // });
 
         state.getState().then(applicationState => {
             $(PLOTS_ID).attr(`style`, `
@@ -358,7 +313,7 @@ module.exports = module.exports = {
                         }
 
                         let titleAsLink = false;
-                        console.log(layerName)
+
                         if (layerName.indexOf(LAYER_NAMES[0]) > -1) {
                             titleAsLink = true;
                         }
@@ -371,7 +326,6 @@ module.exports = module.exports = {
                         });
 
                         if (clickedFeatureAlreadyDetected === false) intersectingFeatures.unshift(clickedFeature);
-
 
                         let boreholes = [];
 
@@ -408,8 +362,6 @@ module.exports = module.exports = {
                             error: function () {
                             }
                         });
-
-
                     });
                 }, "watsonc");
 
@@ -457,22 +409,22 @@ module.exports = module.exports = {
             });
 
             // Renewing the already created store by rebuilding the layer tree
-            layerTree.create(false, [], true).then(() => {
-                let activeLayers = layerTree.getActiveLayers();
-                activeLayers.map(activeLayerKey => {
-                    // Reloading (applying updated store settings) layers that need it
-                    if (LAYER_NAMES.indexOf(activeLayerKey) !== -1) {
-                        layerTree.reloadLayer(activeLayerKey);
-                    }
-                });
+            setTimeout(()=>{
+                console.log("Opening panels (From get state)");
 
-                // Activating specific layers if they have not been activated before
-                [LAYER_NAMES[0]].map(layerNameToEnable => {
-                    if (activeLayers.indexOf(layerNameToEnable) === -1) {
-                        // switchLayer.init(layerNameToEnable, true, true, false);
-                    }
-                });
-            });
+                setTimeout(()=>{
+                    layerTree.create(false, [], true).then(() => {
+                        //layerTree.reloadLayer(LAYER_NAMES[0]);
+                        if (layerTree.getActiveLayers().indexOf(LAYER_NAMES[1]) > -1) {
+                            layerTree.reloadLayer(LAYER_NAMES[1]);
+                        }
+                        if (layerTree.getActiveLayers().indexOf(LAYER_NAMES[0]) > -1) {
+                            layerTree.reloadLayer(LAYER_NAMES[0]);
+                        }
+                    });
+                }, 500);
+            }, 100);
+
 
             const proceedWithInitialization = () => {
                 // Setting up feature dialog
@@ -624,9 +576,9 @@ module.exports = module.exports = {
                 console.warn(`Unable to find the container for watsonc extension (element id: ${DASHBOARD_CONTAINER_ID})`);
             }
         });
-
         $(`#search-border`).trigger(`click`);
     },
+
 
     openBorehole(boreholeIdentifier) {
         let mapLayers = layers.getMapLayers();
@@ -720,8 +672,6 @@ module.exports = module.exports = {
     },
 
     onApplyLayersAndChemical: (parameters) => {
-        console.log(parameters);
-
         // Disabling all layers
         layerTree.getActiveLayers().map(layerNameToEnable => {
             if (layerNameToEnable !== LAYER_NAMES[2])
@@ -732,7 +682,16 @@ module.exports = module.exports = {
         if (parameters.layers.indexOf(LAYER_NAMES[0]) > -1) {
             let rasterToEnable = `system._${parameters.chemical}`;
             currentRasterLayer = rasterToEnable;
-            switchLayer.init(rasterToEnable, true);
+            switchLayer.init(rasterToEnable, true).then(()=>{
+                if (parameters.chemical) {
+                    _self.enableChemical(parameters.chemical, filteredLayers);
+                } else {
+                    lastSelectedChemical = parameters.chemical;
+                    filteredLayers.map(layerName => {
+                        layerTree.reloadLayer(layerName); // TODO
+                    });
+                }
+            });
         }
 
         let filteredLayers = [];
@@ -743,7 +702,9 @@ module.exports = module.exports = {
             }
             if (layerName.indexOf(LAYER_NAMES[1]) === 0) {
                 if (layerName.indexOf(`#`) > -1) {
-                    if (filteredLayers.indexOf(layerName.split(`#`)[0]) === -1) filteredLayers.push(layerName.split(`#`)[0]);
+                    if (filteredLayers.indexOf(layerName.split(`#`)[0]) === -1) {
+                        filteredLayers.push(layerName.split(`#`)[0]);
+                    }
                     enabledLoctypeIds.push(layerName.split(`#`)[1]);
                 } else {
                     if (filteredLayers.indexOf(layerName) === -1) {
@@ -751,17 +712,19 @@ module.exports = module.exports = {
                     }
                 }
             }
-
         });
 
-        backboneEvents.get().trigger(`${MODULE_NAME}:enabledLoctypeIdsChange`);
+        // Wait a bit with trigger state, so this
+        setTimeout(()=>{
+            backboneEvents.get().trigger(`${MODULE_NAME}:enabledLoctypeIdsChange`);
+        }, 1500);
 
         if (parameters.chemical) {
-            _self.enableChemical(parameters.chemical, filteredLayers);
+            //_self.enableChemical(parameters.chemical, filteredLayers);
         } else {
             lastSelectedChemical = parameters.chemical;
             filteredLayers.map(layerName => {
-                layerTree.reloadLayer(layerName);
+                layerTree.reloadLayer(layerName); // TODO
             });
         }
     },
@@ -1001,62 +964,58 @@ module.exports = module.exports = {
 
     enableChemical(chemicalId, layersToEnable = [], onComplete = false) {
         if (!chemicalId) throw new Error(`Chemical identifier was not provided`);
-
-        let layersToEnableWereProvided = (layersToEnable.length > 0);
-
-        if (categoriesOverall) {
-            for (let layerName in categoriesOverall) {
-                for (let key in categoriesOverall[layerName]) {
-                    for (let key2 in categoriesOverall[layerName][key]) {
-                        if (key2.toString() === chemicalId.toString() || categoriesOverall[layerName][key][key2] === chemicalId.toString()) {
-                            if (layersToEnableWereProvided === false) {
-                                if (layersToEnable.indexOf(layerName) === -1) {
-                                    layersToEnable.push(layerName);
-                                    console.log(layerName);
+        setTimeout(()=> {
+            let layersToEnableWereProvided = (layersToEnable.length > 0);
+            if (categoriesOverall) {
+                for (let layerName in categoriesOverall) {
+                    for (let key in categoriesOverall[layerName]) {
+                        for (let key2 in categoriesOverall[layerName][key]) {
+                            if (key2.toString() === chemicalId.toString() || categoriesOverall[layerName][key][key2] === chemicalId.toString()) {
+                                if (layersToEnableWereProvided === false) {
+                                    if (layersToEnable.indexOf(layerName) === -1) {
+                                        layersToEnable.push(layerName);
+                                        console.log(layerName);
+                                    }
+                                    console.log(chemicalId);
                                 }
-                                console.log(chemicalId);
+                                _self.buildBreadcrumbs(key, categoriesOverall[layerName][key][key2], layerName === LAYER_NAMES[1]);
+                                break;
                             }
-                            _self.buildBreadcrumbs(key, categoriesOverall[layerName][key][key2], layerName === LAYER_NAMES[1]);
-                            break;
                         }
                     }
                 }
             }
-        }
+            layerTree.applyFilters({
+                "system.all": {
+                    match: "any", columns: [
+                        {fieldname: "compound", expression: "=", value: chemicalId, restriction: false}
+                    ]
 
-        layerTree.applyFilters({
-            "system.all": {
-                match: "any", columns: [
-                    {fieldname: "compound", expression: "=", value: chemicalId, restriction: false}
-                ]
+                }
+            });
+            lastSelectedChemical = chemicalId;
+            backboneEvents.get().trigger(`${MODULE_NAME}:chemicalChange`);
+            let onLoadCallback = function (store) {
+                if (layersToEnable.indexOf(store.id) > -1) {
+                    _self.displayChemicalSymbols(store.id);
+                }
+            };
+            layerTree.setOnLoad(LAYER_NAMES[0], onLoadCallback, "watsonc");
+            layerTree.setOnLoad(LAYER_NAMES[1], onLoadCallback, "watsonc");
+            layersToEnable.map(layerName => {
+               layerTree.reloadLayer(layerName);
+            });
+            layerTree.setStyle(LAYER_NAMES[0], {
+                "color": "#ffffff",
+                "weight": 0,
+                "opacity": 0.0,
+                "fillOpacity": 0.0
+            });
 
-            }
-        });
-
-        lastSelectedChemical = chemicalId;
-        backboneEvents.get().trigger(`${MODULE_NAME}:chemicalChange`);
-        let onLoadCallback = function (store) {
-            if (layersToEnable.indexOf(store.id) > -1) {
-                _self.displayChemicalSymbols(store.id);
-            }
-        };
-
-        layerTree.setOnLoad(LAYER_NAMES[0], onLoadCallback, "watsonc");
-        layerTree.setOnLoad(LAYER_NAMES[1], onLoadCallback, "watsonc");
-
-        layersToEnable.map(layerName => {
-            layerTree.reloadLayer(layerName);
-        });
-
-        layerTree.setStyle(LAYER_NAMES[0], {
-            "color": "#ffffff",
-            "weight": 0,
-            "opacity": 0.0,
-            "fillOpacity": 0.0
-        });
-
-        if (onComplete) onComplete();
+            if (onComplete) onComplete();
+        }, 0);
     },
+
 
     getExistingPlots: () => {
         if (dashboardComponentInstance) {
