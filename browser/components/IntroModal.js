@@ -114,7 +114,7 @@ class IntroModal extends React.Component {
                     </div>
                 </div>) : false}
 
-                {this.state.mode === MODE_SELECT ? /*(<div className="container" style={{paddingTop: `20px`}}>
+                {this.state.mode === MODE_SELECT ? (<div className="container" style={{paddingTop: `20px`}}>
                     <div className="row-fluid">
                         <div className="col-md-12" style={{textAlign: `right`}}>
                         {this.props.authenticated === false ? (<a id="session" href="#" data-toggle="modal" data-target="#login-modal" className="active">
@@ -135,17 +135,17 @@ class IntroModal extends React.Component {
                                 onStateSnapshotApply={this.props.onClose}/>
                         </div>
                     </div>
-                </div>)*/
+                </div>)
 
 
-                    (<div className="container" style={{paddingTop: `20px`}}>
+               /*     (<div className="container" style={{paddingTop: `20px`}}>
                         <div className="row-fluid">
                             <div className="col-md-12">
                                 Her bliver det muligt at åbne et gemt projekt. Et projekt kan indeholde tidsserie-grafer, profiler mv.
                             </div>
                         </div>
                     </div>
-                    ) : false}
+                    )*/ : false}
             </div>
 
             <div className="modal-footer" style={{padding: `0px`}}>
