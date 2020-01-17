@@ -131,7 +131,7 @@ module.exports = module.exports = {
 
         backboneEvents.get().on("ready:meta", function () {
             console.log("Opening panels (Meta event)");
-            setTimeout(()=>{
+            setTimeout(() => {
                 $(".panel-title a").trigger("click");
             }, 1000);
 
@@ -243,7 +243,9 @@ module.exports = module.exports = {
 
                     // Open intro modal only if there is no predefined state
                     if (!urlparser.urlVars || !urlparser.urlVars.state) {
-                        _self.openMenuModal();
+                        _self.openMenuModal(true);
+                    } else {
+                        _self.openMenuModal(false);
                     }
 
                     backboneEvents.get().trigger(`${MODULE_NAME}:initialized`);
@@ -409,10 +411,10 @@ module.exports = module.exports = {
             });
 
             // Renewing the already created store by rebuilding the layer tree
-            setTimeout(()=>{
+            setTimeout(() => {
                 console.log("Opening panels (From get state)");
 
-                setTimeout(()=>{
+                setTimeout(() => {
                     layerTree.create(false, [], true).then(() => {
                         //layerTree.reloadLayer(LAYER_NAMES[0]);
                         if (layerTree.getActiveLayers().indexOf(LAYER_NAMES[1]) > -1) {
@@ -462,6 +464,9 @@ module.exports = module.exports = {
                             ReactDOM.render(<Provider store={reduxStore}>
                                 <MenuDataSourceAndTypeSelectorComponent
                                     onApply={_self.onApplyLayersAndChemical}
+                                    enabledLoctypeIds={enabledLoctypeIds}
+                                    urlparser={urlparser}
+                                    boreholes={layerTree.getActiveLayers().indexOf(LAYER_NAMES[0]) > -1}
                                     layers={DATA_SOURCES}/>
                             </Provider>, document.getElementById(`data-source-and-types-selector-content`));
                         } catch (e) {
@@ -682,7 +687,7 @@ module.exports = module.exports = {
         if (parameters.layers.indexOf(LAYER_NAMES[0]) > -1) {
             let rasterToEnable = `system._${parameters.chemical}`;
             currentRasterLayer = rasterToEnable;
-            switchLayer.init(rasterToEnable, true).then(()=>{
+            switchLayer.init(rasterToEnable, true).then(() => {
                 if (parameters.chemical) {
                     _self.enableChemical(parameters.chemical, filteredLayers);
                 } else {
@@ -715,7 +720,7 @@ module.exports = module.exports = {
         });
 
         // Wait a bit with trigger state, so this
-        setTimeout(()=>{
+        setTimeout(() => {
             backboneEvents.get().trigger(`${MODULE_NAME}:enabledLoctypeIdsChange`);
         }, 1500);
 
@@ -734,7 +739,7 @@ module.exports = module.exports = {
      *
      * @returns {void}
      */
-    openMenuModal: () => {
+    openMenuModal: (open = true) => {
         const onCloseHandler = () => {
             $('#watsonc-menu-dialog').modal('hide');
         };
@@ -761,9 +766,12 @@ module.exports = module.exports = {
             }
         }
 
-        $('#watsonc-menu-dialog').modal({
-            backdrop: `static`
-        });
+        if (open) {
+            $('#watsonc-menu-dialog').modal({
+                backdrop: `static`
+            });
+        }
+
     },
     createModal: (features, plots = false, titleAsLink = null) => {
         if (features === false) {
@@ -964,7 +972,7 @@ module.exports = module.exports = {
 
     enableChemical(chemicalId, layersToEnable = [], onComplete = false) {
         if (!chemicalId) throw new Error(`Chemical identifier was not provided`);
-        setTimeout(()=> {
+        setTimeout(() => {
             let layersToEnableWereProvided = (layersToEnable.length > 0);
             if (categoriesOverall) {
                 for (let layerName in categoriesOverall) {
@@ -1003,7 +1011,7 @@ module.exports = module.exports = {
             layerTree.setOnLoad(LAYER_NAMES[0], onLoadCallback, "watsonc");
             layerTree.setOnLoad(LAYER_NAMES[1], onLoadCallback, "watsonc");
             layersToEnable.map(layerName => {
-               layerTree.reloadLayer(layerName);
+                layerTree.reloadLayer(layerName);
             });
             layerTree.setStyle(LAYER_NAMES[0], {
                 "color": "#ffffff",

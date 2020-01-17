@@ -33,7 +33,7 @@ class MenuDataSourceAndTypeSelectorComponent extends React.Component {
         return (<div>
             <div style={{display: `flex`}}>
                 <div style={{flexGrow: `1`}}>
-                    <DataSourceSelector layers={this.props.layers}/>
+                    <DataSourceSelector layers={this.props.layers} enabledLoctypeIds={this.props.enabledLoctypeIds} urlparser={this.props.urlparser} boreholes={this.props.boreholes} />
                 </div>
                 <div style={{flexGrow: `1`}}>
                     <p>{__(`Select datatype`)}</p>

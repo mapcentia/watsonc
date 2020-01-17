@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux'
+import {connect} from 'react-redux'
 
-import { selectLayer, unselectLayer } from '../redux/actions'
+import {selectLayer, unselectLayer} from '../redux/actions'
 
 /**
  * Data source selector
@@ -12,12 +12,36 @@ class DataSourceSelector extends React.Component {
         super(props);
     }
 
+    componentDidMount() {
+        // If coming from state link, then check off boxes
+        if (typeof this.props.enabledLoctypeIds !== "undefined" && typeof this.props.urlparser !== "undefined" && this.props.urlparser.urlVars && this.props.urlparser.urlVars.state) {
+            if (this.props.boreholes) {
+                $(`#key0`).trigger("click");
+            }
+            this.props.enabledLoctypeIds.forEach((v) => {
+                let key;
+                switch (v) {
+                    case "1":
+                        key = `key1`;
+                        break;
+                    case "3":
+                        key = `key2`;
+                        break;
+                    case "4":
+                        key = `key3`;
+                        break;
+                }
+                $(`#${key}`).trigger("click");
+            });
+        }
+    }
+
     render() {
         const generateLayerRecord = (key, item) => {
             let selected = (this.props.selectedLayers.indexOf(item.originalLayerKey + (item.additionalKey ? `#${item.additionalKey}` : ``)) !== -1);
             return (<div key={key} style={{paddingBottom: `8px`}}>
                 <div className="checkbox">
-                    <label>
+                    <label id={key}>
                         <input
                             type="checkbox"
                             checked={selected}
