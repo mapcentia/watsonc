@@ -466,7 +466,7 @@ module.exports = module.exports = {
                                     onApply={_self.onApplyLayersAndChemical}
                                     enabledLoctypeIds={enabledLoctypeIds}
                                     urlparser={urlparser}
-                                    boreholes={layerTree.getActiveLayers().indexOf(LAYER_NAMES[0]) > -1}
+                                    boreholes={layerTree.getActiveLayers().indexOf("_") > -1} // DIRTY HACK All raster layers has _ in name
                                     layers={DATA_SOURCES}/>
                             </Provider>, document.getElementById(`data-source-and-types-selector-content`));
                         } catch (e) {
@@ -725,7 +725,7 @@ module.exports = module.exports = {
         }, 1500);
 
         if (parameters.chemical) {
-            //_self.enableChemical(parameters.chemical, filteredLayers);
+            _self.enableChemical(parameters.chemical, filteredLayers);
         } else {
             lastSelectedChemical = parameters.chemical;
             filteredLayers.map(layerName => {
