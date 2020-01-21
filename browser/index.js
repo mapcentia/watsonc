@@ -303,8 +303,12 @@ module.exports = module.exports = {
                                             circle.removeFrom(mapObj);
                                         }
 
-                                        if (bounds && clickBounds.intersects(bounds) && overlay.id) {
-                                            intersectingFeatures.push(feature.feature);
+                                        try {
+                                            if (bounds && clickBounds.intersects(bounds) && overlay.id) {
+                                                intersectingFeatures.push(feature.feature);
+                                            }
+                                        } catch (e) {
+                                            console.log(e);
                                         }
                                     }
                                 }
@@ -470,7 +474,7 @@ module.exports = module.exports = {
                                     layers={DATA_SOURCES}/>
                             </Provider>, document.getElementById(`data-source-and-types-selector-content`));
                         } catch (e) {
-                            console.error(e);
+                            console.log(e);
                         }
                     }
                 });
