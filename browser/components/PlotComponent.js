@@ -165,6 +165,10 @@ class MenuPanelPlotComponent extends React.Component {
                                     },
                                 });
                             }
+                        } else { // Calypso stations
+                            measurementData.measurements[intakeIndex].map((item, index) => {
+                                textValues.push(Math.round(measurementData.measurements[intakeIndex][index] * 100) / 100);
+                            });
                         }
 
                         let title = utils.getMeasurementTitle(feature);
