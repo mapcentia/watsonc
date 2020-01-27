@@ -344,6 +344,12 @@ module.exports = module.exports = {
                             qLayer = "chemicals.boreholes_time_series_with_chemicals";
                         } else {
                             qLayer = "sensor.sensordata_with_correction";
+                            // Filter NaN values, so SQL doesn't return type error
+                            boreholes = boreholes.filter((v)=>{
+                                if (!isNaN(v)) {
+                                    return v;
+                                }
+                            });
                         }
 
                         // Lazy load features
