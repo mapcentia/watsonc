@@ -85,7 +85,7 @@ class DashboardComponent extends React.Component {
         _self = this;
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         $(window).resize(function () {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
