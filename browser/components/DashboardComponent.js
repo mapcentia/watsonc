@@ -96,6 +96,7 @@ class DashboardComponent extends React.Component {
         this.props.backboneEvents.get().on(`session:authChange`, (authenticated) => {
             if (authenticated) {
                 _self.refreshProfilesList();
+                _self.hydratePlots();
             } else {
                 let newDashboardItems = [];
                 _self.state.dashboardItems.map(item => {
