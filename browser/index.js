@@ -76,7 +76,6 @@ let names = {};
 
 let currentRasterLayer = null;
 
-
 const DATA_SOURCES = [{
     originalLayerKey: LAYER_NAMES[0],
     additionalKey: ``,
@@ -345,7 +344,7 @@ module.exports = module.exports = {
                         } else {
                             qLayer = "sensor.sensordata_with_correction";
                             // Filter NaN values, so SQL doesn't return type error
-                            boreholes = boreholes.filter((v)=>{
+                            boreholes = boreholes.filter((v) => {
                                 if (!isNaN(v)) {
                                     return v;
                                 }
@@ -693,6 +692,11 @@ module.exports = module.exports = {
                 switchLayer.init(layerNameToEnable, false);
         });
 
+        // Bind tool tip to stations
+        layerTree.setOnLoad(LAYER_NAMES[1], () => {
+            _self.bindToolTipOnStations()
+        }, "watsonc");
+
         // Enable raster layer
         if (parameters.layers.indexOf(LAYER_NAMES[0]) > -1) {
             let rasterToEnable = `system._${parameters.chemical}`;
@@ -952,6 +956,16 @@ module.exports = module.exports = {
         });
     },
 
+    bindToolTipOnStations() {
+        let stores = layerTree.getStores();
+        stores["v:sensor.sensordata_without_correction"].layer.eachLayer(function (layer) {
+            let feature = layer.feature;
+            let html = [];
+            html.push(`${feature.properties.mouseover}`);
+            layer.bindTooltip(`${html.join('<br>')}`);
+        });
+    },
+
     displayChemicalSymbols(storeId) {
         let stores = layerTree.getStores();
         let participatingIds = [];
@@ -1019,7 +1033,6 @@ module.exports = module.exports = {
                 }
             };
             layerTree.setOnLoad(LAYER_NAMES[0], onLoadCallback, "watsonc");
-            layerTree.setOnLoad(LAYER_NAMES[1], onLoadCallback, "watsonc");
             layersToEnable.map(layerName => {
                 layerTree.reloadLayer(layerName);
             });
