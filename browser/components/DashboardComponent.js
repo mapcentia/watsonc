@@ -69,6 +69,7 @@ class DashboardComponent extends React.Component {
         this.handleRemovePlot = this.handleRemovePlot.bind(this);
         this.handleDeletePlot = this.handleDeletePlot.bind(this);
         this.handleHighlightPlot = this.handleHighlightPlot.bind(this);
+        this.handleArchivePlot = this.handleArchivePlot.bind(this);
 
         this.handleShowProfile = this.handleShowProfile.bind(this);
         this.handleHideProfile = this.handleHideProfile.bind(this);
@@ -562,6 +563,42 @@ class DashboardComponent extends React.Component {
 
     handleNewPlotNameChange(event) {
         this.setState({newPlotName: event.target.value});
+    }
+
+    handleArchivePlot(plotId, isArchived) {
+        let plots = JSON.parse(JSON.stringify(this.state.plots));
+        let correspondingPlot = false;
+        let correspondingPlotIndex = false;
+        plots.map((plot, index) => {
+            if (plot.id == plotId) {
+                correspondingPlot = plot;
+                correspondingPlotIndex = index;
+            }
+
+        });
+        if (correspondingPlot === false) throw new Error(`Plot with id ${plotId} does not exist`);
+        correspondingPlot.isArchived = isArchived;
+        plots[correspondingPlotIndex] = correspondingPlot;
+
+        let dashboardItemsCopy = JSON.parse(JSON.stringify(this.state.dashboardItems));
+        dashboardItemsCopy.map((item, index) => {
+            if (item.type === DASHBOARD_ITEM_PLOT) {
+                if (item.item.id === correspondingPlot.id) {
+                    dashboardItemsCopy[index].item = correspondingPlot;
+                    return false;
+                }
+            }
+        });
+        this.plotManager.update(correspondingPlot).then(() => {
+            this.setState({
+                plots,
+                dashboardItems: dashboardItemsCopy
+            });
+
+            this.props.onPlotsChange(plots);
+        }).catch(error => {
+            console.error(`Error occured while updating plot (${error})`)
+        });
     }
 
     _modifyAxes(plotId, gid, measurementKey, measurementIntakeIndex, action) {

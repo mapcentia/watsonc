@@ -37,6 +37,12 @@ class MenuTimeSeriesComponent extends React.Component {
             let isChecked = (this.state.activePlots.indexOf(plot.id) > -1);
             let isHighlighted = (this.state.highlightedPlot === plot.id);
             let highlightingIsDisabled = (isChecked ? false : true);
+            let archiveButton = plot.isArchived ? <button type="button" className="btn btn-raised btn-xs" style={{padding: `4px`, margin: `0px`}} onClick={() => { this.props.onPlotArchive(plot.id, false)}}>
+                            <i className="material-icons">unarchive</i>
+                        </button> : <button type="button" className="btn btn-raised btn-xs" style={{padding: `4px`, margin: `0px`}} onClick={() => { this.props.onPlotArchive(plot.id, true)}}>
+                            <i className="material-icons">archive</i>
+                        </button>;
+
 
             plotsTable.push(<tr key={`borehole_plot_control_${index}`}>
                 <td>
@@ -51,11 +57,7 @@ class MenuTimeSeriesComponent extends React.Component {
                 <td>{plot.title}</td>
                 <td>
                     <div className="form-group">
-                        <div className="radio">
-                            <label>
-                                <input type="radio" name="sample1" disabled={highlightingIsDisabled} value="option1" checked={isHighlighted} onChange={() => { this.props.onPlotHighlight(plot.id); }}/>
-                            </label>
-                        </div>
+                        {archiveButton}
                     </div>
                 </td>
                 <td>
