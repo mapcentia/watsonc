@@ -57,7 +57,7 @@ const getAllProfiles = (req, res) => {
     request({
         method: 'GET',
         encoding: 'utf8',
-        uri: API_LOCATION + `/` + req.params.dataBase + `?like=watsonc_profile_%`
+        uri: API_LOCATION + `/` + req.params.dataBase + `?like=watsonc_profile_%&filter='{userId}'='${userId}'`
     }, (error, response) => {
         if (error) {
             shared.throwError(res, 'INVALID_OR_EMPTY_EXTERNAL_API_REPLY', { error });
