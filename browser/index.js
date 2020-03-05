@@ -495,6 +495,7 @@ module.exports = module.exports = {
                                 onPlotDelete={dashboardComponentInstance.handleDeletePlot}
                                 onPlotHighlight={dashboardComponentInstance.handleHighlightPlot}
                                 onPlotShow={dashboardComponentInstance.handleShowPlot}
+                                onPlotArchive={dashboardComponentInstance.handleArchivePlot}
                                 onPlotHide={dashboardComponentInstance.handleHidePlot}/>, document.getElementById(`watsonc-timeseries`));
                         } catch (e) {
                             console.error(e);
