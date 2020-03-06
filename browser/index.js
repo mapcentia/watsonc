@@ -582,7 +582,6 @@ module.exports = module.exports = {
                     } catch (e) {
                         console.error(e);
                     }
-
                     proceedWithInitialization();
                 }).catch(() => {
                     console.error(`Unable to hydrate initial plots`, initialPlots);
@@ -1123,9 +1122,19 @@ module.exports = module.exports = {
             };
 
             if (plotsWereProvided) {
-                dashboardComponentInstance.hydratePlots(newState.plots).then(continueWithInitialization).catch(error => {
-                    console.error(`Error occured while hydrating plots at state application`, error);
-                });
+                (function poll() {
+                    if (typeof dashboardComponentInstance === "object") {
+                        dashboardComponentInstance.hydratePlots(newState.plots).then(continueWithInitialization).catch(error => {
+                            console.error(`Error occured while hydrating plots at state application`, error);
+                        });
+                    } else {
+                        setTimeout(() => {
+                            console.log("POLLING");
+                            poll();
+                        }, 100)
+                    }
+                }());
+
             } else {
                 continueWithInitialization();
             }
