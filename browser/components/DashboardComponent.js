@@ -97,7 +97,7 @@ class DashboardComponent extends React.Component {
         this.props.backboneEvents.get().on(`session:authChange`, (authenticated) => {
             if (authenticated) {
                 _self.refreshProfilesList();
-                _self.hydratePlots();
+                _self.hydratePlotsFromIds();
             } else {
                 let newDashboardItems = [];
                 _self.state.dashboardItems.map(item => {
@@ -150,8 +150,8 @@ class DashboardComponent extends React.Component {
         return this.plotManager.dehydratePlots(plots);
     }
 
-    hydratePlots(plots) {
-        return this.plotManager.hydratePlots(plots);
+    hydratePlotsFromIds(plots) {
+        return this.plotManager.hydratePlotsFromIds(plots);
     }
 
     getProfiles() {

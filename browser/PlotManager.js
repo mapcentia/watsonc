@@ -23,7 +23,55 @@ class PlotManager {
         return plots;
     }
 
-    hydratePlots(x) {
+    hydratePlotsFromIds(plots) {
+        return new Promise((methodResolve, methodReject) => {
+            let hydrationPromises = [];
+            plots.map((plot, index) => {
+                let hydrateRequest = new Promise((resolve, reject) => {
+                    $.ajax({
+                        url: `${this.apiUrl}/${plot.id}`,
+                        method: 'GET',
+                        dataType: 'json',
+                        contentType: 'application/json; charset=utf-8',
+                        success: (body) => {
+                            if (body.success) {
+                                resolve(body.data);
+                            } else {
+                                throw new Error(`Failed to perform operation`, body);
+                            }
+                        },
+                        error: error => {
+                            console.error(error);
+                            reject(`Failed to query keyvalue API`);
+                        }
+                    });
+                });
+
+                hydrationPromises.push(hydrateRequest);
+            });
+
+            Promise.all(hydrationPromises).then(results => {
+                plots.map((item, index) => {
+                    results.map((dataItem) => {
+                        if (dataItem.key === item.id) {
+                            plots[index] = JSON.parse(dataItem.value);
+                        }
+                    });
+                });
+
+                plots.map((item, index) => {
+                    if (`measurements` in item === false || !item.measurements
+                        || `measurementsCachedData` in item === false || !item.measurementsCachedData) {
+                        console.warn(`The ${item.id} plot was not properly populated`, item);
+                    }
+                });
+
+                methodResolve(plots);
+            }).catch(methodReject);
+        });
+    }
+
+    hydratePlotsFromUser() {
         return new Promise((methodResolve, methodReject) => {
             let hydrationPromises = [];
             let userId = session.getUserName();

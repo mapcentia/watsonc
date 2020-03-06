@@ -436,7 +436,6 @@ module.exports = module.exports = {
                 }, 500);
             }, 100);
 
-
             const proceedWithInitialization = () => {
                 // Setting up feature dialog
                 $(`#` + FEATURE_CONTAINER_ID).find(".expand-less").on("click", function () {
@@ -546,7 +545,7 @@ module.exports = module.exports = {
                 }
 
                 let plotManager = new PlotManager();
-                plotManager.hydratePlots(initialPlots).then(hydratedInitialPlots => {
+                plotManager.hydratePlotsFromUser(initialPlots).then(hydratedInitialPlots => { // User plots
                     try {
                         dashboardComponentInstance = ReactDOM.render(<DashboardComponent
                             backboneEvents={backboneEvents}
@@ -1124,7 +1123,7 @@ module.exports = module.exports = {
             if (plotsWereProvided) {
                 (function poll() {
                     if (typeof dashboardComponentInstance === "object") {
-                        dashboardComponentInstance.hydratePlots(newState.plots).then(continueWithInitialization).catch(error => {
+                        dashboardComponentInstance.hydratePlotsFromIds(newState.plots).then(continueWithInitialization).catch(error => {
                             console.error(`Error occured while hydrating plots at state application`, error);
                         });
                     } else {
