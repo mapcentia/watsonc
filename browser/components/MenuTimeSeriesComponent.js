@@ -15,8 +15,11 @@ class MenuTimeSeriesComponent extends React.Component {
         this.state = {
             plots: this.props.initialPlots,
             activePlots: this.props.initialActivePlots,
-            highlightedPlot: false
+            highlightedPlot: false,
+            showArchivedPlots: false
         };
+        this.getPlots = this.getPlots.bind(this);
+        this.setShowArchivedPlots = this.setShowArchivedPlots.bind(this);
     }
 
     setPlots(plots) {
@@ -31,9 +34,21 @@ class MenuTimeSeriesComponent extends React.Component {
         this.setState({highlightedPlot})
     }
 
+    setShowArchivedPlots(showArchivedPlots) {
+        this.setState({ showArchivedPlots });
+    }
+
+    getPlots() {
+        if (this.state.showArchivedPlots) {
+            return this.state.plots;
+        } else {
+            return this.state.plots.filter((plot) => plot.isArchived != true);
+        }
+    }
+
     render() {
         let plotsTable = [];
-        this.state.plots.map((plot, index) => {
+        this.getPlots().map((plot, index) => {
             let isChecked = (this.state.activePlots.indexOf(plot.id) > -1);
             let isHighlighted = (this.state.highlightedPlot === plot.id);
             let highlightingIsDisabled = (isChecked ? false : true);
@@ -84,6 +99,10 @@ class MenuTimeSeriesComponent extends React.Component {
             plotsTable = (<p>{__(`No time series were created yet`)}</p>);
         }
 
+        var showArchivedPlotsButton = this.state.showArchivedPlots ?
+            <div style={{color: 'red', cursor: 'pointer', fontWeight: 'bold'}} onClick={() => this.setShowArchivedPlots(false)}>Hide Archived</div> :
+            <div style={{color: 'red', cursor: 'pointer', fontWeight: 'bold'}} onClick={() => this.setShowArchivedPlots(true)}>See Archived</div>;
+
        return (<div>
             <div>
                 <h4>{__(`Timeseries`)}
@@ -93,6 +112,7 @@ class MenuTimeSeriesComponent extends React.Component {
                         onAdd={(title) => { this.props.onPlotCreate(title); }} type="userOwned"/>
                 </h4>
             </div>
+           <div style={{textAlign: 'right', marginRight: '30px'}}>{showArchivedPlotsButton}</div>
             <div>{plotsTable}</div>
         </div>);
     }
