@@ -1033,7 +1033,6 @@ module.exports = module.exports = {
                 }
             };
             layerTree.setOnLoad(LAYER_NAMES[0], onLoadCallback, "watsonc");
-            layerTree.setOnLoad(LAYER_NAMES[1], onLoadCallback, "watsonc");
             layersToEnable.map(layerName => {
                 layerTree.reloadLayer(layerName);
             });
