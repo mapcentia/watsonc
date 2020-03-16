@@ -692,6 +692,11 @@ module.exports = module.exports = {
                 switchLayer.init(layerNameToEnable, false);
         });
 
+        // Bind tool tip to stations
+        layerTree.setOnLoad(LAYER_NAMES[1], () => {
+            _self.bindToolTipOnStations()
+        }, "watsonc");
+
         // Enable raster layer
         if (parameters.layers.indexOf(LAYER_NAMES[0]) > -1) {
             let rasterToEnable = `system._${parameters.chemical}`;
@@ -948,6 +953,16 @@ module.exports = module.exports = {
                     }
                 }
             }
+        });
+    },
+
+    bindToolTipOnStations() {
+        let stores = layerTree.getStores();
+        stores["v:sensor.sensordata_without_correction"].layer.eachLayer(function (layer) {
+            let feature = layer.feature;
+            let html = [];
+            html.push(`${feature.properties.mouseover}`);
+            layer.bindTooltip(`${html.join('<br>')}`);
         });
     },
 
