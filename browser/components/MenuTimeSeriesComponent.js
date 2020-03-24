@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Switch } from '@material-ui/core';
 
 import PlotComponent from './PlotComponent';
 import { isNumber } from 'util';
@@ -99,9 +100,10 @@ class MenuTimeSeriesComponent extends React.Component {
             plotsTable = (<p>{__(`No time series were created yet`)}</p>);
         }
 
-        var showArchivedPlotsButton = this.state.showArchivedPlots ?
-            <div style={{color: 'red', cursor: 'pointer', fontWeight: 'bold'}} onClick={() => this.setShowArchivedPlots(false)}>Hide Archived</div> :
-            <div style={{color: 'red', cursor: 'pointer', fontWeight: 'bold'}} onClick={() => this.setShowArchivedPlots(true)}>See Archived</div>;
+        var showArchivedPlotsButton = <div>
+            Show Archived
+            <Switch  checked={this.state.showArchivedPlots} onChange={() => {this.setShowArchivedPlots(!this.state.showArchivedPlots)}} />
+        </div>;
 
        return (<div>
             <div>
