@@ -408,6 +408,7 @@ module.exports = module.exports = {
                             let icon = L.icon({
                                 iconUrl: 'data:image/svg+xml;base64,' + btoa(localSvgCirclePart),
                                 iconAnchor: [8, 33],
+                                iconSize: [30, 30],
                                 watsoncStatus: `default`
                             });
 
