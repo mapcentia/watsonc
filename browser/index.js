@@ -1068,8 +1068,10 @@ module.exports = module.exports = {
      */
     getState: () => {
         let plots = dashboardComponentInstance.dehydratePlots(_self.getExistingActivePlots());
+        let profiles = dashboardComponentInstance.getProfiles();
         return {
             plots,
+            profiles,
             selectedChemical: lastSelectedChemical,
             enabledLoctypeIds
         };
