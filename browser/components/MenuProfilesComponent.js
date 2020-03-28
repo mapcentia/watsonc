@@ -45,6 +45,7 @@ class MenuProfilesComponent extends React.Component {
             localSelectedChemical: false,
             showDrawingForm: true,
             showExistingProfiles: true,
+            showProjectProfiles: true,
             boreholeNames: [],
             layers: [],
             selectedLayers: [],
@@ -109,6 +110,26 @@ class MenuProfilesComponent extends React.Component {
         this.setState({activeProfiles}, () => {
             this.displayActiveProfiles();
         });
+    }
+
+    getProjectProfilesLength() {
+        let count = 0;
+        this.state.profiles.map(item => {
+            if (item.fromProject) {
+                count += 1;
+            }
+        });
+        return count;
+    }
+
+    getProfilesLength() {
+        let count = 0;
+        this.state.profiles.map(item => {
+            if (!item.fromProject) {
+                count += 1;
+            }
+        });
+        return count;
     }
 
     saveProfile() {
@@ -258,7 +279,7 @@ class MenuProfilesComponent extends React.Component {
     }
 
     displayProfile(data) {
-        this.clearDrawnLayers();        
+        this.clearDrawnLayers();
         let profile = data.profile.profile;
 
         // Get utm zone
@@ -344,10 +365,25 @@ class MenuProfilesComponent extends React.Component {
         let existingProfilesControls = (<div style={{textAlign: `center`}}>
             <p>{__(`No profiles found`)}</p>
         </div>);
+        let projectProfilesControls = (<div style={{textAlign: `center`}}>
+            <p>{__(`No profiles found`)}</p>
+        </div>);
 
         let plotRows = [];
+        let projectProfileRows = [];
         this.state.profiles.map((item, index) => {
-            plotRows.push(<tr key={`existing_profile_${index}`}>
+
+            var deleteButton = item.fromProject ? null : <td style={{textAlign: `right`}}>
+                    <button
+                        type="button"
+                        className="btn btn-xs btn-primary"
+                        title={__(`Delete profile`)}
+                        onClick={(event) => { this.handleProfileDelete(item); }}
+                        style={{padding: `4px`, margin: `0px`}}>
+                        <i className="material-icons">delete</i>
+                    </button>
+                </td>
+            var itemHtml = <tr key={`existing_profile_${index}`}>
                 <td>
                     <div>
                         <div style={{float: `left`}}>
@@ -369,17 +405,13 @@ class MenuProfilesComponent extends React.Component {
                 <td style={{textAlign: `center`}}>
                     {item.profile.compound ? utils.getChemicalName(item.profile.compound, this.props.categories) : __(`Not selected`)}
                 </td>
-                <td style={{textAlign: `right`}}>
-                    <button
-                        type="button"
-                        className="btn btn-xs btn-primary"
-                        title={__(`Delete profile`)}
-                        onClick={(event) => { this.handleProfileDelete(item); }}
-                        style={{padding: `4px`, margin: `0px`}}>
-                        <i className="material-icons">delete</i>
-                    </button>
-                </td>
-            </tr>);
+                {deleteButton}
+            </tr>;
+            if (item.fromProject === true) {
+                projectProfileRows.push(itemHtml);
+            } else {
+                plotRows.push(itemHtml);
+            }
         });
 
         if (plotRows.length > 0) {
@@ -402,17 +434,35 @@ class MenuProfilesComponent extends React.Component {
             </table>);
         }
 
+        if (projectProfileRows.length > 0) {
+            projectProfilesControls = (<table className="table table-striped">
+                <thead style={{color: `rgb(0, 150, 136)`}}>
+                    <tr>
+                        <th>
+                            <div style={{float: `left`}}><i style={{fontSize: `20px`}} className="material-icons" title={__(`Add to the dashboard`)}>grid_on</i></div>
+                            <div style={{float: `left`, paddingLeft: `10px`}}>{__(`Title`)}</div>
+                        </th>
+                        <th style={{textAlign: `center`}}>{__(`Datatype`)}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {projectProfileRows}
+                </tbody>
+            </table>)
+        }
+
         let chemicalName = __(`Not selected`);
         if (this.state.localSelectedChemical) {
             chemicalName = utils.getChemicalName(this.state.localSelectedChemical, this.props.categories);
         }
 
+        let renderText = '';
         if (this.state.authenticated) {
-            return (<div id="profile-drawing-buffer" style={{position: `relative`}}>
+            renderText = (<div id="profile-drawing-buffer" style={{position: `relative`}}>
                 {overlay}
                 <div style={{borderBottom: `1px solid lightgray`}}>
                     <div style={{fontSize: `20px`, padding: `14px`}}>
-                        <a href="javascript:void(0)" onClick={() => { this.setState({showDrawingForm: !this.state.showDrawingForm})}}>{__(`Create new profile`)} 
+                        <a href="javascript:void(0)" onClick={() => { this.setState({showDrawingForm: !this.state.showDrawingForm})}}>{__(`Create new profile`)}
                             {this.state.showDrawingForm ? (<i className="material-icons">keyboard_arrow_down</i>) : (<i className="material-icons">keyboard_arrow_right</i>)}
                         </a>
                     </div>
@@ -580,12 +630,34 @@ class MenuProfilesComponent extends React.Component {
                 </div>
             </div>);
         } else {
-            return (<div id="profile-drawing-buffer" style={{position: `relative`}}>
+            renderText = (<div id="profile-drawing-buffer" style={{position: `relative`}}>
                 <div style={{textAlign: `center`}}>
-                    <p>{__(`Please sign in to access Profiles module`)}</p>
+                    <p>{__(`Please sign in to create / edit Profiles`)}</p>
                 </div>
             </div>);
         }
+
+        if (projectProfileRows.length > 0) {
+            renderText = <div>
+                {renderText}
+                <div style={{borderBottom: `1px solid lightgray`}}>
+                    <div style={{fontSize: `20px`, padding: `14px`}}>
+                        <a href="javascript:void(0)" onClick={() => { this.setState({showProjectProfiles: !this.state.showProjectProfiles})}}>{__(`Select Profiles from Project`)} ({this.state.profiles.length})
+                            {this.state.showProjectProfiles ? (<i className="material-icons">keyboard_arrow_down</i>) : (<i className="material-icons">keyboard_arrow_right</i>)}
+                        </a>
+                    </div>
+                    {this.state.showProjectProfiles ? (<div className="container">
+                        <div className="row">
+                            <div className="col-md-12">
+                                {projectProfilesControls}
+                            </div>
+                        </div>
+                    </div>) : false}
+                </div>
+
+            </div>
+        }
+        return renderText;
     }
 }
 

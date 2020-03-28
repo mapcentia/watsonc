@@ -50,7 +50,9 @@ class DashboardComponent extends React.Component {
             newPlotName: ``,
             dashboardItems,
             plots: this.props.initialPlots,
+            projectPlots: [],
             profiles: [],
+            projectProfiles: [],
             activePlots: [],
             activeProfiles: [],
             dataSource: [],
@@ -78,6 +80,7 @@ class DashboardComponent extends React.Component {
         this.handleDeleteProfile = this.handleDeleteProfile.bind(this);
         this.handleProfileClick = this.handleProfileClick.bind(this);
         this.handleChangeDatatypeProfile = this.handleChangeDatatypeProfile.bind(this);
+        this.setProjectProfiles = this.setProjectProfiles.bind(this);
 
         this.getFeatureByGidFromDataSource = this.getFeatureByGidFromDataSource.bind(this);
         this.handleNewPlotNameChange = this.handleNewPlotNameChange.bind(this);
@@ -123,6 +126,8 @@ class DashboardComponent extends React.Component {
 
     refreshProfilesList() {
         this.profileManager.getAll().then(profiles => {
+            console.log("Refreshing Profiles list");
+            console.log(profiles);
             let newDashboardItems = [];
             this.state.dashboardItems.map(item => {
                 if (item.type === DASHBOARD_ITEM_PLOT) {
@@ -155,7 +160,15 @@ class DashboardComponent extends React.Component {
     }
 
     getProfiles() {
-        return JSON.parse(JSON.stringify(this.state.profiles));
+        let allProfiles = [];
+        this.state.projectProfiles.map(item => {
+            item.fromProject = true;
+            allProfiles.push(item);
+        });
+        this.state.profiles.map(item => {
+            allProfiles.push(item);
+        })
+        return allProfiles;
     }
 
     getActiveProfiles() {
@@ -398,6 +411,12 @@ class DashboardComponent extends React.Component {
         });
 
         this.setState({plots, dashboardItems: dashboardItemsCopy});
+    }
+
+    setProjectProfiles(projectProfiles) {
+        console.log("Setting Profiles");
+        console.log(projectProfiles);
+        this.setState({projectProfiles});
     }
 
     syncPlotData() {
