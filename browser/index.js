@@ -1069,8 +1069,10 @@ module.exports = module.exports = {
      */
     getState: () => {
         let plots = dashboardComponentInstance.dehydratePlots(_self.getExistingActivePlots());
+        let profiles = dashboardComponentInstance.getProfiles();
         return {
             plots,
+            profiles,
             selectedChemical: lastSelectedChemical,
             enabledLoctypeIds
         };
@@ -1084,6 +1086,11 @@ module.exports = module.exports = {
             let plotsWereProvided = false;
             if (newState && `plots` in newState && newState.plots.length > 0) {
                 plotsWereProvided = true;
+            }
+
+            let profilesWereProvided = false;
+            if (newState && `profiles` in newState && newState.profiles.length > 0) {
+                profilesWereProvided = true;
             }
 
             const continueWithInitialization = (populatedPlots) => {
@@ -1137,6 +1144,19 @@ module.exports = module.exports = {
 
             } else {
                 continueWithInitialization();
+            }
+
+            if (profilesWereProvided) {
+                (function poll() {
+                    if (typeof dashboardComponentInstance === "object") {
+                        dashboardComponentInstance.setProjectProfiles(newState.profiles);
+                    } else {
+                        setTimeout(() => {
+                            console.log("POLLING");
+                            poll();
+                        }, 100)
+                    }
+                }());
             }
         });
     }

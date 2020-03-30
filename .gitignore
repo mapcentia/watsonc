@@ -3,3 +3,4 @@ config/config.js
 
 # Scripts data folder and .npy data set
 scripts/profil
+.DS_Store
