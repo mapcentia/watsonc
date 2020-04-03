@@ -18,6 +18,7 @@ const uuidv1 = require('uuid/v1');
 
 const DASHBOARD_ITEM_PLOT = 0;
 const DASHBOARD_ITEM_PROFILE = 1;
+const DASHBOARD_ITEM_PROJECT_PROFILE = 2;
 
 const DISPLAY_MIN = 0;
 const DISPLAY_HALF = 1;
@@ -81,6 +82,7 @@ class DashboardComponent extends React.Component {
         this.handleProfileClick = this.handleProfileClick.bind(this);
         this.handleChangeDatatypeProfile = this.handleChangeDatatypeProfile.bind(this);
         this.setProjectProfiles = this.setProjectProfiles.bind(this);
+        this.getProfilesLength = this.getProfilesLength.bind(this);
 
         this.getFeatureByGidFromDataSource = this.getFeatureByGidFromDataSource.bind(this);
         this.handleNewPlotNameChange = this.handleNewPlotNameChange.bind(this);
@@ -130,7 +132,7 @@ class DashboardComponent extends React.Component {
             console.log(profiles);
             let newDashboardItems = [];
             this.state.dashboardItems.map(item => {
-                if (item.type === DASHBOARD_ITEM_PLOT) {
+                if (item.type !== DASHBOARD_ITEM_PROFILE) {
                     newDashboardItems.push(JSON.parse(JSON.stringify(item)));
                 }
             });
@@ -416,7 +418,23 @@ class DashboardComponent extends React.Component {
     setProjectProfiles(projectProfiles) {
         console.log("Setting Profiles");
         console.log(projectProfiles);
-        this.setState({projectProfiles});
+        let dashboardItemsCopy = [];
+        this.state.dashboardItems.map(item => {
+            if (item.type !== DASHBOARD_ITEM_PROJECT_PROFILE) {
+                dashboardItemsCopy.push(item);
+            }
+        });
+        projectProfiles.map(item => {
+            dashboardItemsCopy.push({
+                type: DASHBOARD_ITEM_PROJECT_PROFILE,
+                item
+            });
+        })
+        this.setState({projectProfiles, dashboardItems: dashboardItemsCopy});
+    }
+
+    getProfilesLength() {
+        return this.state.profiles.length + this.state.projectProfiles.length;
     }
 
     syncPlotData() {
@@ -850,7 +868,6 @@ class DashboardComponent extends React.Component {
         let listItemHeightPx = Math.round(($(document).height() * 0.9 - modalHeaderHeight - 10) / 2);
 
         let localPlotsControls = [];
-
         this.state.dashboardItems.map((item, index) => {
             if (item.type === DASHBOARD_ITEM_PLOT) {
                 let plot = item.item;
@@ -863,7 +880,7 @@ class DashboardComponent extends React.Component {
                         handleDelete={this.handleRemovePlot}
                         meta={plot}/>);
                 }
-            } else if (item.type === DASHBOARD_ITEM_PROFILE) {
+            } else if (item.type === DASHBOARD_ITEM_PROFILE || item.type === DASHBOARD_ITEM_PROJECT_PROFILE) {
                 let profile = item.item;
                 if (this.state.activeProfiles.indexOf(profile.key) > -1) {
                     localPlotsControls.push(<SortableProfileComponent
@@ -953,7 +970,7 @@ class DashboardComponent extends React.Component {
                             data-tip={__(`Click on the modal header to expand or minify the Dashboard`)}
                             onClick={this.nextDisplayType.bind(this)}>
                             <p className="text-muted" style={{margin: `0px`}}>
-                                ({__(`Timeseries total`).toLowerCase()}: {this.state.plots.length}, {__(`timeseries active`)}: {this.state.activePlots.length}; {__(`Profiles total`).toLowerCase()}: {this.state.profiles.length}, {__(`profiles active`)}: {this.state.activeProfiles.length})
+                                ({__(`Timeseries total`).toLowerCase()}: {this.state.plots.length}, {__(`timeseries active`)}: {this.state.activePlots.length}; {__(`Profiles total`).toLowerCase()}: {this.getProfilesLength()}, {__(`profiles active`)}: {this.state.activeProfiles.length})
                             </p>
                         </div>
                         <div style={{
