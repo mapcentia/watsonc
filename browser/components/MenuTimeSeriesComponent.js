@@ -49,6 +49,7 @@ class MenuTimeSeriesComponent extends React.Component {
 
     render() {
         let plotsTable = [];
+        let projectPlotsTable = [];
         this.getPlots().map((plot, index) => {
             let isChecked = (this.state.activePlots.indexOf(plot.id) > -1);
             let isHighlighted = (this.state.highlightedPlot === plot.id);
@@ -58,9 +59,14 @@ class MenuTimeSeriesComponent extends React.Component {
                         </button> : <button type="button" className="btn btn-raised btn-xs" style={{padding: `4px`, margin: `0px`}} onClick={() => { this.props.onPlotArchive(plot.id, true)}}>
                             <i className="material-icons">archive</i>
                         </button>;
+            if (plot.fromProject) {
+                archiveButton = null;
+            }
 
-
-            plotsTable.push(<tr key={`borehole_plot_control_${index}`}>
+            let deleteButton = plot.fromProject ? null : <button type="button" className="btn btn-raised btn-xs" onClick={() => { this.props.onPlotDelete(plot.id, plot.title); }} style={{padding: `4px`, margin: `0px`}}>
+                        <i className="material-icons">delete</i>
+                    </button>;
+            let itemHtml = <tr key={`borehole_plot_control_${index}`}>
                 <td>
                     <div className="form-group">
                         <div className="checkbox">
@@ -77,13 +83,21 @@ class MenuTimeSeriesComponent extends React.Component {
                     </div>
                 </td>
                 <td>
-                    <button type="button" className="btn btn-raised btn-xs" onClick={() => { this.props.onPlotDelete(plot.id, plot.title); }} style={{padding: `4px`, margin: `0px`}}>
-                        <i className="material-icons">delete</i>
-                    </button>
+                    {deleteButton}
                 </td>
-            </tr>);
+            </tr>;
+
+            if (plot.fromProject === true) {
+                projectPlotsTable.push(itemHtml)
+            } else {
+                plotsTable.push(itemHtml);
+            }
         });
 
+        var showArchivedPlotsButton = <div>
+            Show Archived
+            <Switch  checked={this.state.showArchivedPlots} onChange={() => {this.setShowArchivedPlots(!this.state.showArchivedPlots)}} />
+        </div>;
         if (Array.isArray(plotsTable) && plotsTable.length > 0) {
             plotsTable = (<table className="table table-striped table-hover">
                 <thead>
@@ -96,14 +110,31 @@ class MenuTimeSeriesComponent extends React.Component {
                 </thead>
                 <tbody>{plotsTable}</tbody>
             </table>);
-        } else {
+        } else if (projectPlotsTable.length === 0) {
             plotsTable = (<p>{__(`No time series were created yet`)}</p>);
+        } else {
+            plotsTable = null;
+        }
+        if (Array.isArray(projectPlotsTable) && projectPlotsTable.length > 0) {
+            projectPlotsTable = (
+                <div>
+                    <div  style={{fontSize: `20px`, padding: `14px`}}>
+                        {__('Select Time Series from Project')}
+                    </div>
+                    <table className="table table-striped table-hover">
+                        <thead>
+                            <tr style={{color: `rgb(0, 150, 136)`}}>
+                                <td style={{width: `40px`}}><i className="material-icons">border_all</i></td>
+                                <td style={{width: `70%`}}>{__(`Title`)}</td>
+                            </tr>
+                        </thead>
+                        <tbody>{projectPlotsTable}</tbody>
+                    </table>
+                </div>);
+        } else {
+            projectPlotsTable = null;
         }
 
-        var showArchivedPlotsButton = <div>
-            Show Archived
-            <Switch  checked={this.state.showArchivedPlots} onChange={() => {this.setShowArchivedPlots(!this.state.showArchivedPlots)}} />
-        </div>;
 
        return (<div>
             <div>
@@ -116,6 +147,9 @@ class MenuTimeSeriesComponent extends React.Component {
             </div>
            <div style={{textAlign: 'right', marginRight: '30px'}}>{showArchivedPlotsButton}</div>
             <div>{plotsTable}</div>
+            <div>
+                {projectPlotsTable}
+            </div>
         </div>);
     }
 }
