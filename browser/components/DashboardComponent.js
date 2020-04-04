@@ -429,6 +429,7 @@ class DashboardComponent extends React.Component {
                 type: DASHBOARD_ITEM_PROJECT_PROFILE,
                 item
             });
+            this.handleShowProfile(item.key);
         })
         this.setState({projectProfiles, dashboardItems: dashboardItemsCopy});
     }
