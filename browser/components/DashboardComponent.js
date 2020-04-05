@@ -17,6 +17,7 @@ import arrayMove from 'array-move';
 const uuidv1 = require('uuid/v1');
 
 const DASHBOARD_ITEM_PLOT = 0;
+const DASHBOARD_ITEM_PROJECT_PLOT = 0;
 const DASHBOARD_ITEM_PROFILE = 1;
 const DASHBOARD_ITEM_PROJECT_PROFILE = 2;
 
@@ -83,6 +84,7 @@ class DashboardComponent extends React.Component {
         this.handleChangeDatatypeProfile = this.handleChangeDatatypeProfile.bind(this);
         this.setProjectProfiles = this.setProjectProfiles.bind(this);
         this.getProfilesLength = this.getProfilesLength.bind(this);
+        this.getPlotsLength = this.getPlotsLength.bind(this);
 
         this.getFeatureByGidFromDataSource = this.getFeatureByGidFromDataSource.bind(this);
         this.handleNewPlotNameChange = this.handleNewPlotNameChange.bind(this);
@@ -380,7 +382,16 @@ class DashboardComponent extends React.Component {
     }
 
     getPlots() {
-        return JSON.parse(JSON.stringify(this.state.plots));
+        let allPlots = [];
+        this.state.projectPlots.map((item) => {
+            item.fromProject = true;
+            allPlots.push(item);
+        });
+        this.state.plots.map((item) => {
+            item.fromProject = false;
+            allPlots.push(item);
+        })
+        return allPlots;
     }
 
     getActivePlots() {
@@ -395,6 +406,24 @@ class DashboardComponent extends React.Component {
 
     addPlot(newPlotName, activateOnCreate = false) {
         this.handleCreatePlot(newPlotName, activateOnCreate);
+    }
+
+    setProjectPlots(projectPlots) {
+        let dashboardItemsCopy = [];
+        this.state.dashboardItems.map(item => {
+            if (item.type !== DASHBOARD_ITEM_PROJECT_PLOT) {
+                dashboardItemsCopy.push(item);
+            }
+        });
+
+        projectPlots.map(item => {
+            dashboardItemsCopy.push({
+                type: DASHBOARD_ITEM_PROJECT_PLOT,
+                item
+            });
+        });
+
+        this.setState({projectPlots, dashboardItems: dashboardItemsCopy});
     }
 
     setPlots(plots) {
@@ -429,12 +458,17 @@ class DashboardComponent extends React.Component {
                 type: DASHBOARD_ITEM_PROJECT_PROFILE,
                 item
             });
+            this.handleShowProfile(item.key);
         })
         this.setState({projectProfiles, dashboardItems: dashboardItemsCopy});
     }
 
     getProfilesLength() {
         return this.state.profiles.length + this.state.projectProfiles.length;
+    }
+
+    getPlotsLength() {
+        return this.state.plots.length + this.state.projectPlots.length;
     }
 
     syncPlotData() {
@@ -504,7 +538,7 @@ class DashboardComponent extends React.Component {
                 });
             }
 
-            this.props.onPlotsChange(plotsCopy);
+            this.props.onPlotsChange(this.getPlots());
         }).catch(error => {
             console.error(`Error occured while creating plot (${error})`)
         });
@@ -564,7 +598,7 @@ class DashboardComponent extends React.Component {
                     dashboardItems: dashboardItemsCopy
                 });
 
-                this.props.onPlotsChange(plotsCopy);
+                this.props.onPlotsChange(this.getPlots());
             }).catch(error => {
                 console.error(`Error occured while creating plot (${error})`)
             });
@@ -633,7 +667,7 @@ class DashboardComponent extends React.Component {
                 dashboardItems: dashboardItemsCopy
             });
 
-            this.props.onPlotsChange(plots);
+            this.props.onPlotsChange(this.getPlots());
         }).catch(error => {
             console.error(`Error occured while updating plot (${error})`)
         });
@@ -702,7 +736,7 @@ class DashboardComponent extends React.Component {
                 dashboardItems: dashboardItemsCopy
             });
 
-            this.props.onPlotsChange(plots);
+            this.props.onPlotsChange(this.getPlots());
         }).catch(error => {
             console.error(`Error occured while updating plot (${error})`)
         });
@@ -869,7 +903,7 @@ class DashboardComponent extends React.Component {
 
         let localPlotsControls = [];
         this.state.dashboardItems.map((item, index) => {
-            if (item.type === DASHBOARD_ITEM_PLOT) {
+            if (item.type === DASHBOARD_ITEM_PLOT || item.type === DASHBOARD_ITEM_PROJECT_PLOT) {
                 let plot = item.item;
                 if (this.state.activePlots.indexOf(plot.id) > -1) {
                     localPlotsControls.push(<SortablePlotComponent
@@ -970,7 +1004,7 @@ class DashboardComponent extends React.Component {
                             data-tip={__(`Click on the modal header to expand or minify the Dashboard`)}
                             onClick={this.nextDisplayType.bind(this)}>
                             <p className="text-muted" style={{margin: `0px`}}>
-                                ({__(`Timeseries total`).toLowerCase()}: {this.state.plots.length}, {__(`timeseries active`)}: {this.state.activePlots.length}; {__(`Profiles total`).toLowerCase()}: {this.getProfilesLength()}, {__(`profiles active`)}: {this.state.activeProfiles.length})
+                                ({__(`Timeseries total`).toLowerCase()}: {this.getPlotsLength()}, {__(`timeseries active`)}: {this.state.activePlots.length}; {__(`Profiles total`).toLowerCase()}: {this.getProfilesLength()}, {__(`profiles active`)}: {this.state.activeProfiles.length})
                             </p>
                         </div>
                         <div style={{

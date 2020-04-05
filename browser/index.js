@@ -1095,7 +1095,7 @@ module.exports = module.exports = {
 
             const continueWithInitialization = (populatedPlots) => {
                 if (populatedPlots) {
-                    dashboardComponentInstance.setPlots(populatedPlots);
+                    dashboardComponentInstance.setProjectPlots(populatedPlots);
                     populatedPlots.map((item) => {
                         dashboardComponentInstance.handleShowPlot(item.id);
                     });
