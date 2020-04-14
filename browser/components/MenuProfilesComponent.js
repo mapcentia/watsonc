@@ -5,7 +5,7 @@ import Slider from 'rc-slider';
 import { Provider } from 'react-redux';
 import { connect } from 'react-redux';
 
-import {SELECT_CHEMICAL_DIALOG_PREFIX} from './../constants';
+import {SELECT_CHEMICAL_DIALOG_PREFIX, FREE_PLAN_MAX_PROFILES_COUNT} from './../constants';
 import TitleFieldComponent from './../../../../browser/modules/shared/TitleFieldComponent';
 import LoadingOverlay from './../../../../browser/modules/shared/LoadingOverlay';
 
@@ -71,6 +71,8 @@ class MenuProfilesComponent extends React.Component {
 
         this.bufferSliderRef = React.createRef();
         this.bufferValueRef = React.createRef();
+        this.onNewProfileAdd = this.onNewProfileAdd.bind(this);
+        this.canCreateProfile = this.canCreateProfile.bind(this);
 
         window.menuProfilesComponentInstance = this;
     }
@@ -84,6 +86,10 @@ class MenuProfilesComponent extends React.Component {
         });
 
         this.displayActiveProfiles();
+    }
+
+    canCreateProfile() {
+        return this.getProfilesLength() < FREE_PLAN_MAX_PROFILES_COUNT;
     }
 
     displayActiveProfiles() {
@@ -110,6 +116,14 @@ class MenuProfilesComponent extends React.Component {
         this.setState({activeProfiles}, () => {
             this.displayActiveProfiles();
         });
+    }
+
+    onNewProfileAdd(newTitle) {
+        if (!this.canCreateProfile()) {
+            $('#upgrade-modal').modal('show');
+            return;
+        }
+        this.setState({newTitle, step: STEP_NOT_READY});
     }
 
     getProjectProfilesLength() {
@@ -470,7 +484,7 @@ class MenuProfilesComponent extends React.Component {
                         <div className="row">
                             <div className="col-md-12">
                                 <TitleFieldComponent
-                                    onAdd={(newTitle) => { this.setState({newTitle, step: STEP_NOT_READY}) }}
+                                    onAdd={this.onNewProfileAdd}
                                     type="browserOwned"
                                     showIcon={false}
                                     inputPlaceholder={this.state.newTitle}

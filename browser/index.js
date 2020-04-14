@@ -489,6 +489,7 @@ module.exports = module.exports = {
                     if ($(`#watsonc-timeseries`).children().length === 0) {
                         try {
                             menuTimeSeriesComponentInstance = ReactDOM.render(<MenuTimeSeriesComponent
+                                backboneEvents={backboneEvents}
                                 initialPlots={dashboardComponentInstance.getPlots()}
                                 initialActivePlots={dashboardComponentInstance.getActivePlots()}
                                 onPlotCreate={dashboardComponentInstance.handleCreatePlot}

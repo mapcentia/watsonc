@@ -4,6 +4,7 @@ import { Switch } from '@material-ui/core';
 
 import PlotComponent from './PlotComponent';
 import { isNumber } from 'util';
+import {FREE_PLAN_MAX_PROFILES_COUNT} from './../constants';
 import TitleFieldComponent from './../../../../browser/modules/shared/TitleFieldComponent';
 
 /**
@@ -17,10 +18,21 @@ class MenuTimeSeriesComponent extends React.Component {
             plots: this.props.initialPlots,
             activePlots: this.props.initialActivePlots,
             highlightedPlot: false,
-            showArchivedPlots: false
+            showArchivedPlots: false,
+            authenticated: props.authenticated ? props.authenticated : false,
         };
         this.getPlots = this.getPlots.bind(this);
         this.setShowArchivedPlots = this.setShowArchivedPlots.bind(this);
+        this.onPlotAdd = this.onPlotAdd.bind(this);
+    }
+
+    componentDidMount() {
+        let _self = this;
+        this.props.backboneEvents.get().on(`session:authChange`, (authenticated) => {
+            if (_self.state.authenticated !== authenticated) {
+                _self.setState({ authenticated });
+            }
+        });
     }
 
     setPlots(plots) {
@@ -45,6 +57,19 @@ class MenuTimeSeriesComponent extends React.Component {
         } else {
             return this.state.plots.filter((plot) => plot.isArchived != true);
         }
+    }
+
+    canCreatePlot() {
+        let plots = this.state.plots.filter((plot) => plot.fromProject != true);
+        return plots.length < FREE_PLAN_MAX_TIME_SERIES_COUNT;
+    }
+
+    onPlotAdd(title) {
+        if (!this.canCreatePlot()) {
+            $('#upgrade-modal').modal('show');
+            return;
+        }
+        this.props.onPlotCreate(title);
     }
 
     render() {
@@ -135,16 +160,22 @@ class MenuTimeSeriesComponent extends React.Component {
             projectPlotsTable = null;
         }
 
-
-       return (<div>
-            <div>
+       var addTimeSeriesComponent = this.state.authenticated ? <div>
                 <h4>{__(`Timeseries`)}
                     <TitleFieldComponent
                         saveButtonText={__(`Save`)}
                         layout="dense"
-                        onAdd={(title) => { this.props.onPlotCreate(title); }} type="userOwned"/>
+                        onAdd={this.onPlotAdd} type="userOwned"/>
                 </h4>
-            </div>
+            </div> : <div style={{position: `relative`}}>
+                <div style={{textAlign: `center`}}>
+                    <p>{__(`Please sign in to create / edit Time series`)}</p>
+                </div>
+            </div>;
+
+       return (
+           <div>
+           {addTimeSeriesComponent}
            <div style={{textAlign: 'right', marginRight: '30px'}}>{showArchivedPlotsButton}</div>
             <div>{plotsTable}</div>
             <div>
