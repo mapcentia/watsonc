@@ -36,6 +36,15 @@ let _self = false, resizeTimeout = false;
 class DashboardComponent extends React.Component {
     constructor(props) {
         super(props);
+        let queryParams = new URLSearchParams(window.location.search);
+        let licenseToken = queryParams.get('license');
+        let license = null;
+        if (licenseToken) {
+            license = Base64.decode(licenseToken.split('.')[1]);
+            if (license !== '') {
+                license = license.license;
+            }
+        }
 
         let dashboardItems = [];
         if (this.props.initialPlots) {
@@ -61,7 +70,8 @@ class DashboardComponent extends React.Component {
             highlightedPlot: false,
             createdProfileChemical: false,
             createdProfileName: false,
-            lastUpdate: false
+            lastUpdate: false,
+            license: license
         };
 
         this.plotManager = new PlotManager();
@@ -89,6 +99,7 @@ class DashboardComponent extends React.Component {
         this.getFeatureByGidFromDataSource = this.getFeatureByGidFromDataSource.bind(this);
         this.handleNewPlotNameChange = this.handleNewPlotNameChange.bind(this);
         this.handlePlotSort = this.handlePlotSort.bind(this);
+        this.getLicense = this.getLicense.bind(this);
 
         _self = this;
     }
@@ -126,6 +137,10 @@ class DashboardComponent extends React.Component {
 
     componentDidMount() {
         this.nextDisplayType();
+    }
+
+    getLicense() {
+        return this.state.license;
     }
 
     refreshProfilesList() {

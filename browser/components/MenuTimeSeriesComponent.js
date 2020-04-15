@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Switch } from '@material-ui/core';
+import { Provider, connect } from 'react-redux';
 
 import PlotComponent from './PlotComponent';
 import { isNumber } from 'util';
@@ -24,6 +25,7 @@ class MenuTimeSeriesComponent extends React.Component {
         this.getPlots = this.getPlots.bind(this);
         this.setShowArchivedPlots = this.setShowArchivedPlots.bind(this);
         this.onPlotAdd = this.onPlotAdd.bind(this);
+        window.menuTimeSeriesComponentInstance = this;
     }
 
     componentDidMount() {
@@ -60,8 +62,11 @@ class MenuTimeSeriesComponent extends React.Component {
     }
 
     canCreatePlot() {
-        let plots = this.state.plots.filter((plot) => plot.fromProject != true);
-        return plots.length < FREE_PLAN_MAX_TIME_SERIES_COUNT;
+        if (this.props.license === 'free') {
+            let plots = this.state.plots.filter((plot) => plot.fromProject != true);
+            return plots.length < FREE_PLAN_MAX_TIME_SERIES_COUNT;
+        }
+        return true;
     }
 
     onPlotAdd(title) {
@@ -181,13 +186,22 @@ class MenuTimeSeriesComponent extends React.Component {
             <div>
                 {projectPlotsTable}
             </div>
-        </div>);
+            </div>
+            );
     }
 }
+
+const mapStateToProps = state => ({
+    authenticated: state.global.authenticated
+})
+
+const mapDispatchToProps = dispatch => ({
+
+})
 
 MenuTimeSeriesComponent.propTypes = {
     initialPlots: PropTypes.array.isRequired,
     initialActivePlots: PropTypes.array.isRequired,
 };
 
-export default MenuTimeSeriesComponent;
+export default connect(mapStateToProps, mapDispatchToProps)(MenuTimeSeriesComponent);

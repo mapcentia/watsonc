@@ -89,7 +89,10 @@ class MenuProfilesComponent extends React.Component {
     }
 
     canCreateProfile() {
-        return this.getProfilesLength() < FREE_PLAN_MAX_PROFILES_COUNT;
+        if(this.props.license === 'free') {
+            return this.getProfilesLength() < FREE_PLAN_MAX_PROFILES_COUNT;
+        }
+        return true;
     }
 
     displayActiveProfiles() {
