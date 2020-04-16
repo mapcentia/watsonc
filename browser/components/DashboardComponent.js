@@ -179,6 +179,15 @@ class DashboardComponent extends React.Component {
         return JSON.parse(JSON.stringify(this.state.activeProfiles));
     }
 
+    getActiveProfileObjects() {
+        let activeProfiles = this.getProfiles().filter((item) => {
+            if (this.state.activeProfiles.indexOf(item.key) !== -1) {
+                return item;
+            }
+        });
+        return JSON.parse(JSON.stringify(activeProfiles));
+    }
+
     handleCreateProfile(data, activateOnCreate = true, callback = false) {
         this.profileManager.create(data).then(newProfile => {
             let profilesCopy = JSON.parse(JSON.stringify(this.state.profiles));
