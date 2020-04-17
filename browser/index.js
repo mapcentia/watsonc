@@ -1067,12 +1067,20 @@ module.exports = module.exports = {
         }
     },
 
+    getExistingActiveProfiles: () => {
+        if (dashboardComponentInstance) {
+            return dashboardComponentInstance.getActiveProfileObjects();
+        } else {
+            throw new Error('Unable to find the component instance');
+        }
+    },
+
     /**
      * Returns current module state
      */
     getState: () => {
         let plots = dashboardComponentInstance.dehydratePlots(_self.getExistingActivePlots());
-        let profiles = dashboardComponentInstance.getProfiles();
+        let profiles = _self.getExistingActiveProfiles();
         return {
             plots,
             profiles,
