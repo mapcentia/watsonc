@@ -50,8 +50,7 @@ var React = require('react');
 
 var ReactDOM = require('react-dom');
 
-let dashboardComponentInstance = false, modalComponentInstance = false, infoModalInstance = false,
-    menuTimeSeriesComponentInstance = false;
+let dashboardComponentInstance = false, modalComponentInstance = false, infoModalInstance = false;
 
 let lastSelectedChemical = false, categoriesOverall = false, enabledLoctypeIds = [];
 
@@ -488,15 +487,18 @@ module.exports = module.exports = {
                 $(`[data-module-id="timeseries"]`).click(() => {
                     if ($(`#watsonc-timeseries`).children().length === 0) {
                         try {
-                            menuTimeSeriesComponentInstance = ReactDOM.render(<MenuTimeSeriesComponent
-                                initialPlots={dashboardComponentInstance.getPlots()}
-                                initialActivePlots={dashboardComponentInstance.getActivePlots()}
-                                onPlotCreate={dashboardComponentInstance.handleCreatePlot}
-                                onPlotDelete={dashboardComponentInstance.handleDeletePlot}
-                                onPlotHighlight={dashboardComponentInstance.handleHighlightPlot}
-                                onPlotShow={dashboardComponentInstance.handleShowPlot}
-                                onPlotArchive={dashboardComponentInstance.handleArchivePlot}
-                                onPlotHide={dashboardComponentInstance.handleHidePlot}/>, document.getElementById(`watsonc-timeseries`));
+                            ReactDOM.render(<Provider store={reduxStore}>
+                                <MenuTimeSeriesComponent
+                                    backboneEvents={backboneEvents}
+                                    license={dashboardComponentInstance.getLicense()}
+                                    initialPlots={dashboardComponentInstance.getPlots()}
+                                    initialActivePlots={dashboardComponentInstance.getActivePlots()}
+                                    onPlotCreate={dashboardComponentInstance.handleCreatePlot}
+                                    onPlotDelete={dashboardComponentInstance.handleDeletePlot}
+                                    onPlotHighlight={dashboardComponentInstance.handleHighlightPlot}
+                                    onPlotShow={dashboardComponentInstance.handleShowPlot}
+                                    onPlotArchive={dashboardComponentInstance.handleArchivePlot}
+                                    onPlotHide={dashboardComponentInstance.handleHidePlot}/></Provider>, document.getElementById(`watsonc-timeseries`));
                         } catch (e) {
                             console.error(e);
                         }
@@ -513,6 +515,7 @@ module.exports = module.exports = {
                             <MenuProfilesComponent
                                 cloud={cloud}
                                 backboneEvents={backboneEvents}
+                                license={dashboardComponentInstance.getLicense()}
                                 categories={categoriesOverall ? categoriesOverall : []}
                                 initialProfiles={dashboardComponentInstance.getProfiles()}
                                 initialActiveProfiles={dashboardComponentInstance.getActiveProfiles()}
@@ -558,7 +561,7 @@ module.exports = module.exports = {
                                 if (plots) {
                                     _self.setStyleForPlots(plots);
 
-                                    if (menuTimeSeriesComponentInstance) menuTimeSeriesComponentInstance.setPlots(plots);
+                                    if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setPlots(plots);
                                     // Plots were updated from the DashboardComponent component
                                     if (modalComponentInstance) _self.createModal(false, plots);
                                 }
@@ -569,7 +572,7 @@ module.exports = module.exports = {
                             }}
                             onActivePlotsChange={(activePlots) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
-                                if (menuTimeSeriesComponentInstance) menuTimeSeriesComponentInstance.setActivePlots(activePlots);
+                                if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setActivePlots(activePlots);
                             }}
                             onActiveProfilesChange={(activeProfiles) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
@@ -577,7 +580,7 @@ module.exports = module.exports = {
                             }}
                             onHighlightedPlotChange={(plotId, plots) => {
                                 _self.setStyleForHighlightedPlot(plotId, plots);
-                                if (menuTimeSeriesComponentInstance) menuTimeSeriesComponentInstance.setHighlightedPlot(plotId);
+                                if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setHighlightedPlot(plotId);
                             }}/>, document.getElementById(DASHBOARD_CONTAINER_ID));
                     } catch (e) {
                         console.error(e);
