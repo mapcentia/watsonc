@@ -40,8 +40,8 @@ class DashboardComponent extends React.Component {
         let licenseToken = queryParams.get('license');
         let license = null;
         if (licenseToken) {
-            license = Base64.decode(licenseToken.split('.')[1]);
-            if (license !== '') {
+            license = JSON.parse(base64.decode(licenseToken.split('.')[1]));
+            if (typeof license === 'object') {
                 license = license.license;
             }
         }

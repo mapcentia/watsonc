@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Switch } from '@material-ui/core';
-import { Provider, connect } from 'react-redux';
+import {Switch} from '@material-ui/core';
+import {Provider, connect} from 'react-redux';
 
 import PlotComponent from './PlotComponent';
-import { isNumber } from 'util';
+import {isNumber} from 'util';
 import {FREE_PLAN_MAX_PROFILES_COUNT} from './../constants';
 import TitleFieldComponent from './../../../../browser/modules/shared/TitleFieldComponent';
 
@@ -32,7 +32,7 @@ class MenuTimeSeriesComponent extends React.Component {
         let _self = this;
         this.props.backboneEvents.get().on(`session:authChange`, (authenticated) => {
             if (_self.state.authenticated !== authenticated) {
-                _self.setState({ authenticated });
+                _self.setState({authenticated});
             }
         });
     }
@@ -50,7 +50,7 @@ class MenuTimeSeriesComponent extends React.Component {
     }
 
     setShowArchivedPlots(showArchivedPlots) {
-        this.setState({ showArchivedPlots });
+        this.setState({showArchivedPlots});
     }
 
     getPlots() {
@@ -62,11 +62,12 @@ class MenuTimeSeriesComponent extends React.Component {
     }
 
     canCreatePlot() {
-        if (this.props.license === 'free') {
+        if (this.props.license === 'premium') {
+            return true;
+        } else {
             let plots = this.state.plots.filter((plot) => plot.fromProject != true);
             return plots.length < FREE_PLAN_MAX_TIME_SERIES_COUNT;
         }
-        return true;
     }
 
     onPlotAdd(title) {
@@ -84,24 +85,32 @@ class MenuTimeSeriesComponent extends React.Component {
             let isChecked = (this.state.activePlots.indexOf(plot.id) > -1);
             let isHighlighted = (this.state.highlightedPlot === plot.id);
             let highlightingIsDisabled = (isChecked ? false : true);
-            let archiveButton = plot.isArchived ? <button type="button" className="btn btn-raised btn-xs" style={{padding: `4px`, margin: `0px`}} onClick={() => { this.props.onPlotArchive(plot.id, false)}}>
-                            <i className="material-icons">unarchive</i>
-                        </button> : <button type="button" className="btn btn-raised btn-xs" style={{padding: `4px`, margin: `0px`}} onClick={() => { this.props.onPlotArchive(plot.id, true)}}>
-                            <i className="material-icons">archive</i>
-                        </button>;
+            let archiveButton = plot.isArchived ? <button type="button" className="btn btn-raised btn-xs" style={{padding: `4px`, margin: `0px`}} onClick={() => {
+                this.props.onPlotArchive(plot.id, false)
+            }}>
+                <i className="material-icons">unarchive</i>
+            </button> : <button type="button" className="btn btn-raised btn-xs" style={{padding: `4px`, margin: `0px`}} onClick={() => {
+                this.props.onPlotArchive(plot.id, true)
+            }}>
+                <i className="material-icons">archive</i>
+            </button>;
             if (plot.fromProject) {
                 archiveButton = null;
             }
 
-            let deleteButton = plot.fromProject ? null : <button type="button" className="btn btn-raised btn-xs" onClick={() => { this.props.onPlotDelete(plot.id, plot.title); }} style={{padding: `4px`, margin: `0px`}}>
-                        <i className="material-icons">delete</i>
-                    </button>;
+            let deleteButton = plot.fromProject ? null : <button type="button" className="btn btn-raised btn-xs" onClick={() => {
+                this.props.onPlotDelete(plot.id, plot.title);
+            }} style={{padding: `4px`, margin: `0px`}}>
+                <i className="material-icons">delete</i>
+            </button>;
             let itemHtml = <tr key={`borehole_plot_control_${index}`}>
                 <td>
                     <div className="form-group">
                         <div className="checkbox">
                             <label>
-                                <input type="checkbox" checked={isChecked} onChange={(event) => { event.target.checked ? this.props.onPlotShow(plot.id) : this.props.onPlotHide(plot.id)}}/>
+                                <input type="checkbox" checked={isChecked} onChange={(event) => {
+                                    event.target.checked ? this.props.onPlotShow(plot.id) : this.props.onPlotHide(plot.id)
+                                }}/>
                             </label>
                         </div>
                     </div>
@@ -126,17 +135,19 @@ class MenuTimeSeriesComponent extends React.Component {
 
         var showArchivedPlotsButton = <div>
             Show Archived
-            <Switch  checked={this.state.showArchivedPlots} onChange={() => {this.setShowArchivedPlots(!this.state.showArchivedPlots)}} />
+            <Switch checked={this.state.showArchivedPlots} onChange={() => {
+                this.setShowArchivedPlots(!this.state.showArchivedPlots)
+            }}/>
         </div>;
         if (Array.isArray(plotsTable) && plotsTable.length > 0) {
             plotsTable = (<table className="table table-striped table-hover">
                 <thead>
-                    <tr style={{color: `rgb(0, 150, 136)`}}>
-                        <td style={{width: `40px`}}><i className="material-icons">border_all</i></td>
-                        <td style={{width: `70%`}}>{__(`Title`)}</td>
-                        <td><i className="fas fa-map-marked-alt fas-material-adapt"></i></td>
-                        <td><i className="material-icons">delete</i></td>
-                    </tr>
+                <tr style={{color: `rgb(0, 150, 136)`}}>
+                    <td style={{width: `40px`}}><i className="material-icons">border_all</i></td>
+                    <td style={{width: `70%`}}>{__(`Title`)}</td>
+                    <td><i className="fas fa-map-marked-alt fas-material-adapt"></i></td>
+                    <td><i className="material-icons">delete</i></td>
+                </tr>
                 </thead>
                 <tbody>{plotsTable}</tbody>
             </table>);
@@ -148,15 +159,15 @@ class MenuTimeSeriesComponent extends React.Component {
         if (Array.isArray(projectPlotsTable) && projectPlotsTable.length > 0) {
             projectPlotsTable = (
                 <div>
-                    <div  style={{fontSize: `20px`, padding: `14px`}}>
+                    <div style={{fontSize: `20px`, padding: `14px`}}>
                         {__('Select Time Series from Project')}
                     </div>
                     <table className="table table-striped table-hover">
                         <thead>
-                            <tr style={{color: `rgb(0, 150, 136)`}}>
-                                <td style={{width: `40px`}}><i className="material-icons">border_all</i></td>
-                                <td style={{width: `70%`}}>{__(`Title`)}</td>
-                            </tr>
+                        <tr style={{color: `rgb(0, 150, 136)`}}>
+                            <td style={{width: `40px`}}><i className="material-icons">border_all</i></td>
+                            <td style={{width: `70%`}}>{__(`Title`)}</td>
+                        </tr>
                         </thead>
                         <tbody>{projectPlotsTable}</tbody>
                     </table>
@@ -165,29 +176,29 @@ class MenuTimeSeriesComponent extends React.Component {
             projectPlotsTable = null;
         }
 
-       var addTimeSeriesComponent = this.state.authenticated ? <div>
-                <h4>{__(`Timeseries`)}
-                    <TitleFieldComponent
-                        saveButtonText={__(`Save`)}
-                        layout="dense"
-                        onAdd={this.onPlotAdd} type="userOwned"/>
-                </h4>
-            </div> : <div style={{position: `relative`}}>
-                <div style={{textAlign: `center`}}>
-                    <p>{__(`Please sign in to create / edit Time series`)}</p>
-                </div>
-            </div>;
+        var addTimeSeriesComponent = this.state.authenticated ? <div>
+            <h4>{__(`Timeseries`)}
+                <TitleFieldComponent
+                    saveButtonText={__(`Save`)}
+                    layout="dense"
+                    onAdd={this.onPlotAdd} type="userOwned"/>
+            </h4>
+        </div> : <div style={{position: `relative`}}>
+            <div style={{textAlign: `center`}}>
+                <p>{__(`Please sign in to create / edit Time series`)}</p>
+            </div>
+        </div>;
 
-       return (
-           <div>
-           {addTimeSeriesComponent}
-           <div style={{textAlign: 'right', marginRight: '30px'}}>{showArchivedPlotsButton}</div>
-            <div>{plotsTable}</div>
+        return (
             <div>
-                {projectPlotsTable}
+                {addTimeSeriesComponent}
+                <div style={{textAlign: 'right', marginRight: '30px'}}>{showArchivedPlotsButton}</div>
+                <div>{plotsTable}</div>
+                <div>
+                    {projectPlotsTable}
+                </div>
             </div>
-            </div>
-            );
+        );
     }
 }
 
@@ -195,9 +206,7 @@ const mapStateToProps = state => ({
     authenticated: state.global.authenticated
 })
 
-const mapDispatchToProps = dispatch => ({
-
-})
+const mapDispatchToProps = dispatch => ({})
 
 MenuTimeSeriesComponent.propTypes = {
     initialPlots: PropTypes.array.isRequired,

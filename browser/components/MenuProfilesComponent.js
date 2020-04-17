@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import Slider from 'rc-slider';
-import { Provider } from 'react-redux';
-import { connect } from 'react-redux';
+import {Provider} from 'react-redux';
+import {connect} from 'react-redux';
 
 import {SELECT_CHEMICAL_DIALOG_PREFIX, FREE_PLAN_MAX_PROFILES_COUNT} from './../constants';
 import TitleFieldComponent from './../../../../browser/modules/shared/TitleFieldComponent';
@@ -11,7 +11,7 @@ import LoadingOverlay from './../../../../browser/modules/shared/LoadingOverlay'
 
 import reduxStore from './../redux/store';
 
-import { selectChemical } from './../redux/actions';
+import {selectChemical} from './../redux/actions';
 
 const utils = require('./../utils');
 
@@ -35,8 +35,6 @@ let drawnItems = new L.FeatureGroup(), displayedItems = new L.FeatureGroup(), em
 class MenuProfilesComponent extends React.Component {
     constructor(props) {
         super(props);
-
-
 
 
         this.state = {
@@ -81,7 +79,7 @@ class MenuProfilesComponent extends React.Component {
         let _self = this;
         this.props.backboneEvents.get().on(`session:authChange`, (authenticated) => {
             if (_self.state.authenticated !== authenticated) {
-                _self.setState({ authenticated });
+                _self.setState({authenticated});
             }
         });
 
@@ -89,10 +87,12 @@ class MenuProfilesComponent extends React.Component {
     }
 
     canCreateProfile() {
-        if(this.props.license === 'free') {
+        if (this.props.license === 'premium') {
+            return true;
+        } else {
             return this.getProfilesLength() < FREE_PLAN_MAX_PROFILES_COUNT;
+
         }
-        return true;
     }
 
     displayActiveProfiles() {
@@ -363,7 +363,9 @@ class MenuProfilesComponent extends React.Component {
                             <input
                                 type="checkbox"
                                 checked={this.state.selectedLayers.indexOf(item.id) > -1}
-                                onChange={(event) => { this.handleLayerSelect(event.target.checked, item); }}/> {item.title}
+                                onChange={(event) => {
+                                    this.handleLayerSelect(event.target.checked, item);
+                                }}/> {item.title}
                         </label>
                     </div>
                     <div>
@@ -374,9 +376,13 @@ class MenuProfilesComponent extends React.Component {
                 </div>);
             };
 
-            this.state.layers.filter(item => item.type !== `geology`).map((item, index) => { availableLayers.push(generateLayerRecord(item, index, `non_geology_layer_`)); });
+            this.state.layers.filter(item => item.type !== `geology`).map((item, index) => {
+                availableLayers.push(generateLayerRecord(item, index, `non_geology_layer_`));
+            });
             if (availableLayers.length > 0) availableLayers.push(<hr style={{margin: `10px`}} key={`layer_divider`}/>);
-            this.state.layers.filter(item => item.type === `geology`).map((item, index) => { availableLayers.push(generateLayerRecord(item, index, `geology_layer_`)); });
+            this.state.layers.filter(item => item.type === `geology`).map((item, index) => {
+                availableLayers.push(generateLayerRecord(item, index, `geology_layer_`));
+            });
         }
 
         let existingProfilesControls = (<div style={{textAlign: `center`}}>
@@ -391,15 +397,17 @@ class MenuProfilesComponent extends React.Component {
         this.state.profiles.map((item, index) => {
 
             var deleteButton = item.fromProject ? null : <td style={{textAlign: `right`}}>
-                    <button
-                        type="button"
-                        className="btn btn-xs btn-primary"
-                        title={__(`Delete profile`)}
-                        onClick={(event) => { this.handleProfileDelete(item); }}
-                        style={{padding: `4px`, margin: `0px`}}>
-                        <i className="material-icons">delete</i>
-                    </button>
-                </td>
+                <button
+                    type="button"
+                    className="btn btn-xs btn-primary"
+                    title={__(`Delete profile`)}
+                    onClick={(event) => {
+                        this.handleProfileDelete(item);
+                    }}
+                    style={{padding: `4px`, margin: `0px`}}>
+                    <i className="material-icons">delete</i>
+                </button>
+            </td>
             var itemHtml = <tr key={`existing_profile_${index}`}>
                 <td>
                     <div>
@@ -410,7 +418,9 @@ class MenuProfilesComponent extends React.Component {
                                         type="checkbox"
                                         name="enabled_profile"
                                         checked={this.state.activeProfiles.indexOf(item.key) > -1}
-                                        onChange={(event) => { this.handleProfileToggle(event.target.checked, item.key); }}/>
+                                        onChange={(event) => {
+                                            this.handleProfileToggle(event.target.checked, item.key);
+                                        }}/>
                                 </label>
                             </div>
                         </div>
@@ -434,19 +444,19 @@ class MenuProfilesComponent extends React.Component {
         if (plotRows.length > 0) {
             existingProfilesControls = (<table className="table table-striped">
                 <thead style={{color: `rgb(0, 150, 136)`}}>
-                    <tr>
-                        <th>
-                            <div style={{float: `left`}}><i style={{fontSize: `20px`}} className="material-icons" title={__(`Add to the dashboard`)}>grid_on</i></div>
-                            <div style={{float: `left`, paddingLeft: `10px`}}>{__(`Title`)}</div>
-                        </th>
-                        <th style={{textAlign: `center`}}>{__(`Datatype`)}</th>
-                        <th style={{textAlign: `right`, paddingRight: `10px`}}>
-                            <i style={{fontSize: `20px`}} className="material-icons" title={__(`Delete`)}>delete</i>
-                        </th>
-                    </tr>
+                <tr>
+                    <th>
+                        <div style={{float: `left`}}><i style={{fontSize: `20px`}} className="material-icons" title={__(`Add to the dashboard`)}>grid_on</i></div>
+                        <div style={{float: `left`, paddingLeft: `10px`}}>{__(`Title`)}</div>
+                    </th>
+                    <th style={{textAlign: `center`}}>{__(`Datatype`)}</th>
+                    <th style={{textAlign: `right`, paddingRight: `10px`}}>
+                        <i style={{fontSize: `20px`}} className="material-icons" title={__(`Delete`)}>delete</i>
+                    </th>
+                </tr>
                 </thead>
                 <tbody>
-                    {plotRows}
+                {plotRows}
                 </tbody>
             </table>);
         }
@@ -454,16 +464,16 @@ class MenuProfilesComponent extends React.Component {
         if (projectProfileRows.length > 0) {
             projectProfilesControls = (<table className="table table-striped">
                 <thead style={{color: `rgb(0, 150, 136)`}}>
-                    <tr>
-                        <th>
-                            <div style={{float: `left`}}><i style={{fontSize: `20px`}} className="material-icons" title={__(`Add to the dashboard`)}>grid_on</i></div>
-                            <div style={{float: `left`, paddingLeft: `10px`}}>{__(`Title`)}</div>
-                        </th>
-                        <th style={{textAlign: `center`}}>{__(`Datatype`)}</th>
-                    </tr>
+                <tr>
+                    <th>
+                        <div style={{float: `left`}}><i style={{fontSize: `20px`}} className="material-icons" title={__(`Add to the dashboard`)}>grid_on</i></div>
+                        <div style={{float: `left`, paddingLeft: `10px`}}>{__(`Title`)}</div>
+                    </th>
+                    <th style={{textAlign: `center`}}>{__(`Datatype`)}</th>
+                </tr>
                 </thead>
                 <tbody>
-                    {projectProfileRows}
+                {projectProfileRows}
                 </tbody>
             </table>)
         }
@@ -479,7 +489,9 @@ class MenuProfilesComponent extends React.Component {
                 {overlay}
                 <div style={{borderBottom: `1px solid lightgray`}}>
                     <div style={{fontSize: `20px`, padding: `14px`}}>
-                        <a href="javascript:void(0)" onClick={() => { this.setState({showDrawingForm: !this.state.showDrawingForm})}}>{__(`Create new profile`)}
+                        <a href="javascript:void(0)" onClick={() => {
+                            this.setState({showDrawingForm: !this.state.showDrawingForm})
+                        }}>{__(`Create new profile`)}
                             {this.state.showDrawingForm ? (<i className="material-icons">keyboard_arrow_down</i>) : (<i className="material-icons">keyboard_arrow_right</i>)}
                         </a>
                     </div>
@@ -500,36 +512,37 @@ class MenuProfilesComponent extends React.Component {
                         {this.state.step !== STEP_ENTER_NAME ? (<div>
                             <div className="row">
                                 <div className="col-md-12">
-                                    <p><strong>{__(`Select datatype`)}:</strong> {chemicalName} <button
-                                        type="button"
-                                        disabled={this.state.step !== STEP_NOT_READY}
-                                        className="btn btn-primary btn-sm"
-                                        onClick={() => {
-                                            const selectChemicalModalPlaceholderId = `${SELECT_CHEMICAL_DIALOG_PREFIX}-placeholder`;
+                                    <p><strong>{__(`Select datatype`)}:</strong> {chemicalName}
+                                        <button
+                                            type="button"
+                                            disabled={this.state.step !== STEP_NOT_READY}
+                                            className="btn btn-primary btn-sm"
+                                            onClick={() => {
+                                                const selectChemicalModalPlaceholderId = `${SELECT_CHEMICAL_DIALOG_PREFIX}-placeholder`;
 
-                                            if ($(`#${selectChemicalModalPlaceholderId}`).children().length > 0) {
-                                                ReactDOM.unmountComponentAtNode(document.getElementById(selectChemicalModalPlaceholderId));
-                                            }
+                                                if ($(`#${selectChemicalModalPlaceholderId}`).children().length > 0) {
+                                                    ReactDOM.unmountComponentAtNode(document.getElementById(selectChemicalModalPlaceholderId));
+                                                }
 
-                                            try {
-                                                ReactDOM.render(<div>
-                                                    <Provider store={reduxStore}>
-                                                        <ChemicalSelectorModal
-                                                            emptyOptionTitle={__(`Show without data type`)}
-                                                            useLocalSelectedChemical={true}
-                                                            localSelectedChemical={this.state.selectedChemical}
-                                                            onClickControl={(selectorValue) => {
-                                                                this.setState({localSelectedChemical: selectorValue})
-                                                                $('#' + SELECT_CHEMICAL_DIALOG_PREFIX).modal('hide');
-                                                            }}/>
-                                                    </Provider>
-                                                </div>, document.getElementById(selectChemicalModalPlaceholderId));
-                                            } catch (e) {
-                                                console.error(e);
-                                            }
+                                                try {
+                                                    ReactDOM.render(<div>
+                                                        <Provider store={reduxStore}>
+                                                            <ChemicalSelectorModal
+                                                                emptyOptionTitle={__(`Show without data type`)}
+                                                                useLocalSelectedChemical={true}
+                                                                localSelectedChemical={this.state.selectedChemical}
+                                                                onClickControl={(selectorValue) => {
+                                                                    this.setState({localSelectedChemical: selectorValue})
+                                                                    $('#' + SELECT_CHEMICAL_DIALOG_PREFIX).modal('hide');
+                                                                }}/>
+                                                        </Provider>
+                                                    </div>, document.getElementById(selectChemicalModalPlaceholderId));
+                                                } catch (e) {
+                                                    console.error(e);
+                                                }
 
-                                            $('#' + SELECT_CHEMICAL_DIALOG_PREFIX).modal({backdrop: `static`});
-                                        }}><i className="fas fa-edit" title={__(`Edit`)}></i></button>
+                                                $('#' + SELECT_CHEMICAL_DIALOG_PREFIX).modal({backdrop: `static`});
+                                            }}><i className="fas fa-edit" title={__(`Edit`)}></i></button>
                                         <button
                                             type="button"
                                             disabled={this.state.localSelectedChemical === false}
@@ -554,14 +567,18 @@ class MenuProfilesComponent extends React.Component {
                                         value={this.state.buffer ? parseInt(this.state.buffer) : 0}
                                         min={0}
                                         max={500}
-                                        onChange={(value) => { this.setState({buffer: value}); }}/>
+                                        onChange={(value) => {
+                                            this.setState({buffer: value});
+                                        }}/>
                                 </div>
                                 <div className="col-md-3">
                                     <input
                                         disabled={this.state.step !== STEP_NOT_READY}
                                         type="number"
                                         className="form-control"
-                                        onChange={(event) => { this.setState({buffer: event.target.value}); }}
+                                        onChange={(event) => {
+                                            this.setState({buffer: event.target.value});
+                                        }}
                                         value={this.state.buffer}/>
                                 </div>
                             </div>
@@ -575,7 +592,9 @@ class MenuProfilesComponent extends React.Component {
                                         disabled={this.state.step !== STEP_NOT_READY}
                                         type="number"
                                         className="form-control"
-                                        onChange={(event) => { this.setState({profileBottom: event.target.value}); }}
+                                        onChange={(event) => {
+                                            this.setState({profileBottom: event.target.value});
+                                        }}
                                         value={this.state.profileBottom}/>
                                 </div>
                             </div>
@@ -592,14 +611,14 @@ class MenuProfilesComponent extends React.Component {
                                             }, () => {
                                                 this.stopDrawing();
                                             });
-                                    }}><i className="material-icons">block</i> {__(`Cancel`)}</a>) : (<a
+                                        }}><i className="material-icons">block</i> {__(`Cancel`)}</a>) : (<a
                                         href="javascript:void(0)"
                                         className="btn btn-primary"
                                         onClick={() => {
                                             this.setState({step: STEP_BEING_DRAWN}, () => {
                                                 this.startDrawing();
                                             });
-                                    }}><i className="material-icons">linear_scale</i> {__(`Draw profile`)}</a>)}
+                                        }}><i className="material-icons">linear_scale</i> {__(`Draw profile`)}</a>)}
                                 </div>
                                 <div className="col-md-6" style={{textAlign: `center`}}>
                                     <a
@@ -623,7 +642,9 @@ class MenuProfilesComponent extends React.Component {
                                         <button
                                             type="button"
                                             className="btn btn-raised btn-block btn-primary btn-sm"
-                                            onClick={() => { this.saveProfile(); }}>{__(`Save and exit`)}</button>
+                                            onClick={() => {
+                                                this.saveProfile();
+                                            }}>{__(`Save and exit`)}</button>
                                     </div>
                                 </div>
                             </div>) : false}
@@ -633,7 +654,9 @@ class MenuProfilesComponent extends React.Component {
 
                 <div style={{borderBottom: `1px solid lightgray`}}>
                     <div style={{fontSize: `20px`, padding: `14px`}}>
-                        <a href="javascript:void(0)" onClick={() => { this.setState({showExistingProfiles: !this.state.showExistingProfiles})}}>{__(`Select previously created profile`)} ({this.state.profiles.length})
+                        <a href="javascript:void(0)" onClick={() => {
+                            this.setState({showExistingProfiles: !this.state.showExistingProfiles})
+                        }}>{__(`Select previously created profile`)} ({this.state.profiles.length})
                             {this.state.showExistingProfiles ? (<i className="material-icons">keyboard_arrow_down</i>) : (<i className="material-icons">keyboard_arrow_right</i>)}
                         </a>
                     </div>
@@ -659,7 +682,9 @@ class MenuProfilesComponent extends React.Component {
                 {renderText}
                 <div style={{borderBottom: `1px solid lightgray`}}>
                     <div style={{fontSize: `20px`, padding: `14px`}}>
-                        <a href="javascript:void(0)" onClick={() => { this.setState({showProjectProfiles: !this.state.showProjectProfiles})}}>{__(`Select Profiles from Project`)} ({this.state.profiles.length})
+                        <a href="javascript:void(0)" onClick={() => {
+                            this.setState({showProjectProfiles: !this.state.showProjectProfiles})
+                        }}>{__(`Select Profiles from Project`)} ({this.state.profiles.length})
                             {this.state.showProjectProfiles ? (<i className="material-icons">keyboard_arrow_down</i>) : (<i className="material-icons">keyboard_arrow_right</i>)}
                         </a>
                     </div>
