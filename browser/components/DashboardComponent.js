@@ -406,8 +406,11 @@ class DashboardComponent extends React.Component {
     getActivePlots() {
         let activePlots = this.state.plots.filter((item) => {
             if (this.state.activePlots.indexOf(item.id) !== -1) {
-                return item;
+                return item.id;
             }
+        });
+        this.state.projectPlots.map((item) => {
+            activePlots.push(item.id);
         });
         return JSON.parse(JSON.stringify(activePlots));
     }
@@ -473,7 +476,18 @@ class DashboardComponent extends React.Component {
     }
 
     getProfilesLength() {
-        return this.state.profiles.length + this.state.projectProfiles.length;
+        let activeProfiles = [];
+        this.state.profiles.map((item) => {
+            if (activeProfiles.indexOf(item.key) === -1) {
+                activeProfiles.push(item.key);
+            }
+        });
+        this.state.activeProfiles.map((item) => {
+            if (activeProfiles.indexOf(item.key) === -1) {
+                activeProfiles.push(item.key);
+            }
+        });
+        return activeProfiles.length;
     }
 
     getPlotsLength() {
@@ -911,6 +925,7 @@ class DashboardComponent extends React.Component {
         let listItemHeightPx = Math.round(($(document).height() * 0.9 - modalHeaderHeight - 10) / 2);
 
         let localPlotsControls = [];
+        let plottedProfiles = [];
         this.state.dashboardItems.map((item, index) => {
             if (item.type === DASHBOARD_ITEM_PLOT || item.type === DASHBOARD_ITEM_PROJECT_PLOT) {
                 let plot = item.item;
@@ -924,6 +939,9 @@ class DashboardComponent extends React.Component {
                         meta={plot}/>);
                 }
             } else if (item.type === DASHBOARD_ITEM_PROFILE || item.type === DASHBOARD_ITEM_PROJECT_PROFILE) {
+                if (plottedProfiles.indexOf(item.key) > -1) {
+                    return;
+                }
                 let profile = item.item;
                 if (this.state.activeProfiles.indexOf(profile.key) > -1) {
                     localPlotsControls.push(<SortableProfileComponent
@@ -935,6 +953,7 @@ class DashboardComponent extends React.Component {
                         handleDelete={this.handleRemoveProfile}
                         handleClick={this.handleProfileClick}
                         meta={profile}/>);
+                    plottedProfiles.push(item.key);
                 }
             } else {
                 throw new Error(`Unrecognized dashboard item type ${item.type}`);
