@@ -177,14 +177,6 @@ module.exports = module.exports = {
 
         $(`#search-border`).trigger(`click`);
 
-        $(`#find-me-btn`).click(() => {
-            lc.stop();
-            lc.start();
-            setTimeout(() => {
-                lc.stop();
-            }, 5000);
-        });
-
         $(`#js-open-state-snapshots-panel`).click(() => {
             $(`[href="#state-snapshots-content"]`).trigger(`click`);
         });
