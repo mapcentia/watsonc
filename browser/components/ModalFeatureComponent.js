@@ -21,10 +21,29 @@ class ModalFeatureComponent extends React.Component {
             measurementsSearchTerm: ``,
             plotsSearchTerm: ``
         }
+        this.onPlotAdd = this.onPlotAdd.bind(this);
     }
 
     setPlots(plots) {
         this.setState({ plots });
+    }
+
+    canCreatePlot() {
+        if (this.props.license === 'premium') {
+            return true;
+        } else {
+            let plots = this.state.plots.filter((plot) => plot.fromProject != true);
+            return plots.length < FREE_PLAN_MAX_TIME_SERIES_COUNT;
+        }
+    }
+
+    onPlotAdd(title) {
+        if (!this.canCreatePlot()) {
+            $('#upgrade-modal').modal('show');
+            return;
+        }
+        this.props.onPlotAdd(title);
+
     }
 
     render() {
@@ -85,7 +104,7 @@ class ModalFeatureComponent extends React.Component {
 
         /**
          * Creates measurement control
-         * 
+         *
          * @returns {Boolean|Object}
          */
         const createMeasurementControl = (item, key) => {
@@ -261,7 +280,7 @@ class ModalFeatureComponent extends React.Component {
                                 id="new-plot-control"
                                 saveIcon={(<i className="material-icons">add</i>)}
                                 inputPlaceholder={__(`Create new`)}
-                                onAdd={(title) => { this.props.onPlotAdd(title) }}
+                                onAdd={(title) => { this.onPlotAdd(title) }}
                                 type="userOwned"
                                 customStyle={{ width: `100%` }}/>
                         </div>

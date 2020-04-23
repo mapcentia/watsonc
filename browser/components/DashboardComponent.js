@@ -187,6 +187,7 @@ class DashboardComponent extends React.Component {
         this.state.profiles.map(item => {
             allProfiles.push(item);
         })
+        allProfiles = allProfiles.sort((a, b) => b['created_at'] - a['created_at']);
         return allProfiles;
     }
 
@@ -415,6 +416,7 @@ class DashboardComponent extends React.Component {
             item.fromProject = false;
             allPlots.push(item);
         })
+        allPlots = allPlots.sort((a, b) => b['created_at'] - a['created_at']);
         return allPlots;
     }
 
