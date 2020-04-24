@@ -830,6 +830,7 @@ module.exports = module.exports = {
                             names={names}
                             limits={limits}
                             initialPlots={(existingPlots ? existingPlots : [])}
+                            license={dashboardComponentInstance.getLicense()}
                             onAddMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex) => {
                                 dashboardComponentInstance.addMeasurement(plotId, featureGid, featureKey, featureIntakeIndex);
                             }}
@@ -1102,6 +1103,9 @@ module.exports = module.exports = {
                     populatedPlots.map((item) => {
                         dashboardComponentInstance.handleShowPlot(item.id);
                     });
+                    if (window.menuTimeSeriesComponentInstance) {
+                        window.menuTimeSeriesComponentInstance.setPlots(dashboardComponentInstance.getPlots());
+                    }
                 }
 
                 if (newState.enabledLoctypeIds && Array.isArray(newState.enabledLoctypeIds)) {
@@ -1153,6 +1157,9 @@ module.exports = module.exports = {
                 (function poll() {
                     if (typeof dashboardComponentInstance === "object") {
                         dashboardComponentInstance.setProjectProfiles(newState.profiles);
+                        if (window.menuProfilesComponentInstance) {
+                            window.menuProfilesComponentInstance.setProfiles(dashboardComponentInstance.getProfiles());
+                        }
                     } else {
                         setTimeout(() => {
                             console.log("POLLING");

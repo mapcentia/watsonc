@@ -656,7 +656,7 @@ class MenuProfilesComponent extends React.Component {
                     <div style={{fontSize: `20px`, padding: `14px`}}>
                         <a href="javascript:void(0)" onClick={() => {
                             this.setState({showExistingProfiles: !this.state.showExistingProfiles})
-                        }}>{__(`Select previously created profile`)} ({this.state.profiles.length})
+                        }}>{__(`Select previously created profile`)} ({this.getProfilesLength()})
                             {this.state.showExistingProfiles ? (<i className="material-icons">keyboard_arrow_down</i>) : (<i className="material-icons">keyboard_arrow_right</i>)}
                         </a>
                     </div>
@@ -684,7 +684,7 @@ class MenuProfilesComponent extends React.Component {
                     <div style={{fontSize: `20px`, padding: `14px`}}>
                         <a href="javascript:void(0)" onClick={() => {
                             this.setState({showProjectProfiles: !this.state.showProjectProfiles})
-                        }}>{__(`Select Profiles from Project`)} ({this.state.profiles.length})
+                        }}>{__(`Select Profiles from Project`)} ({this.getProjectProfilesLength()})
                             {this.state.showProjectProfiles ? (<i className="material-icons">keyboard_arrow_down</i>) : (<i className="material-icons">keyboard_arrow_right</i>)}
                         </a>
                     </div>
