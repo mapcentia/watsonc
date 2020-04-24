@@ -165,8 +165,8 @@ class DashboardComponent extends React.Component {
                 profiles,
                 dashboardItems: newDashboardItems
             });
+            this.props.onProfilesChange(this.getProfiles());
 
-            this.props.onProfilesChange(profiles);
         });
     }
 
@@ -232,7 +232,7 @@ class DashboardComponent extends React.Component {
 
             if (callback) callback();
 
-            this.props.onProfilesChange(profilesCopy);
+            this.props.onProfilesChange(this.getProfiles());
         }).catch(error => {
             console.error(`Error occured while creating profile (${error})`);
             alert(`Error occured while creating profile (${error})`);
@@ -379,8 +379,8 @@ class DashboardComponent extends React.Component {
                 activeProfiles: activeProfilesCopy,
                 dashboardItems: dashboardItemsCopy
             });
+            this.props.onProfilesChange(this.getProfiles());
 
-            this.props.onProfilesChange(profilesCopy);
         }).catch(error => {
             console.error(`Error occured while deleting profile (${error})`)
         });
