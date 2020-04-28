@@ -50,8 +50,7 @@ var React = require('react');
 
 var ReactDOM = require('react-dom');
 
-let dashboardComponentInstance = false, modalComponentInstance = false, infoModalInstance = false,
-    menuTimeSeriesComponentInstance = false;
+let dashboardComponentInstance = false, modalComponentInstance = false, infoModalInstance = false;
 
 let lastSelectedChemical = false, categoriesOverall = false, enabledLoctypeIds = [];
 
@@ -75,7 +74,6 @@ let limits = {};
 let names = {};
 
 let currentRasterLayer = null;
-
 
 const DATA_SOURCES = [{
     originalLayerKey: LAYER_NAMES[0],
@@ -178,14 +176,6 @@ module.exports = module.exports = {
         }).addTo(cloud.get().map);
 
         $(`#search-border`).trigger(`click`);
-
-        $(`#find-me-btn`).click(() => {
-            lc.stop();
-            lc.start();
-            setTimeout(() => {
-                lc.stop();
-            }, 5000);
-        });
 
         $(`#js-open-state-snapshots-panel`).click(() => {
             $(`[href="#state-snapshots-content"]`).trigger(`click`);
@@ -409,6 +399,7 @@ module.exports = module.exports = {
                             let icon = L.icon({
                                 iconUrl: 'data:image/svg+xml;base64,' + btoa(localSvgCirclePart),
                                 iconAnchor: [8, 33],
+                                iconSize: [30, 30],
                                 watsoncStatus: `default`
                             });
 
@@ -436,7 +427,6 @@ module.exports = module.exports = {
                     });
                 }, 500);
             }, 100);
-
 
             const proceedWithInitialization = () => {
                 // Setting up feature dialog
@@ -489,14 +479,18 @@ module.exports = module.exports = {
                 $(`[data-module-id="timeseries"]`).click(() => {
                     if ($(`#watsonc-timeseries`).children().length === 0) {
                         try {
-                            menuTimeSeriesComponentInstance = ReactDOM.render(<MenuTimeSeriesComponent
-                                initialPlots={dashboardComponentInstance.getPlots()}
-                                initialActivePlots={dashboardComponentInstance.getActivePlots()}
-                                onPlotCreate={dashboardComponentInstance.handleCreatePlot}
-                                onPlotDelete={dashboardComponentInstance.handleDeletePlot}
-                                onPlotHighlight={dashboardComponentInstance.handleHighlightPlot}
-                                onPlotShow={dashboardComponentInstance.handleShowPlot}
-                                onPlotHide={dashboardComponentInstance.handleHidePlot}/>, document.getElementById(`watsonc-timeseries`));
+                            ReactDOM.render(<Provider store={reduxStore}>
+                                <MenuTimeSeriesComponent
+                                    backboneEvents={backboneEvents}
+                                    license={dashboardComponentInstance.getLicense()}
+                                    initialPlots={dashboardComponentInstance.getPlots()}
+                                    initialActivePlots={dashboardComponentInstance.getActivePlots()}
+                                    onPlotCreate={dashboardComponentInstance.handleCreatePlot}
+                                    onPlotDelete={dashboardComponentInstance.handleDeletePlot}
+                                    onPlotHighlight={dashboardComponentInstance.handleHighlightPlot}
+                                    onPlotShow={dashboardComponentInstance.handleShowPlot}
+                                    onPlotArchive={dashboardComponentInstance.handleArchivePlot}
+                                    onPlotHide={dashboardComponentInstance.handleHidePlot}/></Provider>, document.getElementById(`watsonc-timeseries`));
                         } catch (e) {
                             console.error(e);
                         }
@@ -513,6 +507,7 @@ module.exports = module.exports = {
                             <MenuProfilesComponent
                                 cloud={cloud}
                                 backboneEvents={backboneEvents}
+                                license={dashboardComponentInstance.getLicense()}
                                 categories={categoriesOverall ? categoriesOverall : []}
                                 initialProfiles={dashboardComponentInstance.getProfiles()}
                                 initialActiveProfiles={dashboardComponentInstance.getActiveProfiles()}
@@ -546,7 +541,7 @@ module.exports = module.exports = {
                 }
 
                 let plotManager = new PlotManager();
-                plotManager.hydratePlots(initialPlots).then(hydratedInitialPlots => {
+                plotManager.hydratePlotsFromUser(initialPlots).then(hydratedInitialPlots => { // User plots
                     try {
                         dashboardComponentInstance = ReactDOM.render(<DashboardComponent
                             backboneEvents={backboneEvents}
@@ -558,7 +553,7 @@ module.exports = module.exports = {
                                 if (plots) {
                                     _self.setStyleForPlots(plots);
 
-                                    if (menuTimeSeriesComponentInstance) menuTimeSeriesComponentInstance.setPlots(plots);
+                                    if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setPlots(plots);
                                     // Plots were updated from the DashboardComponent component
                                     if (modalComponentInstance) _self.createModal(false, plots);
                                 }
@@ -569,7 +564,7 @@ module.exports = module.exports = {
                             }}
                             onActivePlotsChange={(activePlots) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
-                                if (menuTimeSeriesComponentInstance) menuTimeSeriesComponentInstance.setActivePlots(activePlots);
+                                if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setActivePlots(activePlots);
                             }}
                             onActiveProfilesChange={(activeProfiles) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
@@ -577,7 +572,7 @@ module.exports = module.exports = {
                             }}
                             onHighlightedPlotChange={(plotId, plots) => {
                                 _self.setStyleForHighlightedPlot(plotId, plots);
-                                if (menuTimeSeriesComponentInstance) menuTimeSeriesComponentInstance.setHighlightedPlot(plotId);
+                                if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setHighlightedPlot(plotId);
                             }}/>, document.getElementById(DASHBOARD_CONTAINER_ID));
                     } catch (e) {
                         console.error(e);
@@ -835,6 +830,7 @@ module.exports = module.exports = {
                             names={names}
                             limits={limits}
                             initialPlots={(existingPlots ? existingPlots : [])}
+                            license={dashboardComponentInstance.getLicense()}
                             onAddMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex) => {
                                 dashboardComponentInstance.addMeasurement(plotId, featureGid, featureKey, featureIntakeIndex);
                             }}
@@ -1064,13 +1060,23 @@ module.exports = module.exports = {
         }
     },
 
+    getExistingActiveProfiles: () => {
+        if (dashboardComponentInstance) {
+            return dashboardComponentInstance.getActiveProfileObjects();
+        } else {
+            throw new Error('Unable to find the component instance');
+        }
+    },
+
     /**
      * Returns current module state
      */
     getState: () => {
         let plots = dashboardComponentInstance.dehydratePlots(_self.getExistingActivePlots());
+        let profiles = _self.getExistingActiveProfiles();
         return {
             plots,
+            profiles,
             selectedChemical: lastSelectedChemical,
             enabledLoctypeIds
         };
@@ -1086,12 +1092,20 @@ module.exports = module.exports = {
                 plotsWereProvided = true;
             }
 
+            let profilesWereProvided = false;
+            if (newState && `profiles` in newState && newState.profiles.length > 0) {
+                profilesWereProvided = true;
+            }
+
             const continueWithInitialization = (populatedPlots) => {
                 if (populatedPlots) {
-                    dashboardComponentInstance.setPlots(populatedPlots);
+                    dashboardComponentInstance.setProjectPlots(populatedPlots);
                     populatedPlots.map((item) => {
                         dashboardComponentInstance.handleShowPlot(item.id);
                     });
+                    if (window.menuTimeSeriesComponentInstance) {
+                        window.menuTimeSeriesComponentInstance.setPlots(dashboardComponentInstance.getPlots());
+                    }
                 }
 
                 if (newState.enabledLoctypeIds && Array.isArray(newState.enabledLoctypeIds)) {
@@ -1124,7 +1138,7 @@ module.exports = module.exports = {
             if (plotsWereProvided) {
                 (function poll() {
                     if (typeof dashboardComponentInstance === "object") {
-                        dashboardComponentInstance.hydratePlots(newState.plots).then(continueWithInitialization).catch(error => {
+                        dashboardComponentInstance.hydratePlotsFromIds(newState.plots).then(continueWithInitialization).catch(error => {
                             console.error(`Error occured while hydrating plots at state application`, error);
                         });
                     } else {
@@ -1137,6 +1151,22 @@ module.exports = module.exports = {
 
             } else {
                 continueWithInitialization();
+            }
+
+            if (profilesWereProvided) {
+                (function poll() {
+                    if (typeof dashboardComponentInstance === "object") {
+                        dashboardComponentInstance.setProjectProfiles(newState.profiles);
+                        if (window.menuProfilesComponentInstance) {
+                            window.menuProfilesComponentInstance.setProfiles(dashboardComponentInstance.getProfiles());
+                        }
+                    } else {
+                        setTimeout(() => {
+                            console.log("POLLING");
+                            poll();
+                        }, 100)
+                    }
+                }());
             }
         });
     }
