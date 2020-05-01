@@ -819,7 +819,7 @@ module.exports = module.exports = {
 
             if (document.getElementById(FORM_FEATURE_CONTAINER_ID)) {
                 try {
-                    let existingPlots = (plots ? plots : dashboardComponentInstance.getPlots());
+                    let existingPlots = (plots ? plots : dashboardComponentInstance.getPlots(false));
 
                     setTimeout(() => {
                         ReactDOM.unmountComponentAtNode(document.getElementById(FORM_FEATURE_CONTAINER_ID));
