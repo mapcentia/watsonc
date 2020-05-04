@@ -406,7 +406,7 @@ class DashboardComponent extends React.Component {
         });
     }
 
-    getPlots() {
+    getPlots(getArchived=true) {
         let allPlots = [];
         this.state.projectPlots.map((item) => {
             item.fromProject = true;
@@ -415,6 +415,13 @@ class DashboardComponent extends React.Component {
         this.state.plots.map((item) => {
             item.fromProject = false;
             allPlots.push(item);
+        })
+        allPlots = allPlots.filter((item) => {
+           if (getArchived) {
+            return item;
+           } else if (!item.isArchived) {
+            return item;
+           }
         })
         allPlots = allPlots.sort((a, b) => b['created_at'] - a['created_at']);
         return allPlots;
