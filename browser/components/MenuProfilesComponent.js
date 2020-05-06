@@ -122,10 +122,11 @@ class MenuProfilesComponent extends React.Component {
     }
 
     onNewProfileAdd(newTitle) {
-        //if (!this.canCreateProfile()) {
-        //    $('#upgrade-modal').modal('show');
-        //    return;
-        //}
+        if (!this.canCreateProfile()) {
+            $('#watsonc-limits-reached-text').show();
+            $('#upgrade-modal').modal('show');
+            return;
+        }
         this.setState({newTitle, step: STEP_NOT_READY});
     }
 

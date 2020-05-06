@@ -38,10 +38,11 @@ class ModalFeatureComponent extends React.Component {
     }
 
     onPlotAdd(title) {
-        //if (!this.canCreatePlot()) {
-        //    $('#upgrade-modal').modal('show');
-        //    return;
-        //}
+        if (!this.canCreatePlot()) {
+            $('#watsonc-limits-reached-text').show();
+            $('#upgrade-modal').modal('show');
+            return;
+        }
         this.props.onPlotAdd(title);
 
     }

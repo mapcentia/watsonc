@@ -123,6 +123,32 @@ module.exports = module.exports = {
 
         this.initializeSearchBar();
 
+        let queryParams = new URLSearchParams(window.location.search);
+        let licenseToken = queryParams.get('license');
+        let license = null;
+        if (licenseToken) {
+            license = JSON.parse(base64.decode(licenseToken.split('.')[1]));
+            if (typeof license === 'object') {
+                license = license.license;
+                if (license === "premium") {
+                    $("#watsonc-licens-btn1").html("Vælg");
+                    $("#watsonc-licens-btn1").attr("disabled", true);
+                    $("#watsonc-licens-btn2").html("Valgt");
+                    $("#watsonc-licens-btn2").attr("disabled", true);
+
+                } else {
+                    $("#watsonc-licens-btn1").html("Valgt");
+                    $("#watsonc-licens-btn1").attr("disabled", true);
+                    $("#watsonc-licens-btn2").html("Vælg");
+                }
+            }
+        }
+
+        $("#btn-plan").on("click", ()=>{
+            $('#watsonc-limits-reached-text').hide();
+            $('#upgrade-modal').modal('show');
+        })
+
         backboneEvents.get().on(`session:authChange`, authenticated => {
             reduxStore.dispatch(setAuthenticated(authenticated));
         });
