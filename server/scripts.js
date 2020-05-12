@@ -12,7 +12,8 @@ var moduleConfig = require('./../config/config');
 const profileScriptHandler = (req, res) => {
     if (!config.gc2.host) throw new Error(`GC2 host has to be specified`);
 
-    let zone = utmZone.getZone(req.body.profile.geometry.coordinates[0][1], req.body.profile.geometry.coordinates[0][0]);
+    //let zone = utmZone.getZone(req.body.profile.geometry.coordinates[0][1], req.body.profile.geometry.coordinates[0][0]);
+    let zone = "32";
     let crss = {"EPSG:25832": "+proj=utm +zone=" + zone + " +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs "};
     let reprojectedProfile = reproject.reproject(req.body.profile, 'EPSG:4326', 'EPSG:25832', crss);
 
@@ -111,6 +112,9 @@ const instersectionScriptHandler = (req, res) => {
             let zone = "32";
             let crss = {"EPSG:25832": "+proj=utm +zone=" + zone + " +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs "};
             let reprojectedProfile = reproject.reproject(req.body.profile, 'EPSG:4326', 'EPSG:25832', crss);
+
+            console.log(reprojectedProfile.geometry.coordinates);
+
 
             let inputJSON = {
                 configFolder: require('path').dirname(moduleConfig.intersectionsScriptPath) + '/../profil',
