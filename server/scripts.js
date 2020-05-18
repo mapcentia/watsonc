@@ -123,6 +123,8 @@ const instersectionScriptHandler = (req, res) => {
                 Profile_depth: parseInt(req.body.profileDepth)
             };
 
+            console.log("INPUT til Python script", inputJSON);
+
             let errorOccured = false;
             const pythonProcess = spawn(moduleConfig.pythonCommand, [moduleConfig.intersectionsScriptPath, JSON.stringify(inputJSON)]);
             pythonProcess.stdout.on('data', (data) => {
