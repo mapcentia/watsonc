@@ -29,9 +29,19 @@ class ModalMeasurementComponent extends React.Component {
                 margin: `1px`,
                 zIndex: `1000`,
                 backgroundColor: (isDragging ? `darkgreen` : ``),
-                color: (isDragging ? `white` : ``)
+                color: (isDragging ? `white` : ``),
+                width: '100%',
+                textAlign: 'left'
+
             }}>
-            <i className="fa fa-arrows-alt"></i> {circleIcon} {this.props.title} ({this.props.intakeName})
+            <div style={{display: 'flex'}}>
+                <div style={{'flex-grow': 1, width: '50%'}}>
+                    <i className="fa fa-arrows-alt"></i> {circleIcon} {this.props.title} ({this.props.intakeName})
+                </div>
+                <div style={{'flex-grow': 1, textAlign: 'right', color: 'gray', width: '50%'}}>
+                    max: {this.props.maxMeasurement}
+                </div>
+            </div>
         </div>);
     }
 }
