@@ -137,8 +137,9 @@ class ModalFeatureComponent extends React.Component {
                 }
 
                 let icon = false;
+                let measurementData = null;
                 if (!item.custom) {
-                    let measurementData = evaluateMeasurement(json, this.props.limits, item.key, item.intakeIndex);
+                    measurementData = evaluateMeasurement(json, this.props.limits, item.key, item.intakeIndex);
                     icon = measurementIcon.generate(measurementData.maxColor, measurementData.latestColor);
                 }
 
@@ -146,6 +147,7 @@ class ModalFeatureComponent extends React.Component {
                     key={key}
                     icon={icon}
                     onAddMeasurement={this.props.onAddMeasurement}
+                    maxMeasurement={measurementData.maxMeasurementIntakes[0]}
                     gid={this.props.feature.properties.gid}
                     itemKey={item.key}
                     intakeIndex={item.intakeIndex}
@@ -180,13 +182,17 @@ class ModalFeatureComponent extends React.Component {
                         return true;
                     }
                 });
-
                 if (measurementControls.length > 0) {
+                    measurementControls.sort(function(a, b) { return b.props.maxMeasurement - a.props.maxMeasurement})
+                    let key = 'show' + categoryName.trim() + 'Measurements'
                     // Category has at least one displayed measurement
                     numberOfDisplayedCategories++;
                     propertiesControls.push(<div key={`category_` + numberOfDisplayedCategories}>
-                        <div><h5>{categoryName.trim()}</h5></div>
-                        <div>{measurementControls}</div>
+                        <div style={{fontSize: '20px'}}><a href="javascript:void(0)" onClick={() => {
+                            console.log(this);
+                            this.setState({[key]: !this.state[key]})
+                        }}><h5>{categoryName.trim()}{this.state.showProjectProfiles ? (<i className="material-icons">keyboard_arrow_down</i>) : (<i className="material-icons">keyboard_arrow_right</i>)}</h5></a></div>
+                        {this.state[key] ? (<div>{measurementControls}</div>) : false}
                     </div>);
                 }
             }
@@ -202,6 +208,7 @@ class ModalFeatureComponent extends React.Component {
             });
 
             if (uncategorizedMeasurementControls.length > 0) {
+                uncategorizedMeasurementControls.sort(function(a, b) { return b.props.maxMeasurement - a.props.maxMeasurement})
                 // Category has at least one displayed measurement
                 numberOfDisplayedCategories++;
                 propertiesControls.push(<div key={`uncategorized_category_0`}>
