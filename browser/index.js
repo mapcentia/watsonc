@@ -1017,6 +1017,7 @@ module.exports = module.exports = {
     },
 
     enableChemical(chemicalId, layersToEnable = [], onComplete = false) {
+        console.log("chemicalId first", chemicalId);
         if (!chemicalId) throw new Error(`Chemical identifier was not provided`);
         setTimeout(() => {
             let layersToEnableWereProvided = (layersToEnable.length > 0);
@@ -1039,6 +1040,8 @@ module.exports = module.exports = {
                     }
                 }
             }
+            console.log("chemicalId second", chemicalId);
+
             layerTree.applyFilters({
                 "system.all": {
                     match: "any", columns: [
