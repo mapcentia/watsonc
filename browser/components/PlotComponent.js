@@ -39,9 +39,9 @@ class MenuPanelPlotComponent extends React.Component {
                     let intakeIndex = parseInt(measurementLocation[2]);
 
                     let feature = this.props.plotMeta.measurementsCachedData[measurementLocationRaw].data;
-                    let measurementData = JSON.parse(feature.properties[key]);
+                    let measurementData = (feature.properties[key]);
                     if (Array.isArray(measurementData.measurements) === false) {
-                        measurementData.measurements = JSON.parse(measurementData.measurements);
+                        measurementData.measurements = (measurementData.measurements);
                     }
                     let formatedDates = measurementData.timeOfMeasurement[intakeIndex].map(x => x.replace("T", " "));
                     data.push({
@@ -58,7 +58,7 @@ class MenuPanelPlotComponent extends React.Component {
                     }
 
                     let feature = this.props.plotMeta.measurementsCachedData[measurementLocationRaw].data;
-                    let measurementData = JSON.parse(feature.properties[key]);
+                    let measurementData = (feature.properties[key]);
                     let measurementDataCopy = JSON.parse(JSON.stringify(measurementData.data));
                     data.push(measurementDataCopy[customSpecificator].data[0]);
                 } else {
@@ -114,7 +114,7 @@ class MenuPanelPlotComponent extends React.Component {
                         let key = measurementLocation[1];
                         let intakeIndex = parseInt(measurementLocation[2]);
                         let createdAt = this.props.plotMeta.measurementsCachedData[measurementLocationRaw].created_at;
-                        let measurementData = JSON.parse(feature.properties[key]);
+                        let measurementData = (feature.properties[key]);
                         let localMinTime = measurementData.timeOfMeasurement[intakeIndex][0];
                         if (minTime === false) {
                             minTime = localMinTime;
@@ -194,7 +194,7 @@ class MenuPanelPlotComponent extends React.Component {
                             throw new Error(`The custom specificator (${customSpecificator}) is invalid`);
                         }
 
-                        let measurementData = JSON.parse(feature.properties[key]);
+                        let measurementData = (feature.properties[key]);
                         let measurementDataCopy = JSON.parse(JSON.stringify(measurementData.data));
                         data.push(measurementDataCopy[customSpecificator].data[0]);
 
