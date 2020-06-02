@@ -963,7 +963,7 @@ class DashboardComponent extends React.Component {
                         meta={plot}/>);
                 }
             } else if (item.type === DASHBOARD_ITEM_PROFILE || item.type === DASHBOARD_ITEM_PROJECT_PROFILE) {
-                if (plottedProfiles.indexOf(item.key) > -1) {
+                if (plottedProfiles.indexOf(item.item.key) > -1) {
                     return;
                 }
                 let profile = item.item;
@@ -977,7 +977,7 @@ class DashboardComponent extends React.Component {
                         handleDelete={this.handleRemoveProfile}
                         handleClick={this.handleProfileClick}
                         meta={profile}/>);
-                    plottedProfiles.push(item.key);
+                    plottedProfiles.push(profile.key);
                 }
             } else {
                 throw new Error(`Unrecognized dashboard item type ${item.type}`);
