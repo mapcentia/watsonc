@@ -262,7 +262,7 @@
     }
 
     #layers {
-        display: none;
+        display: inline;
     }
 
     .dropdown-submenu {
@@ -1055,6 +1055,13 @@
                                     <div class="form-group" id="state-snapshots" role="tablist"></div>
                                 </div>
 
+                                <div role="tabpanel" class="tab-pane fade" id="layer-content">
+                                    <div class="help-btn" onclick="javascript:createAlert($(this), '{{Help text overlays}}')">
+                                        <i class="material-icons help-btn">help_outline</i></div>
+                                    <div></div>
+                                    <div class="form-group" id="layers" role="tablist"></div>
+                                </div>
+
                                 <div role="tabpanel" class="tab-pane fade" id="timeseries-content">
                                     <div class="form-group" id="watsonc-timeseries" role="tablist"></div>
                                 </div>
@@ -1089,6 +1096,14 @@
                                 <a href="#state-snapshots-content" aria-controls="" role="tab" data-toggle="tab">
                                     <i data-container="body" data-toggle="tooltip" data-placement="left" title="{{Projects}}" class="material-icons">folder_open</i>
                                     <span class="module-title">{{Projects}}</span>
+                                </a>
+                            </li>
+
+                            <li role="presentation">
+                                <a data-module-id="layerTree" href="#layer-content" aria-controls="" role="tab" data-toggle="tab">
+                                    <i data-container="body" data-toggle="tooltip" data-placement="left"
+                                       title="{{Layers}}" class="material-icons">layers</i>
+                                    <span class="module-title">{{Layers}}</span>
                                 </a>
                             </li>
 
@@ -1180,7 +1195,7 @@
                 </div>
                 <div class="col-xs-2" style="text-align: center; top: 5px">
                     <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                        viewBox="0 0 321.2 93" style="enable-background:new 0 0 321.2 93; height: 40px;" xml:space="preserve">
+                         viewBox="0 0 321.2 93" style="enable-background:new 0 0 321.2 93; height: 40px;" xml:space="preserve">
                         <style type="text/css">
                             .st0{fill:#A0E0C5;}
                             .st1{fill:#FFFFFF;}
@@ -1396,8 +1411,7 @@
                         <div class="form-group">
                             <div class="togglebutton">
                                 <label>
-                                    <input id="add-legend-btn" type="checkbox" checked disabled> {{Show legend on
-                                                                                                        print}}
+                                    <input id="add-legend-btn" type="checkbox" checked disabled> {{Show legend on print}}
                                 </label>
                             </div>
                         </div>
@@ -1436,7 +1450,6 @@
         <div id="layer-slide-body-wrapper" style="background-color: white;">
             <div class="modal-body" style="background-color: white; height: calc(100vh - 110px);">
                 <div class="form-group" id="watsonc-layers" style="padding-top: 10px;"></div>
-                <div class="form-group" id="layers"></div>
             </div>
         </div>
     </div>
