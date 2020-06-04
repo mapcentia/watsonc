@@ -39,6 +39,16 @@ class DataSourceSelector extends React.Component {
     render() {
         const generateLayerRecord = (key, item) => {
             let selected = (this.props.selectedLayers.indexOf(item.originalLayerKey + (item.additionalKey ? `#${item.additionalKey}` : ``)) !== -1);
+            let titles = []
+            let itemTitle = item.title;
+            if (itemTitle) {
+                titles.push(itemTitle);
+            }
+            let translatedTitle = __(item.title);
+            if (translatedTitle && titles.indexOf(translatedTitle) === -1) {
+                titles.push(translatedTitle)
+            }
+
             return (<div key={key} style={{paddingBottom: `8px`}}>
                 <div className="checkbox">
                     <label id={key}>
@@ -51,7 +61,7 @@ class DataSourceSelector extends React.Component {
                                 } else {
                                     this.props.selectLayer(item.originalLayerKey, item.additionalKey);
                                 }
-                            }}/> {item.title}
+                            }}/> {titles.join(' / ')}
                     </label>
                 </div>
             </div>);
