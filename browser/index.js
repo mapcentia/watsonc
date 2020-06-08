@@ -82,15 +82,15 @@ const DATA_SOURCES = [{
 }, {
     originalLayerKey: LAYER_NAMES[1],
     additionalKey: `1`,
-    title: __(`CALYPSO stations`)
+    title: "Online stationer"
 }, {
     originalLayerKey: LAYER_NAMES[1],
     additionalKey: `3`,
-    title: __(`CALYPSO stations`)
+    title: "Online stationer"
 }, {
     originalLayerKey: LAYER_NAMES[1],
     additionalKey: `4`,
-    title: __(`CALYPSO stations`)
+    title: "Online stationer"
 }];
 
 /**
