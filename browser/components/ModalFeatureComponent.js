@@ -147,7 +147,10 @@ class ModalFeatureComponent extends React.Component {
                     key={key}
                     icon={icon}
                     onAddMeasurement={this.props.onAddMeasurement}
-                    maxMeasurement={measurementData.maxMeasurementIntakes[0]}
+                    maxMeasurement={measurementData.maxMeasurement}
+                    latestMeasurement={measurementData.latestMeasurement}
+                    latestMeasurementRelative={Math.round((measurementData.latestMeasurement/measurementData.chemicalLimits[1]) * 100)/100}
+                    chemicalLimits={measurementData.chemicalLimits}
                     gid={this.props.feature.properties.gid}
                     itemKey={item.key}
                     intakeIndex={item.intakeIndex}
@@ -183,7 +186,7 @@ class ModalFeatureComponent extends React.Component {
                     }
                 });
                 if (measurementControls.length > 0) {
-                    measurementControls.sort(function(a, b) { return b.props.maxMeasurement - a.props.maxMeasurement})
+                    measurementControls.sort(function(a, b) { return b.props.latestMeasurementRelative - a.props.latestMeasurementRelative})
                     let key = 'show' + categoryName.trim() + 'Measurements'
                     // Category has at least one displayed measurement
                     numberOfDisplayedCategories++;
@@ -208,7 +211,7 @@ class ModalFeatureComponent extends React.Component {
             });
 
             if (uncategorizedMeasurementControls.length > 0) {
-                uncategorizedMeasurementControls.sort(function(a, b) { return b.props.maxMeasurement - a.props.maxMeasurement})
+                uncategorizedMeasurementControls.sort(function(a, b) { return b.props.latestMeasurementRelative - a.props.latestMeasurementRelative})
                 // Category has at least one displayed measurement
                 numberOfDisplayedCategories++;
                 propertiesControls.push(<div key={`uncategorized_category_0`}>

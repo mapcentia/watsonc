@@ -110,6 +110,9 @@ const evaluate = (json, limits, chem, specificIntake = false) => {
         maxMeasurementIntakes,
         maxColor,
         latestColor,
+        latestMeasurement,
+        maxMeasurement,
+        chemicalLimits
     };
 };
 
