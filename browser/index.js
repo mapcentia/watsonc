@@ -131,14 +131,13 @@ module.exports = module.exports = {
             if (typeof license === 'object') {
                 license = license.license;
                 if (license === "premium") {
-                    $("#watsonc-licens-btn1").html("Vælg");
-                    $("#watsonc-licens-btn1").attr("disabled", true);
+                    $("#watsonc-licens-btn1").html("");
                     $("#watsonc-licens-btn2").html("Valgt");
                     $("#watsonc-licens-btn2").attr("disabled", true);
+                    $("#watsonc-licens-btn2").css("pointer-events", "none");
 
                 } else {
                     $("#watsonc-licens-btn1").html("Valgt");
-                    $("#watsonc-licens-btn1").attr("disabled", true);
                     $("#watsonc-licens-btn2").html("Vælg");
                 }
             }
@@ -152,6 +151,7 @@ module.exports = module.exports = {
         backboneEvents.get().on(`session:authChange`, authenticated => {
             reduxStore.dispatch(setAuthenticated(authenticated));
         });
+
 
         backboneEvents.get().on("ready:meta", function () {
             console.log("Opening panels (Meta event)");
