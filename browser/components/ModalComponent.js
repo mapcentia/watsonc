@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {Provider} from 'react-redux';
+import reduxStore from '../redux/store';
 
 import withDragDropContext from './withDragDropContext';
 import ModalFeatureComponent from './ModalFeatureComponent';
@@ -45,10 +47,12 @@ class ModalComponent extends React.Component {
         return (<div style={{ height: `inherit` }}>
             {tabs}
             <div style={{ height: (tabs === false ? `inherit` : `calc(100% - 39px)`)}}>
+                <Provider store={reduxStore}>
                 <ModalFeatureComponent
                     key={`item_${this.state.activeTabIndex}`}
                     feature={this.props.features[this.state.activeTabIndex]}
                     {...this.props}/>
+                </Provider>
             </div>
         </div>);
     }

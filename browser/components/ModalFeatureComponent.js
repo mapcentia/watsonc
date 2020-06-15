@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 import withDragDropContext from './withDragDropContext';
 import ModalMeasurementComponent from './ModalMeasurementComponent';
@@ -22,6 +23,22 @@ class ModalFeatureComponent extends React.Component {
             plotsSearchTerm: ``
         }
         this.onPlotAdd = this.onPlotAdd.bind(this);
+    }
+
+    componentDidMount() {
+        let { selectedChemical } = this.props;
+        // Simulating the separate group for water level
+        let categories = JSON.parse(JSON.stringify(this.props.categories));
+        let selectedCategory = null;
+        for (let category in categories) {
+            for (let itemId in categories[category]) {
+                if ((itemId + '') === (selectedChemical + '')) {
+                    selectedCategory = category;
+                }
+            }
+        }
+        let selectedCategoryKey = 'show' + selectedCategory.trim() + 'Measurements';
+        this.setState({[selectedCategoryKey]: true});
     }
 
     setPlots(plots) {
@@ -48,6 +65,11 @@ class ModalFeatureComponent extends React.Component {
     }
 
     render() {
+
+        // Simulating the separate group for water level
+        let categories = JSON.parse(JSON.stringify(this.props.categories));
+        categories[`Vandstand`] = {};
+        categories[`Vandstand`][`watlevmsl`] = `Water level`;
         // Detect measurements from feature properties
         let plottedProperties = [];
         for (let key in this.props.feature.properties) {
@@ -163,10 +185,6 @@ class ModalFeatureComponent extends React.Component {
             return control;
         };
 
-        // Simulating the separate group for water level
-        let categories = JSON.parse(JSON.stringify(this.props.categories));
-        categories[`Vandstand`] = {};
-        categories[`Vandstand`][`watlevmsl`] = `Water level`;
 
         let propertiesControls = [];
         if (Object.keys(categories).length > 0) {
@@ -196,7 +214,7 @@ class ModalFeatureComponent extends React.Component {
                         <div style={{fontSize: '20px'}}><a href="javascript:void(0)" onClick={() => {
                             console.log(this);
                             this.setState({[key]: !this.state[key]})
-                        }}><h5>{categoryName.trim()}{this.state.showProjectProfiles ? (<i className="material-icons">keyboard_arrow_down</i>) : (<i className="material-icons">keyboard_arrow_right</i>)}</h5></a></div>
+                        }}><h5>{categoryName.trim()}{this.state[key] ? (<i className="material-icons">keyboard_arrow_down</i>) : (<i className="material-icons">keyboard_arrow_right</i>)}</h5></a></div>
                         {this.state[key] ? (<div>{measurementControls}</div>) : false}
                     </div>);
                 }
@@ -319,4 +337,8 @@ ModalFeatureComponent.propTypes = {
     onDeleteMeasurement: PropTypes.func.isRequired
 };
 
-export default withDragDropContext(ModalFeatureComponent);
+const mapStateToProps = state => ({
+    selectedChemical: state.global.selectedChemical
+})
+
+export default connect(mapStateToProps)(withDragDropContext(ModalFeatureComponent));
