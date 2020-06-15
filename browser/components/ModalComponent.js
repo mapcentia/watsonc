@@ -21,11 +21,21 @@ class ModalComponent extends React.Component {
 
     render() {
         let tabs = false;
-        if (this.props.features.length > 1) {
+        if (this.props.features.length > 0) {
             let tabControls = [];
             this.props.features.map((item, index) => {
+                let name;
+                if (typeof item.properties.watlevmsl !== "undefined") {
+                    try {
+                        name = JSON.parse(item.properties.watlevmsl)["boreholeno"];
+                    } catch (e) {
+                        name = item.properties.boreholeno;
+                    }
+                } else {
+                    name = item.properties.boreholeno;
+                }
                 tabControls.push(<li key={`modal_tab_${index}`} className={index === this.state.activeTabIndex ? `active` : ``}>
-                    <a href="javascript:void(0)" onClick={() => { this.setState({activeTabIndex: index})}}>{item.properties.boreholeno}</a>
+                    <a href="javascript:void(0)" onClick={() => { this.setState({activeTabIndex: index})}}>{name}</a>
                 </li>);
             });
 
