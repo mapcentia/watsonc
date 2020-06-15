@@ -75,7 +75,8 @@ class ModalFeatureComponent extends React.Component {
                                 key,
                                 intakeIndex: i,
                                 boreholeno: data.boreholeno,
-                                title: data.title
+                                title: data.title,
+                                unit: data.unit
                             });
                         }
                     }
@@ -155,6 +156,7 @@ class ModalFeatureComponent extends React.Component {
                     itemKey={item.key}
                     intakeIndex={item.intakeIndex}
                     intakeName={intakeName}
+                    unit={item.unit}
                     title={item.title}/>);
             }
 

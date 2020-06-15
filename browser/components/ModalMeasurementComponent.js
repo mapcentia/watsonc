@@ -54,12 +54,12 @@ class ModalMeasurementComponent extends React.Component {
                     textAlign: 'left'
 
                 }}>
-                <div style={{display: 'flex'}}>
-                    <div style={{'flex-grow': 1, width: '50%'}}>
+                <div>
+                    <div>
                         <i className="fa fa-arrows-alt"></i> {circleIcon} {this.props.title} ({this.props.intakeName})
                     </div>
-                    <div style={{'flex-grow': 1, textAlign: 'right', color: 'gray', width: '50%', 'font-size': 'smaller'}}>
-                        Seneste: {Math.round((this.props.latestMeasurement / this.props.chemicalLimits[1]) * 100) / 100} ({this.props.latestMeasurement}/{this.props.chemicalLimits[1]})
+                    <div style={{color: 'gray', 'font-size': 'smaller', 'padding-left': '15px'}}>
+                        Seneste: {this.props.latestMeasurement} {this.props.unit} | max: {this.props.maxMeasurement} {this.props.unit}
                     </div>
                 </div>
             </div>);
