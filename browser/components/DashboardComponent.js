@@ -17,7 +17,7 @@ import arrayMove from 'array-move';
 const uuidv1 = require('uuid/v1');
 
 const DASHBOARD_ITEM_PLOT = 0;
-const DASHBOARD_ITEM_PROJECT_PLOT = 0;
+const DASHBOARD_ITEM_PROJECT_PLOT = 3;
 const DASHBOARD_ITEM_PROFILE = 1;
 const DASHBOARD_ITEM_PROJECT_PROFILE = 2;
 
@@ -953,7 +953,8 @@ class DashboardComponent extends React.Component {
         this.state.dashboardItems.map((item, index) => {
             if (item.type === DASHBOARD_ITEM_PLOT || item.type === DASHBOARD_ITEM_PROJECT_PLOT) {
                 let plot = item.item;
-                if (this.state.activePlots.indexOf(plot.id) > -1) {
+                let plotId = plot.id || plot.key;
+                if (this.state.activePlots.indexOf(plotId) > -1) {
                     localPlotsControls.push(<SortablePlotComponent
                         key={`sortable_${index}`}
                         viewMode={this.state.view}
