@@ -242,7 +242,7 @@ class DashboardComponent extends React.Component {
 
     handleChangeDatatypeProfile(profileKey) {
         let selectedProfile = false;
-        this.state.profiles.map(item => {
+        this.getProfiles().map(item => {
             if (item.key === profileKey) {
                 selectedProfile = item;
             }
