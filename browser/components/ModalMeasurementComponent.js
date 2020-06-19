@@ -58,7 +58,7 @@ class ModalMeasurementComponent extends React.Component {
                     <div>
                         <i className="fa fa-arrows-alt"></i> {circleIcon} {this.props.title} ({this.props.intakeName})
                     </div>
-                    <div style={{color: 'gray', 'font-size': 'smaller', 'padding-left': '15px'}}>
+                    <div style={{color: 'gray', 'fontSize': 'smaller', 'paddingLeft': '15px'}}>
                         max: {this.props.maxMeasurement} {this.props.unit} | seneste: {this.props.latestMeasurement} {this.props.unit}
                     </div>
                 </div>

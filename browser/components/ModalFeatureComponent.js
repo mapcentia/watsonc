@@ -37,8 +37,12 @@ class ModalFeatureComponent extends React.Component {
                 }
             }
         }
-        let selectedCategoryKey = 'show' + selectedCategory.trim() + 'Measurements';
-        this.setState({[selectedCategoryKey]: true});
+        try {
+            let selectedCategoryKey = 'show' + selectedCategory.trim() + 'Measurements';
+            this.setState({[selectedCategoryKey]: true});
+        } catch (e) {
+            console.info(e.message);
+        }
     }
 
     setPlots(plots) {
