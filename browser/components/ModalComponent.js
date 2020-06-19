@@ -27,9 +27,9 @@ class ModalComponent extends React.Component {
             let tabControls = [];
             this.props.features.map((item, index) => {
                 let name;
-                if (typeof item.properties.watlevmsl !== "undefined") {
+                if (typeof item.properties.alias !== "undefined") {
                     try {
-                        name = JSON.parse(item.properties.watlevmsl)["boreholeno"];
+                        name = item.properties.alias;
                     } catch (e) {
                         name = item.properties.boreholeno;
                     }
