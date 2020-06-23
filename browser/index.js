@@ -1005,8 +1005,8 @@ module.exports = module.exports = {
 
                     let html = [];
                     html.push(`
-                        ${__(`Max`)}: ${feature.properties.maxvalue}<br>
-                        ${__(`Latest`)}: ${feature.properties.latestvalue}<br>`);
+                        Historisk: ${feature.properties.maxvalue}<br>
+                        Seneste: ${feature.properties.latestvalue}<br>`);
 
                     layer.bindTooltip(`<p><a target="_blank" href="https://data.geus.dk/JupiterWWW/borerapport.jsp?dgunr=${feature.properties.boreholeno}">${feature.properties.boreholeno}</a></p>
                     <b style="color: rgb(16, 174, 140)">${names[lastSelectedChemical]}</b><br>${html.join('<br>')}`);

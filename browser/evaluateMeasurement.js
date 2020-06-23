@@ -55,16 +55,16 @@ const evaluate = (json, limits, chem, specificIntake = false) => {
     let numberOfIntakes = json.measurements.length;
     maxMeasurement = 0;
     maxMeasurementIntakes = [];
-
+    let countMeasurements = 0;
     const generateMaxMeasurement = (intake) => {
         maxMeasurementIntakes[intake] = false;
         let length = json.measurements[intake].length;
         for (let u = 0; u < length; u++) {
+            countMeasurements++;
             let detectionLimitReached = true;
             if (json.attributes && json.attributes[intake] && Array.isArray(json.attributes[intake]) && json.attributes[intake][u] === LIMIT_CHAR) {
                 detectionLimitReached = false;
             }
-
             if (detectionLimitReached) {
                 currentValue = json.measurements[intake][u];
                 if (currentValue > maxMeasurementIntakes[intake] || maxMeasurementIntakes[intake] === false) {
@@ -86,7 +86,7 @@ const evaluate = (json, limits, chem, specificIntake = false) => {
     const green = "rgb(16, 174, 140)";
     const yellow = "rgb(247, 168, 77)";
     const red = "rgb(252, 60, 60)";
-    const white = "rgb(255, 255, 255)";
+    const white = "rgb(220, 220, 220)";
 
     let chemicalLimits = (limits[chem] ? limits[chem]: [0, 0]);
 
@@ -100,8 +100,13 @@ const evaluate = (json, limits, chem, specificIntake = false) => {
         maxColor = maxMeasurement === 0 ? white : "#00aaff";
         latestColor = "#00aaff";
     } else {
-        maxColor = maxMeasurement === 0 ? "#ffffff" : maxMeasurement <= parseFloat(chemicalLimits[0]) ? green : maxMeasurement > parseFloat(chemicalLimits[0]) && maxMeasurement <= parseFloat(chemicalLimits[1]) ? yellow : red;
+        maxColor = maxMeasurement === 0 ? white : maxMeasurement <= parseFloat(chemicalLimits[0]) ? green : maxMeasurement > parseFloat(chemicalLimits[0]) && maxMeasurement <= parseFloat(chemicalLimits[1]) ? yellow : red;
         latestColor = latestMeasurement <= parseFloat(chemicalLimits[0]) ? green : latestMeasurement > parseFloat(chemicalLimits[0]) && latestMeasurement <= parseFloat(chemicalLimits[1]) ? yellow : red;
+    }
+
+    // Always set max to white if there is only one measurement
+    if (countMeasurements === 1) {
+        maxColor = white;
     }
 
     return {
