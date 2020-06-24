@@ -178,6 +178,8 @@ class ModalFeatureComponent extends React.Component {
                     latestMeasurement={measurementData === null ? null : measurementData.latestMeasurement}
                     latestMeasurementRelative={measurementData === null ? null : Math.round((measurementData.latestMeasurement/measurementData.chemicalLimits[1]) * 100)/100}
                     chemicalLimits={measurementData === null ? null : measurementData.chemicalLimits}
+                    detectionLimitReachedForMax={measurementData === null ? null : measurementData.detectionLimitReachedForMax}
+                    detectionLimitReachedForLatest={measurementData === null ? null : measurementData.detectionLimitReachedForLatest}
                     gid={this.props.feature.properties.gid}
                     itemKey={item.key}
                     intakeIndex={item.intakeIndex}

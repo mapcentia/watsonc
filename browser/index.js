@@ -1004,6 +1004,9 @@ module.exports = module.exports = {
                 if ("maxvalue" in feature.properties && "latestvalue" in feature.properties) {
 
                     let html = [];
+                    // html.push(`
+                    //     Historisk: ${!feature.properties.maxlimit ? "< " : ""} ${feature.properties.maxvalue}<br>
+                    //     Seneste: ${!feature.properties.latestlimit ? "< " : ""} ${feature.properties.latestvalue}<br>`);
                     html.push(`
                         Historisk: ${feature.properties.maxvalue}<br>
                         Seneste: ${feature.properties.latestvalue}<br>`);

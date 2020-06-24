@@ -14,34 +14,31 @@ const evaluate = (json, limits, chem, specificIntake = false) => {
     let latestPosition = {};
 
     let latestValuesForIntakes = [];
+    let detectionLimitReachedForLatest = false;
 
     const generateLatestMeasurement = (intake) => {
         let length = json.timeOfMeasurement[intake].length;
-
         latestMeasurementIntakes[intake] = false;
         for (let i = length; i--; i >= 0) {
-            let detectionLimitReached = true;
-            if (json.attributes && json.attributes[intake] && Array.isArray(json.attributes[intake]) && json.attributes[intake][i] === LIMIT_CHAR) {
-                detectionLimitReached = false;
-            }
+            detectionLimitReachedForLatest = false;
 
-            if (detectionLimitReached) {
-                currentValue = moment(json.timeOfMeasurement[intake][i], "YYYY-MM-DDTHH:mm:ssZZ");
-                latestMeasurement = json.measurements[intake][i];
-                latestValuesForIntakes.push(latestMeasurement);
-                if (currentValue.isAfter(latestValue)) {
-                    latestValue = currentValue;
-                    latestPosition = {
-                        intake,
-                        measurement: i
-                    }
+            currentValue = moment(json.timeOfMeasurement[intake][i], "YYYY-MM-DDTHH:mm:ssZZ");
+            latestMeasurement = json.measurements[intake][i];
+            latestValuesForIntakes.push(latestMeasurement);
+            if (currentValue.isAfter(latestValue)) {
+                latestValue = currentValue;
+                latestPosition = {
+                    intake,
+                    measurement: i
+                };
+                if (json.attributes && json.attributes[intake] && Array.isArray(json.attributes[intake]) && json.attributes[intake][i] === LIMIT_CHAR) {
+                    detectionLimitReachedForLatest = true;
                 }
-
-                latestMeasurementIntakes[intake] = json.measurements[intake][i];
-                break;
             }
+            latestMeasurementIntakes[intake] = json.measurements[intake][i];
+            break;
         }
-    }
+    };
 
     if (specificIntake !== false) {
         generateLatestMeasurement(specificIntake);
@@ -56,24 +53,23 @@ const evaluate = (json, limits, chem, specificIntake = false) => {
     maxMeasurement = 0;
     maxMeasurementIntakes = [];
     let countMeasurements = 0;
+    let detectionLimitReachedForMax = false;
     const generateMaxMeasurement = (intake) => {
         maxMeasurementIntakes[intake] = false;
         let length = json.measurements[intake].length;
         for (let u = 0; u < length; u++) {
             countMeasurements++;
-            let detectionLimitReached = true;
-            if (json.attributes && json.attributes[intake] && Array.isArray(json.attributes[intake]) && json.attributes[intake][u] === LIMIT_CHAR) {
-                detectionLimitReached = false;
-            }
-            if (detectionLimitReached) {
-                currentValue = json.measurements[intake][u];
-                if (currentValue > maxMeasurementIntakes[intake] || maxMeasurementIntakes[intake] === false) {
-                    maxMeasurementIntakes[intake] = currentValue;
-                    maxMeasurement = currentValue;
+            detectionLimitReachedForMax = false;
+            currentValue = json.measurements[intake][u];
+            if (currentValue >= maxMeasurementIntakes[intake] || maxMeasurementIntakes[intake] === false) {
+                maxMeasurementIntakes[intake] = currentValue;
+                maxMeasurement = currentValue;
+                if (json.attributes && json.attributes[intake] && Array.isArray(json.attributes[intake]) && json.attributes[intake][u] === LIMIT_CHAR) {
+                    detectionLimitReachedForMax = true;
                 }
             }
         }
-    }
+    };
 
     if (specificIntake !== false) {
         generateMaxMeasurement(specificIntake);
@@ -88,7 +84,7 @@ const evaluate = (json, limits, chem, specificIntake = false) => {
     const red = "rgb(252, 60, 60)";
     const white = "rgb(220, 220, 220)";
 
-    let chemicalLimits = (limits[chem] ? limits[chem]: [0, 0]);
+    let chemicalLimits = (limits[chem] ? limits[chem] : [0, 0]);
 
     let maxColor, latestColor;
 
@@ -100,8 +96,8 @@ const evaluate = (json, limits, chem, specificIntake = false) => {
         maxColor = maxMeasurement === 0 ? white : "#00aaff";
         latestColor = "#00aaff";
     } else {
-        maxColor = maxMeasurement === 0 ? white : maxMeasurement <= parseFloat(chemicalLimits[0]) ? green : maxMeasurement > parseFloat(chemicalLimits[0]) && maxMeasurement <= parseFloat(chemicalLimits[1]) ? yellow : red;
-        latestColor = latestMeasurement <= parseFloat(chemicalLimits[0]) ? green : latestMeasurement > parseFloat(chemicalLimits[0]) && latestMeasurement <= parseFloat(chemicalLimits[1]) ? yellow : red;
+        maxColor = maxMeasurement === 0 ? white : maxMeasurement <= parseFloat(chemicalLimits[0]) || detectionLimitReachedForMax ? green : maxMeasurement > parseFloat(chemicalLimits[0]) && maxMeasurement <= parseFloat(chemicalLimits[1]) ? yellow : red;
+        latestColor = latestMeasurement <= parseFloat(chemicalLimits[0]) || detectionLimitReachedForLatest ? green : latestMeasurement > parseFloat(chemicalLimits[0]) && latestMeasurement <= parseFloat(chemicalLimits[1]) ? yellow : red;
     }
 
     // Always set max to white if there is only one measurement
@@ -117,7 +113,9 @@ const evaluate = (json, limits, chem, specificIntake = false) => {
         latestColor,
         latestMeasurement,
         maxMeasurement,
-        chemicalLimits
+        chemicalLimits,
+        detectionLimitReachedForMax,
+        detectionLimitReachedForLatest
     };
 };
 
