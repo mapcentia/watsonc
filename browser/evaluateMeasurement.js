@@ -59,13 +59,20 @@ const evaluate = (json, limits, chem, specificIntake = false) => {
         let length = json.measurements[intake].length;
         for (let u = 0; u < length; u++) {
             countMeasurements++;
-            detectionLimitReachedForMax = false;
             currentValue = json.measurements[intake][u];
-            if (currentValue >= maxMeasurementIntakes[intake] || maxMeasurementIntakes[intake] === false) {
+            if (currentValue > maxMeasurementIntakes[intake] || maxMeasurementIntakes[intake] === false) {
+                let oldMaxMeasurement = maxMeasurement;
+                let oldDetectionLimitReachedForMax = detectionLimitReachedForMax;
                 maxMeasurementIntakes[intake] = currentValue;
                 maxMeasurement = currentValue;
                 if (json.attributes && json.attributes[intake] && Array.isArray(json.attributes[intake]) && json.attributes[intake][u] === LIMIT_CHAR) {
                     detectionLimitReachedForMax = true;
+                } else {
+                    detectionLimitReachedForMax = false;
+                }
+                if (u === latestPosition.measurement) {
+                    maxMeasurement = oldMaxMeasurement;
+                    detectionLimitReachedForMax = oldDetectionLimitReachedForMax;
                 }
             }
         }
