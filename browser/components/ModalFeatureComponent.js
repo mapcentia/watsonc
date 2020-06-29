@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import {Switch} from '@material-ui/core';
 
 import withDragDropContext from './withDragDropContext';
 import ModalMeasurementComponent from './ModalMeasurementComponent';
@@ -23,6 +24,8 @@ class ModalFeatureComponent extends React.Component {
             plotsSearchTerm: ``
         }
         this.onPlotAdd = this.onPlotAdd.bind(this);
+        this.hasSelectAll = this.hasSelectAll.bind(this);
+        this.setSelectAll = this.setSelectAll.bind(this);
     }
 
     componentDidMount() {
@@ -43,6 +46,30 @@ class ModalFeatureComponent extends React.Component {
         } catch (e) {
             console.info(e.message);
         }
+    }
+
+    hasSelectAll() {
+        let categories = JSON.parse(JSON.stringify(this.props.categories));
+        let hasSelectAll = true;
+        for (let category in categories) {
+            if (!hasSelectAll) {
+                break;
+            }
+            let selectedCategoryKey = 'show' + category.trim() + 'Measurements'
+            let isCategorySelected = this.state[selectedCategoryKey];
+            hasSelectAll = hasSelectAll && isCategorySelected;
+        }
+        return hasSelectAll;
+    }
+
+    setSelectAll(selectAll) {
+        let categories = JSON.parse(JSON.stringify(this.props.categories));
+        let stateUpdate = {}
+        for (let category in categories) {
+            let selectedCategoryKey = 'show' + category.trim() + 'Measurements';
+            stateUpdate[selectedCategoryKey] = selectAll;
+        }
+        this.setState(stateUpdate);
     }
 
     setPlots(plots) {
@@ -297,6 +324,24 @@ class ModalFeatureComponent extends React.Component {
         return (<div style={{ height: `inherit` }}>
             <div>
                 <div className="measurements-modal_left-column">
+                    <div style={{display: 'flex', height: '50px'}}>
+                        <div style={{width: '30px', height: '30px', marginLeft: '25px'}}>
+                        <a href={`https://data.geus.uk/JupiterWWW/borerapport.jsp?dgunr=${this.props.feature.properties.boreholeno}`}>
+                            <img style={{width: '30px', height: '30px'}} src="https://watsonc-test.vidi.gc2.io/app/jupiter/chemicals,sensor,system/favicon.ico" />
+                        </a>
+                        </div>
+                        <div style={{width: '30px', height: '30px', marginLeft: '30px'}}>
+                        <a href={`https://borpro.dk/borejournal.asp?dguNr=${this.props.feature.properties.boreholeno}`}>
+                            <img style={{width: '30px', height: '30px'}} src="https://watsonc-test.vidi.gc2.io/app/jupiter/chemicals,sensor,system/favicon.ico" />
+                        </a>
+                        </div>
+                        <div style={{width: '80px', height: '30px', marginLeft: 'auto', marginRight: '60px'}}>
+                        <Switch checked={this.hasSelectAll()} onChange={(name, isChecked) => {
+                            this.setSelectAll(isChecked);
+                        }}/>
+                        Fold ind/ud
+                        </div>
+                    </div>
                     <div>{measurementsText}</div>
                     <div className="form-group">
                         <SearchFieldComponent id="measurements-search-control" onSearch={(measurementsSearchTerm) => {
