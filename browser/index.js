@@ -382,7 +382,7 @@ module.exports = module.exports = {
                                 }
 
 
-                                _self.createModal(response.features, false, titleAsLink);
+                                _self.createModal(response.features, false, titleAsLink, false);
                                 if (!dashboardComponentInstance) {
                                     throw new Error(`Unable to find the component instance`);
                                 }
@@ -808,7 +808,7 @@ module.exports = module.exports = {
         }
 
     },
-    createModal: (features, plots = false, titleAsLink = null) => {
+    createModal: (features, plots = false, titleAsLink = null, setTitle = true) => {
         if (features === false) {
             if (lastFeatures) {
                 features = lastFeatures;
@@ -837,10 +837,14 @@ module.exports = module.exports = {
                 }
             });
 
-            if (titles.length === 1) {
-                $("#" + FEATURE_CONTAINER_ID).find(`.modal-title`).html(titles[0]);
+            if (setTitle === true) {
+                if (titles.length === 1) {
+                    $("#" + FEATURE_CONTAINER_ID).find(`.modal-title`).html(titles[0]);
+                } else {
+                    $("#" + FEATURE_CONTAINER_ID).find(`.modal-title`).html(`${__(`Boreholes`)} (${titles.join(`, `)})`);
+                }
             } else {
-                $("#" + FEATURE_CONTAINER_ID).find(`.modal-title`).html(`${__(`Boreholes`)} (${titles.join(`, `)})`);
+                $("#" + FEATURE_CONTAINER_ID).find(`.modal-title`).html('');
             }
 
             if (document.getElementById(FORM_FEATURE_CONTAINER_ID)) {
