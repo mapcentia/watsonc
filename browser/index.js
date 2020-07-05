@@ -860,6 +860,9 @@ module.exports = module.exports = {
                             names={names}
                             limits={limits}
                             initialPlots={(existingPlots ? existingPlots : [])}
+                            initialActivePlots={dashboardComponentInstance.getActivePlots()}
+                            onPlotHide={dashboardComponentInstance.handleHidePlot}
+                            onPlotShow={dashboardComponentInstance.handleShowPlot}
                             license={dashboardComponentInstance.getLicense()}
                             onAddMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex) => {
                                 dashboardComponentInstance.addMeasurement(plotId, featureGid, featureKey, featureIntakeIndex);

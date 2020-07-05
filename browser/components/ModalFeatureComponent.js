@@ -21,9 +21,12 @@ class ModalFeatureComponent extends React.Component {
         this.state = {
             plots: this.props.initialPlots,
             measurementsSearchTerm: ``,
-            plotsSearchTerm: ``
+            plotsSearchTerm: ``,
+            activePlots: this.props.initialActivePlots,
         }
         this.onPlotAdd = this.onPlotAdd.bind(this);
+        this.handleHidePlot = this.handleHidePlot.bind(this);
+        this.handleShowPlot = this.handleShowPlot.bind(this);
         this.hasSelectAll = this.hasSelectAll.bind(this);
         this.setSelectAll = this.setSelectAll.bind(this);
     }
@@ -60,6 +63,21 @@ class ModalFeatureComponent extends React.Component {
             hasSelectAll = hasSelectAll && isCategorySelected;
         }
         return hasSelectAll;
+    }
+
+    handleHidePlot(plot) {
+        let activePlots = this.state.activePlots.filter((activePlot) => {
+            return activePlot.id != plot.id;
+        })
+        this.setState({ activePlots });
+        this.props.onPlotHide(plot.id);
+    }
+
+    handleShowPlot(plot) {
+        let activePlots = this.state.activePlots;
+        activePlots.push(plot);
+        this.setState({ activePlots });
+        this.props.onPlotShow(plot.id);
     }
 
     setSelectAll(selectAll) {
@@ -303,6 +321,9 @@ class ModalFeatureComponent extends React.Component {
 
         if (this.state.plots && this.state.plots.length > 0) {
             plotsControls = [];
+            const activePlotIds = this.state.activePlots.map((plot) => {
+                return plot.id;
+            });
             this.state.plots.map((plot) => {
                 let display = true;
                 if (this.state.plotsSearchTerm.length > 0) {
@@ -315,6 +336,9 @@ class ModalFeatureComponent extends React.Component {
                     plotsControls.push(<ModalPlotComponent
                         key={`plot_container_` + plot.id}
                         plot={plot}
+                        isActive={activePlotIds.indexOf(plot.id) > -1}
+                        onPlotShow={this.handleShowPlot}
+                        onPlotHide={this.handleHidePlot}
                         onDeleteMeasurement={this.props.onDeleteMeasurement}
                         dataSource={this.props.dataSource}/>);
                 }
