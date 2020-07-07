@@ -39,7 +39,7 @@ const getChemicalName = (chemicalId, categories) => {
 const getMeasurementTitle = (measurement) => {
     let title = measurement.properties.boreholeno;
     if (`watlevmsl` in measurement.properties && measurement.properties.loctypeid && measurement.properties.loctypeid > 0) {
-        let parsedData = JSON.parse(measurement.properties.watlevmsl);
+        let parsedData = measurement.properties.watlevmsl;
         if (parsedData.boreholeno) {
             title = parsedData.boreholeno;
         }

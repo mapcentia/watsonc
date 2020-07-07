@@ -36,7 +36,7 @@ class ModalPlotComponent extends React.Component {
                 this.props.dataSource.map(item => {
                     if (item.properties.gid === gid) {
                         if (customGraph) {
-                            let json = JSON.parse(item.properties[splitMeasurementId[1]]).data[splitMeasurementId[2]];
+                            let json = item.properties[splitMeasurementId[1]].data[splitMeasurementId[2]];
                             let intakeName = `#` + (parseInt(splitMeasurementId[3]) + 1);
                             if (`intakes` in json && Array.isArray(json.intakes) && json.intakes[parseInt(splitMeasurementId[3])] !== null) {
                                 intakeName = json.intakes[parseInt(splitMeasurementId[3])];
@@ -45,7 +45,7 @@ class ModalPlotComponent extends React.Component {
                             measurementDisplayTitle = (`${item.properties.boreholeno}, ${json.data[0].name} (${intakeName})`);
                             return false;
                         } else {
-                            let json = JSON.parse(item.properties[splitMeasurementId[1]]);
+                            let json = item.properties[splitMeasurementId[1]];
                             let intakeName = `#` + (parseInt(splitMeasurementId[2]) + 1);
                             if (`intakes` in json && Array.isArray(json.intakes) && json.intakes[parseInt(splitMeasurementId[2])] !== null) {
                                 intakeName = json.intakes[parseInt(splitMeasurementId[2])];

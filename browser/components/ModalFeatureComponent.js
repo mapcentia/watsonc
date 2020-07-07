@@ -78,13 +78,13 @@ class ModalFeatureComponent extends React.Component {
         let plottedProperties = [];
         for (let key in this.props.feature.properties) {
             try {
-                let data = JSON.parse(this.props.feature.properties[key]);
+                let data = this.props.feature.properties[key];
                 if (typeof data === `object` && data !== null && `boreholeno` in data && `unit` in data && `title` in data
                     && `measurements` in data && `timeOfMeasurement` in data) {
                     // Regular properties ("measurements" and "timeOfMeasurement" exist)
                     let isPlottableProperty = true;
                     if (Array.isArray(data.measurements) === false) {
-                        data.measurements = JSON.parse(data.measurements);
+                        data.measurements = data.measurements;
                     }
 
                     // Checking if number of measurements corresponds to the number of time measurements for each intake
@@ -121,6 +121,7 @@ class ModalFeatureComponent extends React.Component {
                     }
                 }
             } catch (e) {
+                console.error(e)
             }
         }
 
@@ -151,7 +152,7 @@ class ModalFeatureComponent extends React.Component {
                     json = item;
                 } else {
                     try {
-                        json = JSON.parse(this.props.feature.properties[item.key]);
+                        json = this.props.feature.properties[item.key];
                     } catch (e) {
                         console.error(item);
                         throw new Error(`Unable to parse measurements data`);
