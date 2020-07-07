@@ -91,6 +91,10 @@ const DATA_SOURCES = [{
     originalLayerKey: LAYER_NAMES[1],
     additionalKey: `4`,
     title: "Online stationer"
+}, {
+    originalLayerKey: LAYER_NAMES[3],
+    additionalKey: ``,
+    title: "Pesticidoverblik"
 }];
 
 /**
@@ -450,6 +454,9 @@ module.exports = module.exports = {
                         if (layerTree.getActiveLayers().indexOf(LAYER_NAMES[0]) > -1) {
                             layerTree.reloadLayer(LAYER_NAMES[0]);
                         }
+                        if (layerTree.getActiveLayers().indexOf(LAYER_NAMES[3]) > -1) {
+                            layerTree.reloadLayer(LAYER_NAMES[3]);
+                        }
                     });
                 }, 500);
             }, 100);
@@ -707,6 +714,8 @@ module.exports = module.exports = {
     },
 
     onApplyLayersAndChemical: (parameters) => {
+        console.log("parameters", parameters)
+
         // Disabling all layers
         layerTree.getActiveLayers().map(layerNameToEnable => {
             if (layerNameToEnable !== LAYER_NAMES[2])
@@ -734,6 +743,7 @@ module.exports = module.exports = {
             });
         }
 
+
         let filteredLayers = [];
         enabledLoctypeIds = [];
         parameters.layers.map(layerName => {
@@ -751,6 +761,10 @@ module.exports = module.exports = {
                         filteredLayers.push(layerName);
                     }
                 }
+            }
+            if (layerName.indexOf(LAYER_NAMES[3]) === 0) {
+                filteredLayers.push(layerName);
+                switchLayer.init(LAYER_NAMES[4], true);
             }
         });
 
@@ -980,10 +994,16 @@ module.exports = module.exports = {
 
     bindToolTipOnStations() {
         let stores = layerTree.getStores();
-        stores["v:sensor.sensordata_without_correction"].layer.eachLayer(function (layer) {
+        stores[LAYER_NAMES[1]].layer.eachLayer(function (layer) {
             let feature = layer.feature;
             let html = [];
             html.push(`${feature.properties.mouseover}`);
+            layer.bindTooltip(`${html.join('<br>')}`);
+        });
+        stores[LAYER_NAMES[3]].layer.eachLayer(function (layer) {
+            let feature = layer.feature;
+            let html = [];
+            html.push(`${feature.properties.mouse_over}`);
             layer.bindTooltip(`${html.join('<br>')}`);
         });
     },

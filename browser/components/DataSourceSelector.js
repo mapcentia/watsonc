@@ -9,6 +9,7 @@ import {selectLayer, unselectLayer} from '../redux/actions'
  */
 class DataSourceSelector extends React.Component {
     constructor(props) {
+        console.log(props)
         super(props);
     }
 
@@ -29,6 +30,9 @@ class DataSourceSelector extends React.Component {
                         break;
                     case "4":
                         key = `key3`;
+                        break;
+                    case "5":
+                        key = `key4`;
                         break;
                 }
                 $(`#${key}`).trigger("click");
@@ -77,6 +81,8 @@ class DataSourceSelector extends React.Component {
                 {generateLayerRecord(`key2`, this.props.layers[2])}
                 <h4>Nedbør</h4>
                 {generateLayerRecord(`key3`, this.props.layers[3])}
+                <h4>Analyser</h4>
+                {generateLayerRecord(`key4`, this.props.layers[4])}
             </div>
         </div>);
     }
