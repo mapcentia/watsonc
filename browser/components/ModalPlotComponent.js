@@ -87,7 +87,13 @@ class ModalPlotComponent extends React.Component {
                 backgroundColor: (isOver ? `darkgreen` : ``),
                 color: (isOver ? `white` : ``),
             }}>
-            <div>{this.props.plot.title}</div>
+            <div style={{display: 'flex'}}>
+                <div>{this.props.plot.title}</div>
+                <div style={{marginLeft: 'auto'}}>
+                    {__(`Dashboard`)} <input type="checkbox" checked={this.props.isActive}  onChange={(event) => {
+                        event.target.checked ? this.props.onPlotShow(this.props.plot) : this.props.onPlotHide(this.props.plot)}}/>
+                </div>
+            </div>
             <div>{removeButtons}</div>
         </div>);
     }

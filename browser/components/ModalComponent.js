@@ -64,6 +64,9 @@ ModalComponent.propTypes = {
     names: PropTypes.object.isRequired,
     limits: PropTypes.object.isRequired,
     initialPlots: PropTypes.array.isRequired,
+    initialActivePlots: PropTypes.array.isRequired,
+    onPlotShow: PropTypes.func.isRequired,
+    onPlotHide: PropTypes.func.isRequired,
     onPlotAdd: PropTypes.func.isRequired,
     onAddMeasurement: PropTypes.func.isRequired,
     onDeleteMeasurement: PropTypes.func.isRequired
