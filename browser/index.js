@@ -360,7 +360,7 @@ module.exports = module.exports = {
                         });
 
                         let qLayer;
-                        if (layerName.indexOf(LAYER_NAMES[0]) > -1) {
+                        if (layerName.indexOf(LAYER_NAMES[0]) > -1 || layerName.indexOf(LAYER_NAMES[3]) > -1) {
                             qLayer = "chemicals.boreholes_time_series_with_chemicals";
                         } else {
                             qLayer = "sensor.sensordata_with_correction";
@@ -727,6 +727,11 @@ module.exports = module.exports = {
             _self.bindToolTipOnStations()
         }, "watsonc");
 
+        // Bind tool tip to  Pesticidoverblik
+        layerTree.setOnLoad(LAYER_NAMES[3], () => {
+            _self.bindToolTipOnPesticidoverblik()
+        }, "watsonc");
+
         // Enable raster layer
         if (parameters.layers.indexOf(LAYER_NAMES[0]) > -1) {
             let rasterToEnable = `system._${parameters.chemical}`;
@@ -765,6 +770,13 @@ module.exports = module.exports = {
             if (layerName.indexOf(LAYER_NAMES[3]) === 0) {
                 filteredLayers.push(layerName);
                 switchLayer.init(LAYER_NAMES[4], true);
+
+                layerTree.setStyle(LAYER_NAMES[3], {
+                    "color": "#ffffff",
+                    "weight": 0,
+                    "opacity": 0.0,
+                    "fillOpacity": 0.0
+                });
             }
         });
 
@@ -1007,11 +1019,13 @@ module.exports = module.exports = {
             html.push(`${feature.properties.mouseover}`);
             layer.bindTooltip(`${html.join('<br>')}`);
         });
+    },
+
+    bindToolTipOnPesticidoverblik() {
+        let stores = layerTree.getStores();
         stores[LAYER_NAMES[3]].layer.eachLayer(function (layer) {
             let feature = layer.feature;
-            let html = [];
-            html.push(`${feature.properties.mouse_over}`);
-            layer.bindTooltip(`${html.join('<br>')}`);
+            layer.bindTooltip(JSON.stringify(feature.properties.mouseover));
         });
     },
 

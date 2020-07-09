@@ -76,13 +76,12 @@ class DataSourceSelector extends React.Component {
             <div>
                 <h4>Grundvand</h4>
                 {generateLayerRecord(`key0`, this.props.layers[0])}
+                {generateLayerRecord(`key4`, this.props.layers[4])}
                 {generateLayerRecord(`key1`, this.props.layers[1])}
                 <h4>Vandløb, kyst, bassiner</h4>
                 {generateLayerRecord(`key2`, this.props.layers[2])}
                 <h4>Nedbør</h4>
                 {generateLayerRecord(`key3`, this.props.layers[3])}
-                <h4>Analyser</h4>
-                {generateLayerRecord(`key4`, this.props.layers[4])}
             </div>
         </div>);
     }

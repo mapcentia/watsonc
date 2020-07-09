@@ -350,12 +350,12 @@ class ModalFeatureComponent extends React.Component {
                 <div className="measurements-modal_left-column">
                     <div style={{display: 'flex', height: '50px'}}>
                         <div style={{width: '30px', height: '30px', marginLeft: '25px'}}>
-                        <a href={`https://data.geus.uk/JupiterWWW/borerapport.jsp?dgunr=${this.props.feature.properties.boreholeno}`}>
+                        <a target="_blank" href={`http://data.geus.dk/JupiterWWW/borerapport.jsp?dgunr=${this.props.feature.properties.boreholeno}`}>
                             <img style={{width: '30px', height: '30px'}} src="https://watsonc-test.vidi.gc2.io/app/jupiter/chemicals,sensor,system/favicon.ico" />
                         </a>
                         </div>
                         <div style={{width: '30px', height: '30px', marginLeft: '30px'}}>
-                        <a href={`https://borpro.dk/borejournal.asp?dguNr=${this.props.feature.properties.boreholeno}`}>
+                        <a target="_blank" href={`http://borpro.dk/borejournal.asp?dguNr=${this.props.feature.properties.boreholeno}`}>
                             <img style={{width: '30px', height: '30px'}} src="https://watsonc-test.vidi.gc2.io/app/jupiter/chemicals,sensor,system/favicon.ico" />
                         </a>
                         </div>
