@@ -577,7 +577,7 @@ class DashboardComponent extends React.Component {
                     activePlots: activePlotsCopy
                 });
 
-                this.props.onActivePlotsChange(activePlotsCopy);
+                this.props.onActivePlotsChange(activePlotsCopy, this.getPlots());
             } else {
                 this.setState({
                     plots: plotsCopy,
@@ -608,7 +608,7 @@ class DashboardComponent extends React.Component {
         if (activePlotsCopy.indexOf(id) > -1) activePlotsCopy.splice(activePlotsCopy.indexOf(id), 1);
 
         this.setState({activePlots: activePlotsCopy});
-        this.props.onActivePlotsChange(activePlotsCopy);
+        this.props.onActivePlotsChange(activePlotsCopy, this.getPlots());
     }
 
     handleDeletePlot(id, name) {
@@ -666,7 +666,7 @@ class DashboardComponent extends React.Component {
         let activePlots = JSON.parse(JSON.stringify(this.state.activePlots));
         if (activePlots.indexOf(plotId) === -1) activePlots.push(plotId);
         this.setState({activePlots}, () => {
-            this.props.onActivePlotsChange(this.state.activePlots);
+            this.props.onActivePlotsChange(this.state.activePlots, this.getPlots());
         });
     }
 
@@ -676,7 +676,7 @@ class DashboardComponent extends React.Component {
         let activePlots = JSON.parse(JSON.stringify(this.state.activePlots));
         if (activePlots.indexOf(plotId) > -1) activePlots.splice(activePlots.indexOf(plotId), 1);
         this.setState({activePlots}, () => {
-            this.props.onActivePlotsChange(this.state.activePlots);
+            this.props.onActivePlotsChange(this.state.activePlots, this.getPlots());
         });
     }
 

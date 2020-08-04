@@ -595,9 +595,10 @@ module.exports = module.exports = {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
                                 if (profiles && window.menuProfilesComponentInstance) window.menuProfilesComponentInstance.setProfiles(profiles);
                             }}
-                            onActivePlotsChange={(activePlots) => {
+                            onActivePlotsChange={(activePlots, plots) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
                                 if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setActivePlots(activePlots);
+                                if (modalComponentInstance) _self.createModal(false, plots);
                             }}
                             onActiveProfilesChange={(activeProfiles) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
