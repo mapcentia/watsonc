@@ -10,6 +10,8 @@ import MenuDataSourceAndTypeSelectorComponent from './components/MenuDataSourceA
 import MenuProfilesComponent from './components/MenuProfilesComponent';
 import IntroModal from './components/IntroModal';
 import {LAYER_NAMES, WATER_LEVEL_KEY} from './constants';
+import trustedIpAddresses from './trustedIpAddresses';
+
 
 import reduxStore from './redux/store';
 import {setAuthenticated} from './redux/actions';
@@ -130,21 +132,28 @@ module.exports = module.exports = {
         let queryParams = new URLSearchParams(window.location.search);
         let licenseToken = queryParams.get('license');
         let license = null;
+
         if (licenseToken) {
             license = JSON.parse(base64.decode(licenseToken.split('.')[1]));
             if (typeof license === 'object') {
                 license = license.license;
-                if (license === "premium") {
-                    $("#watsonc-licens-btn1").html("");
-                    $("#watsonc-licens-btn2").html("Valgt");
-                    $("#watsonc-licens-btn2").attr("disabled", true);
-                    $("#watsonc-licens-btn2").css("pointer-events", "none");
 
-                } else {
-                    $("#watsonc-licens-btn1").html("Valgt");
-                    $("#watsonc-licens-btn2").html("Vælg");
-                }
             }
+        }
+        console.log("IP address", window._vidiIp);
+        if (trustedIpAddresses.includes(window._vidiIp)) {
+            license = "premium";
+        }
+
+        if (license === "premium") {
+            $("#watsonc-licens-btn1").html("");
+            $("#watsonc-licens-btn2").html("Valgt");
+            $("#watsonc-licens-btn2").attr("disabled", true);
+            $("#watsonc-licens-btn2").css("pointer-events", "none");
+
+        } else {
+            $("#watsonc-licens-btn1").html("Valgt");
+            $("#watsonc-licens-btn2").html("Vælg");
         }
 
         $("#btn-plan").on("click", ()=>{
@@ -1026,7 +1035,7 @@ module.exports = module.exports = {
         let stores = layerTree.getStores();
         stores[LAYER_NAMES[3]].layer.eachLayer(function (layer) {
             let feature = layer.feature;
-            layer.bindTooltip(JSON.stringify(feature.properties.mouseover));
+            layer.bindTooltip(feature.properties.html_mouseover);
         });
     },
 
@@ -1086,7 +1095,7 @@ module.exports = module.exports = {
             }
             layerTree.applyFilters({
                 "system.all": {
-                    match: "any", columns: [
+                   match: "any", columns: [
                         {fieldname: "compound", expression: "=", value: chemicalId, restriction: false}
                     ]
 

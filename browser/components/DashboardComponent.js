@@ -13,6 +13,8 @@ import SortableProfileComponent from './SortableProfileComponent';
 import SortablePlotsGridComponent from './SortablePlotsGridComponent';
 import {isNumber} from 'util';
 import arrayMove from 'array-move';
+import trustedIpAddresses from '../trustedIpAddresses';
+
 
 const uuidv1 = require('uuid/v1');
 
@@ -44,6 +46,9 @@ class DashboardComponent extends React.Component {
             if (typeof license === 'object') {
                 license = license.license;
             }
+        }
+        if (trustedIpAddresses.includes(window._vidiIp)) {
+            license = "premium";
         }
 
         let dashboardItems = [];
@@ -406,7 +411,7 @@ class DashboardComponent extends React.Component {
         });
     }
 
-    getPlots(getArchived=true) {
+    getPlots(getArchived = true) {
         let allPlots = [];
         this.state.projectPlots.map((item) => {
             item.fromProject = true;
@@ -417,11 +422,11 @@ class DashboardComponent extends React.Component {
             allPlots.push(item);
         })
         allPlots = allPlots.filter((item) => {
-           if (getArchived) {
-            return item;
-           } else if (!item.isArchived) {
-            return item;
-           }
+            if (getArchived) {
+                return item;
+            } else if (!item.isArchived) {
+                return item;
+            }
         })
         allPlots = allPlots.sort((a, b) => b['created_at'] - a['created_at']);
         return allPlots;
