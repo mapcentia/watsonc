@@ -351,12 +351,14 @@ class ModalFeatureComponent extends React.Component {
                     <div style={{display: 'flex', height: '50px'}}>
                         <div style={{width: '30px', height: '30px', marginLeft: '25px'}}>
                         <a target="_blank" href={`http://data.geus.dk/JupiterWWW/borerapport.jsp?dgunr=${this.props.feature.properties.boreholeno}`}>
-                            <img style={{width: '30px', height: '30px'}} src="https://watsonc-test.vidi.gc2.io/app/jupiter/chemicals,sensor,system/favicon.ico" />
+                            <img style={{width: '30px', height: '30px'}} src="https://mapcentia-www.s3-eu-west-1.amazonaws.com/calypso/icons/geus.ico" /><br/>
+                            <span style={{fontSize: '70%', paddingLeft: '3px'}}>Jupiter</span>
                         </a>
                         </div>
                         <div style={{width: '30px', height: '30px', marginLeft: '30px'}}>
                         <a target="_blank" href={`http://borpro.dk/borejournal.asp?dguNr=${this.props.feature.properties.boreholeno}`}>
-                            <img style={{width: '30px', height: '30px'}} src="https://watsonc-test.vidi.gc2.io/app/jupiter/chemicals,sensor,system/favicon.ico" />
+                            <img style={{width: '30px', height: '30px'}} src="https://mapcentia-www.s3-eu-west-1.amazonaws.com/calypso/icons/borpro.ico" /><br/>
+                            <span style={{fontSize: '70%'}}>Borpro</span>
                         </a>
                         </div>
                         <div style={{width: '80px', height: '30px', marginLeft: 'auto', marginRight: '60px'}}>
