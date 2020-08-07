@@ -758,7 +758,6 @@ module.exports = module.exports = {
             });
         }
 
-
         let filteredLayers = [];
         enabledLoctypeIds = [];
         parameters.layers.map(layerName => {
@@ -794,15 +793,6 @@ module.exports = module.exports = {
         setTimeout(() => {
             backboneEvents.get().trigger(`${MODULE_NAME}:enabledLoctypeIdsChange`);
         }, 1500);
-
-        if (parameters.chemical) {
-            _self.enableChemical(parameters.chemical, filteredLayers);
-        } else {
-            lastSelectedChemical = parameters.chemical;
-            filteredLayers.map(layerName => {
-                layerTree.reloadLayer(layerName); // TODO
-            });
-        }
     },
 
     /**
@@ -1109,6 +1099,7 @@ module.exports = module.exports = {
                 }
             };
             layerTree.setOnLoad(LAYER_NAMES[0], onLoadCallback, "watsonc");
+            console.log("layersToEnable", layersToEnable);
             layersToEnable.map(layerName => {
                 layerTree.reloadLayer(layerName);
             });
