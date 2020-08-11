@@ -86,10 +86,6 @@ class PlotManager {
                         body.data.map(item => {
                             results.push(item);
                         });
-                        console.log("results");
-                        console.log(results);
-
-
                         let plots = [];
                         results.map((item, index) => {
                             plots[index] = JSON.parse(item.value);

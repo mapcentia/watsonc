@@ -724,8 +724,6 @@ module.exports = module.exports = {
     },
 
     onApplyLayersAndChemical: (parameters) => {
-        console.log("parameters", parameters)
-
         // Disabling all layers
         layerTree.getActiveLayers().map(layerNameToEnable => {
             if (layerNameToEnable !== LAYER_NAMES[2])
