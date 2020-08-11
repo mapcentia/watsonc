@@ -358,7 +358,7 @@ class ModalFeatureComponent extends React.Component {
                         </a>
                         </div>
                         <div style={{width: '30px', height: '30px', marginLeft: '30px'}}>
-                        <a target="_blank" href={`http://borpro.dk/borejournal.asp?dguNr=${this.props.feature.properties.boreholeno}`}>
+                        <a target="_blank" href={`http://borpro.dk/borejournal.asp?dguNr=${this.props.feature.properties.boreholeno.replace(/\s/g, '')}`}>
                             <img style={{width: '30px', height: '30px'}} src="https://mapcentia-www.s3-eu-west-1.amazonaws.com/calypso/icons/borpro.ico" /><br/>
                             <span style={{fontSize: '70%'}}>Borpro</span>
                         </a>
