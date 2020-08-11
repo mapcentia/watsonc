@@ -48,6 +48,8 @@ class ModalFeatureComponent extends React.Component {
             this.setState({[selectedCategoryKey]: true});
         } catch (e) {
             console.info(e.message);
+            // Hack to open group when Pesticid Overblik is chosen
+            this.setState({"showPesticider og nedbrydningsprodMeasurements": true});
         }
     }
 
