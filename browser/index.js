@@ -156,7 +156,7 @@ module.exports = module.exports = {
             $("#watsonc-licens-btn2").html("Vælg");
         }
 
-        $("#btn-plan").on("click", ()=>{
+        $("#btn-plan").on("click", () => {
             $('#watsonc-limits-reached-text').hide();
             $('#upgrade-modal').modal('show');
         })
@@ -779,7 +779,9 @@ module.exports = module.exports = {
             if (layerName.indexOf(LAYER_NAMES[3]) === 0) {
                 filteredLayers.push(layerName);
                 switchLayer.init(LAYER_NAMES[4], true);
-
+                filteredLayers.map(layerName => {
+                    layerTree.reloadLayer(layerName);
+                });
                 layerTree.setStyle(LAYER_NAMES[3], {
                     "color": "#ffffff",
                     "weight": 0,
@@ -793,6 +795,7 @@ module.exports = module.exports = {
         setTimeout(() => {
             backboneEvents.get().trigger(`${MODULE_NAME}:enabledLoctypeIdsChange`);
         }, 1500);
+
     },
 
     /**
@@ -1085,7 +1088,7 @@ module.exports = module.exports = {
             }
             layerTree.applyFilters({
                 "system.all": {
-                   match: "any", columns: [
+                    match: "any", columns: [
                         {fieldname: "compound", expression: "=", value: chemicalId, restriction: false}
                     ]
 
