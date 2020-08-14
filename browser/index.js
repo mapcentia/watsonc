@@ -774,9 +774,9 @@ module.exports = module.exports = {
                     }
                 }
             }
-            if (layerName.indexOf(LAYER_NAMES[3]) === 0) {
+            if (layerName.indexOf(LAYER_NAMES[3]) === 0 || layerName.indexOf(LAYER_NAMES[1]) === 0) {
                 filteredLayers.push(layerName);
-                switchLayer.init(LAYER_NAMES[4], true);
+                if (layerName.indexOf(LAYER_NAMES[3]) === 0) switchLayer.init(LAYER_NAMES[4], true);
                 filteredLayers.map(layerName => {
                     layerTree.reloadLayer(layerName);
                 });
