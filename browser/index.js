@@ -9,7 +9,8 @@ import MenuTimeSeriesComponent from './components/MenuTimeSeriesComponent';
 import MenuDataSourceAndTypeSelectorComponent from './components/MenuDataSourceAndTypeSelectorComponent';
 import MenuProfilesComponent from './components/MenuProfilesComponent';
 import IntroModal from './components/IntroModal';
-import {LAYER_NAMES, WATER_LEVEL_KEY} from './constants';
+import AnalyticsComponent from './components/AnalyticsComponent';
+import {LAYER_NAMES, WATER_LEVEL_KEY, KOMMUNER} from './constants';
 import trustedIpAddresses from './trustedIpAddresses';
 
 
@@ -629,6 +630,16 @@ module.exports = module.exports = {
             }
         });
         $(`#search-border`).trigger(`click`);
+
+        try {
+            ReactDOM.render(
+                <AnalyticsComponent kommuner={KOMMUNER}
+
+                />, document.getElementById("watsonc-analytics-content"));
+        } catch (e) {
+            console.error(e);
+        }
+
     },
 
 
