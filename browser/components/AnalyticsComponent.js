@@ -21,7 +21,7 @@ class AnalyticsComponent extends React.Component {
     handleSubmit(event) {
         this.setState({loading: true});
         axios.get(`/api/extension/watsonc/report?komcode=${this.kommune.current.value}&userid=1234`).then(response => {
-            fileSaver.saveAs("http://127.0.0.1:3000" + response.data.url, "rapport.xlsx");
+            fileSaver.saveAs(response.data.url, "rapport.xlsx");
         }).catch(error => {
             console.log(`Error occured`, error);
         }).finally(() => {
