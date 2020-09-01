@@ -1,4 +1,8 @@
-import React from 'react';
+import React from "react";
+import axios from "axios";
+import fileSaver from "file-saver";
+import LoadingOverlay from './../../../../browser/modules/shared/LoadingOverlay';
+
 
 /**
  * Analytics Component
@@ -9,33 +13,46 @@ class AnalyticsComponent extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.kommune = React.createRef();
         this.type = React.createRef();
+        this.state = {
+            loading: false
+        };
     }
 
     handleSubmit(event) {
-        alert(this.kommune.current.value + " " + this.type.current.value);
+        this.setState({loading: true});
+        axios.get(`/api/extension/watsonc/report?komcode=${this.kommune.current.value}&userid=1234`).then(response => {
+            fileSaver.saveAs("http://127.0.0.1:3000" + response.data.url, "rapport.xlsx");
+        }).catch(error => {
+            console.log(`Error occured`, error);
+        }).finally(() => {
+                this.setState({loading: false});
+            }
+        )
         event.preventDefault();
     }
 
     render() {
         let data = this.props.kommuner;
         let makeItem = function (i) {
-            return <option key={i.komkode} value={i.komnavn}>{i.komnavn}</option>;
+            return <option key={i.komkode} value={i.komkode}>{i.komnavn}</option>;
         };
 
         return (
             <form className="form-horizontal" onSubmit={this.handleSubmit}>
+                {this.state.loading ? <LoadingOverlay/> : false}
                 <div className="form-group">
-                    <label htmlFor="watsonc-kommune">Kommune</label>
-                    <select className="form-control" id="watsonc-kommune" ref={this.kommune}>{data.map(makeItem)}</select>
-                </div>
-                <div className="form-group">
-                    <label htmlFor="watsonc-type">Type</label>
+                    <label htmlFor="watsonc-type">Vælg rapport</label>
                     <select className="form-control" id="watsonc-type" ref={this.type}>
-                        <option key="1" value="1">Type 1</option>
+                        <option key="1" value="1">Pesticidoverblik</option>
                     </select>
                 </div>
                 <div className="form-group">
-                    <button className="btn btn-primary" type="submit" value="Submit">Hent</button>
+                    <label htmlFor="watsonc-kommune">Vælg afgrænsning</label>
+                    <select className="form-control" id="watsonc-kommune"
+                            ref={this.kommune}>{data.map(makeItem)}</select>
+                </div>
+                <div className="form-group">
+                    <button className="btn btn-primary" type="submit" value="Submit">Download rapport</button>
                 </div>
             </form>
         );

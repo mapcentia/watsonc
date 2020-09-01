@@ -45,14 +45,14 @@ const profileScriptHandler = (req, res) => {
         result += data.toString();
     });
 
-    pythonProcess.stdout.on('close', function(code) {
+    pythonProcess.stdout.on('close', function (code) {
         let parsedData = false;
 
         let error = false;
         try {
             let localParsedData = JSON.parse(result);
             parsedData = localParsedData;
-        } catch(e) {
+        } catch (e) {
             error = e.toString();
         }
 
@@ -89,7 +89,7 @@ const instersectionScriptHandler = (req, res) => {
     if (req.body.profile && req.body.profile.type) {
         let table = `chemicals.boreholes_time_series_without_chemicals`;
         let sql = `SELECT * FROM ${table} WHERE ST_Intersects(ST_Transform(ST_geomfromtext('${req.body.data}', 4326), 25832), the_geom)`;
-    
+
         let url = config.gc2.host + `/api/v1/sql/jupiter`;
         let data = {
             q: Buffer.from(sql).toString('base64'),
@@ -98,7 +98,7 @@ const instersectionScriptHandler = (req, res) => {
             lifetime: 0,
             client_encoding: `UTF8`,
         };
-    
+
         request.post({url, form: data}, function (err, localRes) {
             let boreholeNames = [];
             let parsedResponse = JSON.parse(localRes.body);
@@ -128,7 +128,7 @@ const instersectionScriptHandler = (req, res) => {
                 try {
                     let localParsedData = JSON.parse(data.toString());
                     parsedData = localParsedData;
-                } catch(e) {
+                } catch (e) {
                     error = e.toString();
                 }
 
@@ -150,7 +150,7 @@ const instersectionScriptHandler = (req, res) => {
                     }
                 }
             });
-    
+
             pythonProcess.stderr.on('data', (data) => {
                 errorOccured = true;
                 res.status(400);
@@ -159,7 +159,7 @@ const instersectionScriptHandler = (req, res) => {
                     message: data.toString()
                 });
             });
-        }); 
+        });
     } else {
         res.status(400);
         res.send({
@@ -169,4 +169,46 @@ const instersectionScriptHandler = (req, res) => {
     }
 };
 
-module.exports = {instersectionScriptHandler, profileScriptHandler};
+const reportHandler = (req, res) => {
+    if (!config.gc2.host) throw new Error(`GC2 host has to be specified`);
+
+    console.log(__dirname);
+
+    const pythonProcess = spawn(moduleConfig.pythonCommand, [moduleConfig.reportScriptPath, req.query.komcode, moduleConfig.reportSavePath, req.query.userid], {
+        cwd: require('path').dirname(moduleConfig.reportScriptPath),
+        shell: true
+    });
+
+    let result = '';
+    let errorOccured = false;
+
+    pythonProcess.stdout.on('data', (data) => {
+        result += data.toString();
+    });
+
+    pythonProcess.stdout.on('close', function (code) {
+
+        if (errorOccured === true) {
+
+            res.status(400);
+            res.send({
+                status: `error`,
+                message: result,
+                process: pythonProcess.spawnargs
+            });
+        } else {
+            res.send({
+                success: true,
+                path: result,
+                url: "/tmp/" + result.split("/").reverse()[0]
+            });
+        }
+
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+        errorOccured = true;
+    });
+}
+
+module.exports = {instersectionScriptHandler, profileScriptHandler, reportHandler};

@@ -20,4 +20,7 @@ router.get('/api/extension/watsonc/:dataBase/profiles', profilesController.getAl
 router.post('/api/extension/watsonc/:dataBase/profiles', profilesController.createProfile);
 router.delete('/api/extension/watsonc/:dataBase/profiles/:id', profilesController.deleteProfile);
 
+router.get('/api/extension/watsonc/report', scripts.reportHandler);
+
+
 module.exports = router;
