@@ -902,6 +902,8 @@ module.exports = module.exports = {
                             onPlotHide={dashboardComponentInstance.handleHidePlot}
                             onPlotShow={dashboardComponentInstance.handleShowPlot}
                             license={dashboardComponentInstance.getLicense()}
+                            modalScroll={dashboardComponentInstance.getModalScroll()}
+                            setModalScroll={dashboardComponentInstance.setModalScroll}
                             onAddMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex) => {
                                 dashboardComponentInstance.addMeasurement(plotId, featureGid, featureKey, featureIntakeIndex);
                             }}

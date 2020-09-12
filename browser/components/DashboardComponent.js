@@ -76,7 +76,8 @@ class DashboardComponent extends React.Component {
             createdProfileChemical: false,
             createdProfileName: false,
             lastUpdate: false,
-            license: license
+            license: license,
+            modalScroll: {}
         };
 
         this.plotManager = new PlotManager();
@@ -105,6 +106,9 @@ class DashboardComponent extends React.Component {
         this.handleNewPlotNameChange = this.handleNewPlotNameChange.bind(this);
         this.handlePlotSort = this.handlePlotSort.bind(this);
         this.getLicense = this.getLicense.bind(this);
+
+        this.setModalScroll = this.setModalScroll.bind(this);
+        this.getModalScroll = this.getModalScroll.bind(this);
 
         _self = this;
     }
@@ -146,6 +150,14 @@ class DashboardComponent extends React.Component {
 
     getLicense() {
         return this.state.license;
+    }
+
+    getModalScroll() {
+        return this.state.modalScroll;
+    }
+
+    setModalScroll(modalScroll) {
+        this.setState({ modalScroll });
     }
 
     refreshProfilesList() {
