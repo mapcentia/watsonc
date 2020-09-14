@@ -24,11 +24,18 @@ class ModalFeatureComponent extends React.Component {
             plotsSearchTerm: ``,
             activePlots: this.props.initialActivePlots,
         }
+        this.listRef = React.createRef();
         this.onPlotAdd = this.onPlotAdd.bind(this);
         this.handleHidePlot = this.handleHidePlot.bind(this);
         this.handleShowPlot = this.handleShowPlot.bind(this);
         this.hasSelectAll = this.hasSelectAll.bind(this);
         this.setSelectAll = this.setSelectAll.bind(this);
+    }
+
+    getSnapshotBeforeUpdate(prevProps, prevState) {
+        const list = this.listRef.current;
+        const scroll = list.scrollHeight - list.scrollTop;
+        this.props.setModalScroll(scroll);
     }
 
     componentDidMount() {
@@ -50,6 +57,13 @@ class ModalFeatureComponent extends React.Component {
             console.info(e.message);
             // Hack to open group when Pesticid Overblik is chosen
             this.setState({"showPesticider og nedbrydningsprodMeasurements": true});
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.props.modalScroll) {
+            const list = this.listRef.current;
+            list.scrollTop = list.scrollHeight - this.props.modalScroll;
         }
     }
 
@@ -406,7 +420,7 @@ class ModalFeatureComponent extends React.Component {
             </div>
             <div style={{ height: `calc(100% - 74px)`, display: `flex` }}>
                 <div className="measurements-modal_left-column measurements-modal_scrollable">{propertiesControls}</div>
-                <div className="measurements-modal_right-column measurements-modal_scrollable">{plotsControls}</div>
+                <div className="measurements-modal_right-column measurements-modal_scrollable" ref={this.listRef}>{plotsControls}</div>
             </div>
         </div>);
     }
