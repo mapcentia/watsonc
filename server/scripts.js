@@ -113,17 +113,12 @@ const instersectionScriptHandler = (req, res) => {
             let crss = {"EPSG:25832": "+proj=utm +zone=" + zone + " +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs "};
             let reprojectedProfile = reproject.reproject(req.body.profile, 'EPSG:4326', 'EPSG:25832', crss);
 
-            console.log(reprojectedProfile.geometry.coordinates);
-
-
             let inputJSON = {
                 configFolder: require('path').dirname(moduleConfig.intersectionsScriptPath) + '/../profil',
                 coordinates: reprojectedProfile.geometry.coordinates,
                 DGU_nr: boreholeNames,
                 Profile_depth: parseInt(req.body.profileDepth)
             };
-
-            console.log("INPUT til Python script", inputJSON);
 
             let errorOccured = false;
             const pythonProcess = spawn(moduleConfig.pythonCommand, [moduleConfig.intersectionsScriptPath, JSON.stringify(inputJSON)]);
