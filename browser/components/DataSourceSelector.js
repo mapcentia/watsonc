@@ -9,6 +9,7 @@ import {selectLayer, unselectLayer} from '../redux/actions'
  */
 class DataSourceSelector extends React.Component {
     constructor(props) {
+        console.log(props)
         super(props);
     }
 
@@ -30,6 +31,9 @@ class DataSourceSelector extends React.Component {
                     case "4":
                         key = `key3`;
                         break;
+                    case "5":
+                        key = `key4`;
+                        break;
                 }
                 $(`#${key}`).trigger("click");
             });
@@ -39,6 +43,16 @@ class DataSourceSelector extends React.Component {
     render() {
         const generateLayerRecord = (key, item) => {
             let selected = (this.props.selectedLayers.indexOf(item.originalLayerKey + (item.additionalKey ? `#${item.additionalKey}` : ``)) !== -1);
+            let titles = []
+            let itemTitle = item.title;
+            if (itemTitle) {
+                titles.push(itemTitle);
+            }
+            let translatedTitle = __(item.title);
+            if (translatedTitle && titles.indexOf(translatedTitle) === -1) {
+                titles.push(translatedTitle)
+            }
+
             return (<div key={key} style={{paddingBottom: `8px`}}>
                 <div className="checkbox">
                     <label id={key}>
@@ -51,7 +65,7 @@ class DataSourceSelector extends React.Component {
                                 } else {
                                     this.props.selectLayer(item.originalLayerKey, item.additionalKey);
                                 }
-                            }}/> {item.title}
+                            }}/> {titles.join(' / ')}
                     </label>
                 </div>
             </div>);
@@ -60,12 +74,13 @@ class DataSourceSelector extends React.Component {
         return (<div>
             <p>{__(`Please select at least one layer`)}</p>
             <div>
-                <h4>{__(`Groundwater`)}</h4>
+                <h4>Grundvand</h4>
                 {generateLayerRecord(`key0`, this.props.layers[0])}
+                {generateLayerRecord(`key4`, this.props.layers[4])}
                 {generateLayerRecord(`key1`, this.props.layers[1])}
-                <h4>{__(`Streams`)}</h4>
+                <h4>Vandløb, kyst, bassiner</h4>
                 {generateLayerRecord(`key2`, this.props.layers[2])}
-                <h4>{__(`Rain`)}</h4>
+                <h4>Nedbør</h4>
                 {generateLayerRecord(`key3`, this.props.layers[3])}
             </div>
         </div>);

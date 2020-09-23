@@ -9,7 +9,10 @@ import MenuTimeSeriesComponent from './components/MenuTimeSeriesComponent';
 import MenuDataSourceAndTypeSelectorComponent from './components/MenuDataSourceAndTypeSelectorComponent';
 import MenuProfilesComponent from './components/MenuProfilesComponent';
 import IntroModal from './components/IntroModal';
-import {LAYER_NAMES, WATER_LEVEL_KEY} from './constants';
+import AnalyticsComponent from './components/AnalyticsComponent';
+import {LAYER_NAMES, WATER_LEVEL_KEY, KOMMUNER} from './constants';
+import trustedIpAddresses from './trustedIpAddresses';
+
 
 import reduxStore from './redux/store';
 import {setAuthenticated} from './redux/actions';
@@ -82,15 +85,19 @@ const DATA_SOURCES = [{
 }, {
     originalLayerKey: LAYER_NAMES[1],
     additionalKey: `1`,
-    title: __(`CALYPSO stations`)
+    title: "Online stationer"
 }, {
     originalLayerKey: LAYER_NAMES[1],
     additionalKey: `3`,
-    title: __(`CALYPSO stations`)
+    title: "Online stationer"
 }, {
     originalLayerKey: LAYER_NAMES[1],
     additionalKey: `4`,
-    title: __(`CALYPSO stations`)
+    title: "Online stationer"
+}, {
+    originalLayerKey: LAYER_NAMES[3],
+    additionalKey: ``,
+    title: "Pesticidoverblik"
 }];
 
 /**
@@ -126,25 +133,31 @@ module.exports = module.exports = {
         let queryParams = new URLSearchParams(window.location.search);
         let licenseToken = queryParams.get('license');
         let license = null;
+
         if (licenseToken) {
             license = JSON.parse(base64.decode(licenseToken.split('.')[1]));
             if (typeof license === 'object') {
                 license = license.license;
-                if (license === "premium") {
-                    $("#watsonc-licens-btn1").html("Vælg");
-                    $("#watsonc-licens-btn1").attr("disabled", true);
-                    $("#watsonc-licens-btn2").html("Valgt");
-                    $("#watsonc-licens-btn2").attr("disabled", true);
 
-                } else {
-                    $("#watsonc-licens-btn1").html("Valgt");
-                    $("#watsonc-licens-btn1").attr("disabled", true);
-                    $("#watsonc-licens-btn2").html("Vælg");
-                }
             }
         }
+        console.log("IP address", window._vidiIp);
+        if (trustedIpAddresses.includes(window._vidiIp)) {
+            license = "premium";
+        }
 
-        $("#btn-plan").on("click", ()=>{
+        if (license === "premium") {
+            $("#watsonc-licens-btn1").html("");
+            $("#watsonc-licens-btn2").html("Valgt");
+            $("#watsonc-licens-btn2").attr("disabled", true);
+            $("#watsonc-licens-btn2").css("pointer-events", "none");
+
+        } else {
+            $("#watsonc-licens-btn1").html("Valgt");
+            $("#watsonc-licens-btn2").html("Vælg");
+        }
+
+        $("#btn-plan").on("click", () => {
             $('#watsonc-limits-reached-text').hide();
             $('#upgrade-modal').modal('show');
         })
@@ -152,6 +165,7 @@ module.exports = module.exports = {
         backboneEvents.get().on(`session:authChange`, authenticated => {
             reduxStore.dispatch(setAuthenticated(authenticated));
         });
+
 
         backboneEvents.get().on("ready:meta", function () {
             console.log("Opening panels (Meta event)");
@@ -356,7 +370,7 @@ module.exports = module.exports = {
                         });
 
                         let qLayer;
-                        if (layerName.indexOf(LAYER_NAMES[0]) > -1) {
+                        if (layerName.indexOf(LAYER_NAMES[0]) > -1 || layerName.indexOf(LAYER_NAMES[3]) > -1) {
                             qLayer = "chemicals.boreholes_time_series_with_chemicals";
                         } else {
                             qLayer = "sensor.sensordata_with_correction";
@@ -382,7 +396,7 @@ module.exports = module.exports = {
                                 }
 
 
-                                _self.createModal(response.features, false, titleAsLink);
+                                _self.createModal(response.features, false, titleAsLink, false);
                                 if (!dashboardComponentInstance) {
                                     throw new Error(`Unable to find the component instance`);
                                 }
@@ -449,6 +463,9 @@ module.exports = module.exports = {
                         }
                         if (layerTree.getActiveLayers().indexOf(LAYER_NAMES[0]) > -1) {
                             layerTree.reloadLayer(LAYER_NAMES[0]);
+                        }
+                        if (layerTree.getActiveLayers().indexOf(LAYER_NAMES[3]) > -1) {
+                            layerTree.reloadLayer(LAYER_NAMES[3]);
                         }
                     });
                 }, 500);
@@ -588,9 +605,10 @@ module.exports = module.exports = {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
                                 if (profiles && window.menuProfilesComponentInstance) window.menuProfilesComponentInstance.setProfiles(profiles);
                             }}
-                            onActivePlotsChange={(activePlots) => {
+                            onActivePlotsChange={(activePlots, plots) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
                                 if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setActivePlots(activePlots);
+                                if (modalComponentInstance) _self.createModal(false, plots);
                             }}
                             onActiveProfilesChange={(activeProfiles) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
@@ -612,6 +630,16 @@ module.exports = module.exports = {
             }
         });
         $(`#search-border`).trigger(`click`);
+
+        try {
+            ReactDOM.render(
+                <AnalyticsComponent kommuner={KOMMUNER}
+
+                />, document.getElementById("watsonc-analytics-content"));
+        } catch (e) {
+            console.error(e);
+        }
+
     },
 
 
@@ -718,6 +746,11 @@ module.exports = module.exports = {
             _self.bindToolTipOnStations()
         }, "watsonc");
 
+        // Bind tool tip to  Pesticidoverblik
+        layerTree.setOnLoad(LAYER_NAMES[3], () => {
+            _self.bindToolTipOnPesticidoverblik()
+        }, "watsonc");
+
         // Enable raster layer
         if (parameters.layers.indexOf(LAYER_NAMES[0]) > -1) {
             let rasterToEnable = `system._${parameters.chemical}`;
@@ -752,6 +785,19 @@ module.exports = module.exports = {
                     }
                 }
             }
+            if (layerName.indexOf(LAYER_NAMES[3]) === 0 || layerName.indexOf(LAYER_NAMES[1]) === 0) {
+                filteredLayers.push(layerName);
+                if (layerName.indexOf(LAYER_NAMES[3]) === 0) switchLayer.init(LAYER_NAMES[4], true);
+                filteredLayers.map(layerName => {
+                    layerTree.reloadLayer(layerName);
+                });
+                layerTree.setStyle(LAYER_NAMES[3], {
+                    "color": "#ffffff",
+                    "weight": 0,
+                    "opacity": 0.0,
+                    "fillOpacity": 0.0
+                });
+            }
         });
 
         // Wait a bit with trigger state, so this
@@ -759,14 +805,6 @@ module.exports = module.exports = {
             backboneEvents.get().trigger(`${MODULE_NAME}:enabledLoctypeIdsChange`);
         }, 1500);
 
-        if (parameters.chemical) {
-            _self.enableChemical(parameters.chemical, filteredLayers);
-        } else {
-            lastSelectedChemical = parameters.chemical;
-            filteredLayers.map(layerName => {
-                layerTree.reloadLayer(layerName); // TODO
-            });
-        }
     },
 
     /**
@@ -808,7 +846,7 @@ module.exports = module.exports = {
         }
 
     },
-    createModal: (features, plots = false, titleAsLink = null) => {
+    createModal: (features, plots = false, titleAsLink = null, setTitle = true) => {
         if (features === false) {
             if (lastFeatures) {
                 features = lastFeatures;
@@ -837,10 +875,14 @@ module.exports = module.exports = {
                 }
             });
 
-            if (titles.length === 1) {
-                $("#" + FEATURE_CONTAINER_ID).find(`.modal-title`).html(titles[0]);
+            if (setTitle === true) {
+                if (titles.length === 1) {
+                    $("#" + FEATURE_CONTAINER_ID).find(`.modal-title`).html(titles[0]);
+                } else {
+                    $("#" + FEATURE_CONTAINER_ID).find(`.modal-title`).html(`${__(`Boreholes`)} (${titles.join(`, `)})`);
+                }
             } else {
-                $("#" + FEATURE_CONTAINER_ID).find(`.modal-title`).html(`${__(`Boreholes`)} (${titles.join(`, `)})`);
+                $("#" + FEATURE_CONTAINER_ID).find(`.modal-title`).html('');
             }
 
             if (document.getElementById(FORM_FEATURE_CONTAINER_ID)) {
@@ -856,7 +898,12 @@ module.exports = module.exports = {
                             names={names}
                             limits={limits}
                             initialPlots={(existingPlots ? existingPlots : [])}
+                            initialActivePlots={dashboardComponentInstance.getActivePlots()}
+                            onPlotHide={dashboardComponentInstance.handleHidePlot}
+                            onPlotShow={dashboardComponentInstance.handleShowPlot}
                             license={dashboardComponentInstance.getLicense()}
+                            modalScroll={dashboardComponentInstance.getModalScroll()}
+                            setModalScroll={dashboardComponentInstance.setModalScroll}
                             onAddMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex) => {
                                 dashboardComponentInstance.addMeasurement(plotId, featureGid, featureKey, featureIntakeIndex);
                             }}
@@ -980,11 +1027,19 @@ module.exports = module.exports = {
 
     bindToolTipOnStations() {
         let stores = layerTree.getStores();
-        stores["v:sensor.sensordata_without_correction"].layer.eachLayer(function (layer) {
+        stores[LAYER_NAMES[1]].layer.eachLayer(function (layer) {
             let feature = layer.feature;
             let html = [];
             html.push(`${feature.properties.mouseover}`);
             layer.bindTooltip(`${html.join('<br>')}`);
+        });
+    },
+
+    bindToolTipOnPesticidoverblik() {
+        let stores = layerTree.getStores();
+        stores[LAYER_NAMES[3]].layer.eachLayer(function (layer) {
+            let feature = layer.feature;
+            layer.bindTooltip(feature.properties.html_mouseover);
         });
     },
 
@@ -1004,9 +1059,12 @@ module.exports = module.exports = {
                 if ("maxvalue" in feature.properties && "latestvalue" in feature.properties) {
 
                     let html = [];
+                    // html.push(`
+                    //     Historisk: ${!feature.properties.maxlimit ? "< " : ""} ${feature.properties.maxvalue}<br>
+                    //     Seneste: ${!feature.properties.latestlimit ? "< " : ""} ${feature.properties.latestvalue}<br>`);
                     html.push(`
-                        ${__(`Max`)}: ${feature.properties.maxvalue}<br>
-                        ${__(`Latest`)}: ${feature.properties.latestvalue}<br>`);
+                        Historisk: ${feature.properties.maxvalue}<br>
+                        Seneste: ${feature.properties.latestvalue}<br>`);
 
                     layer.bindTooltip(`<p><a target="_blank" href="https://data.geus.dk/JupiterWWW/borerapport.jsp?dgunr=${feature.properties.boreholeno}">${feature.properties.boreholeno}</a></p>
                     <b style="color: rgb(16, 174, 140)">${names[lastSelectedChemical]}</b><br>${html.join('<br>')}`);
@@ -1058,6 +1116,7 @@ module.exports = module.exports = {
                 }
             };
             layerTree.setOnLoad(LAYER_NAMES[0], onLoadCallback, "watsonc");
+            console.log("layersToEnable", layersToEnable);
             layersToEnable.map(layerName => {
                 layerTree.reloadLayer(layerName);
             });

@@ -13,11 +13,13 @@ import SortableProfileComponent from './SortableProfileComponent';
 import SortablePlotsGridComponent from './SortablePlotsGridComponent';
 import {isNumber} from 'util';
 import arrayMove from 'array-move';
+import trustedIpAddresses from '../trustedIpAddresses';
+
 
 const uuidv1 = require('uuid/v1');
 
 const DASHBOARD_ITEM_PLOT = 0;
-const DASHBOARD_ITEM_PROJECT_PLOT = 0;
+const DASHBOARD_ITEM_PROJECT_PLOT = 3;
 const DASHBOARD_ITEM_PROFILE = 1;
 const DASHBOARD_ITEM_PROJECT_PROFILE = 2;
 
@@ -45,6 +47,9 @@ class DashboardComponent extends React.Component {
                 license = license.license;
             }
         }
+        if (trustedIpAddresses.includes(window._vidiIp)) {
+            license = "premium";
+        }
 
         let dashboardItems = [];
         if (this.props.initialPlots) {
@@ -71,7 +76,8 @@ class DashboardComponent extends React.Component {
             createdProfileChemical: false,
             createdProfileName: false,
             lastUpdate: false,
-            license: license
+            license: license,
+            modalScroll: {}
         };
 
         this.plotManager = new PlotManager();
@@ -100,6 +106,9 @@ class DashboardComponent extends React.Component {
         this.handleNewPlotNameChange = this.handleNewPlotNameChange.bind(this);
         this.handlePlotSort = this.handlePlotSort.bind(this);
         this.getLicense = this.getLicense.bind(this);
+
+        this.setModalScroll = this.setModalScroll.bind(this);
+        this.getModalScroll = this.getModalScroll.bind(this);
 
         _self = this;
     }
@@ -141,6 +150,14 @@ class DashboardComponent extends React.Component {
 
     getLicense() {
         return this.state.license;
+    }
+
+    getModalScroll() {
+        return this.state.modalScroll;
+    }
+
+    setModalScroll(modalScroll) {
+        this.setState({ modalScroll });
     }
 
     refreshProfilesList() {
@@ -242,7 +259,7 @@ class DashboardComponent extends React.Component {
 
     handleChangeDatatypeProfile(profileKey) {
         let selectedProfile = false;
-        this.state.profiles.map(item => {
+        this.getProfiles().map(item => {
             if (item.key === profileKey) {
                 selectedProfile = item;
             }
@@ -406,7 +423,7 @@ class DashboardComponent extends React.Component {
         });
     }
 
-    getPlots(getArchived=true) {
+    getPlots(getArchived = true) {
         let allPlots = [];
         this.state.projectPlots.map((item) => {
             item.fromProject = true;
@@ -417,11 +434,11 @@ class DashboardComponent extends React.Component {
             allPlots.push(item);
         })
         allPlots = allPlots.filter((item) => {
-           if (getArchived) {
-            return item;
-           } else if (!item.isArchived) {
-            return item;
-           }
+            if (getArchived) {
+                return item;
+            } else if (!item.isArchived) {
+                return item;
+            }
         })
         allPlots = allPlots.sort((a, b) => b['created_at'] - a['created_at']);
         return allPlots;
@@ -577,7 +594,7 @@ class DashboardComponent extends React.Component {
                     activePlots: activePlotsCopy
                 });
 
-                this.props.onActivePlotsChange(activePlotsCopy);
+                this.props.onActivePlotsChange(activePlotsCopy, this.getPlots());
             } else {
                 this.setState({
                     plots: plotsCopy,
@@ -608,7 +625,7 @@ class DashboardComponent extends React.Component {
         if (activePlotsCopy.indexOf(id) > -1) activePlotsCopy.splice(activePlotsCopy.indexOf(id), 1);
 
         this.setState({activePlots: activePlotsCopy});
-        this.props.onActivePlotsChange(activePlotsCopy);
+        this.props.onActivePlotsChange(activePlotsCopy, this.getPlots());
     }
 
     handleDeletePlot(id, name) {
@@ -666,7 +683,7 @@ class DashboardComponent extends React.Component {
         let activePlots = JSON.parse(JSON.stringify(this.state.activePlots));
         if (activePlots.indexOf(plotId) === -1) activePlots.push(plotId);
         this.setState({activePlots}, () => {
-            this.props.onActivePlotsChange(this.state.activePlots);
+            this.props.onActivePlotsChange(this.state.activePlots, this.getPlots());
         });
     }
 
@@ -676,7 +693,7 @@ class DashboardComponent extends React.Component {
         let activePlots = JSON.parse(JSON.stringify(this.state.activePlots));
         if (activePlots.indexOf(plotId) > -1) activePlots.splice(activePlots.indexOf(plotId), 1);
         this.setState({activePlots}, () => {
-            this.props.onActivePlotsChange(this.state.activePlots);
+            this.props.onActivePlotsChange(this.state.activePlots, this.getPlots());
         });
     }
 
@@ -953,7 +970,8 @@ class DashboardComponent extends React.Component {
         this.state.dashboardItems.map((item, index) => {
             if (item.type === DASHBOARD_ITEM_PLOT || item.type === DASHBOARD_ITEM_PROJECT_PLOT) {
                 let plot = item.item;
-                if (this.state.activePlots.indexOf(plot.id) > -1) {
+                let plotId = plot.id || plot.key;
+                if (this.state.activePlots.indexOf(plotId) > -1) {
                     localPlotsControls.push(<SortablePlotComponent
                         key={`sortable_${index}`}
                         viewMode={this.state.view}

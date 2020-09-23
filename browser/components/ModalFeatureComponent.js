@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import {Switch} from '@material-ui/core';
 
 import withDragDropContext from './withDragDropContext';
 import ModalMeasurementComponent from './ModalMeasurementComponent';
@@ -19,9 +21,89 @@ class ModalFeatureComponent extends React.Component {
         this.state = {
             plots: this.props.initialPlots,
             measurementsSearchTerm: ``,
-            plotsSearchTerm: ``
+            plotsSearchTerm: ``,
+            activePlots: this.props.initialActivePlots,
         }
+        this.listRef = React.createRef();
         this.onPlotAdd = this.onPlotAdd.bind(this);
+        this.handleHidePlot = this.handleHidePlot.bind(this);
+        this.handleShowPlot = this.handleShowPlot.bind(this);
+        this.hasSelectAll = this.hasSelectAll.bind(this);
+        this.setSelectAll = this.setSelectAll.bind(this);
+    }
+
+    getSnapshotBeforeUpdate(prevProps, prevState) {
+        const list = this.listRef.current;
+        const scroll = list.scrollHeight - list.scrollTop;
+        this.props.setModalScroll(scroll);
+    }
+
+    componentDidMount() {
+        let { selectedChemical } = this.props;
+        // Simulating the separate group for water level
+        let categories = JSON.parse(JSON.stringify(this.props.categories));
+        let selectedCategory = null;
+        for (let category in categories) {
+            for (let itemId in categories[category]) {
+                if ((itemId + '') === (selectedChemical + '')) {
+                    selectedCategory = category;
+                }
+            }
+        }
+        try {
+            let selectedCategoryKey = 'show' + selectedCategory.trim() + 'Measurements';
+            this.setState({[selectedCategoryKey]: true});
+        } catch (e) {
+            console.info(e.message);
+            // Hack to open group when Pesticid Overblik is chosen
+            this.setState({"showPesticider og nedbrydningsprodMeasurements": true});
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.props.modalScroll) {
+            const list = this.listRef.current;
+            list.scrollTop = list.scrollHeight - this.props.modalScroll;
+        }
+    }
+
+    hasSelectAll() {
+        let categories = JSON.parse(JSON.stringify(this.props.categories));
+        let hasSelectAll = true;
+        for (let category in categories) {
+            if (!hasSelectAll) {
+                break;
+            }
+            let selectedCategoryKey = 'show' + category.trim() + 'Measurements'
+            let isCategorySelected = this.state[selectedCategoryKey];
+            hasSelectAll = hasSelectAll && isCategorySelected;
+        }
+        return hasSelectAll;
+    }
+
+    handleHidePlot(plot) {
+        let activePlots = this.state.activePlots.filter((activePlot) => {
+            return activePlot.id != plot.id;
+        })
+        this.setState({ activePlots });
+        this.props.onPlotHide(plot.id);
+    }
+
+    handleShowPlot(plot) {
+        let activePlots = this.state.activePlots;
+        activePlots.push(plot);
+        this.setState({ activePlots });
+        this.props.onPlotShow(plot.id);
+    }
+
+    setSelectAll(selectAll) {
+        let categories = JSON.parse(JSON.stringify(this.props.categories));
+        let stateUpdate = {}
+        for (let category in categories) {
+            let selectedCategoryKey = 'show' + category.trim() + 'Measurements';
+            stateUpdate[selectedCategoryKey] = selectAll;
+        }
+        this.setState(stateUpdate);
     }
 
     setPlots(plots) {
@@ -48,6 +130,11 @@ class ModalFeatureComponent extends React.Component {
     }
 
     render() {
+
+        // Simulating the separate group for water level
+        let categories = JSON.parse(JSON.stringify(this.props.categories));
+        categories[`Vandstand`] = {};
+        categories[`Vandstand`][`watlevmsl`] = `Water level`;
         // Detect measurements from feature properties
         let plottedProperties = [];
         for (let key in this.props.feature.properties) {
@@ -75,7 +162,8 @@ class ModalFeatureComponent extends React.Component {
                                 key,
                                 intakeIndex: i,
                                 boreholeno: data.boreholeno,
-                                title: data.title
+                                title: data.title,
+                                unit: data.unit
                             });
                         }
                     }
@@ -137,8 +225,9 @@ class ModalFeatureComponent extends React.Component {
                 }
 
                 let icon = false;
+                let measurementData = null;
                 if (!item.custom) {
-                    let measurementData = evaluateMeasurement(json, this.props.limits, item.key, item.intakeIndex);
+                    measurementData = evaluateMeasurement(json, this.props.limits, item.key, item.intakeIndex);
                     icon = measurementIcon.generate(measurementData.maxColor, measurementData.latestColor);
                 }
 
@@ -146,20 +235,23 @@ class ModalFeatureComponent extends React.Component {
                     key={key}
                     icon={icon}
                     onAddMeasurement={this.props.onAddMeasurement}
+                    maxMeasurement={measurementData === null ? null : measurementData.maxMeasurement}
+                    latestMeasurement={measurementData === null ? null : measurementData.latestMeasurement}
+                    latestMeasurementRelative={measurementData === null ? null : Math.round((measurementData.latestMeasurement/measurementData.chemicalLimits[1]) * 100)/100}
+                    chemicalLimits={measurementData === null ? null : measurementData.chemicalLimits}
+                    detectionLimitReachedForMax={measurementData === null ? null : measurementData.detectionLimitReachedForMax}
+                    detectionLimitReachedForLatest={measurementData === null ? null : measurementData.detectionLimitReachedForLatest}
                     gid={this.props.feature.properties.gid}
                     itemKey={item.key}
                     intakeIndex={item.intakeIndex}
                     intakeName={intakeName}
+                    unit={item.unit}
                     title={item.title}/>);
             }
 
             return control;
         };
 
-        // Simulating the separate group for water level
-        let categories = JSON.parse(JSON.stringify(this.props.categories));
-        categories[`Vandstand`] = {};
-        categories[`Vandstand`][`watlevmsl`] = `Water level`;
 
         let propertiesControls = [];
         if (Object.keys(categories).length > 0) {
@@ -180,13 +272,17 @@ class ModalFeatureComponent extends React.Component {
                         return true;
                     }
                 });
-
                 if (measurementControls.length > 0) {
+                    measurementControls.sort(function(a, b) { return b.props.latestMeasurementRelative - a.props.latestMeasurementRelative})
+                    let key = 'show' + categoryName.trim() + 'Measurements'
                     // Category has at least one displayed measurement
                     numberOfDisplayedCategories++;
                     propertiesControls.push(<div key={`category_` + numberOfDisplayedCategories}>
-                        <div><h5>{categoryName.trim()}</h5></div>
-                        <div>{measurementControls}</div>
+                        <div style={{fontSize: '20px'}}><a href="javascript:void(0)" onClick={() => {
+                            console.log(this);
+                            this.setState({[key]: !this.state[key]})
+                        }}><h5>{categoryName.trim()}{this.state[key] ? (<i className="material-icons">keyboard_arrow_down</i>) : (<i className="material-icons">keyboard_arrow_right</i>)}</h5></a></div>
+                        {this.state[key] ? (<div>{measurementControls}</div>) : false}
                     </div>);
                 }
             }
@@ -202,6 +298,7 @@ class ModalFeatureComponent extends React.Component {
             });
 
             if (uncategorizedMeasurementControls.length > 0) {
+                uncategorizedMeasurementControls.sort(function(a, b) { return b.props.latestMeasurementRelative - a.props.latestMeasurementRelative})
                 // Category has at least one displayed measurement
                 numberOfDisplayedCategories++;
                 propertiesControls.push(<div key={`uncategorized_category_0`}>
@@ -240,6 +337,9 @@ class ModalFeatureComponent extends React.Component {
 
         if (this.state.plots && this.state.plots.length > 0) {
             plotsControls = [];
+            const activePlotIds = this.state.activePlots.map((plot) => {
+                return plot.id;
+            });
             this.state.plots.map((plot) => {
                 let display = true;
                 if (this.state.plotsSearchTerm.length > 0) {
@@ -252,15 +352,45 @@ class ModalFeatureComponent extends React.Component {
                     plotsControls.push(<ModalPlotComponent
                         key={`plot_container_` + plot.id}
                         plot={plot}
+                        isActive={activePlotIds.indexOf(plot.id) > -1}
+                        onPlotShow={this.handleShowPlot}
+                        onPlotHide={this.handleHidePlot}
                         onDeleteMeasurement={this.props.onDeleteMeasurement}
                         dataSource={this.props.dataSource}/>);
                 }
             });
         }
 
+        let borproUrl;
+        try {
+            borproUrl = this.props.feature.properties.boreholeno.replace(/\s/g, '');
+        } catch (e) {
+            borproUrl = "";
+        }
+
         return (<div style={{ height: `inherit` }}>
             <div>
                 <div className="measurements-modal_left-column">
+                    <div style={{display: 'flex', height: '50px'}}>
+                        <div style={{width: '30px', height: '30px', marginLeft: '25px'}}>
+                        <a target="_blank" href={`http://data.geus.dk/JupiterWWW/borerapport.jsp?dgunr=${this.props.feature.properties.boreholeno}`}>
+                            <img style={{width: '30px', height: '30px'}} src="https://mapcentia-www.s3-eu-west-1.amazonaws.com/calypso/icons/geus.ico" /><br/>
+                            <span style={{fontSize: '70%'}}>Jupiter</span>
+                        </a>
+                        </div>
+                        <div style={{width: '30px', height: '30px', marginLeft: '30px'}}>
+                        <a target="_blank" href={`http://borpro.dk/borejournal.asp?dguNr=${borproUrl}`}>
+                            <img style={{width: '30px', height: '30px'}} src="https://mapcentia-www.s3-eu-west-1.amazonaws.com/calypso/icons/borpro.ico" /><br/>
+                            <span style={{fontSize: '70%'}}>Borpro</span>
+                        </a>
+                        </div>
+                        <div style={{width: '80px', height: '30px', marginLeft: 'auto', marginRight: '60px'}}>
+                        <Switch checked={this.hasSelectAll()} onChange={(name, isChecked) => {
+                            this.setSelectAll(isChecked);
+                        }}/>
+                        Fold ind/ud
+                        </div>
+                    </div>
                     <div>{measurementsText}</div>
                     <div className="form-group">
                         <SearchFieldComponent id="measurements-search-control" onSearch={(measurementsSearchTerm) => {
@@ -290,7 +420,7 @@ class ModalFeatureComponent extends React.Component {
             </div>
             <div style={{ height: `calc(100% - 74px)`, display: `flex` }}>
                 <div className="measurements-modal_left-column measurements-modal_scrollable">{propertiesControls}</div>
-                <div className="measurements-modal_right-column measurements-modal_scrollable">{plotsControls}</div>
+                <div className="measurements-modal_right-column measurements-modal_scrollable" ref={this.listRef}>{plotsControls}</div>
             </div>
         </div>);
     }
@@ -307,4 +437,8 @@ ModalFeatureComponent.propTypes = {
     onDeleteMeasurement: PropTypes.func.isRequired
 };
 
-export default withDragDropContext(ModalFeatureComponent);
+const mapStateToProps = state => ({
+    selectedChemical: state.global.selectedChemical
+})
+
+export default connect(mapStateToProps)(withDragDropContext(ModalFeatureComponent));

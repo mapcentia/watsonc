@@ -33,7 +33,8 @@ class ChemicalSelectorModal extends React.Component {
                         excludeWaterLevel={disabled}
                         useLocalSelectedChemical={this.props.useLocalSelectedChemical}
                         localSelectedChemical={this.props.localSelectedChemical}
-                        localSelectChemical={this.props.onClickControl}/>
+                        localSelectChemical={this.props.onClickControl}
+                        selectedLayers={this.props.selectedLayers}/>
                 </div>
                 <div style={{textAlign: `right`}}>
                     <button
@@ -59,7 +60,8 @@ ChemicalSelectorModal.defaultProps = {
 };
 
 const mapStateToProps = state => ({
-    selectedChemical: state.global.selectedChemical
+    selectedChemical: state.global.selectedChemical,
+    selectedLayers: state.global.selectedLayers,
 });
 
 const mapDispatchToProps = dispatch => ({
