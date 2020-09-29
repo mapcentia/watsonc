@@ -2,11 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {DragSource} from 'react-dnd';
 
+
 /**
  * Measurement component
  */
 class ModalMeasurementComponent extends React.Component {
     constructor(props) {
+        if (props.itemKey === "_2712")
+            console.log(props)
         super(props);
     }
 
@@ -15,7 +18,8 @@ class ModalMeasurementComponent extends React.Component {
 
         let circleIcon = false;
         if (this.props.icon) {
-            circleIcon = (<img src={this.props.icon} alt={this.props.title} style={{width: `12px`, height: `12px`, marginTop: `-2px`}}/>);
+            circleIcon = (<img src={this.props.icon} alt={this.props.title}
+                               style={{width: `12px`, height: `12px`, marginTop: `-2px`}}/>);
         }
 
         if (this.props.chemicalLimits === null) {
@@ -59,7 +63,8 @@ class ModalMeasurementComponent extends React.Component {
                         <i className="fa fa-arrows-alt"></i> {circleIcon} {this.props.title} ({this.props.intakeName})
                     </div>
                     <div style={{color: 'gray', 'fontSize': 'smaller', 'paddingLeft': '15px'}}>
-                        Historisk: {this.props.detectionLimitReachedForMax ? "< "  : ""}{this.props.maxMeasurement === 0 ? "-" : this.props.maxMeasurement} {this.props.maxMeasurement === 0 ? "" : this.props.unit} | Seneste: {this.props.detectionLimitReachedForLatest ? "< " : ""}{this.props.latestMeasurement} {this.props.unit}
+                        Historisk: {this.props.detectionLimitReachedForMax ? "< " : ""}{this.props.maxMeasurement === 0 ? "-" : this.props.maxMeasurement} {this.props.maxMeasurement === 0 ? "" : <span style={{textTransform: "lowercase"}}>{this.props.unit}</span>} |
+                        Seneste: {this.props.detectionLimitReachedForLatest ? "< " : ""}{this.props.latestMeasurement} <span style={{textTransform: "lowercase"}}>{this.props.unit}</span>
                     </div>
                 </div>
             </div>);
