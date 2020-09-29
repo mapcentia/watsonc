@@ -197,7 +197,6 @@ class ModalFeatureComponent extends React.Component {
          * @returns {Boolean|Object}
          */
         const createMeasurementControl = (item, key) => {
-            console.log(item)
             let display = true;
             if (this.state.measurementsSearchTerm.length > 0) {
                 if (item.title.toLowerCase().indexOf(this.state.measurementsSearchTerm.toLowerCase()) === -1) {

@@ -737,7 +737,7 @@ module.exports = module.exports = {
     onApplyLayersAndChemical: (parameters) => {
         // Disabling all layers
         layerTree.getActiveLayers().map(layerNameToEnable => {
-            if (layerNameToEnable !== LAYER_NAMES[2])
+            if (layerNameToEnable !== LAYER_NAMES[2] && !layerNameToEnable.startsWith("gc2_io_dk"))
                 switchLayer.init(layerNameToEnable, false);
         });
 
