@@ -53,19 +53,22 @@ class PlotManager {
             Promise.all(hydrationPromises).then(results => {
                 plots.map((item, index) => {
                     results.map((dataItem) => {
-                        if (dataItem.key === item.id) {
+                        if (dataItem.key === item.id && typeof dataItem.value !== "undefined") {
                             plots[index] = JSON.parse(dataItem.value);
                         }
                     });
                 });
 
                 plots.map((item, index) => {
-                    if (`measurements` in item === false || !item.measurements
-                        || `measurementsCachedData` in item === false || !item.measurementsCachedData) {
+                    if (typeof item === "object" && (`measurements` in item === false || !item.measurements
+                        || `measurementsCachedData` in item === false || !item.measurementsCachedData)) {
                         console.warn(`The ${item.id} plot was not properly populated`, item);
                     }
                 });
-
+                // Filter non objects. A non object can occur when time a project time series is deleted from from key value store
+                plots = plots.filter((item)=>{
+                    return (typeof item === 'object')
+                });
                 methodResolve(plots);
             }).catch(methodReject);
         });

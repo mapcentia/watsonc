@@ -498,6 +498,13 @@ class DashboardComponent extends React.Component {
     }
 
     setProjectProfiles(projectProfiles) {
+        const unique = (myArr) => {
+            return myArr.filter((obj, pos, arr) => {
+                return arr.map(mapObj => mapObj["key"]).indexOf(obj["key"]) === pos;
+            });
+        }
+        // Remove duplets
+        projectProfiles = unique(projectProfiles);
         console.log("Setting Profiles");
         console.log(projectProfiles);
         let dashboardItemsCopy = [];
