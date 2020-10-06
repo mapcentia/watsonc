@@ -475,8 +475,21 @@ class DashboardComponent extends React.Component {
             return [...new Map(data.map(item => [key(item), item])).values()]
         };
 
-        // console.log("this.state.dashboardItems", this.state.dashboardItems)
+        // console.log("this.state.dashboardItems", this.state.dashboardItems);
         this.state.dashboardItems.map(item => {
+            if (item.type !== DASHBOARD_ITEM_PROJECT_PLOT) {
+                dashboardItemsCopy.push(item);
+            }
+        });
+
+        projectPlots.map(item => {
+            dashboardItemsCopy.push({
+                type: DASHBOARD_ITEM_PROJECT_PLOT,
+                item
+            });
+        });
+
+        dashboardItemsCopy.map(item => {
             if (typeof item.type !== "undefined" && item.type === 0) {
                 plotsNotOnDashboard.push(item.item.id);
             } else if (typeof item.type !== "undefined" && item.type === 3) {
@@ -491,18 +504,6 @@ class DashboardComponent extends React.Component {
             }
         });
 
-        this.state.dashboardItems.map(item => {
-            if (item.type !== DASHBOARD_ITEM_PROJECT_PLOT) {
-                dashboardItemsCopy.push(item);
-            }
-        });
-
-        projectPlots.map(item => {
-            dashboardItemsCopy.push({
-                type: DASHBOARD_ITEM_PROJECT_PLOT,
-                item
-            });
-        });
         // Remove duplets
         dashboardItemsCopy = unique(dashboardItemsCopy, item => item.item.id);
         // console.log("projectPlots", projectPlots)
@@ -510,8 +511,10 @@ class DashboardComponent extends React.Component {
         // console.log("plotsNotOnDashboard", plotsNotOnDashboard)
         // console.log("profilesNotOnDashboard", plotsNotOnDashboard)
         this.setState({projectPlots, dashboardItems: dashboardItemsCopy}, () => {
-            plotsNotOnDashboard.forEach(id => this.handleHidePlot(id));
-            profilesNotOnDashboard.forEach(id => this.handleHideProfile(id));
+            setTimeout(() => {
+                plotsNotOnDashboard.forEach(id => this.handleHidePlot(id));
+                profilesNotOnDashboard.forEach(id => this.handleHideProfile(id));
+            }, 500)
         });
     }
 
@@ -541,8 +544,8 @@ class DashboardComponent extends React.Component {
         }
         // Remove duplets
         projectProfiles = unique(projectProfiles);
-        console.log("Setting Profiles");
-        console.log(projectProfiles);
+        // console.log("Setting Profiles");
+        // console.log(projectProfiles);
         let dashboardItemsCopy = [];
         this.state.dashboardItems.map(item => {
             if (item.type !== DASHBOARD_ITEM_PROJECT_PROFILE) {
