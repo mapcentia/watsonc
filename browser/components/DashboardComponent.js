@@ -157,7 +157,7 @@ class DashboardComponent extends React.Component {
     }
 
     setModalScroll(modalScroll) {
-        this.setState({ modalScroll });
+        this.setState({modalScroll});
     }
 
     refreshProfilesList() {
@@ -441,6 +441,12 @@ class DashboardComponent extends React.Component {
             }
         })
         allPlots = allPlots.sort((a, b) => b['created_at'] - a['created_at']);
+        const unique = (myArr) => {
+            return myArr.filter((obj, pos, arr) => {
+                return arr.map(mapObj => mapObj["id"]).indexOf(obj["id"]) === pos;
+            });
+        }
+        allPlots = unique(allPlots);
         return allPlots;
     }
 
@@ -463,6 +469,28 @@ class DashboardComponent extends React.Component {
 
     setProjectPlots(projectPlots) {
         let dashboardItemsCopy = [];
+        let plotsNotOnDashboard = [];
+        let profilesNotOnDashboard = [];
+        const unique = (data, key) => {
+            return [...new Map(data.map(item => [key(item), item])).values()]
+        };
+
+        // console.log("this.state.dashboardItems", this.state.dashboardItems)
+        this.state.dashboardItems.map(item => {
+            if (typeof item.type !== "undefined" && item.type === 0) {
+                plotsNotOnDashboard.push(item.item.id);
+            } else if (typeof item.type !== "undefined" && item.type === 3) {
+                // Remove an id again if it appears more than once in this.state.dashboardItems
+                plotsNotOnDashboard = plotsNotOnDashboard.filter(e => e !== item.item.id);
+            }
+            if (typeof item.type !== "undefined" && item.type === 1) {
+                profilesNotOnDashboard.push(item.item.key);
+            } else if (typeof item.type !== "undefined" && item.type === 2) {
+                // Remove a key again if it appears more than once in this.state.dashboardItems
+                profilesNotOnDashboard = profilesNotOnDashboard.filter(e => e !== item.item.key);
+            }
+        });
+
         this.state.dashboardItems.map(item => {
             if (item.type !== DASHBOARD_ITEM_PROJECT_PLOT) {
                 dashboardItemsCopy.push(item);
@@ -475,8 +503,16 @@ class DashboardComponent extends React.Component {
                 item
             });
         });
-
-        this.setState({projectPlots, dashboardItems: dashboardItemsCopy});
+        // Remove duplets
+        dashboardItemsCopy = unique(dashboardItemsCopy, item => item.item.id);
+        // console.log("projectPlots", projectPlots)
+        // console.log("dashboardItemsCopy", dashboardItemsCopy)
+        // console.log("plotsNotOnDashboard", plotsNotOnDashboard)
+        // console.log("profilesNotOnDashboard", plotsNotOnDashboard)
+        this.setState({projectPlots, dashboardItems: dashboardItemsCopy}, () => {
+            plotsNotOnDashboard.forEach(id => this.handleHidePlot(id));
+            profilesNotOnDashboard.forEach(id => this.handleHideProfile(id));
+        });
     }
 
     setPlots(plots) {
@@ -688,9 +724,11 @@ class DashboardComponent extends React.Component {
         if (!plotId) throw new Error(`Empty plot identifier`);
 
         let activePlots = JSON.parse(JSON.stringify(this.state.activePlots));
+
         if (activePlots.indexOf(plotId) === -1) activePlots.push(plotId);
+        let plots = this.getPlots()
         this.setState({activePlots}, () => {
-            this.props.onActivePlotsChange(this.state.activePlots, this.getPlots());
+            this.props.onActivePlotsChange(this.state.activePlots, plots);
         });
     }
 
@@ -1011,7 +1049,8 @@ class DashboardComponent extends React.Component {
 
         if (localPlotsControls.length > 0) {
             plotsControls = (
-                <SortablePlotsGridComponent axis="xy" onSortEnd={this.handlePlotSort} useDragHandle>{localPlotsControls}</SortablePlotsGridComponent>);
+                <SortablePlotsGridComponent axis="xy" onSortEnd={this.handlePlotSort}
+                                            useDragHandle>{localPlotsControls}</SortablePlotsGridComponent>);
         }
 
         const setNoExpanded = () => {
