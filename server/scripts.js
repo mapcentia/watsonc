@@ -65,7 +65,8 @@ const profileScriptHandler = (req, res) => {
                     status: `error`,
                     message: error,
                     result: parsedData,
-                    process: pythonProcess.spawnargs
+                    process: pythonProcess.spawnargs,
+                    pycmd: [moduleConfig.pythonCommand, moduleConfig.profileScriptPath, '"' + JSON.stringify(inputJSON).replace(/"/g, '\'') + '"']
                 });
             }
         }
@@ -77,7 +78,8 @@ const profileScriptHandler = (req, res) => {
         res.send({
             status: `error`,
             message: data.toString(),
-            process: pythonProcess.spawnargs
+            process: pythonProcess.spawnargs,
+            pycmd: [moduleConfig.pythonCommand, moduleConfig.profileScriptPath, '"' + JSON.stringify(inputJSON).replace(/"/g, '\'') + '"']
 
         });
     });
@@ -145,6 +147,7 @@ const instersectionScriptHandler = (req, res) => {
                         res.send({
                             status: `error`,
                             message: error,
+                            pycmd: [moduleConfig.pythonCommand, moduleConfig.intersectionsScriptPath, JSON.stringify(inputJSON)],
                             result: parsedData
                         });
                     }
@@ -156,7 +159,8 @@ const instersectionScriptHandler = (req, res) => {
                 res.status(400);
                 res.send({
                     status: `error`,
-                    message: data.toString()
+                    message: data.toString(),
+                    pycmd: [moduleConfig.pythonCommand, moduleConfig.intersectionsScriptPath, JSON.stringify(inputJSON)],
                 });
             });
         });
@@ -194,7 +198,8 @@ const reportHandler = (req, res) => {
             res.send({
                 status: `error`,
                 message: result,
-                process: pythonProcess.spawnargs
+                process: pythonProcess.spawnargs,
+                pycmd: [moduleConfig.pythonCommand, moduleConfig.reportScriptPath, req.query.komcode, moduleConfig.reportSavePath, req.query.userid]
             });
         } else {
             res.send({
