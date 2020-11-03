@@ -113,10 +113,10 @@ class MenuPanelComponent extends React.Component {
         this.setState({ dataSource });
     }
 
-    getFeatureByGidFromDataSource(gid) {
+    getFeatureByGidFromDataSource(boreholeno) {
         let featureWasFound = false;
         this.state.dataSource.map(item => {
-            if (item.properties.gid === gid) {
+            if (item.properties.boreholeno === boreholeno) {
                 featureWasFound = item;
                 return false;
             }
@@ -142,7 +142,7 @@ class MenuPanelComponent extends React.Component {
                 localPlotsControls.push(<li key={`borehole_plot_${index}`} className="list-group-item">
                     <div>
                         <MenuPlotComponent
-                            getFeatureByGid={(gid) => { return this.getFeatureByGidFromDataSource(gid)}}
+                            getFeatureByGid={(boreholeno) => { return this.getFeatureByGidFromDataSource(boreholeno)}}
                             onDelete={(id) => { this.handleDeletePlot(id)}}
                             plotMeta={plot}/>
                     </div>
@@ -157,7 +157,7 @@ class MenuPanelComponent extends React.Component {
         return (<div>
             <div>
                 <h4>
-                    {__(`Plots`)} 
+                    {__(`Plots`)}
                     <TitleFieldComponent onAdd={(title) => { this.handleCreatePlot(title) }} type="userOwned"/>
                 </h4>
             </div>

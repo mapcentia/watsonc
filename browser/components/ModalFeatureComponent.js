@@ -241,7 +241,7 @@ class ModalFeatureComponent extends React.Component {
                     chemicalLimits={measurementData === null ? null : measurementData.chemicalLimits}
                     detectionLimitReachedForMax={measurementData === null ? null : measurementData.detectionLimitReachedForMax}
                     detectionLimitReachedForLatest={measurementData === null ? null : measurementData.detectionLimitReachedForLatest}
-                    gid={this.props.feature.properties.gid}
+                    gid={this.props.feature.properties.boreholeno}
                     itemKey={item.key}
                     intakeIndex={item.intakeIndex}
                     intakeName={intakeName}
