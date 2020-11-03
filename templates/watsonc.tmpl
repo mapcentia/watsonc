@@ -1069,6 +1069,21 @@
                                     <div class="form-group" id="layers" role="tablist"></div>
                                 </div>
 
+                                <div role="tabpanel" class="tab-pane fade" id="baselayer-content">
+                                    <div class="help-btn" onclick="javascript:createAlert($(this), '{{Help text baselayers}}')">
+                                        <i class="material-icons help-btn">help_outline</i></div>
+                                    <div></div>
+                                    <div class="form-group" id="base-layer-list"></div>
+                                </div>
+
+                                <div role="tabpanel" class="tab-pane fade" id="legend-content">
+                                    <div class="help-btn" onclick="javascript:createAlert($(this), '{{Help text legend}}')">
+                                        <i class="material-icons help-btn">help_outline</i></div>
+                                    <div></div>
+                                    <a href="#legend-dialog" id="btn-show-legend-in-map" data-module="legend" class="btn btn-raised btn-xs map-tool-btn">{{Show legend on top the map}}</a>
+                                    <div id="legend" class="legend"></div>
+                                </div>
+
                                 <div role="tabpanel" class="tab-pane fade" id="timeseries-content">
                                     <div class="form-group" id="watsonc-timeseries" role="tablist"></div>
                                 </div>
@@ -1115,6 +1130,22 @@
                                     <i data-container="body" data-toggle="tooltip" data-placement="left"
                                        title="{{Layers}}" class="material-icons">layers</i>
                                     <span class="module-title">{{Layers}}</span>
+                                </a>
+                            </li>
+
+                            <li role="presentation">
+                                <a data-module-id="baseLayer" href="#baselayer-content" data-module-title="{{Baselayers}}"  aria-controls="" role="tab" data-toggle="tab">
+                                    <i data-container="body" data-toggle="tooltip" data-placement="left"
+                                       title="{{Baselayers}}" class="material-icons">map</i>
+                                    <span class="module-title">{{Baselayers}}</span>
+                                </a>
+                            </li>
+
+                            <li role="presentation">
+                                <a data-module-id="legend" href="#legend-content" aria-controls="" data-module-title="{{Legend}}" role="tab" data-toggle="tab">
+                                    <i data-container="body" data-toggle="tooltip" data-placement="left"
+                                       title="{{Legend}}" class="material-icons">format_color_text</i>
+                                    <span class="module-title">{{Legend}}</span>
                                 </a>
                             </li>
 
@@ -1195,9 +1226,6 @@
 
         <div id="floating-container-secondary" style="display: inline;">
             <div id="locale-btn"></div>
-            <a href="#base-layers-dialog" id="base-layers-btn" class="btn btn-default btn-fab btn-fab-mini map-tool-btn" title="{{Layer}}">
-                <i class="material-icons">layers</i>
-            </a>
         </div>
     </div>
 
@@ -1267,24 +1295,6 @@
             </div>
         </div>
     </nav>
-
-    <div id="base-layers-dialog" class="dialog-bottom fade-then-dragging">
-        <div class="modal-header">
-            <button type="button" class="close close-hide" aria-hidden="true">
-                <i class="material-icons">close</i>
-            </button>
-            <button type="button" class="close expand-more" aria-hidden="true">
-                <i class="material-icons">expand_less</i>
-            </button>
-            <button type="button" class="close expand-less" aria-hidden="true">
-                <i class="material-icons">expand_more</i>
-            </button>
-            <h3 class="modal-title">Korttype</h3>
-        </div>
-        <div class="modal-body">
-            <div class="form-group" id="base-layer-list"></div>
-        </div>
-    </div>
 
     <div id="editor-attr-dialog" class="dialog-bottom fade-then-dragging">
         <div class="modal-header">
@@ -1600,4 +1610,19 @@
 
 <div class="modal fade" tabindex="-1" role="dialog" id="watsonc-text-field-dialog">
     <div class="modal-dialog" id="watsonc-text-field-dialog-placeholder" role="document"></div>
+</div>
+<div id="legend-dialog" style="right: auto; left: 56px;" class="dialog-bottom fade-then-dragging">
+    <div class="modal-header">
+        <button type="button" class="close close-hide" data-module="legend" aria-hidden="true"><i
+                class="material-icons">close</i>
+        </button>
+        <button type="button" class="close expand-more" aria-hidden="true"><i
+                class="material-icons">expand_less</i>
+        </button>
+        <button type="button" class="close expand-less" aria-hidden="true"><i
+                class="material-icons">expand_more</i>
+        </button>
+        <h3 class="modal-title">{{Legend}}</h3>
+    </div>
+    <div class="modal-body"></div>
 </div>
