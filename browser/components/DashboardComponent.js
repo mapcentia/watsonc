@@ -585,6 +585,7 @@ class DashboardComponent extends React.Component {
         let plots = this.state.dashboardItems.map((e) => {
             return e.item;
         });
+        let activePlots = this.state.activePlots;
         let newPlots = plots;
         let count = 0;
         plots.forEach((e, i) => {
@@ -596,6 +597,9 @@ class DashboardComponent extends React.Component {
             } else if (Object.keys(obj).length === 0 && obj.constructor === Object) {
                 count++;
             } else {
+                if (!activePlots.includes(e.id)) {
+                    return;
+                }
                 for (let key in obj) {
                     if (obj.hasOwnProperty(key)) {
                         let rel;
