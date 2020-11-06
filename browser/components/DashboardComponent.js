@@ -514,7 +514,7 @@ class DashboardComponent extends React.Component {
             setTimeout(() => {
                 plotsNotOnDashboard.forEach(id => this.handleHidePlot(id));
                 profilesNotOnDashboard.forEach(id => this.handleHideProfile(id));
-            }, 500)
+            }, 1000)
         });
     }
 
