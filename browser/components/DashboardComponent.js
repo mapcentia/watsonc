@@ -864,7 +864,7 @@ class DashboardComponent extends React.Component {
                 if (splitMeasurementIndex.length !== 3 && splitMeasurementIndex.length !== 4) throw new Error(`Invalid measurement index`);
                 let measurementData = false;
                 dataSource.map(item => {
-                    if (item.properties.gid === parseInt(splitMeasurementIndex[0])) {
+                    if (item.properties.boreholeno === parseInt(splitMeasurementIndex[0])) {
                         measurementData = item;
                         return false;
                     }
@@ -905,14 +905,14 @@ class DashboardComponent extends React.Component {
         });
     }
 
-    getFeatureByGidFromDataSource(gid, check = true) {
-        if (check && isNumber(gid) === false) {
-            throw new Error(`Invalid gid ${gid} was provided`);
+    getFeatureByGidFromDataSource(boreholeno, check = true) {
+        if (check && isNumber(boreholeno) === false) {
+            throw new Error(`Invalid boreholeno ${boreholeno} was provided`);
         }
 
         let featureWasFound = false;
         this.state.dataSource.map(item => {
-            if (item.properties.gid === gid) {
+            if (item.properties.boreholeno === boreholeno) {
                 featureWasFound = item;
                 return false;
             }
