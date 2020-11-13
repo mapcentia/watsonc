@@ -7,7 +7,7 @@ Created on Tue May 14 2019
 import os
 from pprint import pprint
 import shapefile
-import psycopg2
+#import psycopg2
 import pandas.io.sql as sqlio
 from shapely.geometry import Point, LineString, Polygon, shape
 import pandas as pd
@@ -31,12 +31,17 @@ def getCoordinatesFromString(l):
         coordinates.append((float(splitCoordinates[0]), float(splitCoordinates[1])))
     return coordinates
 
+
 def getStationingPoints(inputLine, modelPoly):
     pkter = inputLine.coords
+    if len(pkter) ==2: #if only two points insert point in the middel of the line
+        inputLine = LineString([[pkter[0][0],pkter[0][1]] ,[(pkter[0][0]+pkter[1][0])/2,(pkter[0][1]+pkter[1][1])/2], [pkter[1][0],pkter[1][1]]])    
+        pkter = inputLine.coords
+    
     if inputLine.intersects(modelPoly):
         polyStr = str(modelPoly)
         polyStr = polyStr.replace("POLYGON ((", "")
-        polyStr = polyStr.replace("))", "")
+        polyStr = polyStr.replace("))", "").replace("(","").replace(")","")
         polyStrSplit = polyStr.split(", ")
 
         polyCoords = []
@@ -74,14 +79,17 @@ def getStationingPoints(inputLine, modelPoly):
                 segmentEndInside = modelPoly.contains(currentPoint)
 
                 additionalIntersection = profileSegment.intersection(modelPoly)
-                if additionalIntersection.wkt != "GEOMETRYCOLLECTION EMPTY":
+
+                if additionalIntersection.wkt != "GEOMETRYCOLLECTION EMPTY" and additionalIntersection.wkt != "LINESTRING EMPTY":
                     if additionalIntersection.wkt.startswith("MULTILINESTRING (("):
                         lineRaw = additionalIntersection.wkt.replace("MULTILINESTRING ((", "").replace("))", "")
                         lineSplit = lineRaw.split("), (")
                     elif additionalIntersection.wkt.startswith("LINESTRING ("):
                         lineSplit = [additionalIntersection.wkt.replace("LINESTRING (", "").replace(")", "")]
                     else:
-                        raise Exception("Unexpected intersection format: " + additionalIntersection.wkt)
+                        
+                        'no intersection between segment af polygon - move to next segment'
+                        #raise Exception("Unexpected intersection format: " + additionalIntersection.wkt)
 
                     numberOfIntersectingLines = len(lineSplit)
 
@@ -147,7 +155,7 @@ def getStationingPoints(inputLine, modelPoly):
                         elif segmentStartInside == False:
                             if segmentEndInside == True:
                                 if i == (len(pkter) - 1):
-                                    intersectionSegments.append((round(absoluteSum - insideSum), round(absoluteSum + intersection.length)))
+                                    intersectionSegments.append((round(absoluteSum + tmpProfileSegment1.length), round(absoluteSum + tmpProfileSegment2.length)))
                                     insideSum = 0
                                 else:
                                     insideSum += intersection.length
@@ -200,6 +208,7 @@ def getStationingPoints(inputLine, modelPoly):
             return [(0, inputLine.length)]
         else:
             return []
+
 
 if __name__ == "__main__":
     inputdata = json.loads(sys.argv[1])
@@ -262,3 +271,10 @@ if __name__ == "__main__":
 
     print(json.dumps(intersectingModels))
     
+    
+## OMU TEST JSON INPUT
+# Aalborg - FRH fra syd mod nord
+#inputdata ={"configFolder":"C:/Users/Bruger/Documents/GitHub/profile/profil","coordinates":[[565918.2575099298,6297972.39500331],[582641.6460329907,6344869.257171175]],"DGU_nr":[],"Profile_depth":-100}
+# Aalborg - Hjørring Syd Nord
+#inputdata ={"configFolder":"C:/Users/Bruger/Documents/GitHub/profile/profil","coordinates":[[553603.901,6296111.324],[563652.935,6342939.824],[565260.781,6390773.227]],"DGU_nr":[],"Profile_depth":-100}
+#
