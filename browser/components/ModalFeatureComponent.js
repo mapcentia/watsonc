@@ -18,6 +18,7 @@ const measurementIcon = require('./../measurementIcon');
 class ModalFeatureComponent extends React.Component {
     constructor(props) {
         super(props);
+        console.log(props)
         this.state = {
             plots: this.props.initialPlots,
             measurementsSearchTerm: ``,

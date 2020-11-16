@@ -102,7 +102,7 @@ class ModalPlotComponent extends React.Component {
 const plotTarget = {
     drop(props, monitor) {
         let item = monitor.getItem();
-        item.onAddMeasurement(props.plot.id, item.boreholeno, item.itemKey, item.intakeIndex);
+        item.onAddMeasurement(props.plot.id, item.gid, item.itemKey, item.intakeIndex);
     }
 };
 

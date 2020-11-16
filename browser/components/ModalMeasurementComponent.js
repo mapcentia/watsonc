@@ -74,8 +74,9 @@ class ModalMeasurementComponent extends React.Component {
 
 const measurementSource = {
     beginDrag(props) {
+        console.log("Begin" , props)
         return {
-            gid: props.boreholeno,
+            gid: props.gid,
             itemKey: props.itemKey,
             intakeIndex: props.intakeIndex,
             onAddMeasurement: props.onAddMeasurement
@@ -91,7 +92,6 @@ const collect = (connect, monitor) => {
 };
 
 ModalMeasurementComponent.propTypes = {
-    gid: PropTypes.number.isRequired,
     itemKey: PropTypes.string.isRequired,
     intakeIndex: PropTypes.number.isRequired,
     intakeName: PropTypes.string.isRequired,

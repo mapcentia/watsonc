@@ -602,7 +602,7 @@ class DashboardComponent extends React.Component {
                         rel = key.split(":")[1].startsWith("_") ? "chemicals.boreholes_time_series_with_chemicals" : "sensor.sensordata_with_correction";
                         // Lazy load data and sync
                         $.ajax({
-                            url: "/api/sql/jupiter?srs=25832&q=SELECT * FROM " + rel + " WHERE gid=" + key.split(":")[0],
+                            url: "/api/sql/jupiter?srs=25832&q=SELECT * FROM " + rel + " WHERE boreholeno='" + key.split(":")[0] + "'",
                             scriptCharset: "utf-8",
                             success: (response) => {
                                 newPlots[shadowI].measurementsCachedData[key].data = response.features[0];
@@ -906,7 +906,7 @@ class DashboardComponent extends React.Component {
     }
 
     getFeatureByGidFromDataSource(boreholeno, check = true) {
-        if (check && isNumber(boreholeno) === false) {
+        if (check === false) {
             throw new Error(`Invalid boreholeno ${boreholeno} was provided`);
         }
 
