@@ -80,8 +80,8 @@ def getStationingPoints(inputLine, modelPoly):
                         lineSplit = lineRaw.split("), (")
                     elif additionalIntersection.wkt.startswith("LINESTRING ("):
                         lineSplit = [additionalIntersection.wkt.replace("LINESTRING (", "").replace(")", "")]
-                    else:
-                        raise Exception("Unexpected intersection format: " + additionalIntersection.wkt)
+                    #else:
+                        #raise Exception("Unexpected intersection format: " + additionalIntersection.wkt)
 
                     numberOfIntersectingLines = len(lineSplit)
 
@@ -261,4 +261,3 @@ if __name__ == "__main__":
                 currentPolygon += 1
 
     print(json.dumps(intersectingModels))
-    
