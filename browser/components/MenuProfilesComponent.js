@@ -8,6 +8,7 @@ import {connect} from 'react-redux';
 import {SELECT_CHEMICAL_DIALOG_PREFIX, FREE_PLAN_MAX_PROFILES_COUNT} from './../constants';
 import TitleFieldComponent from './../../../../browser/modules/shared/TitleFieldComponent';
 import LoadingOverlay from './../../../../browser/modules/shared/LoadingOverlay';
+import SearchFieldComponent from './../../../../browser/modules/shared/SearchFieldComponent';
 
 import reduxStore from './../redux/store';
 
@@ -56,6 +57,7 @@ class MenuProfilesComponent extends React.Component {
             profileBottom: -100,
             buffer: 100,
             newTitle: '',
+            profilesSearchTerm: '',
         };
 
         this.search = this.search.bind(this);
@@ -396,7 +398,11 @@ class MenuProfilesComponent extends React.Component {
         let plotRows = [];
         let projectProfileRows = [];
         this.state.profiles.map((item, index) => {
-
+            if (this.state.profilesSearchTerm.length > 0) {
+                if (item.profile.title.toLowerCase().indexOf(this.state.profilesSearchTerm.toLowerCase()) === -1) {
+                    return;
+                }
+            }
             var deleteButton = item.fromProject ? null : <td style={{textAlign: `right`}}>
                 <button
                     type="button"
@@ -651,6 +657,16 @@ class MenuProfilesComponent extends React.Component {
                             </div>) : false}
                         </div>) : false}
                     </div>) : false}
+                </div>
+                <div className="container">
+                    <div className="row">
+                        <div className="col-md-6">
+                            <SearchFieldComponent id="measurements-search-control" onSearch={(profilesSearchTerm) => {
+                                this.setState({ profilesSearchTerm });
+                            }}/>
+                        </div>
+                    </div>
+
                 </div>
 
                 <div style={{borderBottom: `1px solid lightgray`}}>
