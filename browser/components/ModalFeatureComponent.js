@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import {Switch} from '@material-ui/core';
+import Switch from '@material-ui/core/Switch';
 
 import withDragDropContext from './withDragDropContext';
 import ModalMeasurementComponent from './ModalMeasurementComponent';

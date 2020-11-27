@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Switch} from '@material-ui/core';
+import Switch from '@material-ui/core/Switch';
 import {Provider, connect} from 'react-redux';
 
 import PlotComponent from './PlotComponent';
