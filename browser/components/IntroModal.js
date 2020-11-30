@@ -126,6 +126,7 @@ class IntroModal extends React.Component {
                     <div className="row-fluid">
                         <div className="col-md-12">
                             <StateSnapshotsDashboard
+                                force={true}
                                 readOnly={true}
                                 customSetOfTitles={true}
                                 initialAuthenticated={this.props.authenticated}
