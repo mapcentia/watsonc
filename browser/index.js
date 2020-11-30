@@ -231,7 +231,7 @@ module.exports = module.exports = {
         switchLayer.init(LAYER_NAMES[2], true, true, false);
 
         $.ajax({
-            url: '/api/sql/jupiter?q=SELECT * FROM codes.compunds_view&base64=false',
+            url: '/api/sql/jupiter?q=SELECT * FROM codes.compunds_view&base64=false&lifetime=10800',
             scriptCharset: "utf-8",
             success: function (response) {
                 if (`features` in response) {
