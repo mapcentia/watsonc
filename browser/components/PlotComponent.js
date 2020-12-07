@@ -8,7 +8,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import dayjs from 'dayjs';
-import Plot from 'react-plotly.js';
+import moment from 'moment';
+import createPlotlyComponent from 'react-plotly.js/factory';
+import Plotly from 'plotly.js-basic-dist';
+
+const Plot = createPlotlyComponent(Plotly);
 
 import {LIMIT_CHAR} from '../constants';
 import LoadingOverlay from './../../../../browser/modules/shared/LoadingOverlay';
