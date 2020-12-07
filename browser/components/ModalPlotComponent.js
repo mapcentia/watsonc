@@ -31,7 +31,7 @@ class ModalPlotComponent extends React.Component {
                 throw new Error(`Invalid measurement key (${measurement})`);
             }
 
-            let boreholeno = parseInt(splitMeasurementId[0]);
+            let boreholeno = splitMeasurementId[0];
             if (this.props.dataSource && this.props.dataSource.length > 0) {
                 this.props.dataSource.map(item => {
                     if (item.properties.boreholeno === boreholeno) {
