@@ -231,7 +231,7 @@ module.exports = module.exports = {
         switchLayer.init(LAYER_NAMES[2], true, true, false);
 
         $.ajax({
-            url: '/api/sql/jupiter?q=SELECT * FROM codes.compunds_view&base64=false',
+            url: '/api/sql/jupiter?q=SELECT * FROM codes.compunds_view&base64=false&lifetime=10800',
             scriptCharset: "utf-8",
             success: function (response) {
                 if (`features` in response) {
@@ -429,7 +429,7 @@ module.exports = module.exports = {
                                 });
                             }
 
-                            let highlighted = (participatingIds.indexOf(feature.properties.gid) > -1);
+                            let highlighted = (participatingIds.indexOf(feature.properties.boreholeno) > -1);
                             let localSvgCirclePart = symbolizer.getSymbol(layerName, {
                                 online: feature.properties.status,
                                 shape: feature.properties.loctypeid,
@@ -996,15 +996,15 @@ module.exports = module.exports = {
             if ([LAYER_NAMES[0], LAYER_NAMES[1]].indexOf(layer.id) > -1 && layer._layers) {
                 for (let key in layer._layers) {
                     let featureLayer = layer._layers[key];
-                    if (featureLayer.feature && featureLayer.feature.properties && featureLayer.feature.properties.gid) {
+                    if (featureLayer.feature && featureLayer.feature.properties && featureLayer.feature.properties.boreholeno) {
                         let icon = L.icon({
                             iconUrl: 'data:image/svg+xml;base64,' + btoa(getSymbol(layer.id, {
                                 online: featureLayer.feature.properties.status,
                                 shape: featureLayer.feature.properties.loctypeid,
-                                highlighted: (participatingIds.indexOf(featureLayer.feature.properties.gid) > -1)
+                                highlighted: (participatingIds.indexOf(featureLayer.feature.properties.boreholeno) > -1)
                             })),
                             iconAnchor: [8, 33],
-                            watsoncStatus: participatingIds.indexOf(featureLayer.feature.properties.gid) > -1 ? `highlighted` : `default`
+                            watsoncStatus: participatingIds.indexOf(featureLayer.feature.properties.boreholeno) > -1 ? `highlighted` : `default`
                         });
 
                         if (icon && `setIcon` in featureLayer) {

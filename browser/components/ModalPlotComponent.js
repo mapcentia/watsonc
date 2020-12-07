@@ -31,10 +31,10 @@ class ModalPlotComponent extends React.Component {
                 throw new Error(`Invalid measurement key (${measurement})`);
             }
 
-            let gid = parseInt(splitMeasurementId[0]);
+            let boreholeno = splitMeasurementId[0];
             if (this.props.dataSource && this.props.dataSource.length > 0) {
                 this.props.dataSource.map(item => {
-                    if (item.properties.gid === gid) {
+                    if (item.properties.boreholeno === boreholeno) {
                         if (customGraph) {
                             let json = JSON.parse(item.properties[splitMeasurementId[1]]).data[splitMeasurementId[2]];
                             let intakeName = `#` + (parseInt(splitMeasurementId[3]) + 1);
@@ -59,7 +59,7 @@ class ModalPlotComponent extends React.Component {
                 });
             }
 
-            const onDelete = () => { this.props.onDeleteMeasurement(this.props.plot.id, gid, key, intakeIndex); };
+            const onDelete = () => { this.props.onDeleteMeasurement(this.props.plot.id, boreholeno, key, intakeIndex); };
 
             removeButtons.push(<div key={`remove_measurement_` + index + `_` + splitMeasurementId[1] + `_` + splitMeasurementId[2]}>
                 <button
@@ -67,7 +67,7 @@ class ModalPlotComponent extends React.Component {
                     type="button"
                     className="btn btn-sm btn-primary"
                     data-plot-id="{this.props.plot.id}"
-                    data-gid="{gid}"
+                    data-gid="{boreholeno}"
                     data-key="{splitMeasurementId[1]}"
                     data-intake-index="{splitMeasurementId[2]}"
                     onClick={onDelete}

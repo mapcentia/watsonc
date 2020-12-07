@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import {LIMIT_CHAR} from './constants';
 
 const evaluate = (json, limits, chem, specificIntake = false) => {
@@ -10,7 +10,7 @@ const evaluate = (json, limits, chem, specificIntake = false) => {
     // Find latest value
     let intakes = json.timeOfMeasurement.length;
     let currentValue;
-    let latestValue = moment("0001-01-01T00:00:00+00:00", "YYYY-MM-DDTHH:mm:ssZZ");
+    let latestValue = dayjs("0001-01-01T00:00:00+00:00", "YYYY-MM-DDTHH:mm:ssZZ");
     let latestPosition = {};
 
     let latestValuesForIntakes = [];
@@ -22,7 +22,7 @@ const evaluate = (json, limits, chem, specificIntake = false) => {
         for (let i = length; i--; i >= 0) {
             detectionLimitReachedForLatest = false;
 
-            currentValue = moment(json.timeOfMeasurement[intake][i], "YYYY-MM-DDTHH:mm:ssZZ");
+            currentValue = dayjs(json.timeOfMeasurement[intake][i], "YYYY-MM-DDTHH:mm:ssZZ");
             latestMeasurement = json.measurements[intake][i];
             latestValuesForIntakes.push(latestMeasurement);
             if (currentValue.isAfter(latestValue)) {

@@ -585,6 +585,7 @@ class DashboardComponent extends React.Component {
         let plots = this.state.dashboardItems.map((e) => {
             return e.item;
         });
+        let activePlots = this.state.activePlots;
         let newPlots = plots;
         let count = 0;
         plots.forEach((e, i) => {
@@ -596,13 +597,16 @@ class DashboardComponent extends React.Component {
             } else if (Object.keys(obj).length === 0 && obj.constructor === Object) {
                 count++;
             } else {
+                if (!activePlots.includes(e.id)) {
+                    return;
+                }
                 for (let key in obj) {
                     if (obj.hasOwnProperty(key)) {
                         let rel;
                         rel = key.split(":")[1].startsWith("_") ? "chemicals.boreholes_time_series_with_chemicals" : "sensor.sensordata_with_correction";
                         // Lazy load data and sync
                         $.ajax({
-                            url: "/api/sql/jupiter?srs=25832&q=SELECT * FROM " + rel + " WHERE gid=" + key.split(":")[0],
+                            url: "/api/sql/jupiter?srs=25832&q=SELECT * FROM " + rel + " WHERE boreholeno='" + key.split(":")[0] + "'",
                             scriptCharset: "utf-8",
                             success: (response) => {
                                 newPlots[shadowI].measurementsCachedData[key].data = response.features[0];
@@ -864,7 +868,7 @@ class DashboardComponent extends React.Component {
                 if (splitMeasurementIndex.length !== 3 && splitMeasurementIndex.length !== 4) throw new Error(`Invalid measurement index`);
                 let measurementData = false;
                 dataSource.map(item => {
-                    if (item.properties.gid === parseInt(splitMeasurementIndex[0])) {
+                    if (item.properties.boreholeno === parseInt(splitMeasurementIndex[0])) {
                         measurementData = item;
                         return false;
                     }
@@ -905,14 +909,14 @@ class DashboardComponent extends React.Component {
         });
     }
 
-    getFeatureByGidFromDataSource(gid, check = true) {
-        if (check && isNumber(gid) === false) {
-            throw new Error(`Invalid gid ${gid} was provided`);
+    getFeatureByGidFromDataSource(boreholeno, check = true) {
+        if (check === false) {
+            throw new Error(`Invalid boreholeno ${boreholeno} was provided`);
         }
 
         let featureWasFound = false;
         this.state.dataSource.map(item => {
-            if (item.properties.gid === gid) {
+            if (item.properties.boreholeno === boreholeno) {
                 featureWasFound = item;
                 return false;
             }

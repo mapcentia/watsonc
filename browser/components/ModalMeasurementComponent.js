@@ -26,7 +26,7 @@ class ModalMeasurementComponent extends React.Component {
             return this.props.connectDragSource(<div
                 title={__(`Drag and drop measurement to add it to time series`)}
                 className="btn btn-sm btn-primary js-plotted-property"
-                data-gid="{this.props.gid}"
+                data-gid="{this.props.boreholeno}"
                 data-key="{this.props.itemKey}"
                 data-intake-index="{this.props.intakeIndex}"
                 style={{
@@ -45,7 +45,7 @@ class ModalMeasurementComponent extends React.Component {
             return this.props.connectDragSource(<div
                 title={__(`Drag and drop measurement to add it to time series`)}
                 className="btn btn-sm btn-primary js-plotted-property"
-                data-gid="{this.props.gid}"
+                data-gid="{this.props.boreholeno}"
                 data-key="{this.props.itemKey}"
                 data-intake-index="{this.props.intakeIndex}"
                 style={{
@@ -74,6 +74,7 @@ class ModalMeasurementComponent extends React.Component {
 
 const measurementSource = {
     beginDrag(props) {
+        console.log("Begin" , props)
         return {
             gid: props.gid,
             itemKey: props.itemKey,
@@ -91,7 +92,6 @@ const collect = (connect, monitor) => {
 };
 
 ModalMeasurementComponent.propTypes = {
-    gid: PropTypes.number.isRequired,
     itemKey: PropTypes.string.isRequired,
     intakeIndex: PropTypes.number.isRequired,
     intakeName: PropTypes.string.isRequired,

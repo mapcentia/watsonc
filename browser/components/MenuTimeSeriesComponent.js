@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Switch} from '@material-ui/core';
+import Switch from '@material-ui/core/Switch';
 import {Provider, connect} from 'react-redux';
 
 import PlotComponent from './PlotComponent';
 import {isNumber} from 'util';
 import {FREE_PLAN_MAX_PROFILES_COUNT} from './../constants';
 import TitleFieldComponent from './../../../../browser/modules/shared/TitleFieldComponent';
+import SearchFieldComponent from './../../../../browser/modules/shared/SearchFieldComponent';
 
 /**
  * Component for managing time series
@@ -21,6 +22,7 @@ class MenuTimeSeriesComponent extends React.Component {
             highlightedPlot: false,
             showArchivedPlots: false,
             authenticated: props.authenticated ? props.authenticated : false,
+            plotsSearchTerm: '',
         };
         this.getPlots = this.getPlots.bind(this);
         this.setShowArchivedPlots = this.setShowArchivedPlots.bind(this);
@@ -84,6 +86,11 @@ class MenuTimeSeriesComponent extends React.Component {
         let plotsTable = [];
         let projectPlotsTable = [];
         this.getPlots().map((plot, index) => {
+            if (this.state.plotsSearchTerm.length > 0) {
+                if (plot.title.toLowerCase().indexOf(this.state.plotsSearchTerm.toLowerCase()) === -1) {
+                    return;
+                }
+            }
             let isChecked = (this.state.activePlots.indexOf(plot.id) > -1);
             let isHighlighted = (this.state.highlightedPlot === plot.id);
             let highlightingIsDisabled = (isChecked ? false : true);
@@ -194,7 +201,13 @@ class MenuTimeSeriesComponent extends React.Component {
         return (
             <div>
                 {addTimeSeriesComponent}
-                <div style={{textAlign: 'right', marginRight: '30px'}}>{showArchivedPlotsButton}</div>
+                <div style={{ display: `flex` }}>
+                        <SearchFieldComponent id="measurements-search-control" onSearch={(plotsSearchTerm) => {
+                            this.setState({ plotsSearchTerm });
+                        }}/>
+
+                <div style={{textAlign: 'right', marginRight: '30px', marginLeft: 'auto'}}>{showArchivedPlotsButton}</div>
+                </div>
                 <div>{plotsTable}</div>
                 <div>
                     {projectPlotsTable}

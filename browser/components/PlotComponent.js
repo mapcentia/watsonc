@@ -7,7 +7,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import Plot from 'react-plotly.js';
 
 import {LIMIT_CHAR} from '../constants';
@@ -119,7 +119,7 @@ class MenuPanelPlotComponent extends React.Component {
                         if (minTime === false) {
                             minTime = localMinTime;
                         } else {
-                            if (moment(localMinTime).isBefore(minTime)) {
+                            if (dayjs(localMinTime).isBefore(minTime)) {
                                 minTime = localMinTime;
                             }
                         }
@@ -128,7 +128,7 @@ class MenuPanelPlotComponent extends React.Component {
                         if (maxTime === false) {
                             maxTime = localMaxTime;
                         } else {
-                            if (moment(localMaxTime).isAfter(maxTime)) {
+                            if (dayjs(localMaxTime).isAfter(maxTime)) {
                                 maxTime = localMaxTime;
                             }
                         }

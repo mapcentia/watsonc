@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import {Switch} from '@material-ui/core';
+import Switch from '@material-ui/core/Switch';
 
 import withDragDropContext from './withDragDropContext';
 import ModalMeasurementComponent from './ModalMeasurementComponent';
@@ -18,6 +18,7 @@ const measurementIcon = require('./../measurementIcon');
 class ModalFeatureComponent extends React.Component {
     constructor(props) {
         super(props);
+        console.log(props)
         this.state = {
             plots: this.props.initialPlots,
             measurementsSearchTerm: ``,
@@ -241,7 +242,7 @@ class ModalFeatureComponent extends React.Component {
                     chemicalLimits={measurementData === null ? null : measurementData.chemicalLimits}
                     detectionLimitReachedForMax={measurementData === null ? null : measurementData.detectionLimitReachedForMax}
                     detectionLimitReachedForLatest={measurementData === null ? null : measurementData.detectionLimitReachedForLatest}
-                    gid={this.props.feature.properties.gid}
+                    gid={this.props.feature.properties.boreholeno}
                     itemKey={item.key}
                     intakeIndex={item.intakeIndex}
                     intakeName={intakeName}

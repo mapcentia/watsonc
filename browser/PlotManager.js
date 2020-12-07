@@ -7,11 +7,7 @@ const session = require('./../../session/browser/index');
 
 class PlotManager {
     constructor() {
-        // let hostname = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
-        let hostname = 'https://watsonc.admin.gc2.io';
-        this.apiUrl = hostname + `/api/v2/keyvalue/` + window.vidiConfig.appDatabase;
         this.apiUrlLocal = `/api/key-value/` + window.vidiConfig.appDatabase;
-
     }
 
     dehydratePlots(plots) {
@@ -29,7 +25,7 @@ class PlotManager {
             plots.map((plot, index) => {
                 let hydrateRequest = new Promise((resolve, reject) => {
                     $.ajax({
-                        url: `${this.apiUrl}/${plot.id}`,
+                        url: `${this.apiUrlLocal}/${plot.id}`,
                         method: 'GET',
                         dataType: 'json',
                         contentType: 'application/json; charset=utf-8',
@@ -79,7 +75,7 @@ class PlotManager {
             let hydrationPromises = [];
             let userId = session.getUserName();
             $.ajax({
-                url: `${this.apiUrl}/?like=watsonc_plot_%&filter='{userId}'='${userId}'`,
+                url: `${this.apiUrlLocal}/?like=watsonc_plot_%&filter='{userId}'='${userId}'`,
                 method: 'GET',
                 dataType: 'json',
                 contentType: 'application/json; charset=utf-8',
