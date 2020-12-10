@@ -221,6 +221,8 @@ class ModalFeatureComponent extends React.Component {
                 }
 
                 let intakeName = `#` + (parseInt(item.intakeIndex) + 1);
+                console.log("json", json)
+                console.log("intakeName", intakeName)
                 if (`intakes` in json && Array.isArray(json.intakes) && json.intakes[item.intakeIndex] !== null) {
                     intakeName = json.intakes[item.intakeIndex] + '';
                 }

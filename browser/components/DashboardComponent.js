@@ -820,6 +820,8 @@ class DashboardComponent extends React.Component {
                 }
             }
         } else if (action === `delete`) {
+            console.log("correspondingPlot", correspondingPlot)
+            console.log("measurementIndex", measurementIndex)
             if (correspondingPlot.measurements.indexOf(measurementIndex) === -1) {
                 throw new Error(`Unable to find measurement ${measurementIndex} for ${plotId} plot`);
             } else {
