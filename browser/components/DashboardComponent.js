@@ -611,7 +611,7 @@ class DashboardComponent extends React.Component {
                             success: (response) => {
                                 newPlots[shadowI].measurementsCachedData[key].data = response.features[0];
                                 count++;
-                                if (count === plots.length) {
+                                if (count === activePlots.length) {
                                     console.log("All plots synced");
                                     _self.setPlots(newPlots);
                                 }
