@@ -20,6 +20,7 @@ class PlotManager {
     }
 
     hydratePlotsFromIds(plots) {
+        plots = plots.filter(e => !!e.id)
         return new Promise((methodResolve, methodReject) => {
             let hydrationPromises = [];
             plots.map((plot, index) => {
