@@ -8,7 +8,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import dayjs from 'dayjs';
+//import createPlotlyComponent from 'react-plotly.js/factory';
+//import Plotly from 'plotly.js-basic-dist';
 import Plot from 'react-plotly.js';
+
+//const Plot = createPlotlyComponent(Plotly);
 
 import {LIMIT_CHAR} from '../constants';
 import LoadingOverlay from './../../../../browser/modules/shared/LoadingOverlay';
@@ -106,7 +110,9 @@ class MenuPanelPlotComponent extends React.Component {
             let yAxis2LayoutSettings = false;
             this.props.plotMeta.measurements.map((measurementLocationRaw, index) => {
                 if (measurementLocationRaw in this.props.plotMeta.measurementsCachedData &&
-                    this.props.plotMeta.measurementsCachedData[measurementLocationRaw]) {
+                    this.props.plotMeta.measurementsCachedData[measurementLocationRaw] &&
+                    this.props.plotMeta.measurementsCachedData[measurementLocationRaw].data
+                ) {
                     let measurementLocation = measurementLocationRaw.split(':');
 
                     let feature = this.props.plotMeta.measurementsCachedData[measurementLocationRaw].data;
@@ -115,6 +121,7 @@ class MenuPanelPlotComponent extends React.Component {
                         let intakeIndex = parseInt(measurementLocation[2]);
                         let createdAt = this.props.plotMeta.measurementsCachedData[measurementLocationRaw].created_at;
                         let measurementData = JSON.parse(feature.properties[key]);
+                        /*
                         let localMinTime = measurementData.timeOfMeasurement[intakeIndex][0];
                         if (minTime === false) {
                             minTime = localMinTime;
@@ -132,6 +139,7 @@ class MenuPanelPlotComponent extends React.Component {
                                 maxTime = localMaxTime;
                             }
                         }
+                         */
 
                         let textValues = [];
                         if (measurementData.attributes && Array.isArray(measurementData.attributes[intakeIndex]) && measurementData.attributes[intakeIndex].length > 0) {

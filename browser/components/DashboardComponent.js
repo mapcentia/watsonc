@@ -15,6 +15,7 @@ import {isNumber} from 'util';
 import arrayMove from 'array-move';
 import trustedIpAddresses from '../trustedIpAddresses';
 
+let syncInProg = false;
 
 const uuidv1 = require('uuid/v1');
 
@@ -128,7 +129,7 @@ class DashboardComponent extends React.Component {
             } else {
                 let newDashboardItems = [];
                 _self.state.dashboardItems.map(item => {
-                    if (item.type === DASHBOARD_ITEM_PLOT) {
+                    if (item.type === DASHBOARD_ITEM_PLOT || item.type === DASHBOARD_ITEM_PROJECT_PLOT) {
                         newDashboardItems.push(JSON.parse(JSON.stringify(item)));
                     }
                 });
@@ -162,8 +163,6 @@ class DashboardComponent extends React.Component {
 
     refreshProfilesList() {
         this.profileManager.getAll().then(profiles => {
-            console.log("Refreshing Profiles list");
-            console.log(profiles);
             let newDashboardItems = [];
             this.state.dashboardItems.map(item => {
                 if (item.type !== DASHBOARD_ITEM_PROFILE) {
@@ -332,7 +331,6 @@ class DashboardComponent extends React.Component {
     }
 
     handleProfileClick(e) {
-        console.log(e.points[0].data.text);
         if (e && e.points && e.points.length === 1 && e.points[0].data && e.points[0].data.text) {
             if (e.points[0].data.text.indexOf(`DGU`) > -1) {
                 let boreholeNumber = false;
@@ -347,7 +345,6 @@ class DashboardComponent extends React.Component {
                     }
                 });
                 if (boreholeNumber !== false) {
-                    console.log(boreholeNumber);
                     this.props.onOpenBorehole(boreholeNumber);
                 }
             }
@@ -521,7 +518,7 @@ class DashboardComponent extends React.Component {
     setPlots(plots) {
         let dashboardItemsCopy = [];
         this.state.dashboardItems.map(item => {
-            if (item.type !== DASHBOARD_ITEM_PLOT) {
+            if (item.type !== DASHBOARD_ITEM_PLOT /* type 0 */ && item.type !== DASHBOARD_ITEM_PROJECT_PLOT /* type 3*/) {
                 dashboardItemsCopy.push(item);
             }
         });
@@ -582,41 +579,59 @@ class DashboardComponent extends React.Component {
     }
 
     syncPlotData() {
-        let plots = this.state.dashboardItems.map((e) => {
-            return e.item;
-        });
         let activePlots = this.state.activePlots;
+        let plots = this.state.dashboardItems.filter(e => {
+            if (activePlots.includes(e.item.id)) {
+                return true;
+            }
+        });
+        plots = plots.map(e => e.item);
         let newPlots = plots;
+        let preCount = 0;
         let count = 0;
         plots.forEach((e, i) => {
-            let obj = e.measurementsCachedData;
-            let shadowI = i;
-            if ('key' in e) {
-                count++;
-                newPlots[shadowI] = e;
-            } else if (Object.keys(obj).length === 0 && obj.constructor === Object) {
-                count++;
-            } else {
-                if (!activePlots.includes(e.id)) {
-                    return;
+            if ('id' in e) {
+                let obj = e.measurementsCachedData;
+                if (Object.keys(obj).length === 0 && obj.constructor === Object) {
+                    preCount++;
+                } else {
+                    for (let key in obj) {
+                        if (obj.hasOwnProperty(key)) {
+                            preCount++;
+                        }
+                    }
                 }
-                for (let key in obj) {
-                    if (obj.hasOwnProperty(key)) {
-                        let rel;
-                        rel = key.split(":")[1].startsWith("_") ? "chemicals.boreholes_time_series_with_chemicals" : "sensor.sensordata_with_correction";
-                        // Lazy load data and sync
-                        $.ajax({
-                            url: "/api/sql/jupiter?srs=25832&q=SELECT * FROM " + rel + " WHERE boreholeno='" + key.split(":")[0] + "'",
-                            scriptCharset: "utf-8",
-                            success: (response) => {
-                                newPlots[shadowI].measurementsCachedData[key].data = response.features[0];
-                                count++;
-                                if (count === plots.length) {
-                                    console.log("All plots synced");
-                                    _self.setPlots(newPlots);
+            }
+        });
+        plots.forEach((e, i) => {
+            if ('id' in e) {
+                let obj = e.measurementsCachedData;
+                let shadowI = i;
+                newPlots[shadowI] = e;
+                if (Object.keys(obj).length === 0 && obj.constructor === Object) {
+                    count++;
+                } else {
+                    for (let key in obj) {
+                        if (obj.hasOwnProperty(key)) {
+                            let rel;
+                            rel = key.split(":")[1].startsWith("_") ? "chemicals.boreholes_time_series_with_chemicals" : "sensor.sensordata_with_correction";
+                            // Lazy load data and sync
+                            $.ajax({
+                                url: "/api/sql/jupiter?srs=25832&q=SELECT * FROM " + rel + " WHERE boreholeno='" + key.split(":")[0] + "'",
+                                scriptCharset: "utf-8",
+                                success: (response) => {
+                                    newPlots[shadowI].measurementsCachedData[key].data = response.features[0];
+                                    count++;
+                                    //console.log("preCount", preCount)
+                                    //console.log("plots.length", plots.length)
+                                    //console.log("newPlots", newPlots)
+                                    if (count === preCount) {
+                                        console.log("All plots synced");
+                                        _self.setPlots(newPlots);
+                                    }
                                 }
-                            }
-                        })
+                            })
+                        }
                     }
                 }
             }
@@ -695,7 +710,7 @@ class DashboardComponent extends React.Component {
 
                 let dashboardItemsCopy = JSON.parse(JSON.stringify(this.state.dashboardItems));
                 dashboardItemsCopy.map((item, index) => {
-                    if (item.type === DASHBOARD_ITEM_PLOT) {
+                    if (item.type === DASHBOARD_ITEM_PLOT || item.type === DASHBOARD_ITEM_PROJECT_PLOT) {
                         if (item.item.id === id) {
                             dashboardItemsCopy.splice(index, 1);
                             return false;
@@ -770,7 +785,7 @@ class DashboardComponent extends React.Component {
 
         let dashboardItemsCopy = JSON.parse(JSON.stringify(this.state.dashboardItems));
         dashboardItemsCopy.map((item, index) => {
-            if (item.type === DASHBOARD_ITEM_PLOT) {
+            if (item.type === DASHBOARD_ITEM_PLOT || item.type === DASHBOARD_ITEM_PROJECT_PLOT) {
                 if (item.item.id === correspondingPlot.id) {
                     dashboardItemsCopy[index].item = correspondingPlot;
                     return false;
@@ -820,6 +835,8 @@ class DashboardComponent extends React.Component {
                 }
             }
         } else if (action === `delete`) {
+            //console.log("correspondingPlot", correspondingPlot)
+            //console.log("measurementIndex", measurementIndex)
             if (correspondingPlot.measurements.indexOf(measurementIndex) === -1) {
                 throw new Error(`Unable to find measurement ${measurementIndex} for ${plotId} plot`);
             } else {
@@ -838,20 +855,21 @@ class DashboardComponent extends React.Component {
 
         let dashboardItemsCopy = JSON.parse(JSON.stringify(this.state.dashboardItems));
         dashboardItemsCopy.map((item, index) => {
-            if (item.type === DASHBOARD_ITEM_PLOT) {
+            if (item.type === DASHBOARD_ITEM_PLOT || item.type === DASHBOARD_ITEM_PROJECT_PLOT) {
                 if (item.item.id === correspondingPlot.id) {
                     dashboardItemsCopy[index].item = correspondingPlot;
                     return false;
                 }
             }
         });
-
+        //console.log("dashboardItemsCopy", dashboardItemsCopy)
+        //console.log("plots", plots)
         this.plotManager.update(correspondingPlot).then(() => {
             this.setState({
                 plots,
+                projectPlots: plots,
                 dashboardItems: dashboardItemsCopy
             });
-
             this.props.onPlotsChange(this.getPlots());
         }).catch(error => {
             console.error(`Error occured while updating plot (${error})`)
@@ -893,7 +911,7 @@ class DashboardComponent extends React.Component {
         Promise.all(updatePlotsPromises).then(() => {
             let dashboardItemsCopy = JSON.parse(JSON.stringify(this.state.dashboardItems));
             dashboardItemsCopy.map((item, index) => {
-                if (item.type === DASHBOARD_ITEM_PLOT) {
+                if (item.type === DASHBOARD_ITEM_PLOT || item.type === DASHBOARD_ITEM_PROJECT_PLOT) {
                     plots.map(updatedPlot => {
                         if (item.item.id === updatedPlot.id) {
                             dashboardItemsCopy[index].item = updatedPlot;
@@ -1001,6 +1019,16 @@ class DashboardComponent extends React.Component {
     }
 
     render() {
+        setTimeout(() => {
+            if (!syncInProg) {
+                //console.log("Syncing plots")
+                //this.syncPlotData();
+            }
+            // Debounce sync
+            syncInProg = true;
+            setTimeout(() => syncInProg = false, 2000);
+        }, 500);
+
         let plotsControls = (<p style={{
             textAlign: `center`,
             paddingTop: `20px`

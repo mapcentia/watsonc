@@ -94,24 +94,29 @@ class MenuTimeSeriesComponent extends React.Component {
             let isChecked = (this.state.activePlots.indexOf(plot.id) > -1);
             let isHighlighted = (this.state.highlightedPlot === plot.id);
             let highlightingIsDisabled = (isChecked ? false : true);
-            let archiveButton = plot.isArchived ? <button type="button" className="btn btn-raised btn-xs" style={{padding: `4px`, margin: `0px`}} onClick={() => {
-                this.props.onPlotArchive(plot.id, false)
-            }}>
-                <i className="material-icons">unarchive</i>
-            </button> : <button type="button" className="btn btn-raised btn-xs" style={{padding: `4px`, margin: `0px`}} onClick={() => {
-                this.props.onPlotArchive(plot.id, true)
-            }}>
-                <i className="material-icons">archive</i>
-            </button>;
+            let archiveButton = plot.isArchived ?
+                <button type="button" className="btn btn-raised btn-xs" style={{padding: `4px`, margin: `0px`}}
+                        onClick={() => {
+                            this.props.onPlotArchive(plot.id, false)
+                        }}>
+                    <i className="material-icons">unarchive</i>
+                </button> :
+                <button type="button" className="btn btn-raised btn-xs" style={{padding: `4px`, margin: `0px`}}
+                        onClick={() => {
+                            this.props.onPlotArchive(plot.id, true)
+                        }}>
+                    <i className="material-icons">archive</i>
+                </button>;
             if (plot.fromProject) {
                 archiveButton = null;
             }
 
-            let deleteButton = plot.fromProject ? null : <button type="button" className="btn btn-raised btn-xs" onClick={() => {
-                this.props.onPlotDelete(plot.id, plot.title);
-            }} style={{padding: `4px`, margin: `0px`}}>
-                <i className="material-icons">delete</i>
-            </button>;
+            let deleteButton = plot.fromProject ? null :
+                <button type="button" className="btn btn-raised btn-xs" onClick={() => {
+                    this.props.onPlotDelete(plot.id, plot.title);
+                }} style={{padding: `4px`, margin: `0px`}}>
+                    <i className="material-icons">delete</i>
+                </button>;
             let itemHtml = <tr key={`borehole_plot_control_${index}`}>
                 <td>
                     <div className="form-group">
@@ -137,9 +142,9 @@ class MenuTimeSeriesComponent extends React.Component {
 
             if (plot.fromProject === true) {
                 projectPlotsTable.push(itemHtml)
-            } else {
-                plotsTable.push(itemHtml);
             }
+            plotsTable.push(itemHtml);
+
         });
 
         var showArchivedPlotsButton = <div>
@@ -201,12 +206,16 @@ class MenuTimeSeriesComponent extends React.Component {
         return (
             <div>
                 {addTimeSeriesComponent}
-                <div style={{ display: `flex` }}>
-                        <SearchFieldComponent id="measurements-search-control" onSearch={(plotsSearchTerm) => {
-                            this.setState({ plotsSearchTerm });
-                        }}/>
+                <div style={{display: `flex`}}>
+                    <SearchFieldComponent id="measurements-search-control" onSearch={(plotsSearchTerm) => {
+                        this.setState({plotsSearchTerm});
+                    }}/>
 
-                <div style={{textAlign: 'right', marginRight: '30px', marginLeft: 'auto'}}>{showArchivedPlotsButton}</div>
+                    <div style={{
+                        textAlign: 'right',
+                        marginRight: '30px',
+                        marginLeft: 'auto'
+                    }}>{showArchivedPlotsButton}</div>
                 </div>
                 <div>{plotsTable}</div>
                 <div>

@@ -1,5 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+//import createPlotlyComponent from 'react-plotly.js/factory';
+//import Plotly from 'plotly.js-basic-dist';
+//const Plot = createPlotlyComponent(Plotly);
 import Plot from 'react-plotly.js';
 
 import SortableHandleComponent from './SortableHandleComponent';

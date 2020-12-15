@@ -115,7 +115,7 @@ class ModalFeatureComponent extends React.Component {
         if (this.props.license === 'premium') {
             return true;
         } else {
-            let plots = this.state.plots.filter((plot) => plot.fromProject != true);
+            let plots = this.state.plots.filter((plot) => plot.fromProject !== true);
             return plots.length < FREE_PLAN_MAX_TIME_SERIES_COUNT;
         }
     }
@@ -221,6 +221,8 @@ class ModalFeatureComponent extends React.Component {
                 }
 
                 let intakeName = `#` + (parseInt(item.intakeIndex) + 1);
+                //console.log("json", json)
+                //console.log("intakeName", intakeName)
                 if (`intakes` in json && Array.isArray(json.intakes) && json.intakes[item.intakeIndex] !== null) {
                     intakeName = json.intakes[item.intakeIndex] + '';
                 }
