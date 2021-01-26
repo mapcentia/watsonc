@@ -580,12 +580,7 @@ class DashboardComponent extends React.Component {
 
     syncPlotData() {
         let activePlots = this.state.activePlots;
-        let plots = this.state.dashboardItems.filter(e => {
-            if (activePlots.includes(e.item.id)) {
-                return true;
-            }
-        });
-        plots = plots.map(e => e.item);
+        let plots = this.state.dashboardItems.map(e => e.item);
         let newPlots = plots;
         let preCount = 0;
         let count = 0;
@@ -616,21 +611,23 @@ class DashboardComponent extends React.Component {
                             let rel;
                             rel = key.split(":")[1].startsWith("_") ? "chemicals.boreholes_time_series_with_chemicals" : "sensor.sensordata_with_correction";
                             // Lazy load data and sync
-                            $.ajax({
-                                url: "/api/sql/jupiter?srs=25832&q=SELECT * FROM " + rel + " WHERE boreholeno='" + key.split(":")[0] + "'",
-                                scriptCharset: "utf-8",
-                                success: (response) => {
-                                    newPlots[shadowI].measurementsCachedData[key].data = response.features[0];
-                                    count++;
-                                    //console.log("preCount", preCount)
-                                    //console.log("plots.length", plots.length)
-                                    //console.log("newPlots", newPlots)
-                                    if (count === preCount) {
-                                        console.log("All plots synced");
-                                        _self.setPlots(newPlots);
+                            // Only load active plots
+                            if (activePlots.includes(e.id)) {
+                                $.ajax({
+                                    url: "/api/sql/jupiter?srs=25832&q=SELECT * FROM " + rel + " WHERE boreholeno='" + key.split(":")[0] + "'",
+                                    scriptCharset: "utf-8",
+                                    success: (response) => {
+                                        newPlots[shadowI].measurementsCachedData[key].data = response.features[0];
+                                        count++;
+                                        if (count === preCount) {
+                                            console.log("All plots synced");
+                                            _self.setPlots(newPlots);
+                                        }
                                     }
-                                }
-                            })
+                                })
+                            } else {
+                                count++;
+                            }
                         }
                     }
                 }
@@ -751,6 +748,9 @@ class DashboardComponent extends React.Component {
         let plots = this.getPlots()
         this.setState({activePlots}, () => {
             this.props.onActivePlotsChange(this.state.activePlots, plots);
+            setTimeout(() => {
+                document.getElementById("syncWithDatabaseBtn").click();
+            }, 200);
         });
     }
 
@@ -1168,6 +1168,7 @@ class DashboardComponent extends React.Component {
                                     onClick={() => {
                                         _self.syncPlotData();
                                     }}
+                                    id="syncWithDatabaseBtn"
                                     className="btn btn-sm btn-primary btn-default">{__(`Sync med database`)}</button>
                             </div>
                             <div className="btn-group btn-group-raised" role="group" style={{margin: `0px`}}>

@@ -20,6 +20,7 @@ class PlotManager {
     }
 
     hydratePlotsFromIds(plots) {
+        if (typeof plots === "undefined") return;
         plots = plots.filter(e => !!e.id)
         return new Promise((methodResolve, methodReject) => {
             let hydrationPromises = [];
