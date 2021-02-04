@@ -234,8 +234,6 @@ class ModalFeatureComponent extends React.Component {
                     icon = measurementIcon.generate(measurementData.maxColor, measurementData.latestColor);
                 }
 
-                console.log(measurementData.latestMeasurement)
-                console.log(measurementData.detectionLimitReachedForLatest)
                 control = (<ModalMeasurementComponent
                     key={key}
                     icon={icon}
