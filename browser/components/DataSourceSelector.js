@@ -9,7 +9,6 @@ import {selectLayer, unselectLayer} from '../redux/actions'
  */
 class DataSourceSelector extends React.Component {
     constructor(props) {
-        console.log(props)
         super(props);
     }
 
