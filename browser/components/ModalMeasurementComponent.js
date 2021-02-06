@@ -8,8 +8,6 @@ import {DragSource} from 'react-dnd';
  */
 class ModalMeasurementComponent extends React.Component {
     constructor(props) {
-        if (props.itemKey === "_2712")
-            console.log(props)
         super(props);
     }
 
@@ -74,7 +72,6 @@ class ModalMeasurementComponent extends React.Component {
 
 const measurementSource = {
     beginDrag(props) {
-        console.log("Begin" , props)
         return {
             gid: props.gid,
             itemKey: props.itemKey,
