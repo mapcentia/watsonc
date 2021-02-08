@@ -220,8 +220,6 @@ class ModalFeatureComponent extends React.Component {
                 }
 
                 let intakeName = `#` + (parseInt(item.intakeIndex) + 1);
-                //console.log("json", json)
-                //console.log("intakeName", intakeName)
                 if (`intakes` in json && Array.isArray(json.intakes) && json.intakes[item.intakeIndex] !== null) {
                     intakeName = json.intakes[item.intakeIndex] + '';
                 }
@@ -283,7 +281,6 @@ class ModalFeatureComponent extends React.Component {
                     numberOfDisplayedCategories++;
                     propertiesControls.push(<div key={`category_` + numberOfDisplayedCategories}>
                         <div style={{fontSize: '20px'}}><a href="javascript:void(0)" onClick={() => {
-                            console.log(this);
                             this.setState({[key]: !this.state[key]})
                         }}><h5>{categoryName.trim()}{this.state[key] ? (
                             <i className="material-icons">keyboard_arrow_down</i>) : (

@@ -99,7 +99,6 @@ class PlotManager {
                             }
                         });
 
-                        console.log(plots);
                         methodResolve(plots);
 
 

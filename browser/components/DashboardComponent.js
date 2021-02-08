@@ -472,7 +472,6 @@ class DashboardComponent extends React.Component {
             return [...new Map(data.map(item => [key(item), item])).values()]
         };
 
-        // console.log("this.state.dashboardItems", this.state.dashboardItems);
         this.state.dashboardItems.map(item => {
             if (item.type !== DASHBOARD_ITEM_PROJECT_PLOT) {
                 dashboardItemsCopy.push(item);
@@ -503,10 +502,6 @@ class DashboardComponent extends React.Component {
 
         // Remove duplets
         dashboardItemsCopy = unique(dashboardItemsCopy, item => item.item.id);
-        // console.log("projectPlots", projectPlots)
-        // console.log("dashboardItemsCopy", dashboardItemsCopy)
-        // console.log("plotsNotOnDashboard", plotsNotOnDashboard)
-        // console.log("profilesNotOnDashboard", plotsNotOnDashboard)
         this.setState({projectPlots, dashboardItems: dashboardItemsCopy}, () => {
             setTimeout(() => {
                 plotsNotOnDashboard.forEach(id => this.handleHidePlot(id));
@@ -541,8 +536,6 @@ class DashboardComponent extends React.Component {
         }
         // Remove duplets
         projectProfiles = unique(projectProfiles);
-        // console.log("Setting Profiles");
-        // console.log(projectProfiles);
         let dashboardItemsCopy = [];
         this.state.dashboardItems.map(item => {
             if (item.type !== DASHBOARD_ITEM_PROJECT_PROFILE) {
@@ -835,8 +828,6 @@ class DashboardComponent extends React.Component {
                 }
             }
         } else if (action === `delete`) {
-            //console.log("correspondingPlot", correspondingPlot)
-            //console.log("measurementIndex", measurementIndex)
             if (correspondingPlot.measurements.indexOf(measurementIndex) === -1) {
                 throw new Error(`Unable to find measurement ${measurementIndex} for ${plotId} plot`);
             } else {

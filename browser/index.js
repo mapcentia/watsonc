@@ -141,7 +141,6 @@ module.exports = module.exports = {
 
             }
         }
-        console.log("IP address", window._vidiIp);
         if (trustedIpAddresses.includes(window._vidiIp)) {
             license = "premium";
         }
@@ -168,7 +167,6 @@ module.exports = module.exports = {
 
 
         backboneEvents.get().on("ready:meta", function () {
-            console.log("Opening panels (Meta event)");
             setTimeout(() => {
                 $(".panel-title a").trigger("click");
             }, 1000);
@@ -453,7 +451,6 @@ module.exports = module.exports = {
 
             // Renewing the already created store by rebuilding the layer tree
             setTimeout(() => {
-                console.log("Opening panels (From get state)");
 
                 setTimeout(() => {
                     layerTree.create(false, [], true).then(() => {
@@ -1086,9 +1083,7 @@ module.exports = module.exports = {
                                 if (layersToEnableWereProvided === false) {
                                     if (layersToEnable.indexOf(layerName) === -1) {
                                         layersToEnable.push(layerName);
-                                        console.log(layerName);
                                     }
-                                    console.log(chemicalId);
                                 }
                                 _self.buildBreadcrumbs(key, categoriesOverall[layerName][key][key2], layerName === LAYER_NAMES[1]);
                                 break;
@@ -1113,7 +1108,6 @@ module.exports = module.exports = {
                 }
             };
             layerTree.setOnLoad(LAYER_NAMES[0], onLoadCallback, "watsonc");
-            console.log("layersToEnable", layersToEnable);
             layersToEnable.map(layerName => {
                 layerTree.reloadLayer(layerName);
             });
@@ -1228,7 +1222,6 @@ module.exports = module.exports = {
                         });
                     } else {
                         setTimeout(() => {
-                            console.log("POLLING");
                             poll();
                         }, 100)
                     }
@@ -1247,7 +1240,6 @@ module.exports = module.exports = {
                         }
                     } else {
                         setTimeout(() => {
-                            console.log("POLLING");
                             poll();
                         }, 100)
                     }
