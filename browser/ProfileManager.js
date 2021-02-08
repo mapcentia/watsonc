@@ -34,8 +34,8 @@ class ProfileManager {
     create(savedProfile) {
         return new Promise((resolve, reject) => {
             axios.post(`/api/extension/watsonc/profile`, savedProfile).then(response => {
-                if (response.data) {            
-                    savedProfile.data = response.data;    
+                if (response.data) {
+                    savedProfile.data = response.data;
                     axios.post(`${this.apiUrl}`, savedProfile).then(response => {
                         let data = JSON.parse(response.data.data.value);
                         resolve(data);
@@ -44,11 +44,11 @@ class ProfileManager {
                         reject(error);
                     });
                 } else {
-                    console.log(`Unable to generate plot data`);
+                    console.error(`Unable to generate plot data`);
                     reject(`Unable to generate plot data`);
                 }
             }).catch(error => {
-                console.log(`Error occured during plot generation`, error);
+                console.error(`Error occured during plot generation`, error);
                 reject(error);
             });
         });

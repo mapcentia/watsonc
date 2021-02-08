@@ -155,7 +155,6 @@ class MenuPanelPlotComponent extends React.Component {
                                 }
                             });
 
-                            console.log("xValues", xValues.length)
                             if (xValues.length > 0) {
                                 data.push({
                                     x: xValues,
