@@ -4,7 +4,7 @@ const initialState = {
     authenticated: false,
     categories: false,
     selectedLayers: [],
-    selectedChemical: false
+    selectedChemical: "99999"
 };
 
 const reducer = (state = initialState, action) => {

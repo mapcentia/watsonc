@@ -1,10 +1,10 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 
 import SearchFieldComponent from './../../../../browser/modules/shared/SearchFieldComponent';
-import { selectChemical } from '../redux/actions';
+import {selectChemical} from '../redux/actions';
 
-import { WATER_LEVEL_KEY } from './../constants';
+import {WATER_LEVEL_KEY} from './../constants';
 
 const uuidv4 = require('uuid/v4');
 
@@ -33,7 +33,7 @@ class ChemicalSelector extends React.Component {
             </div>
             <div>
                 <div>
-                    <div style={{ display: `inline-block`}}>
+                    <div style={{display: `inline-block`}}>
                         <label>
                             <input
                                 name={`chem_modal_${runId}`}
@@ -69,7 +69,7 @@ class ChemicalSelector extends React.Component {
                             }
 
                             chemicalsMarkup.push(<div key={`chemical_${key2}`}>
-                                <div style={{ display: `inline-block`}}>
+                                <div style={{display: `inline-block`}}>
                                     <label>
                                         <input
                                             name={`chem_modal_${runId}`}
@@ -81,7 +81,8 @@ class ChemicalSelector extends React.Component {
                                                 } else {
                                                     this.props.selectChemical(key2);
                                                 }
-                                            }}/> <span className="js-chemical-name">{this.props.categories[layerName][key][key2]}</span>
+                                            }}/> <span
+                                        className="js-chemical-name">{this.props.categories[layerName][key][key2]}</span>
                                     </label>
                                 </div>
                             </div>);
@@ -89,7 +90,7 @@ class ChemicalSelector extends React.Component {
                     }
 
                     if (chemicalsMarkup.length > 0) {
-                        if (key !== `Vandstand` || key === `Vandstand` && this.props.excludeWaterLevel === false) {
+                        if (key !== `Vandstand`) {
                             chemicalGroupsForLayer.push(<div key={`chemical_group_key_${key}`}>
                                 <div>
                                     <h5>{key}</h5>
@@ -101,7 +102,6 @@ class ChemicalSelector extends React.Component {
                 }
             }
         }
-
         return chemicalGroupsForLayer;
     }
 
@@ -116,30 +116,27 @@ class ChemicalSelector extends React.Component {
 
         if (this.props.emptyOptionTitle) {
             layerGroupsList.push(<div key={`chemical_group_empty`}>
-            <div>
                 <div>
-                    <div style={{ display: `inline-block`}}>
-                        <label>
-                            <input
-                                name={`chem_modal_${runId}_empty`}
-                                type="radio"
-                                checked={false}
-                                onChange={() => {
-                                    this.props.localSelectChemical(false);
-                                }}/> <span className="js-chemical-name">{this.props.emptyOptionTitle}</span>
-                        </label>
+                    <div>
+                        <div style={{display: `inline-block`}}>
+                            <label>
+                                <input
+                                    name={`chem_modal_${runId}_empty`}
+                                    type="radio"
+                                    checked={false}
+                                    onChange={() => {
+                                        this.props.localSelectChemical(false);
+                                    }}/> <span className="js-chemical-name">{this.props.emptyOptionTitle}</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>);
-        }
-
-        if (this.props.selectedLayers.length > 0 && this.props.excludeWaterLevel === false) {
-            let waterGroup = this.generateWaterGroup(runId);
-            layerGroupsList.push(waterGroup);
+            </div>);
         }
 
         if (this.props.selectedLayers.indexOf(LAYER_NAMES[0]) > -1) {
+            let waterGroup = this.generateWaterGroup(runId);
+            layerGroupsList.push(waterGroup);
             let chemicalGroups = this.generateChemicalGroups(runId);
             layerGroupsList = layerGroupsList.concat(chemicalGroups);
         }
@@ -147,14 +144,15 @@ class ChemicalSelector extends React.Component {
         return (<div>
             {this.props.selectedLayers.length > 0 ? (<div>
                 <SearchFieldComponent onSearch={this.handleSearch}/>
-                {layerGroupsList.length > 0 ? (<div style={{ maxHeight: `400px`, overflowY: `scroll`}}>{layerGroupsList}</div>) : (<p>{__(`Nothing found`)}</p>)}
+                {layerGroupsList.length > 0 ? (
+                    <div style={{maxHeight: `400px`, overflowY: `scroll`}}>{layerGroupsList}</div>) : (
+                    <p>{__(`Nothing found`)}</p>)}
             </div>) : false}
         </div>);
     }
 }
 
 ChemicalSelector.defaultProps = {
-    excludeWaterLevel: false,
     useLocalSelectedChemical: false,
     localSelectedChemical: false
 };
