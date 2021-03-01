@@ -176,7 +176,6 @@ const instersectionScriptHandler = (req, res) => {
 const reportHandler = (req, res) => {
     if (!config.gc2.host) throw new Error(`GC2 host has to be specified`);
 
-    console.log(__dirname);
 
     const pythonProcess = spawn(moduleConfig.pythonCommand, [moduleConfig.reportScriptPath, req.query.komcode, moduleConfig.reportSavePath, req.query.userid], {
         cwd: require('path').dirname(moduleConfig.reportScriptPath),

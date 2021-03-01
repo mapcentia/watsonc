@@ -6,9 +6,6 @@ import React from 'react';
 class TextFieldModal extends React.Component {
     constructor(props) {
 
-        console.log(`### creating TextFieldModal`);
-
-
         super(props);
         this.state = {text: ``};
     }

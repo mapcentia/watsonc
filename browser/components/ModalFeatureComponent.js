@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import Switch from '@material-ui/core/Switch';
 
 import withDragDropContext from './withDragDropContext';
@@ -18,7 +18,6 @@ const measurementIcon = require('./../measurementIcon');
 class ModalFeatureComponent extends React.Component {
     constructor(props) {
         super(props);
-        console.log(props)
         this.state = {
             plots: this.props.initialPlots,
             measurementsSearchTerm: ``,
@@ -40,7 +39,7 @@ class ModalFeatureComponent extends React.Component {
     }
 
     componentDidMount() {
-        let { selectedChemical } = this.props;
+        let {selectedChemical} = this.props;
         // Simulating the separate group for water level
         let categories = JSON.parse(JSON.stringify(this.props.categories));
         let selectedCategory = null;
@@ -86,14 +85,14 @@ class ModalFeatureComponent extends React.Component {
         let activePlots = this.state.activePlots.filter((activePlot) => {
             return activePlot.id != plot.id;
         })
-        this.setState({ activePlots });
+        this.setState({activePlots});
         this.props.onPlotHide(plot.id);
     }
 
     handleShowPlot(plot) {
         let activePlots = this.state.activePlots;
         activePlots.push(plot);
-        this.setState({ activePlots });
+        this.setState({activePlots});
         this.props.onPlotShow(plot.id);
     }
 
@@ -108,7 +107,7 @@ class ModalFeatureComponent extends React.Component {
     }
 
     setPlots(plots) {
-        this.setState({ plots });
+        this.setState({plots});
     }
 
     canCreatePlot() {
@@ -221,8 +220,6 @@ class ModalFeatureComponent extends React.Component {
                 }
 
                 let intakeName = `#` + (parseInt(item.intakeIndex) + 1);
-                //console.log("json", json)
-                //console.log("intakeName", intakeName)
                 if (`intakes` in json && Array.isArray(json.intakes) && json.intakes[item.intakeIndex] !== null) {
                     intakeName = json.intakes[item.intakeIndex] + '';
                 }
@@ -238,9 +235,9 @@ class ModalFeatureComponent extends React.Component {
                     key={key}
                     icon={icon}
                     onAddMeasurement={this.props.onAddMeasurement}
-                    maxMeasurement={measurementData === null ? null : measurementData.maxMeasurement}
-                    latestMeasurement={measurementData === null ? null : measurementData.latestMeasurement}
-                    latestMeasurementRelative={measurementData === null ? null : Math.round((measurementData.latestMeasurement/measurementData.chemicalLimits[1]) * 100)/100}
+                    maxMeasurement={measurementData === null ? null : Math.round((measurementData.maxMeasurement) * 100) / 100}
+                    latestMeasurement={measurementData === null ? null : Math.round((measurementData.latestMeasurement) * 100) / 100}
+                    latestMeasurementRelative={measurementData === null ? null : Math.round((measurementData.latestMeasurement / measurementData.chemicalLimits[1]) * 100) / 100}
                     chemicalLimits={measurementData === null ? null : measurementData.chemicalLimits}
                     detectionLimitReachedForMax={measurementData === null ? null : measurementData.detectionLimitReachedForMax}
                     detectionLimitReachedForLatest={measurementData === null ? null : measurementData.detectionLimitReachedForLatest}
@@ -276,15 +273,18 @@ class ModalFeatureComponent extends React.Component {
                     }
                 });
                 if (measurementControls.length > 0) {
-                    measurementControls.sort(function(a, b) { return b.props.latestMeasurementRelative - a.props.latestMeasurementRelative})
+                    measurementControls.sort(function (a, b) {
+                        return (b.props.detectionLimitReachedForLatest ? 0 : b.props.latestMeasurementRelative) - (a.props.detectionLimitReachedForLatest ? 0 : a.props.latestMeasurementRelative)
+                    })
                     let key = 'show' + categoryName.trim() + 'Measurements'
                     // Category has at least one displayed measurement
                     numberOfDisplayedCategories++;
                     propertiesControls.push(<div key={`category_` + numberOfDisplayedCategories}>
                         <div style={{fontSize: '20px'}}><a href="javascript:void(0)" onClick={() => {
-                            console.log(this);
                             this.setState({[key]: !this.state[key]})
-                        }}><h5>{categoryName.trim()}{this.state[key] ? (<i className="material-icons">keyboard_arrow_down</i>) : (<i className="material-icons">keyboard_arrow_right</i>)}</h5></a></div>
+                        }}><h5>{categoryName.trim()}{this.state[key] ? (
+                            <i className="material-icons">keyboard_arrow_down</i>) : (
+                            <i className="material-icons">keyboard_arrow_right</i>)}</h5></a></div>
                         {this.state[key] ? (<div>{measurementControls}</div>) : false}
                     </div>);
                 }
@@ -301,7 +301,9 @@ class ModalFeatureComponent extends React.Component {
             });
 
             if (uncategorizedMeasurementControls.length > 0) {
-                uncategorizedMeasurementControls.sort(function(a, b) { return b.props.latestMeasurementRelative - a.props.latestMeasurementRelative})
+                uncategorizedMeasurementControls.sort(function (a, b) {
+                    return (b.props.detectionLimitReachedForLatest ? 0 : b.props.latestMeasurementRelative) - (a.props.detectionLimitReachedForLatest ? 0 : a.props.latestMeasurementRelative)
+                })
                 // Category has at least one displayed measurement
                 numberOfDisplayedCategories++;
                 propertiesControls.push(<div key={`uncategorized_category_0`}>
@@ -371,42 +373,45 @@ class ModalFeatureComponent extends React.Component {
             borproUrl = "";
         }
 
-        return (<div style={{ height: `inherit` }}>
+        return (<div style={{height: `inherit`}}>
             <div>
                 <div className="measurements-modal_left-column">
                     <div style={{display: 'flex', height: '50px'}}>
                         <div style={{width: '30px', height: '30px', marginLeft: '25px'}}>
-                        <a target="_blank" href={`http://data.geus.dk/JupiterWWW/borerapport.jsp?dgunr=${this.props.feature.properties.boreholeno}`}>
-                            <img style={{width: '30px', height: '30px'}} src="https://mapcentia-www.s3-eu-west-1.amazonaws.com/calypso/icons/geus.ico" /><br/>
-                            <span style={{fontSize: '70%'}}>Jupiter</span>
-                        </a>
+                            <a target="_blank"
+                               href={`http://data.geus.dk/JupiterWWW/borerapport.jsp?dgunr=${this.props.feature.properties.boreholeno}`}>
+                                <img style={{width: '30px', height: '30px'}}
+                                     src="https://mapcentia-www.s3-eu-west-1.amazonaws.com/calypso/icons/geus.ico"/><br/>
+                                <span style={{fontSize: '70%'}}>Jupiter</span>
+                            </a>
                         </div>
                         <div style={{width: '30px', height: '30px', marginLeft: '30px'}}>
-                        <a target="_blank" href={`http://borpro.dk/borejournal.asp?dguNr=${borproUrl}`}>
-                            <img style={{width: '30px', height: '30px'}} src="https://mapcentia-www.s3-eu-west-1.amazonaws.com/calypso/icons/borpro.ico" /><br/>
-                            <span style={{fontSize: '70%'}}>Borpro</span>
-                        </a>
+                            <a target="_blank" href={`http://borpro.dk/borejournal.asp?dguNr=${borproUrl}`}>
+                                <img style={{width: '30px', height: '30px'}}
+                                     src="https://mapcentia-www.s3-eu-west-1.amazonaws.com/calypso/icons/borpro.ico"/><br/>
+                                <span style={{fontSize: '70%'}}>Borpro</span>
+                            </a>
                         </div>
                         <div style={{width: '80px', height: '30px', marginLeft: 'auto', marginRight: '60px'}}>
-                        <Switch checked={this.hasSelectAll()} onChange={(name, isChecked) => {
-                            this.setSelectAll(isChecked);
-                        }}/>
-                        Fold ind/ud
+                            <Switch checked={this.hasSelectAll()} onChange={(name, isChecked) => {
+                                this.setSelectAll(isChecked);
+                            }}/>
+                            Fold ind/ud
                         </div>
                     </div>
                     <div>{measurementsText}</div>
                     <div className="form-group">
                         <SearchFieldComponent id="measurements-search-control" onSearch={(measurementsSearchTerm) => {
-                            this.setState({ measurementsSearchTerm });
+                            this.setState({measurementsSearchTerm});
                         }}/>
                     </div>
                 </div>
                 <div className="measurements-modal_right-column">
                     <div>{plotsText}</div>
-                    <div style={{ display: `flex` }}>
+                    <div style={{display: `flex`}}>
                         <div className="form-group">
                             <SearchFieldComponent id="plots-search-control" onSearch={(plotsSearchTerm) => {
-                                this.setState({ plotsSearchTerm });
+                                this.setState({plotsSearchTerm});
                             }}/>
                         </div>
                         <div className="form-group">
@@ -414,16 +419,19 @@ class ModalFeatureComponent extends React.Component {
                                 id="new-plot-control"
                                 saveIcon={(<i className="material-icons">add</i>)}
                                 inputPlaceholder={__(`Create new`)}
-                                onAdd={(title) => { this.onPlotAdd(title) }}
+                                onAdd={(title) => {
+                                    this.onPlotAdd(title)
+                                }}
                                 type="userOwned"
-                                customStyle={{ width: `100%` }}/>
+                                customStyle={{width: `100%`}}/>
                         </div>
                     </div>
                 </div>
             </div>
-            <div style={{ height: `calc(100% - 74px)`, display: `flex` }}>
+            <div style={{height: `calc(100% - 74px)`, display: `flex`}}>
                 <div className="measurements-modal_left-column measurements-modal_scrollable">{propertiesControls}</div>
-                <div className="measurements-modal_right-column measurements-modal_scrollable" ref={this.listRef}>{plotsControls}</div>
+                <div className="measurements-modal_right-column measurements-modal_scrollable"
+                     ref={this.listRef}>{plotsControls}</div>
             </div>
         </div>);
     }
