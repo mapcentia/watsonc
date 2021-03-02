@@ -23,3 +23,17 @@ export const setAuthenticated = (authenticated) => ({
     payload: authenticated
 });
 
+export const selectStartDate = date => ({
+    type: 'SELECT_START_DATE',
+    payload: date
+});
+
+export const selectEndDate = date => ({
+    type: 'SELECT_END_DATE',
+    payload: date
+});
+
+export const selectMeasurementCount = count => ({
+    type: 'SELECT_MEASUREMENT_COUNT',
+    payload: count
+});

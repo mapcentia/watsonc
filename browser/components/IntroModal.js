@@ -1,10 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux'
+import {connect} from 'react-redux'
 
 import DataSourceSelector from './DataSourceSelector';
 import ChemicalSelector from './ChemicalSelector';
-import { setCategories } from '../redux/actions';
+import GlobalFilter from './DataSelectorGlobalFilterComponent';
+import {selectStartDate, setCategories} from '../redux/actions';
 
 import StateSnapshotsDashboard from './../../../../browser/modules/stateSnapshots/components/StateSnapshotsDashboard';
 
@@ -18,7 +19,7 @@ const MODE_SELECT = 2;
 class IntroModal extends React.Component {
     constructor(props) {
         super(props);
-        
+
         this.state = {
             mode: MODE_INDEX,
             layers: this.props.layers,
@@ -39,7 +40,10 @@ class IntroModal extends React.Component {
     applyParameters() {
         this.props.onApply({
             layers: this.props.selectedLayers,
-            chemical: (this.props.selectedChemical ? this.props.selectedChemical : false)
+            chemical: (this.props.selectedChemical ? this.props.selectedChemical : false),
+            selectedStartDate: this.props.selectedStartDate,
+            selectedEndDate: this.props.selectedEndDate,
+            selectedMeasurementCount: this.props.selectedMeasurementCount,
         });
     }
 
@@ -87,17 +91,24 @@ class IntroModal extends React.Component {
                 <div className="container" style={{padding: `0px`}}>
                     <div className="row-fluid">
                         <div className="col-md-6 text-center"
-                            style={Object.assign({}, buttonColumnStyle, leftColumnBorder, (this.state.mode === MODE_NEW ? shadowStyle : {}))}
-                            onClick={() => { this.setState({mode: MODE_NEW}) }}>
+                             style={Object.assign({}, buttonColumnStyle, leftColumnBorder, (this.state.mode === MODE_NEW ? shadowStyle : {}))}
+                             onClick={() => {
+                                 this.setState({mode: MODE_NEW})
+                             }}>
                             <div style={buttonStyle}>
-                                {__(`New project`)}    {this.state.mode === MODE_NEW ? (<i className="fas fa-chevron-down"></i>) : (<i className="fas fa-chevron-right"></i>)}
+                                {__(`New project`)} {this.state.mode === MODE_NEW ? (
+                                <i className="fas fa-chevron-down"></i>) : (<i className="fas fa-chevron-right"></i>)}
                             </div>
                         </div>
-                        <div className="col-md-6 text-center" style={Object.assign({}, buttonColumnStyle, rightColumnBorder, {
-                            borderLeft: `1px solid white`
-                        }, (this.state.mode === MODE_SELECT ? shadowStyle : {}))} onClick={() => { this.setState({mode: MODE_SELECT}) }}>
+                        <div className="col-md-6 text-center"
+                             style={Object.assign({}, buttonColumnStyle, rightColumnBorder, {
+                                 borderLeft: `1px solid white`
+                             }, (this.state.mode === MODE_SELECT ? shadowStyle : {}))} onClick={() => {
+                            this.setState({mode: MODE_SELECT})
+                        }}>
                             <div style={buttonStyle}>
-                                {__(`Open existing project`)}    {this.state.mode === MODE_SELECT ? (<i className="fas fa-chevron-down"></i>) : (<i className="fas fa-chevron-right"></i>)}
+                                {__(`Open existing project`)} {this.state.mode === MODE_SELECT ? (
+                                <i className="fas fa-chevron-down"></i>) : (<i className="fas fa-chevron-right"></i>)}
                             </div>
                         </div>
                     </div>
@@ -115,50 +126,66 @@ class IntroModal extends React.Component {
                 </div>) : false}
 
                 {this.state.mode === MODE_SELECT ? (<div className="container" style={{paddingTop: `20px`}}>
-                    <div className="row-fluid">
-                        <div className="col-md-12" style={{textAlign: `right`}}>
-                        {this.props.authenticated === false ? (<a id="session" href="#" data-toggle="modal" data-target="#login-modal" className="active">
-                            <i className="material-icons gc2-session-unlock">lock_open</i>
-                            <span className="module-title">{__(`Sign in in order to access user projects`)}</span>
-                        </a>) : false}
-                        </div>
-                    </div>
-                    <div className="row-fluid">
-                        <div className="col-md-12">
-                            <StateSnapshotsDashboard
-                                force={true}
-                                readOnly={true}
-                                customSetOfTitles={true}
-                                initialAuthenticated={this.props.authenticated}
-                                showStateSnapshotTypes={false}
-                                playOnly={true}
-                                {...this.props}
-                                onStateSnapshotApply={this.props.onClose}/>
-                        </div>
-                    </div>
-                </div>)
-
-
-               /*     (<div className="container" style={{paddingTop: `20px`}}>
                         <div className="row-fluid">
-                            <div className="col-md-12">
-                                Her bliver det muligt at åbne et gemt projekt. Et projekt kan indeholde tidsserie-grafer, profiler mv.
+                            <div className="col-md-12" style={{textAlign: `right`}}>
+                                {this.props.authenticated === false ? (
+                                    <a id="session" href="#" data-toggle="modal" data-target="#login-modal"
+                                       className="active">
+                                        <i className="material-icons gc2-session-unlock">lock_open</i>
+                                        <span
+                                            className="module-title">{__(`Sign in in order to access user projects`)}</span>
+                                    </a>) : false}
                             </div>
                         </div>
-                    </div>
-                    )*/ : false}
+                        <div className="row-fluid">
+                            <div className="col-md-12">
+                                <StateSnapshotsDashboard
+                                    force={true}
+                                    readOnly={true}
+                                    customSetOfTitles={true}
+                                    initialAuthenticated={this.props.authenticated}
+                                    showStateSnapshotTypes={false}
+                                    playOnly={true}
+                                    {...this.props}
+                                    onStateSnapshotApply={this.props.onClose}/>
+                            </div>
+                        </div>
+                    </div>)
+
+
+                    /*     (<div className="container" style={{paddingTop: `20px`}}>
+                             <div className="row-fluid">
+                                 <div className="col-md-12">
+                                     Her bliver det muligt at åbne et gemt projekt. Et projekt kan indeholde tidsserie-grafer, profiler mv.
+                                 </div>
+                             </div>
+                         </div>
+                         )*/ : false}
             </div>
 
             <div className="modal-footer" style={{padding: `0px`}}>
                 {this.state.mode === MODE_NEW ? (<div className="container">
                     <div className="row-fluid">
-                        <div className="col-md-12" style={{textAlign: `right`, paddingTop: `10px`, paddingBottom: `10px`}}>
+                        <div className="col-md-12"
+                             style={{textAlign: `right`, paddingTop: `10px`, paddingBottom: `10px`}}>
                             <button
                                 type="button"
                                 disabled={this.props.selectedLayers.length === 0}
                                 className="btn btn-raised btn-primary"
                                 data-dismiss="modal"
-                                onClick={this.applyParameters.bind(this)}>{__(`Continue`)}<div className="ripple-container"></div></button>
+                                onClick={this.applyParameters.bind(this)}>{__(`Continue`)}
+                                <div className="ripple-container"></div>
+                            </button>
+                        </div>
+                    </div>
+                </div>) : false}
+            </div>
+            <div className="modal-footer" style={{padding: `0px`}}>
+                {this.state.mode === MODE_NEW ? (<div className="container">
+                    <div className="row-fluid">
+                        <div className="col-md-12"
+                             style={{textAlign: `left`, paddingTop: `10px`, paddingBottom: `10px`}}>
+                            <GlobalFilter/>
                         </div>
                     </div>
                 </div>) : false}
@@ -177,7 +204,10 @@ IntroModal.propTypes = {
 const mapStateToProps = state => ({
     authenticated: state.global.authenticated,
     selectedLayers: state.global.selectedLayers,
-    selectedChemical: state.global.selectedChemical
+    selectedChemical: state.global.selectedChemical,
+    selectedMeasurementCount: state.global.selectedMeasurementCount,
+    selectedStartDate: state.global.selectedStartDate,
+    selectedEndDate: state.global.selectedEndDate,
 });
 
 const mapDispatchToProps = dispatch => ({

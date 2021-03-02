@@ -4,7 +4,10 @@ const initialState = {
     authenticated: false,
     categories: false,
     selectedLayers: [],
-    selectedChemical: "99999"
+    selectedChemical: "99999",
+    selectedStartDate: "",
+    selectedEndDate: "",
+    selectedMeasurementCount: 0
 };
 
 const reducer = (state = initialState, action) => {
@@ -16,6 +19,12 @@ const reducer = (state = initialState, action) => {
             return Object.assign({}, state, {categories: action.payload});
         case 'SELECT_CHEMICAL':
             return Object.assign({}, state, {selectedChemical: action.payload});
+        case 'SELECT_START_DATE':
+            return Object.assign({}, state, {selectedStartDate: action.payload});
+        case 'SELECT_END_DATE':
+            return Object.assign({}, state, {selectedEndDate: action.payload});
+        case 'SELECT_MEASUREMENT_COUNT':
+            return Object.assign({}, state, {selectedMeasurementCount: action.payload});
         case 'SELECT_LAYER':
             compoundLayerKey = action.payload.originalLayerKey + (action.payload.additionalKey ? `#${action.payload.additionalKey}` : ``);
             selectedLayers = state.selectedLayers.slice(0);

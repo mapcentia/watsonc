@@ -1,11 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Provider } from 'react-redux';
-import { connect } from 'react-redux';
+import {Provider} from 'react-redux';
+import {connect} from 'react-redux';
 import reduxStore from '../redux/store';
 
 import DataSourceSelector from './DataSourceSelector';
 import ChemicalSelectorModal from './ChemicalSelectorModal';
+import GlobalFilter from './DataSelectorGlobalFilterComponent';
 
 const utils = require('./../utils');
 
@@ -20,7 +21,10 @@ class MenuDataSourceAndTypeSelectorComponent extends React.Component {
     applyParameters() {
         this.props.onApply({
             layers: this.props.selectedLayers,
-            chemical: (this.props.selectedChemical ? this.props.selectedChemical : false)
+            chemical: (this.props.selectedChemical ? this.props.selectedChemical : false),
+            selectedStartDate: this.props.selectedStartDate,
+            selectedEndDate: this.props.selectedEndDate,
+            selectedMeasurementCount: this.props.selectedMeasurementCount,
         });
     }
 
@@ -33,38 +37,43 @@ class MenuDataSourceAndTypeSelectorComponent extends React.Component {
         return (<div>
             <div style={{display: `flex`}}>
                 <div style={{flexGrow: `1`}}>
-                    <DataSourceSelector layers={this.props.layers} enabledLoctypeIds={this.props.enabledLoctypeIds} urlparser={this.props.urlparser} boreholes={this.props.boreholes} />
+                    <DataSourceSelector layers={this.props.layers} enabledLoctypeIds={this.props.enabledLoctypeIds}
+                                        urlparser={this.props.urlparser} boreholes={this.props.boreholes}/>
                 </div>
                 <div style={{flexGrow: `1`}}>
                     <p>{__(`Select datatype`)}</p>
-                    <p>{chemicalName} <button
-                        type="button"
-                        disabled={this.props.selectedLayers.length === 0}
-                        className="btn btn-primary btn-sm"
-                        onClick={() => {
-                            const dialogPrefix = `watsonc-select-chemical-dialog`;
-                            const selectChemicalModalPlaceholderId = `${dialogPrefix}-placeholder`;
+                    <p>{chemicalName}
+                        <button
+                            type="button"
+                            disabled={this.props.selectedLayers.length === 0}
+                            className="btn btn-primary btn-sm"
+                            onClick={() => {
+                                const dialogPrefix = `watsonc-select-chemical-dialog`;
+                                const selectChemicalModalPlaceholderId = `${dialogPrefix}-placeholder`;
 
-                            if ($(`#${selectChemicalModalPlaceholderId}`).children().length > 0) {
-                                ReactDOM.unmountComponentAtNode(document.getElementById(selectChemicalModalPlaceholderId))
-                            }
+                                if ($(`#${selectChemicalModalPlaceholderId}`).children().length > 0) {
+                                    ReactDOM.unmountComponentAtNode(document.getElementById(selectChemicalModalPlaceholderId))
+                                }
 
-                            try {
-                                ReactDOM.render(<div>
-                                    <Provider store={reduxStore}>
-                                        <ChemicalSelectorModal onClickControl={() => {
-                                            $('#' + dialogPrefix).modal('hide');
-                                        }}/>
-                                    </Provider>
-                                </div>, document.getElementById(selectChemicalModalPlaceholderId));
-                            } catch (e) {
-                                console.error(e);
-                            }
+                                try {
+                                    ReactDOM.render(<div>
+                                        <Provider store={reduxStore}>
+                                            <ChemicalSelectorModal onClickControl={() => {
+                                                $('#' + dialogPrefix).modal('hide');
+                                            }}/>
+                                        </Provider>
+                                    </div>, document.getElementById(selectChemicalModalPlaceholderId));
+                                } catch (e) {
+                                    console.error(e);
+                                }
 
-                            $('#' + dialogPrefix).modal({backdrop: `static`});
-                        }}><i className="fas fa-edit" title={__(`Edit`)}></i></button>
+                                $('#' + dialogPrefix).modal({backdrop: `static`});
+                            }}><i className="fas fa-edit" title={__(`Edit`)}></i></button>
                     </p>
                 </div>
+            </div>
+            <div>
+                <GlobalFilter/>
             </div>
             <div>
                 <button
@@ -82,7 +91,10 @@ MenuDataSourceAndTypeSelectorComponent.propTypes = {};
 const mapStateToProps = state => ({
     selectedLayers: state.global.selectedLayers,
     selectedChemical: state.global.selectedChemical,
-    categories: state.global.categories
+    categories: state.global.categories,
+    selectedMeasurementCount: state.global.selectedMeasurementCount,
+    selectedStartDate: state.global.selectedStartDate,
+    selectedEndDate: state.global.selectedEndDate,
 });
 
 export default connect(mapStateToProps)(MenuDataSourceAndTypeSelectorComponent);
