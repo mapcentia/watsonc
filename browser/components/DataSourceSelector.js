@@ -70,8 +70,8 @@ class DataSourceSelector extends React.Component {
                                 }
                             }}/> {titles.join(' / ')}
                     </label>
-                    <button type="button" className="btn btn-xs btn-primary" title={__(`Filter`)} onClick={() => { this.state.openFilter === key ? this.setState({openFilter: null}) : this.setState({openFilter: key})}}><i className='material-icons'>filter_list</i></button>
-                    {this.state.openFilter === key ? <DataSelectorFilterComponent /> : null}
+                    {/*<button type="button" className="btn btn-xs btn-primary" title={__(`Filter`)} onClick={() => { this.state.openFilter === key ? this.setState({openFilter: null}) : this.setState({openFilter: key})}}><i className='material-icons'>filter_list</i></button>*/}
+                    {/*{this.state.openFilter === key ? <DataSelectorFilterComponent /> : null}*/}
                 </div>
             </div>);
         };

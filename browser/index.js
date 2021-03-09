@@ -753,9 +753,17 @@ module.exports = module.exports = {
         if (parameters.layers.indexOf(LAYER_NAMES[0]) > -1) {
             let rasterToEnable = `system._${parameters.chemical}`;
             currentRasterLayer = rasterToEnable;
+            let filters = {};
+            filters[rasterToEnable] = {
+                match: "all", columns: [
+                    {fieldname: "count", expression: ">", value: parameters.selectedMeasurementCount, restriction: false}
+                ]
+
+            }
+            layerTree.applyFilters(filters);
             switchLayer.init(rasterToEnable, true).then(() => {
                 if (parameters.chemical) {
-                    _self.enableChemical(parameters.chemical, filteredLayers);
+                    _self.enableChemical(parameters.chemical, filteredLayers, false, parameters);
                 } else {
                     lastSelectedChemical = parameters.chemical;
                     filteredLayers.map(layerName => {
@@ -1072,7 +1080,7 @@ module.exports = module.exports = {
         }
     },
 
-    enableChemical(chemicalId, layersToEnable = [], onComplete = false) {
+    enableChemical(chemicalId, layersToEnable = [], onComplete = false, parameters) {
         if (!chemicalId) throw new Error(`Chemical identifier was not provided`);
         setTimeout(() => {
             let layersToEnableWereProvided = (layersToEnable.length > 0);
@@ -1093,14 +1101,18 @@ module.exports = module.exports = {
                     }
                 }
             }
-            layerTree.applyFilters({
+            let filters = {
                 "system.all": {
-                    match: "any", columns: [
-                        {fieldname: "compound", expression: "=", value: chemicalId, restriction: false}
+                    match: "all", columns: [
+                        {fieldname: "compound", expression: "=", value: chemicalId, restriction: false},
+                        {fieldname: "count", expression: ">", value: parameters.selectedMeasurementCount, restriction: false}
                     ]
 
                 }
-            });
+            };
+
+
+            layerTree.applyFilters(filters);
             lastSelectedChemical = chemicalId;
             backboneEvents.get().trigger(`${MODULE_NAME}:chemicalChange`);
             let onLoadCallback = function (store) {
