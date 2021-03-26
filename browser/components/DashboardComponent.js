@@ -14,6 +14,7 @@ import SortablePlotsGridComponent from './SortablePlotsGridComponent';
 import {isNumber} from 'util';
 import arrayMove from 'array-move';
 import trustedIpAddresses from '../trustedIpAddresses';
+import { getPlotData } from '../services/plot';
 
 let syncInProg = false;
 
@@ -607,25 +608,21 @@ class DashboardComponent extends React.Component {
                     }
                     for (let index in e.measurements) {
                         let key = e.measurements[index];
-                        let rel;
-                        rel = key.split(":")[1].startsWith("_") ? "chemicals.boreholes_time_series_with_chemicals" : "sensor.sensordata_with_correction";
                         // Lazy load data and sync
                         // Only load active plots
                         if (activePlots.includes(e.id)) {
-                            $.ajax({
-                                url: "/api/sql/jupiter?srs=25832&q=SELECT * FROM " + rel + " WHERE boreholeno='" + key.split(":")[0] + "'",
-                                scriptCharset: "utf-8",
-                                success: (response) => {
+                            getPlotData(key).then((response) => {
                                     if (!newPlots[shadowI].measurementsCachedData[key]) {
                                         newPlots[shadowI].measurementsCachedData[key] = {};
                                     }
-                                    newPlots[shadowI].measurementsCachedData[key].data = response.features[0];
+                                    newPlots[shadowI].measurementsCachedData[key].data = response.data.features[0];
                                     count++;
                                     if (count === preCount) {
                                         console.log("All plots synced");
                                         _self.setPlots(newPlots);
                                     }
-                                }
+                            }).catch((error) => {
+                                console.log(error);
                             })
                         } else {
                             count++;
