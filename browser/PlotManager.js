@@ -53,6 +53,7 @@ class PlotManager {
                     results.map((dataItem) => {
                         if (dataItem.key === item.id && typeof dataItem.value !== "undefined") {
                             plots[index] = JSON.parse(dataItem.value);
+                            delete plots[index].measurementsCachedData;
                         }
                     });
                 });
@@ -90,6 +91,7 @@ class PlotManager {
                         let plots = [];
                         results.map((item, index) => {
                             plots[index] = JSON.parse(item.value);
+                            delete plots[index].measurementsCachedData;
                         });
 
                         plots.map((item, index) => {
@@ -210,6 +212,7 @@ class PlotManager {
             }
         });
     }
+
 }
 
 export default PlotManager;

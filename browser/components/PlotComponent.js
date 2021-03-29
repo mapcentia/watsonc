@@ -109,7 +109,7 @@ class MenuPanelPlotComponent extends React.Component {
 
             let yAxis2LayoutSettings = false;
             this.props.plotMeta.measurements.map((measurementLocationRaw, index) => {
-                if (measurementLocationRaw in this.props.plotMeta.measurementsCachedData &&
+                if (this.props.plotMeta.measurementsCachedData && measurementLocationRaw in this.props.plotMeta.measurementsCachedData &&
                     this.props.plotMeta.measurementsCachedData[measurementLocationRaw] &&
                     this.props.plotMeta.measurementsCachedData[measurementLocationRaw].data
                 ) {

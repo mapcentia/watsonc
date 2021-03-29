@@ -14,6 +14,7 @@ import SortablePlotsGridComponent from './SortablePlotsGridComponent';
 import {isNumber} from 'util';
 import arrayMove from 'array-move';
 import trustedIpAddresses from '../trustedIpAddresses';
+import { getPlotData } from '../services/plot';
 
 let syncInProg = false;
 
@@ -580,7 +581,10 @@ class DashboardComponent extends React.Component {
         plots.forEach((e, i) => {
             if ('id' in e) {
                 let obj = e.measurementsCachedData;
-                if (Object.keys(obj).length === 0 && obj.constructor === Object) {
+                if (obj && Object.keys(obj).length === 0 && obj.constructor === Object) {
+                    preCount++;
+                }
+                else if (!obj) {
                     preCount++;
                 } else {
                     for (let key in obj) {
@@ -596,31 +600,32 @@ class DashboardComponent extends React.Component {
                 let obj = e.measurementsCachedData;
                 let shadowI = i;
                 newPlots[shadowI] = e;
-                if (Object.keys(obj).length === 0 && obj.constructor === Object) {
+                if (obj && Object.keys(obj).length === 0 && obj.constructor === Object) {
                     count++;
                 } else {
-                    for (let key in obj) {
-                        if (obj.hasOwnProperty(key)) {
-                            let rel;
-                            rel = key.split(":")[1].startsWith("_") ? "chemicals.boreholes_time_series_with_chemicals" : "sensor.sensordata_with_correction";
-                            // Lazy load data and sync
-                            // Only load active plots
-                            if (activePlots.includes(e.id)) {
-                                $.ajax({
-                                    url: "/api/sql/jupiter?srs=25832&q=SELECT * FROM " + rel + " WHERE boreholeno='" + key.split(":")[0] + "'",
-                                    scriptCharset: "utf-8",
-                                    success: (response) => {
-                                        newPlots[shadowI].measurementsCachedData[key].data = response.features[0];
-                                        count++;
-                                        if (count === preCount) {
-                                            console.log("All plots synced");
-                                            _self.setPlots(newPlots);
-                                        }
+                    if (!e.measurementsCachedData) {
+                        e.measurementsCachedData = {};
+                    }
+                    for (let index in e.measurements) {
+                        let key = e.measurements[index];
+                        // Lazy load data and sync
+                        // Only load active plots
+                        if (activePlots.includes(e.id)) {
+                            getPlotData(key).then((response) => {
+                                    if (!newPlots[shadowI].measurementsCachedData[key]) {
+                                        newPlots[shadowI].measurementsCachedData[key] = {};
                                     }
-                                })
-                            } else {
-                                count++;
-                            }
+                                    newPlots[shadowI].measurementsCachedData[key].data = response.data.features[0];
+                                    count++;
+                                    if (count === preCount) {
+                                        console.log("All plots synced");
+                                        _self.setPlots(newPlots);
+                                    }
+                            }).catch((error) => {
+                                console.log(error);
+                            })
+                        } else {
+                            count++;
                         }
                     }
                 }
@@ -742,7 +747,8 @@ class DashboardComponent extends React.Component {
         this.setState({activePlots}, () => {
             this.props.onActivePlotsChange(this.state.activePlots, plots);
             setTimeout(() => {
-                document.getElementById("syncWithDatabaseBtn").click();
+                // document.getElementById("syncWithDatabaseBtn").click();
+                this.syncPlotData();
             }, 200);
         });
     }
