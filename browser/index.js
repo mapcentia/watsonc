@@ -1,6 +1,9 @@
 'use strict';
 
 import {Provider} from 'react-redux';
+import ThemeProvider from "./themes/ThemeProvider";
+import LightTheme from "./themes/LightTheme";
+
 
 import PlotManager from './PlotManager';
 import ModalComponent from './components/ModalComponent';
@@ -9,6 +12,7 @@ import MenuTimeSeriesComponent from './components/MenuTimeSeriesComponent';
 import MenuDataSourceAndTypeSelectorComponent from './components/MenuDataSourceAndTypeSelectorComponent';
 import MenuProfilesComponent from './components/MenuProfilesComponent';
 import IntroModal from './components/IntroModal';
+import Modal from './components/modal/Modal';
 import AnalyticsComponent from './components/AnalyticsComponent';
 import {LAYER_NAMES, WATER_LEVEL_KEY, KOMMUNER} from './constants';
 import trustedIpAddresses from './trustedIpAddresses';
@@ -826,7 +830,7 @@ module.exports = module.exports = {
         const introlModalPlaceholderId = `watsonc-intro-modal-placeholder`;
         if ($(`#${introlModalPlaceholderId}`).is(`:empty`)) {
             try {
-                ReactDOM.render(<Provider store={reduxStore}>
+                /* ReactDOM.render(<Provider store={reduxStore}>
                     <IntroModal
                         ref={inst => {
                             infoModalInstance = inst;
@@ -839,7 +843,10 @@ module.exports = module.exports = {
                         categories={categoriesOverall ? categoriesOverall : []}
                         onApply={_self.onApplyLayersAndChemical}
                         onClose={onCloseHandler}
-                    /></Provider>, document.getElementById(introlModalPlaceholderId));
+                    /></Provider>, document.getElementById(introlModalPlaceholderId)); */
+                ReactDOM.render(<ThemeProvider>
+                    <Modal />
+                    </ThemeProvider>, document.getElementById(introlModalPlaceholderId))
             } catch (e) {
                 console.error(e);
             }
