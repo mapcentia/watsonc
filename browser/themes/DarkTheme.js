@@ -1,11 +1,6 @@
 export const DarkTheme = {
-  branding: null, // Defined in custom brandings
-  buttons: {
-    background: '#ffa137',
-    color: '#fff'
-  },
-  padding: {
-    titlePadding: '30px'
+  colors: {
+    titleColor: '#fff'
   },
   colors: {
     background: "#F8F8F8",
