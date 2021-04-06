@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import {connect} from 'react-redux'
+import Button from '../Shared/Button';
 
 
 class Modal extends React.Component {
@@ -15,10 +16,9 @@ class Modal extends React.Component {
             </div>
             <div className="modal-body">
                 <Right>
-                <select onChange={(event) => this.props.functions.setTheme(event.target.value)}>
-                    <option value="light">Light Theme</option>
-                    <option value="dark">Dark Theme</option>
-                </select>
+                <Button>
+                    Test Button
+                </Button>
                 </Right>
             </div>
         </ModalContent>);
@@ -28,7 +28,7 @@ class Modal extends React.Component {
 export default Modal;
 
 const Title = styled.div`
-  color: ${({ theme }) => { console.log(theme); return theme.colors.titleColor}};
+  color: ${({ theme }) => { return theme.colors.headings}};
   padding: ${({ theme }) => theme.padding.titlePadding};
   text-align: center;
   font-size: 34px;
@@ -37,7 +37,7 @@ const Title = styled.div`
 `;
 
 const ModalContent = styled.div`
-  background: ${({ theme }) => theme.backgroundColor};
+  background: ${({ theme }) => theme.colors.background};
 `;
 
 const Right = styled.div`
