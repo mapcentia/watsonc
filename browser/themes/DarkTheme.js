@@ -1,6 +1,8 @@
 export const DarkTheme = {
-  colors: {
-    titleColor: '#fff'
+  branding: null, // Defined in custom brandings
+  buttons: {
+    background: '#ffa137',
+    color: '#fff'
   },
   colors: {
     background: "#F8F8F8",
