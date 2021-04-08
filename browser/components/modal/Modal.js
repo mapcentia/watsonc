@@ -1,8 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import {connect} from 'react-redux'
-import { BUTTON_VARIANTS } from '../../constants';
-import Button from '../Shared/Button';
+import { Variants } from '../../constants';
+import Button from '../Shared/button/Button';
 
 
 class Modal extends React.Component {
@@ -17,10 +16,10 @@ class Modal extends React.Component {
             </div>
             <div className="modal-body">
                 <Right>
-                <Button variant={BUTTON_VARIANTS.Primary} text="Primary Button"
+                <Button variant={Variants.Primary} text="Primary Button"
                     onClick={() => window.alert("Primary Button")}>
                 </Button>
-                <Button variant={BUTTON_VARIANTS.Secondary} text="Secondary Button"
+                <Button variant={Variants.Secondary} text="Secondary Button"
                     onClick={() => window.alert("Secondary Button")}>
                 </Button>
                 </Right>

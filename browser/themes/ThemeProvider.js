@@ -1,4 +1,4 @@
-import React, { Children } from 'react';
+import React from 'react';
 import { ThemeProvider as StyledThemeProvider } from "styled-components";
 import { DarkTheme } from "./DarkTheme";
 

@@ -420,7 +420,7 @@ const KOMMUNER =[
 ]
 
 
-const BUTTON_VARIANTS = {
+const Variants = {
     None: 'None',
     Primary: 'Primary',
     Secondary: 'Secondary',
@@ -439,5 +439,5 @@ export {
     FREE_PLAN_MAX_TIME_SERIES_COUNT,
     FREE_PLAN_MAX_PROFILES_COUNT,
     KOMMUNER,
-    BUTTON_VARIANTS
+    Variants
 };

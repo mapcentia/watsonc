@@ -1,5 +1,5 @@
 import styled, { css } from "styled-components";
-import { BUTTON_VARIANTS } from "../../constants";
+import { Variants } from "../../../constants";
 import PropTypes from 'prop-types';
 
 function Button(props) {
@@ -13,7 +13,7 @@ function Button(props) {
 }
 Button.propTypes = {
     text: PropTypes.string,
-    variant: PropTypes.oneOf(Object.keys(BUTTON_VARIANTS)),
+    variant: PropTypes.oneOf(Object.keys(Variants)),
     onClick: PropTypes.func.isRequired
 }
 
@@ -28,16 +28,16 @@ const Root = styled.button`
     margin: 0 10px 0 10px;
     ${({ variant, theme }) => {
         const styles = {
-            [BUTTON_VARIANTS.Primary]: css `
+            [Variants.Primary]: css `
                 background-color: ${theme.colors.interaction[4]};
                 &:hover {
                     background-color: ${props => props.theme.colors.interaction[5]};
                 }
             `,
-            [BUTTON_VARIANTS.Secondary]: css `
+            [Variants.Secondary]: css `
                 background-color: ${theme.colors.primary[4]};
             `,
-            [BUTTON_VARIANTS.None]: css `
+            [Variants.None]: css `
                 background-color: ${theme.colors.gray[3]};
             `
         };
