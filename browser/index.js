@@ -1,8 +1,6 @@
 'use strict';
 
 import {Provider} from 'react-redux';
-import ThemeProvider from "./themes/ThemeProvider";
-
 
 import PlotManager from './PlotManager';
 import ModalComponent from './components/ModalComponent';
@@ -849,7 +847,7 @@ module.exports = module.exports = {
         const introlModalPlaceholderId = `watsonc-intro-modal-placeholder`;
         if ($(`#${introlModalPlaceholderId}`).is(`:empty`)) {
             try {
-                /* ReactDOM.render(<Provider store={reduxStore}>
+                ReactDOM.render(<Provider store={reduxStore}>
                     <IntroModal
                         ref={inst => {
                             infoModalInstance = inst;
@@ -862,10 +860,7 @@ module.exports = module.exports = {
                         categories={categoriesOverall ? categoriesOverall : []}
                         onApply={_self.onApplyLayersAndChemical}
                         onClose={onCloseHandler}
-                    /></Provider>, document.getElementById(introlModalPlaceholderId)); */
-                ReactDOM.render(<ThemeProvider>
-                    <Modal />
-                    </ThemeProvider>, document.getElementById(introlModalPlaceholderId))
+                    /></Provider>, document.getElementById(introlModalPlaceholderId));
             } catch (e) {
                 console.error(e);
             }
