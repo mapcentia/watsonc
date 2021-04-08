@@ -2,7 +2,6 @@
 
 import {Provider} from 'react-redux';
 import ThemeProvider from "./themes/ThemeProvider";
-import LightTheme from "./themes/LightTheme";
 
 
 import PlotManager from './PlotManager';

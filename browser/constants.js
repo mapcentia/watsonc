@@ -419,6 +419,15 @@ const KOMMUNER =[
     }
 ]
 
+
+const BUTTON_VARIANTS = {
+    None: 'None',
+    Primary: 'Primary',
+    Secondary: 'Secondary',
+    Tertiary: 'Tertiary',
+};
+
+
 export {
     LAYER_NAMES,
     WATER_LEVEL_KEY,
@@ -429,5 +438,6 @@ export {
     VIEW_ROW,
     FREE_PLAN_MAX_TIME_SERIES_COUNT,
     FREE_PLAN_MAX_PROFILES_COUNT,
-    KOMMUNER
+    KOMMUNER,
+    BUTTON_VARIANTS
 };
