@@ -1,13 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Variants } from '../../constants';
-import Button from '../Shared/button/Button';
+import Button from '../shared/button/Button';
 
 
 class Modal extends React.Component {
-    state = {
-        selectedTheme: 'light'
-    }
     render() {
         console.log(this.props);
         return (<ModalContent>
