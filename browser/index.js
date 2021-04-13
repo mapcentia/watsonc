@@ -757,7 +757,9 @@ module.exports = module.exports = {
             let filters = {};
             filters[rasterToEnable] = {
                 match: "all", columns: [
-                    {fieldname: "count", expression: ">", value: parameters.selectedMeasurementCount, restriction: false}
+                    {fieldname: "count", expression: ">", value: parameters.selectedMeasurementCount, restriction: false},
+                    {fieldname: "startdate", expression: ">", value: parameters.selectedStartDate, restriction: false},
+                    {fieldname: "enddate", expression: "<", value: parameters.selectedEndDate, restriction: false}
                 ]
 
             }
@@ -1106,7 +1108,9 @@ module.exports = module.exports = {
                 "system.all": {
                     match: "all", columns: [
                         {fieldname: "compound", expression: "=", value: chemicalId, restriction: false},
-                        {fieldname: "count", expression: ">", value: parameters.selectedMeasurementCount, restriction: false}
+                        {fieldname: "count", expression: ">", value: parameters.selectedMeasurementCount, restriction: false},
+                        {fieldname: "startdate", expression: ">", value: parameters.selectedStartDate, restriction: false},
+                        {fieldname: "enddate", expression: "<", value: parameters.selectedEndDate, restriction: false}
                     ]
 
                 }
