@@ -53,5 +53,8 @@ export const DarkTheme = {
     body: "'regular 15px Open Sans'",
     subbody: "'regular 13px Open Sans'",
     footnote: "'regular 11px Open Sans'",
+  },
+  fontSize: {
+    title: 40
   }
 };

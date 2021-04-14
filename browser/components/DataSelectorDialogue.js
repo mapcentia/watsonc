@@ -1,13 +1,13 @@
 import styled from "styled-components";
-import Title from '../title/Title';
-import CloseButton from '../button/CloseButton';
+import Title from './shared/title/Title';
+import CloseButton from './shared/button/CloseButton';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 
-function Dialogue(props) {
+function DataSelectorDialogue(props) {
     return (
         <Root>
-            <div className="modal-header">
+            <div>
                 <Grid container>
                     <Grid container item xs={10}>
                         <Title text={props.titleText} />
@@ -23,13 +23,13 @@ function Dialogue(props) {
         </Root>
     );
 }
-Button.propTypes = {
+DataSelectorDialogue.propTypes = {
     text: PropTypes.string,
 }
 
 const Root = styled.div`
     background: ${({ theme }) => theme.colors.primary[1]};
-    padding: 24px 32px 24px 32px;
+    padding: 24px;
     border-radius: ${({ theme }) => `${theme.layout.borderRadius.large}px`};
 `
-export default Dialogue;
+export default DataSelectorDialogue;
