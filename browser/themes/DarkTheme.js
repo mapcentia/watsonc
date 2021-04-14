@@ -8,6 +8,7 @@ export const DarkTheme = {
     background: "#F8F8F8",
     text: "#242323",
     headings: "#292A2C",
+    dialogueTitle: '#FFFFFF',
     primary: { // Low index = low brightness
       1: "#001E1B",
       2: "#003C36",

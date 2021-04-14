@@ -13,9 +13,8 @@ Button.propTypes = {
 }
 
 const Root = styled.h4`
-    font-size: 34px;
-    color: ${props => props.theme.colors.headings};
-    text-align: center;
-    font-weight: bold;
+    font-size: 40px;
+    color: ${props => props.theme.colors.dialogueTitle};
+    font-family: ${props => props.theme.fonts.title};
 `
 export default Title;
