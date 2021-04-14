@@ -864,10 +864,9 @@ module.exports = module.exports = {
                         onClose={onCloseHandler}
                     /></Provider>, document.getElementById(introlModalPlaceholderId)); */
                 ReactDOM.render(<ThemeProvider>
-                    <Dialogue titleText='Welcome to Calypso'
-                        onCloseButtonClick={onCloseHandler}>
-                        <div>This is test for modal content</div>
-                    </Dialogue></ThemeProvider>, document.getElementById(introlModalPlaceholderId));
+                    <DataSelectorDialogue titleText={__('Welcome to Calypso')}
+                        onCloseButtonClick={onCloseHandler} />
+                    </ThemeProvider>, document.getElementById(introlModalPlaceholderId));
             } catch (e) {
                 console.error(e);
             }
