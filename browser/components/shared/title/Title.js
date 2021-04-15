@@ -8,13 +8,13 @@ function Title(props) {
         </Root>
     );
 }
-Button.propTypes = {
+Title.propTypes = {
     text: PropTypes.string,
 }
 
 const Root = styled.h4`
     font-size: 40px;
-    color: ${props => props.theme.colors.dialogueTitle};
-    font-family: ${props => props.theme.fonts.title};
+    color: ${props => props.theme.colors.headings};
+    font: ${props => props.theme.fontSize.title} ${props => props.theme.fonts.title};
 `
 export default Title;
