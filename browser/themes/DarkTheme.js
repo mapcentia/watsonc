@@ -47,14 +47,11 @@ export const DarkTheme = {
     }
   },
   fonts: {
-    title: "'bold 40px Lato'",
-    subtitle: "'regular 24px Lato'",
-    heading: "'bold 18px Open Sans'",
-    body: "'regular 15px Open Sans'",
-    subbody: "'regular 13px Open Sans'",
-    footnote: "'regular 11px Open Sans'",
+    title: "bold 40px Lato",
+    subtitle: "regular 24px Lato",
+    heading: "bold 18px Open Sans",
+    body: "regular 15px Open Sans",
+    subbody: "regular 13px Open Sans",
+    footnote: "regular 11px Open Sans",
   },
-  fontSize: {
-    title: 40
-  }
 };
