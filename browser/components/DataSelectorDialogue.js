@@ -3,11 +3,12 @@ import Title from './shared/title/Title';
 import CloseButton from './shared/button/CloseButton';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
+import IconButton from './shared/button/IconButton';
 
 function DataSelectorDialogue(props) {
     return (
         <Root>
-            <div>
+            <ModalHeader>
                 <Grid container>
                     <Grid container item xs={10}>
                         <Title text={props.titleText} />
@@ -16,10 +17,12 @@ function DataSelectorDialogue(props) {
                         <CloseButton onClick={props.onCloseButtonClick} />
                     </Grid>
                 </Grid>
-            </div>
-            <div className="modal-body">
-                {props.children}
-            </div>
+            </ModalHeader>
+            <ModalBody>
+                <IconButton icon="dashboard" label="Science" />
+                <IconButton icon="lock" label="Lock" />
+                <IconButton icon="history" label="History" />
+            </ModalBody>
         </Root>
     );
 }
@@ -29,7 +32,14 @@ DataSelectorDialogue.propTypes = {
 
 const Root = styled.div`
     background: ${({ theme }) => theme.colors.primary[1]};
-    padding: 24px;
     border-radius: ${({ theme }) => `${theme.layout.borderRadius.large}px`};
-`
+`;
+
+const ModalHeader = styled.div`
+    padding: ${( { theme }) => `${theme.layout.gutter}px 0 0 ${theme.layout.gutter}px`};
+`;
+
+const ModalBody = styled.div`
+    padding: ${( { theme }) => `${theme.layout.gutter}px`};
+`;
 export default DataSelectorDialogue;
