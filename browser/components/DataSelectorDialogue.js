@@ -36,7 +36,7 @@ const Root = styled.div`
 `;
 
 const ModalHeader = styled.div`
-    padding: ${( { theme }) => `${theme.layout.gutter}px 0 0 ${theme.layout.gutter}px`};
+    padding: ${( { theme }) => `${theme.layout.gutter}px ${theme.layout.gutter}px 0 ${theme.layout.gutter}px`};
 `;
 
 const ModalBody = styled.div`
