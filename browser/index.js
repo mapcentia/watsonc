@@ -750,19 +750,35 @@ module.exports = module.exports = {
             _self.bindToolTipOnPesticidoverblik()
         }, "watsonc");
 
+        let filters = {};
+        let filteredLayers = [];
+        filters[LAYER_NAMES[1].split(":")[1]] = {
+            match: "all", columns: [
+                {fieldname: "count", expression: ">", value: parameters.selectedMeasurementCount, restriction: false},
+                {fieldname: "startdate", expression: ">", value: parameters.selectedStartDate, restriction: false},
+                {fieldname: "enddate", expression: "<", value: parameters.selectedEndDate, restriction: false}
+            ]
+
+        }
+
         // Enable raster layer
         if (parameters.layers.indexOf(LAYER_NAMES[0]) > -1) {
             let rasterToEnable = `system._${parameters.chemical}`;
             currentRasterLayer = rasterToEnable;
-            let filters = {};
             filters[rasterToEnable] = {
                 match: "all", columns: [
-                    {fieldname: "count", expression: ">", value: parameters.selectedMeasurementCount, restriction: false},
+                    {
+                        fieldname: "count",
+                        expression: ">",
+                        value: parameters.selectedMeasurementCount,
+                        restriction: false
+                    },
                     {fieldname: "startdate", expression: ">", value: parameters.selectedStartDate, restriction: false},
                     {fieldname: "enddate", expression: "<", value: parameters.selectedEndDate, restriction: false}
                 ]
 
             }
+            console.log("filters", filters)
             layerTree.applyFilters(filters);
             switchLayer.init(rasterToEnable, true).then(() => {
                 if (parameters.chemical) {
@@ -774,9 +790,10 @@ module.exports = module.exports = {
                     });
                 }
             });
+        } else {
+            layerTree.applyFilters(filters);
         }
 
-        let filteredLayers = [];
         enabledLoctypeIds = [];
         parameters.layers.map(layerName => {
             if (layerName.indexOf(LAYER_NAMES[0]) === 0) {
@@ -1104,17 +1121,28 @@ module.exports = module.exports = {
                     }
                 }
             }
-            let filters = {
-                "system.all": {
-                    match: "all", columns: [
-                        {fieldname: "compound", expression: "=", value: chemicalId, restriction: false},
-                        {fieldname: "count", expression: ">", value: parameters.selectedMeasurementCount, restriction: false},
-                        {fieldname: "startdate", expression: ">", value: parameters.selectedStartDate, restriction: false},
-                        {fieldname: "enddate", expression: "<", value: parameters.selectedEndDate, restriction: false}
-                    ]
+            let filter = {
+                match: "all", columns: [
+                    {fieldname: "compound", expression: "=", value: chemicalId, restriction: false},
+                    {
+                        fieldname: "count",
+                        expression: ">",
+                        value: parameters.selectedMeasurementCount,
+                        restriction: false
+                    },
+                    {
+                        fieldname: "startdate",
+                        expression: ">",
+                        value: parameters.selectedStartDate,
+                        restriction: false
+                    },
+                    {fieldname: "enddate", expression: "<", value: parameters.selectedEndDate, restriction: false}
+                ]
 
-                }
             };
+            let filters = {};
+            filters[LAYER_NAMES[0].split(":")[1]] = filter;
+            filters[LAYER_NAMES[1].split(":")[1]] = filter;
 
 
             layerTree.applyFilters(filters);
