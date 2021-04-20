@@ -1,20 +1,19 @@
 import styled, { css } from "styled-components";
 import PropTypes from 'prop-types';
-import Icon from "@material-ui/core/Icon";
-
+import Icon from '../icons/Icon';
 
 function IconButton(props) {
     return (
         <Root
             onClick={props.onClick ?? props.onClick}>
-            <Icon fontSize="large">{props.icon}</Icon>
+            <Icon name={props.icon} size={32} />
             <IconLabel>{props.label}</IconLabel>
         </Root>
     )
 }
 
 IconButton.propTypes = {
-    onClick: PropTypes.func.isRequired,
+    onClick: PropTypes.func,
     icon: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
 }
@@ -22,11 +21,14 @@ IconButton.propTypes = {
 const Root = styled.button`
     height: 80px;
     width: 80px;
-    background: transparent;
-    border 1px solid ${props => props.theme.colors.primary[3]};
+    background: ${props => props.theme.colors.primary[1]};
+    border 2px solid ${props => props.theme.colors.primary[3]};
     color: ${props => props.theme.colors.gray[4]};
     border-radius: ${props => props.theme.layout.borderRadius.medium}px;
-    margin-right: 16px;
+    margin-right: ${props => props.theme.layout.gutter/2}px;
+    &:hover {
+        border: 2px solid ${props => props.theme.colors.interaction[4]};
+    }
 `;
 
 const IconLabel = styled.div`

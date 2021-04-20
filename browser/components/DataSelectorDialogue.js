@@ -3,7 +3,23 @@ import Title from './shared/title/Title';
 import CloseButton from './shared/button/CloseButton';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
+import Card from './shared/card/Card';
 import IconButton from './shared/button/IconButton';
+import CardTitle from './shared/title/CardTitle';
+import CheckBoxList from './shared/list/CheckBoxList';
+import { hexToRgbA } from '../helpers/colors';
+
+const CheckBoxGroups = [
+    {
+        title: __('Grundvand'),
+        listItems: [__('Jupiter boringer'), __('Jupiter anlaeg'), __('Online stationer')]
+    },
+    {
+        title: __('Overfladevand'),
+        listItems: [__('Vandleb'), __('Hav')]
+    }
+
+]
 
 function DataSelectorDialogue(props) {
     return (
@@ -19,9 +35,20 @@ function DataSelectorDialogue(props) {
                 </Grid>
             </ModalHeader>
             <ModalBody>
-                <IconButton icon="dashboard" label="Science" />
-                <IconButton icon="lock" label="Lock" />
-                <IconButton icon="history" label="History" />
+                <IconButton icon="cleaning-spray" label={__('Pesticider')} />
+                <IconButton icon="no3-solid" label={__('Nitrat')} />
+                <IconButton icon="water-drop-wifi-solid" label={__('Mine stationer')} />
+                <IconButton icon="lab-flask-experiment" label={__('Mine favoritter')} />
+                <Grid container>
+                    <Grid container item md={6}>
+                        <Card>
+                            <CardTitle text={__('Datakilder')} />
+                            {CheckBoxGroups.map((group) => {
+                                return <CheckBoxList title={group.title} listItems={group.listItems} />
+                            })}
+                        </Card>
+                    </Grid>
+                </Grid>
             </ModalBody>
         </Root>
     );
@@ -31,7 +58,7 @@ DataSelectorDialogue.propTypes = {
 }
 
 const Root = styled.div`
-    background: ${({ theme }) => theme.colors.primary[1]};
+    background: ${({ theme }) => hexToRgbA(theme.colors.primary[1], 0.92)};
     border-radius: ${({ theme }) => `${theme.layout.borderRadius.large}px`};
 `;
 
