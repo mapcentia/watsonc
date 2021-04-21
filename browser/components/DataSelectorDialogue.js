@@ -9,17 +9,13 @@ import CardTitle from './shared/title/CardTitle';
 import CheckBoxList from './shared/list/CheckBoxList';
 import { hexToRgbA } from '../helpers/colors';
 
-const CheckBoxGroups = [
-    {
-        title: __('Grundvand'),
-        listItems: [__('Jupiter boringer'), __('Jupiter anlaeg'), __('Online stationer')]
-    },
-    {
-        title: __('Overfladevand'),
-        listItems: [__('Vandleb'), __('Hav')]
-    }
+const DataSources = [{ label: "Klima", value: "klima", group: "Klima"},
+	{ label: "Hav", value: "hav", group: "Overfladevand"},
+	{ label: "Sø", value: "sø", group: "Overfladevand"},
+	{ label: "Fjord, hav mm.", value: "fjord", group: "Overfladevand"},
+	{ label: "Grundvand, boringer", value: "grundvandsboringer", group: "Grundvand"},
+	{ label: "Grundvand, moser, kær mm.", value: "grundvand", group: "Grundvand"}]
 
-]
 
 function DataSelectorDialogue(props) {
     return (
@@ -43,9 +39,7 @@ function DataSelectorDialogue(props) {
                     <Grid container item md={6}>
                         <Card>
                             <CardTitle text={__('Datakilder')} />
-                            {CheckBoxGroups.map((group) => {
-                                return <CheckBoxList title={group.title} listItems={group.listItems} />
-                            })}
+                            <CheckBoxList listItems={DataSources} onChange={(selectedItems) => console.log(selectedItems)} />
                         </Card>
                     </Grid>
                 </Grid>
