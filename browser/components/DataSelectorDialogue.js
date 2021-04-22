@@ -7,6 +7,7 @@ import Card from './shared/card/Card';
 import IconButton from './shared/button/IconButton';
 import CardTitle from './shared/title/CardTitle';
 import CheckBoxList from './shared/list/CheckBoxList';
+import RadioButtonList from './shared/list/RadioButtonList';
 import { hexToRgbA } from '../helpers/colors';
 
 const DataSources = [{ label: "Klima", value: "klima", group: "Klima"},
@@ -35,11 +36,17 @@ function DataSelectorDialogue(props) {
                 <IconButton icon="no3-solid" label={__('Nitrat')} />
                 <IconButton icon="water-drop-wifi-solid" label={__('Mine stationer')} />
                 <IconButton icon="lab-flask-experiment" label={__('Mine favoritter')} />
-                <Grid container>
+                <Grid container spacing={32}>
                     <Grid container item md={6}>
                         <Card>
                             <CardTitle text={__('Datakilder')} />
                             <CheckBoxList listItems={DataSources} onChange={(selectedItems) => console.log(selectedItems)} />
+                        </Card>
+                    </Grid>
+                    <Grid container item md={6}>
+                        <Card>
+                            <CardTitle text={__('Datakilder')} />
+                            <RadioButtonList listItems={DataSources} onChange={(selectedItem) => console.log(selectedItem)} />
                         </Card>
                     </Grid>
                 </Grid>
