@@ -30,7 +30,7 @@ function CheckBoxList(props) {
     const renderItem = (item, index) => {
         let returnData = [];
         if (item.group != currentGroup) {
-            returnData.push(<GroupTitle key={`${index}-title`}>{item.group}</GroupTitle>);
+            returnData.push(<Title key={`${index}-title`} text={item.group} level={5} />);
             currentGroup = item.group;
         }
         returnData.push(
@@ -68,14 +68,9 @@ CheckBoxList.propTypes = {
 
 
 const Root = styled.div`
+    height:  ${props => props.theme.layout.gutter*10}px;
+    overflow-y: scroll;
 `;
-
-const GroupTitle = styled.div`
-    color: ${props => props.theme.colors.gray[4]};
-    font: ${props => props.theme.fonts.subbody};
-    margin-top: ${props => props.theme.layout.gutter/2}px;
-`;
-
 
 const ListItem = styled.div`
     margin-left: ${props => props.theme.layout.gutter/4}px;

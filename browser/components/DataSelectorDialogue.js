@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 import Card from './shared/card/Card';
 import IconButton from './shared/button/IconButton';
-import CardTitle from './shared/title/CardTitle';
 import CheckBoxList from './shared/list/CheckBoxList';
 import RadioButtonList from './shared/list/RadioButtonList';
 import { hexToRgbA } from '../helpers/colors';
@@ -17,8 +16,23 @@ const DataSources = [{ label: "Klima", value: "klima", group: "Klima"},
 	{ label: "Grundvand, boringer", value: "grundvandsboringer", group: "Grundvand"},
 	{ label: "Grundvand, moser, kær mm.", value: "grundvand", group: "Grundvand"}]
 
+const Parameters = [
+	{ label: "Vandstand", value: "vandstand", group: "Vandstand"},
+	{ label: "Lugt", value: "lugt", group: "Tilstandsparametre"},
+	{ label: "Smag", value: "smag", group: "Tilstandsparametre"},
+	{ label: "Konduktivitet", value: "konduktivitet", group: "Tilstandsparametre"},
+	{ label: "pH", value: "ph", group: "Tilstandsparametre"},
+	{ label: "Turbiditet", value: "turbiditet", group: "Tilstandsparametre"},
+	{ label: "Farvetal-Pt", value: "farvatel-pt", group: "Tilstandsparametre"},
+	{ label: "Hardhed, total", value: "hardhedtotal", group: "Tilstandsparametre"},
+	{ label: "Temperatur", value: "temperatur", group: "Tilstandsparametre"},
+    { label: "Oxygen indhold", value: "oxygenindhold", group: "Kemiske hovedbestanddele"},
+    { label: "Carbondioxid, aggr.", value: "carbondioxid", group: "Kemiske hovedbestanddele"},
+]
+
 
 function DataSelectorDialogue(props) {
+    console.log(props);
     return (
         <Root>
             <ModalHeader>
@@ -39,14 +53,14 @@ function DataSelectorDialogue(props) {
                 <Grid container spacing={32}>
                     <Grid container item md={6}>
                         <Card>
-                            <CardTitle text={__('Datakilder')} />
+                            <Title text={__('Datakilder')} level={3} />
                             <CheckBoxList listItems={DataSources} onChange={(selectedItems) => console.log(selectedItems)} />
                         </Card>
                     </Grid>
                     <Grid container item md={6}>
                         <Card>
-                            <CardTitle text={__('Datakilder')} />
-                            <RadioButtonList listItems={DataSources} onChange={(selectedItem) => console.log(selectedItem)} />
+                            <Title text={__('Måleparameter')} level={3} />
+                            <RadioButtonList listItems={Parameters} onChange={(selectedItem) => console.log(selectedItem)} />
                         </Card>
                     </Grid>
                 </Grid>

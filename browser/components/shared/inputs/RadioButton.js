@@ -56,6 +56,7 @@ const RadioButtonLabel = styled.label`
     margin-top: ${props => props.theme.layout.gutter/4}px;
     color: ${props => props.theme.colors.gray[5]};
     font: ${props => props.theme.fonts.label};
+    vertical-align: text-bottom;
 `;
 
 export default RadioButton;

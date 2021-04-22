@@ -15,7 +15,7 @@ function RadioButtonList(props) {
     const renderItem = (item, index) => {
         let returnData = [];
         if (item.group != currentGroup) {
-            returnData.push(<GroupTitle key={`${index}-title`}>{item.group}</GroupTitle>);
+            returnData.push(<Title key={`${index}-title`} text={item.group} level={5} />);
             currentGroup = item.group;
         }
         returnData.push(
@@ -53,12 +53,8 @@ RadioButtonList.propTypes = {
 
 
 const Root = styled.div`
-`;
-
-const GroupTitle = styled.div`
-    color: ${props => props.theme.colors.gray[4]};
-    font: ${props => props.theme.fonts.subbody};
-    margin-top: ${props => props.theme.layout.gutter/2}px;
+    height: ${props => props.theme.layout.gutter*10}px;
+    overflow-y: scroll;
 `;
 
 

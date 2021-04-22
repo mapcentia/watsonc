@@ -49,10 +49,10 @@ export const DarkTheme = {
   fonts: {
     title: "bold 40px Lato",
     subtitle: "normal 24px Lato",
-    heading: "normal normal normal 20px/27px Open Sans",
+    heading: "normal 20px Open Sans",
     body: "normal 15px Open Sans",
-    subbody: "normal 13px/16px Open Sans",
-    label: "normal normal normal 11px/15px Open Sans",
-    footnote: "normal 9px/13px Open Sans",
+    subbody: "normal 13px Lato",
+    label: "normal 11px Open Sans",
+    footnote: "normal 9px Open Sans",
   },
 };
