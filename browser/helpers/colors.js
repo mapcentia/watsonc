@@ -8,7 +8,7 @@ function hexToRgbA(hex, opacity){
         c= '0x'+c.join('');
         return 'rgba(' + [(c>>16)&255, (c>>8)&255, c&255, (opacity || 1)].join(',') + ')';
     }
-    throw new Error('Bad Hex');
+    return hex;
 }
 
 export {
