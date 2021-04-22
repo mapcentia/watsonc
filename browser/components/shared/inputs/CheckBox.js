@@ -7,6 +7,7 @@ function CheckBox(props) {
         <StyledCheckBox checked={props.checked} value={props.value} onClick={() => props.onChange(props.value)}>
             <Icon name='check-mark-solid' size={8} strokeColor='#000' />
         </StyledCheckBox>
+        <CheckBoxLabel>{props.label}</CheckBoxLabel>
 
     </Root>);
 }
@@ -41,6 +42,12 @@ const StyledCheckBox = styled.div`
 const Root = styled.div`
     display: inline-block;
     vertical-align: middle;
+`;
+
+const CheckBoxLabel = styled.label`
+    margin-top: ${props => props.theme.layout.gutter/4}px;
+    color: ${props => props.theme.colors.gray[5]};
+    font: ${props => props.theme.fonts.label};
 `;
 
 export default CheckBox;

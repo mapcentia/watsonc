@@ -19,25 +19,23 @@ function CheckBoxList(props) {
     }
 
     const getSelectedItems = () => {
-        let returnData = [];
-        listItems.map((item) => {
+        return listItems.filter((item) => {
             if (selectedItems.indexOf(item.value) > -1) {
-                returnData.push(item);
+                return item;
             }
+            return null;
         });
-        return returnData;
     }
 
     const renderItem = (item, index) => {
         let returnData = [];
         if (item.group != currentGroup) {
-            returnData.push(<GroupTitle>{item.group}</GroupTitle>);
+            returnData.push(<GroupTitle key={`${index}-title`}>{item.group}</GroupTitle>);
             currentGroup = item.group;
         }
         returnData.push(
             <ListItem key={index}>
-                <Checkbox value={item.value} checked={selectedItems.indexOf(item.value) > -1} onChange={onChangeCheckbox} />
-                <CheckBoxLabel>{item.label}</CheckBoxLabel>
+                <Checkbox value={item.value} checked={selectedItems.indexOf(item.value) > -1} onChange={onChangeCheckbox} label={item.label} />
             </ListItem>)
         return returnData;
     }
@@ -78,11 +76,6 @@ const GroupTitle = styled.div`
     margin-top: ${props => props.theme.layout.gutter/2}px;
 `;
 
-const CheckBoxLabel = styled.label`
-    margin-top: ${props => props.theme.layout.gutter/4}px;
-    color: ${props => props.theme.colors.gray[5]};
-    font: ${props => props.theme.fonts.label};
-`;
 
 const ListItem = styled.div`
     margin-left: ${props => props.theme.layout.gutter/4}px;
