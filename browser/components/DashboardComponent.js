@@ -876,8 +876,12 @@ class DashboardComponent extends React.Component {
     setDataSource(dataSource) {
         let plots = JSON.parse(JSON.stringify(this.state.plots));
         let updatePlotsPromises = [];
-        plots.map((plot, index) => {
+        for (let i = 0; i < plots.length; i++) {
+            let plot = plots[i];
             let plotWasUpdatedAtLeastOnce = false;
+            if (typeof plot.measurements === "undefined") {
+                break;
+            }
             plot.measurements.map(measurementIndex => {
                 let splitMeasurementIndex = measurementIndex.split(`:`);
                 if (splitMeasurementIndex.length !== 3 && splitMeasurementIndex.length !== 4) throw new Error(`Invalid measurement index`);
@@ -890,8 +894,8 @@ class DashboardComponent extends React.Component {
                 });
 
                 if (measurementData) {
-                    var currentTime = new Date();
-                    plots[index].measurementsCachedData[measurementIndex] = {
+                    let currentTime = new Date();
+                    plot.measurementsCachedData[measurementIndex] = {
                         data: measurementData,
                         created_at: currentTime.toISOString()
                     };
@@ -901,9 +905,9 @@ class DashboardComponent extends React.Component {
             });
 
             if (plotWasUpdatedAtLeastOnce) {
-                updatePlotsPromises.push(this.plotManager.update(plots[index]));
+                updatePlotsPromises.push(this.plotManager.update(plot));
             }
-        });
+        }
 
         Promise.all(updatePlotsPromises).then(() => {
             let dashboardItemsCopy = JSON.parse(JSON.stringify(this.state.dashboardItems));
