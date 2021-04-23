@@ -750,6 +750,7 @@ module.exports = module.exports = {
 
         // Enable raster layer
         if (parameters.layers.indexOf(LAYER_NAMES[0]) > -1) {
+            if (!parameters.chemical) return;
             let rasterToEnable = `system._${parameters.chemical}`;
             currentRasterLayer = rasterToEnable;
             switchLayer.init(rasterToEnable, true).then(() => {
