@@ -1,12 +1,14 @@
 import styled, { css } from "styled-components";
-import { Variants } from "../../../constants";
+import { Variants } from "../constants/variants";
+import { Size } from '../constants/size';
 import PropTypes from 'prop-types';
 
 function Button(props) {
     return (
         <Root
             onClick={props.onClick ?? props.onClick}
-            variant={props.variant}>
+            variant={props.variant}
+            size={props.size}>
             {props.text}
         </Root>
     );
@@ -14,6 +16,7 @@ function Button(props) {
 Button.propTypes = {
     text: PropTypes.string,
     variant: PropTypes.oneOf(Object.keys(Variants)),
+    size: PropTypes.oneOf(Object.keys(Size)),
     onClick: PropTypes.func.isRequired
 }
 
@@ -42,6 +45,20 @@ const Root = styled.button`
             `
         };
         return styles[variant];
+  }}
+  ${({ size, theme }) => {
+        const styles = {
+            [Size.Small]: css `
+                width: ${theme.layout.gutter * 10}px;
+            `,
+            [Size.Medium]: css `
+                width: ${theme.layout.gutter * 20}px;
+            `,
+            [Size.Large]: css `
+                width: ${theme.layout.gutter * 40}px;
+            `
+        };
+        return styles[size];
   }}
 `
 export default Button;
