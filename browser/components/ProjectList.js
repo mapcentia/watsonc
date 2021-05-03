@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import ProjectsApi from '../api/projects/Projects';
+import ProjectsApi from '../api/projects/ProjectsApi';
 
 
 function ProjectList(props) {
@@ -7,7 +7,7 @@ function ProjectList(props) {
 
     const loadProjects = () => {
         const projectsApi = new ProjectsApi();
-        projectsApi.getProjectsList().then((results) => {
+        projectsApi.getProjects().then((results) => {
             console.log(results);
             setProjects(results);
         })
