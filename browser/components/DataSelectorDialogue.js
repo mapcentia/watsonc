@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import styled from "styled-components";
 import Title from './shared/title/Title';
 import CloseButton from './shared/button/CloseButton';
@@ -7,6 +8,11 @@ import Card from './shared/card/Card';
 import IconButton from './shared/button/IconButton';
 import CheckBoxList from './shared/list/CheckBoxList';
 import RadioButtonList from './shared/list/RadioButtonList';
+import Button from './shared/button/Button';
+import ButtonGroup from './shared/button/ButtonGroup';
+import ProjectList from './ProjectList';
+import { Variants } from './shared/constants/variants';
+import { Size } from './shared/constants/size';
 import { hexToRgbA } from '../helpers/colors';
 
 const DataSources = [{ label: "Klima", value: "klima", group: "Klima"},
@@ -32,6 +38,7 @@ const Parameters = [
 
 
 function DataSelectorDialogue(props) {
+    const [showProjectsList, setShowProjectsList] = useState(false);
     console.log(props);
     return (
         <Root>
@@ -50,7 +57,7 @@ function DataSelectorDialogue(props) {
                 <IconButton icon="no3-solid" label={__('Nitrat')} />
                 <IconButton icon="water-drop-wifi-solid" label={__('Mine stationer')} />
                 <IconButton icon="lab-flask-experiment" label={__('Mine favoritter')} />
-                <Grid container spacing={32}>
+                {showProjectsList ? <ProjectList /> : <Grid container spacing={32}>
                     <Grid container item md={6}>
                         <Card>
                             <Title text={__('Datakilder')} level={3} />
@@ -63,7 +70,11 @@ function DataSelectorDialogue(props) {
                             <RadioButtonList listItems={Parameters} onChange={(selectedItem) => console.log(selectedItem)} />
                         </Card>
                     </Grid>
-                </Grid>
+                </Grid> }
+                <ButtonGroup align="center">
+                    <Button text={__("Abn eksisterende")} variant={Variants.None} onClick={() => setShowProjectsList(!showProjectsList)} size={Size.Large} />
+                    <Button text={__("Start")} variant={Variants.Primary} onClick={() => console.log("Button click star")} size={Size.Large} />
+                </ButtonGroup>
             </ModalBody>
         </Root>
     );
