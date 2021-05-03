@@ -9,6 +9,7 @@ import MenuTimeSeriesComponent from './components/MenuTimeSeriesComponent';
 import MenuDataSourceAndTypeSelectorComponent from './components/MenuDataSourceAndTypeSelectorComponent';
 import MenuProfilesComponent from './components/MenuProfilesComponent';
 import IntroModal from './components/IntroModal';
+import Modal from './components/modal/Modal';
 import AnalyticsComponent from './components/AnalyticsComponent';
 import {LAYER_NAMES, WATER_LEVEL_KEY, KOMMUNER} from './constants';
 import trustedIpAddresses from './trustedIpAddresses';
@@ -732,6 +733,7 @@ module.exports = module.exports = {
     },
 
     onApplyLayersAndChemical: (parameters) => {
+        console.log("parameters", parameters)
         // Disabling all layers
         layerTree.getActiveLayers().map(layerNameToEnable => {
             if (layerNameToEnable !== LAYER_NAMES[2] && !layerNameToEnable.startsWith("gc2_io_dk"))
@@ -748,14 +750,40 @@ module.exports = module.exports = {
             _self.bindToolTipOnPesticidoverblik()
         }, "watsonc");
 
+        let filters = {};
+        let filteredLayers = [];
+        filters[LAYER_NAMES[1].split(":")[1]] = {
+            match: "all", columns: [
+                {fieldname: "count", expression: ">", value: parameters.selectedMeasurementCount, restriction: false},
+                {fieldname: "startdate", expression: ">", value: parameters.selectedStartDate, restriction: false},
+                {fieldname: "enddate", expression: "<", value: parameters.selectedEndDate, restriction: false}
+            ]
+
+        }
+
         // Enable raster layer
         if (parameters.layers.indexOf(LAYER_NAMES[0]) > -1) {
             if (!parameters.chemical) return;
             let rasterToEnable = `system._${parameters.chemical}`;
             currentRasterLayer = rasterToEnable;
+            filters[rasterToEnable] = {
+                match: "all", columns: [
+                    {
+                        fieldname: "count",
+                        expression: ">",
+                        value: parameters.selectedMeasurementCount,
+                        restriction: false
+                    },
+                    {fieldname: "startdate", expression: ">", value: parameters.selectedStartDate, restriction: false},
+                    {fieldname: "enddate", expression: "<", value: parameters.selectedEndDate, restriction: false}
+                ]
+
+            }
+            console.log("filters", filters)
+            layerTree.applyFilters(filters);
             switchLayer.init(rasterToEnable, true).then(() => {
                 if (parameters.chemical) {
-                    _self.enableChemical(parameters.chemical, filteredLayers);
+                    _self.enableChemical(parameters.chemical, filteredLayers, false, parameters);
                 } else {
                     lastSelectedChemical = parameters.chemical;
                     filteredLayers.map(layerName => {
@@ -763,9 +791,10 @@ module.exports = module.exports = {
                     });
                 }
             });
+        } else {
+            layerTree.applyFilters(filters);
         }
 
-        let filteredLayers = [];
         enabledLoctypeIds = [];
         parameters.layers.map(layerName => {
             if (layerName.indexOf(LAYER_NAMES[0]) === 0) {
@@ -1072,7 +1101,7 @@ module.exports = module.exports = {
         }
     },
 
-    enableChemical(chemicalId, layersToEnable = [], onComplete = false) {
+    enableChemical(chemicalId, layersToEnable = [], onComplete = false, parameters) {
         if (!chemicalId) throw new Error(`Chemical identifier was not provided`);
         setTimeout(() => {
             let layersToEnableWereProvided = (layersToEnable.length > 0);
@@ -1093,14 +1122,31 @@ module.exports = module.exports = {
                     }
                 }
             }
-            layerTree.applyFilters({
-                "system.all": {
-                    match: "any", columns: [
-                        {fieldname: "compound", expression: "=", value: chemicalId, restriction: false}
-                    ]
+            let filter = {
+                match: "all", columns: [
+                    {fieldname: "compound", expression: "=", value: chemicalId, restriction: false},
+                    {
+                        fieldname: "count",
+                        expression: ">",
+                        value: parameters.selectedMeasurementCount,
+                        restriction: false
+                    },
+                    {
+                        fieldname: "startdate",
+                        expression: ">",
+                        value: parameters.selectedStartDate,
+                        restriction: false
+                    },
+                    {fieldname: "enddate", expression: "<", value: parameters.selectedEndDate, restriction: false}
+                ]
 
-                }
-            });
+            };
+            let filters = {};
+            filters[LAYER_NAMES[0].split(":")[1]] = filter;
+            filters[LAYER_NAMES[1].split(":")[1]] = filter;
+
+
+            layerTree.applyFilters(filters);
             lastSelectedChemical = chemicalId;
             backboneEvents.get().trigger(`${MODULE_NAME}:chemicalChange`);
             let onLoadCallback = function (store) {

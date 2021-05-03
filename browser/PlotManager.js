@@ -53,6 +53,7 @@ class PlotManager {
                     results.map((dataItem) => {
                         if (dataItem.key === item.id && typeof dataItem.value !== "undefined") {
                             plots[index] = JSON.parse(dataItem.value);
+                            delete plots[index].measurementsCachedData;
                         }
                     });
                 });
@@ -90,6 +91,7 @@ class PlotManager {
                         let plots = [];
                         results.map((item, index) => {
                             plots[index] = JSON.parse(item.value);
+                            delete plots[index].measurementsCachedData;
                         });
 
                         plots.map((item, index) => {
@@ -152,17 +154,19 @@ class PlotManager {
     }
 
     update(data) {
+        let clone = JSON.parse(JSON.stringify(data));
+        clone.measurementsCachedData = {};
         return new Promise((resolve, reject) => {
-            if (!data || !data.id) {
-                console.error(`Invalid plot was provided`, data);
+            if (!clone || !clone.id) {
+                console.error(`Invalid plot was provided`, clone);
                 reject(`Invalid plot was provided`);
             } else {
                 $.ajax({
-                    url: `${this.apiUrlLocal}/${data.id}`,
+                    url: `${this.apiUrlLocal}/${clone.id}`,
                     method: 'PUT',
                     dataType: 'json',
                     contentType: 'application/json; charset=utf-8',
-                    data: JSON.stringify(data),
+                    data: JSON.stringify(clone),
                     success: (body) => {
                         if (body.success) {
                             resolve();
@@ -210,6 +214,7 @@ class PlotManager {
             }
         });
     }
+
 }
 
 export default PlotManager;
