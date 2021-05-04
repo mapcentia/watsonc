@@ -862,10 +862,10 @@ module.exports = module.exports = {
                         onApply={_self.onApplyLayersAndChemical}
                         onClose={onCloseHandler}
                     /></Provider>, document.getElementById(introlModalPlaceholderId)); */
-                ReactDOM.render(<ThemeProvider>
+                ReactDOM.render(<Provider store={reduxStore}><ThemeProvider>
                     <DataSelectorDialogue titleText={__('Welcome to Calypso')}
                         onCloseButtonClick={onCloseHandler} />
-                    </ThemeProvider>, document.getElementById(introlModalPlaceholderId));
+                    </ThemeProvider></Provider>, document.getElementById(introlModalPlaceholderId));
             } catch (e) {
                 console.error(e);
             }

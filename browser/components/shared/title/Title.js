@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 function Title(props) {
     return (
-        <Root level={props.level}>
+        <Root level={props.level} color={props.color} align={props.align}>
             {props.text}
         </Root>
     );
@@ -13,6 +13,7 @@ Title.propTypes = {
     level: PropTypes.number,
     className: PropTypes.string,
     align: PropTypes.string,
+    color: PropTypes.string,
 }
 
 Title.defaultProps = {
@@ -22,37 +23,38 @@ Title.defaultProps = {
 }
 
 const Root = styled.h4`
-    display: "block",
-    fontWeight: "normal",
-    margin: 0,
-    lineHeight: 1.3
+    display: block;
+    font-weight: normal;
+    margin: 0;
+    line-height: 1.3;
     text-align: ${props => props.align};
     ${({ level, theme }) => {
         const styles = {
 
             1: css `
                 font: ${props => props.theme.fonts.title};
-                color: ${props => props.theme.colors.headings};
+                color: ${props => props.color || props.theme.colors.headings};
             `,
             2: css `
                 font: ${props => props.theme.fonts.subtitle};
             `,
             3: css `
                 font: ${props => props.theme.fonts.heading};
-                color: ${props => props.theme.colors.gray[3]};
+                color: ${props => props.color || props.theme.colors.gray[3]};
             `,
             4: css `
                 font: ${props => props.theme.fonts.body};
+                color: ${props => props.color || props.theme.colors.primary[5]};
             `,
             5: css `
                 margin-top: ${props => props.theme.layout.gutter/2}px;
                 font: ${props => props.theme.fonts.subbody};
-                color: ${props => props.theme.colors.gray[4]};
+                color: ${props => props.color || props.theme.colors.gray[4]};
             `,
             6: css `
                 margin-top: ${props => props.theme.layout.gutter/4}px;
                 font: ${props => props.theme.fonts.label};
-                color: ${props => props.theme.colors.gray[5]};
+                color: ${props => props.color || props.theme.colors.gray[5]};
             `,
             7: css `
                 font: ${props => props.theme.fonts.footnote};
