@@ -864,7 +864,7 @@ module.exports = module.exports = {
                     /></Provider>, document.getElementById(introlModalPlaceholderId)); */
                 ReactDOM.render(<Provider store={reduxStore}><ThemeProvider>
                     <DataSelectorDialogue titleText={__('Welcome to Calypso')}
-                        onCloseButtonClick={onCloseHandler} />
+                        onCloseButtonClick={onCloseHandler} state={state} />
                     </ThemeProvider></Provider>, document.getElementById(introlModalPlaceholderId));
             } catch (e) {
                 console.error(e);

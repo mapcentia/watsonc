@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import {connect} from 'react-redux'
+import Icon from '@material-ui/core/Icon';
 import ProjectsApi from '../api/projects/ProjectsApi';
 import Card from './shared/card/Card';
 import Title from './shared/title/Title';
@@ -8,11 +9,13 @@ import Grid from '@material-ui/core/Grid';
 import {DarkTheme} from '../themes/DarkTheme';
 import {Spacing} from './shared/constants/spacing';
 import {Align} from './shared/constants/align';
+import Button from './shared/button/Button';
 
 
 function ProjectList(props) {
     const [projects, setProjects] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [disableStateApply, setDisableStateApply] = useState(false);
 
     const loadProjects = () => {
         setIsLoading(true);
@@ -24,6 +27,18 @@ function ProjectList(props) {
                 setIsLoading(false);
             });
         })
+    }
+
+    const applySnapshot = (project) => {
+        if (disableStateApply) {
+            return;
+        }
+        console.log(project)
+        if (props.onStateSnapshotApply) props.onStateSnapshotApply();
+        setDisableStateApply(true);
+        props.state.applyState(project.snapshot).then(() => {
+            setDisableStateApply(false);
+        });
     }
 
     useEffect(() => {
@@ -46,7 +61,7 @@ function ProjectList(props) {
                                                 <Title text={project.title} level={4} color={DarkTheme.colors.headings} />
                                             </Grid>
                                             <Grid container item md={4} justify='flex-end'>
-
+                                                <Icon onClick={() => applySnapshot(project)}>play_arrow</Icon>
                                             </Grid>
                                         </Grid>
                                     </Card>)}

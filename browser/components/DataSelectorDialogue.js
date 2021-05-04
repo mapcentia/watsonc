@@ -57,7 +57,7 @@ function DataSelectorDialogue(props) {
                 <IconButton icon="no3-solid" label={__('Nitrat')} />
                 <IconButton icon="water-drop-wifi-solid" label={__('Mine stationer')} />
                 <IconButton icon="lab-flask-experiment" label={__('Mine favoritter')} />
-                {showProjectsList ? <ProjectList /> : <Grid container spacing={32}>
+                {showProjectsList ? <ProjectList onStateSnapshotApply={props.onCloseButtonClick} state={props.state} /> : <Grid container spacing={32}>
                     <Grid container item md={6}>
                         <Card>
                             <Title text={__('Datakilder')} level={3} />
@@ -81,6 +81,7 @@ function DataSelectorDialogue(props) {
 }
 DataSelectorDialogue.propTypes = {
     text: PropTypes.string,
+    state: PropTypes.object,
 }
 
 const Root = styled.div`
