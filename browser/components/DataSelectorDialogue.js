@@ -36,6 +36,10 @@ const Parameters = [
     { label: "Carbondioxid, aggr.", value: "carbondioxid", group: "Kemiske hovedbestanddele"},
 ]
 
+DataSelectorDialogue.propTypes = {
+    text: PropTypes.string,
+    state: PropTypes.object,
+}
 
 function DataSelectorDialogue(props) {
     const [showProjectsList, setShowProjectsList] = useState(false);
@@ -53,24 +57,28 @@ function DataSelectorDialogue(props) {
                 </Grid>
             </ModalHeader>
             <ModalBody>
-                <IconButton icon="cleaning-spray" label={__('Pesticider')} />
-                <IconButton icon="no3-solid" label={__('Nitrat')} />
-                <IconButton icon="water-drop-wifi-solid" label={__('Mine stationer')} />
-                <IconButton icon="lab-flask-experiment" label={__('Mine favoritter')} />
-                {showProjectsList ? <ProjectList onStateSnapshotApply={props.onCloseButtonClick} state={props.state} /> : <Grid container spacing={32}>
-                    <Grid container item md={6}>
-                        <Card>
-                            <Title text={__('Datakilder')} level={3} />
-                            <CheckBoxList listItems={DataSources} onChange={(selectedItems) => console.log(selectedItems)} />
-                        </Card>
-                    </Grid>
-                    <Grid container item md={6}>
-                        <Card>
-                            <Title text={__('Måleparameter')} level={3} />
-                            <RadioButtonList listItems={Parameters} onChange={(selectedItem) => console.log(selectedItem)} />
-                        </Card>
-                    </Grid>
-                </Grid> }
+                {showProjectsList ? <ProjectList onStateSnapshotApply={props.onCloseButtonClick} state={props.state} /> :
+                    <div>
+                        <IconButton icon="cleaning-spray" label={__('Pesticider')} />
+                        <IconButton icon="no3-solid" label={__('Nitrat')} />
+                        <IconButton icon="water-drop-wifi-solid" label={__('Mine stationer')} />
+                        <IconButton icon="lab-flask-experiment" label={__('Mine favoritter')} />
+
+                        <Grid container spacing={32}>
+                            <Grid container item md={6}>
+                                <Card>
+                                    <Title text={__('Datakilder')} level={3} />
+                                    <CheckBoxList listItems={DataSources} onChange={(selectedItems) => console.log(selectedItems)} />
+                                </Card>
+                            </Grid>
+                            <Grid container item md={6}>
+                                <Card>
+                                    <Title text={__('Måleparameter')} level={3} />
+                                    <RadioButtonList listItems={Parameters} onChange={(selectedItem) => console.log(selectedItem)} />
+                                </Card>
+                            </Grid>
+                        </Grid>
+                    </div>}
                 <ButtonGroup align="center">
                     <Button text={__("Abn eksisterende")} variant={Variants.None} onClick={() => setShowProjectsList(!showProjectsList)} size={Size.Large} />
                     <Button text={__("Start")} variant={Variants.Primary} onClick={() => console.log("Button click star")} size={Size.Large} />
@@ -78,10 +86,6 @@ function DataSelectorDialogue(props) {
             </ModalBody>
         </Root>
     );
-}
-DataSelectorDialogue.propTypes = {
-    text: PropTypes.string,
-    state: PropTypes.object,
 }
 
 const Root = styled.div`

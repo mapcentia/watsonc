@@ -3,6 +3,13 @@ import { Variants } from "../constants/variants";
 import { Size } from '../constants/size';
 import PropTypes from 'prop-types';
 
+Button.propTypes = {
+    text: PropTypes.string,
+    variant: PropTypes.oneOf(Object.keys(Variants)),
+    size: PropTypes.oneOf(Object.keys(Size)),
+    onClick: PropTypes.func.isRequired
+}
+
 function Button(props) {
     return (
         <Root
@@ -12,12 +19,6 @@ function Button(props) {
             {props.text}
         </Root>
     );
-}
-Button.propTypes = {
-    text: PropTypes.string,
-    variant: PropTypes.oneOf(Object.keys(Variants)),
-    size: PropTypes.oneOf(Object.keys(Size)),
-    onClick: PropTypes.func.isRequired
 }
 
 const Root = styled.button`

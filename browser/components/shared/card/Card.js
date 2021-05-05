@@ -2,20 +2,27 @@ import styled, { css } from "styled-components";
 import PropTypes from 'prop-types';
 import { Spacing } from '../constants/spacing';
 
-function Card(props) {
-    return (
-        <Root spacing={props.spacing}>
-            {props.children}
-        </Root>
-    );
-}
-
 Card.propTypes = {
-    spacing: PropTypes.string
+    spacing: PropTypes.string,
+    onClick: PropTypes.func
 }
 
 Card.defaultProps = {
     spacing: Spacing.Standard
+}
+
+function Card(props) {
+
+    const onClick = (event) => {
+        if (props.onClick) {
+            props.onClick(event);
+        }
+    }
+    return (
+        <Root spacing={props.spacing} hasClick={!!props.onClick} onClick={onClick}>
+            {props.children}
+        </Root>
+    );
 }
 
 const Root = styled.div`
@@ -24,6 +31,7 @@ const Root = styled.div`
     width: 100%;
     border: 0;
     box-shadow: none;
+    cursor: ${props => props.hasClick ? 'pointer' : 'inherit'};
     ${({ spacing, theme }) => {
         const styles = {
             [Spacing.Standard]: css `

@@ -1,7 +1,7 @@
 const Align = {
-    LEFT: 'left',
-    CENTER: 'center',
-    RIGHT: 'right'
+    Left: 'left',
+    Center: 'center',
+    Right: 'right'
 }
 
 export {Align};

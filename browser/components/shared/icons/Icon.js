@@ -5,6 +5,22 @@ import icons from "../../../../shared/icons/icons.json";
 import { IconName } from "../../../../shared/icons/icons";
 import PropTypes from 'prop-types';
 
+Icon.propTypes = {
+    name: PropTypes.string,
+    variant: PropTypes.oneOf(Object.keys(Variants)),
+    onClick: PropTypes.func,
+    strokeColor: PropTypes.string,
+    fillColor: PropTypes.string,
+    size: PropTypes.number
+}
+
+Icon.defaultProps = {
+    strokeColor: 'currentColor',
+    fillColor: 'none',
+    size: 24,
+    variant: 'Primary'
+}
+
 function Icon(props) {
   const icon = icons.find((i) => i.name === props.name);
   if (!icon) {
@@ -47,22 +63,6 @@ function Icon(props) {
     </Root>
   );
 
-}
-
-Icon.propTypes = {
-    name: PropTypes.string,
-    variant: PropTypes.oneOf(Object.keys(Variants)),
-    onClick: PropTypes.func,
-    strokeColor: PropTypes.string,
-    fillColor: PropTypes.string,
-    size: PropTypes.number
-}
-
-Icon.defaultProps = {
-    strokeColor: 'currentColor',
-    fillColor: 'none',
-    size: 24,
-    variant: 'Primary'
 }
 
 const Root = styled.div`

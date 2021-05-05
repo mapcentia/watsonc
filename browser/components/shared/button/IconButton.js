@@ -2,6 +2,12 @@ import styled, { css } from "styled-components";
 import PropTypes from 'prop-types';
 import Icon from '../icons/Icon';
 
+IconButton.propTypes = {
+    onClick: PropTypes.func,
+    icon: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired,
+}
+
 function IconButton(props) {
     return (
         <Root
@@ -10,12 +16,6 @@ function IconButton(props) {
             <IconLabel>{props.label}</IconLabel>
         </Root>
     )
-}
-
-IconButton.propTypes = {
-    onClick: PropTypes.func,
-    icon: PropTypes.string.isRequired,
-    label: PropTypes.string.isRequired,
 }
 
 const Root = styled.button`

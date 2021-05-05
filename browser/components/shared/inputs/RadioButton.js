@@ -33,7 +33,6 @@ const StyledRadioButton = styled.div`
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  font-size: 12px;
   background: ${props => props.checked ? props.theme.colors.interaction[4] : '#fff'};
   transition: all 150ms;
   padding: ${props => props.theme.layout.gutter / 8}px;

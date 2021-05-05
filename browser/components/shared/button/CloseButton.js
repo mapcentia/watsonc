@@ -3,6 +3,11 @@ import { Variants } from "../../../constants";
 import PropTypes from 'prop-types';
 import Icon from "@material-ui/core/Icon";
 
+CloseButton.propTypes = {
+    text: PropTypes.string,
+    onClick: PropTypes.func.isRequired
+}
+
 function CloseButton(props) {
     return (
         <Root
@@ -16,10 +21,6 @@ function CloseButton(props) {
               </svg>
         </Root>
     );
-}
-CloseButton.propTypes = {
-    text: PropTypes.string,
-    onClick: PropTypes.func.isRequired
 }
 
 const Root = styled.button`
