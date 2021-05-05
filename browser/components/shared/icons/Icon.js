@@ -11,6 +11,7 @@ Icon.propTypes = {
     onClick: PropTypes.func,
     strokeColor: PropTypes.string,
     fillColor: PropTypes.string,
+    marginRight: PropTypes.number,
     size: PropTypes.number
 }
 
@@ -18,7 +19,8 @@ Icon.defaultProps = {
     strokeColor: 'currentColor',
     fillColor: 'none',
     size: 24,
-    variant: 'Primary'
+    variant: 'Primary',
+    marginRight: 0
 }
 
 function Icon(props) {
@@ -34,7 +36,7 @@ function Icon(props) {
     <Root
       onClick={props.onClick ?? props.onClick}
       style={{ width: size, height: size }}
-
+      marginRight={props.marginRight}
     >
       <svg
         version="1.1"
@@ -68,6 +70,7 @@ function Icon(props) {
 const Root = styled.div`
   display: inline-block;
   position: relative;
+  margin-right: ${props => props.marginRight}px;
   ${({ variant, theme }) => {
     const styles = {
         [Variants.Primary]: css `

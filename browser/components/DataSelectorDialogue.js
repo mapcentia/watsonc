@@ -13,6 +13,7 @@ import ButtonGroup from './shared/button/ButtonGroup';
 import ProjectList from './ProjectList';
 import { Variants } from './shared/constants/variants';
 import { Size } from './shared/constants/size';
+import { Align } from './shared/constants/align';
 import { hexToRgbA } from '../helpers/colors';
 
 const DataSources = [{ label: "Klima", value: "klima", group: "Klima"},
@@ -79,10 +80,14 @@ function DataSelectorDialogue(props) {
                             </Grid>
                         </Grid>
                     </div>}
-                <ButtonGroup align="center">
+                {showProjectsList ? <ButtonGroup align={Align.Center}>
+                    <Button text={__("Choose datasource and layers")} variant={Variants.None} onClick={() => setShowProjectsList(false)} size={Size.Large} />
+
+                </ButtonGroup> :
+                <ButtonGroup align={Align.Center}>
                     <Button text={__("Abn eksisterende")} variant={Variants.None} onClick={() => setShowProjectsList(!showProjectsList)} size={Size.Large} />
                     <Button text={__("Start")} variant={Variants.Primary} onClick={() => console.log("Button click star")} size={Size.Large} />
-                </ButtonGroup>
+                </ButtonGroup> }
             </ModalBody>
         </Root>
     );

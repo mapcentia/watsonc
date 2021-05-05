@@ -54,14 +54,15 @@ function ProjectList(props) {
                     <div>
                         <Title text={__('My projects')} level={4} />
                         <Grid container>
-                            <Grid container item xs={7}>
+                            <Grid container item xs={12}>
                                 {projects.map((project, index) => {
                                     return (<Card key={index} spacing={Spacing.Lite} onClick={() => applySnapshot(project)}>
                                         <Grid container>
                                             <Grid container item md={7}>
+                                                <Icon name='dashboard' variant={Variants.Primary} strokeColor={DarkTheme.colors.primary[4]} size={24} marginRight={8} />
                                                 <Title text={project.title} level={4} color={DarkTheme.colors.headings} />
                                             </Grid>
-                                            <Grid container item md={4} justify='flex-end'>
+                                            <Grid container item md={5} justify='flex-end'>
                                                 <Icon name='hyperlink' variant={Variants.Primary} size={12} strokeColor={DarkTheme.colors.headings} />
                                             </Grid>
                                         </Grid>
@@ -79,6 +80,7 @@ function ProjectList(props) {
 
 const Root = styled.div`
     margin-top: ${props => props.theme.layout.gutter/2}px;
+    margin-bottom: ${props => props.theme.layout.gutter*2}px;
 `;
 
 const mapStateToProps = state => ({

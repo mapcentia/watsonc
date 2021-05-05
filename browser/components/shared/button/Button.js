@@ -50,13 +50,13 @@ const Root = styled.button`
   ${({ size, theme }) => {
         const styles = {
             [Size.Small]: css `
-                width: ${theme.layout.gutter * 10}px;
+                width: ${theme.layout.gutter * 2}px;
             `,
             [Size.Medium]: css `
-                width: ${theme.layout.gutter * 20}px;
+                width: ${theme.layout.gutter * 5}px;
             `,
             [Size.Large]: css `
-                width: ${theme.layout.gutter * 40}px;
+                width: ${theme.layout.gutter * 10}px;
             `
         };
         return styles[size];
