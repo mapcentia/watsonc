@@ -2,6 +2,11 @@ import styled, { css } from "styled-components";
 import { Align } from '../constants/align';
 import PropTypes from 'prop-types';
 
+ButtonGroup.propTypes = {
+    text: PropTypes.string,
+    align: PropTypes.string,
+}
+
 function ButtonGroup(props) {
     return (
         <Root align={props.align}>
@@ -9,24 +14,20 @@ function ButtonGroup(props) {
         </Root>
     );
 }
-ButtonGroup.propTypes = {
-    text: PropTypes.string,
-    align: PropTypes.string,
-}
 
 const Root = styled.div`
     display: flex;
     margin-top: ${props => props.theme.layout.gutter}px;
     ${({ align, theme }) => {
         const styles = {
-            [Align.LEFT]: css `
+            [Align.Left]: css `
                 justify-content: start;
                 align-items: flex-start;
                 button {
                     margin-right: ${theme.layout.gutter / 2}px;
                 }
             `,
-            [Align.CENTER]: css`
+            [Align.Center]: css`
                 justify-content: center;
                 align-items: center;
                 button {
@@ -34,7 +35,7 @@ const Root = styled.div`
                   margin-right: ${theme.layout.gutter / 2};
                 }
             `,
-            [Align.RIGHT]: css`
+            [Align.Right]: css`
                 justify-content: flex-end,
                 align-items: flex-end,
                 button {

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import {connect} from 'react-redux'
-import Icon from '@material-ui/core/Icon';
 import ProjectsApi from '../api/projects/ProjectsApi';
 import Card from './shared/card/Card';
 import Title from './shared/title/Title';
@@ -10,6 +9,8 @@ import {DarkTheme} from '../themes/DarkTheme';
 import {Spacing} from './shared/constants/spacing';
 import {Align} from './shared/constants/align';
 import Button from './shared/button/Button';
+import Icon from './shared/icons/Icon';
+import {Variants} from './shared/constants/variants';
 
 
 function ProjectList(props) {
@@ -46,7 +47,7 @@ function ProjectList(props) {
     }, []);
 
     return (<Root>
-        {props.authenticated ? null : <Title text={__('Sign in in order to access user projects')} level={5} color={DarkTheme.colors.headings} align={Align.CENTER} />}
+        {props.authenticated ? null : <Title text={__('Sign in in order to access user projects')} level={5} color={DarkTheme.colors.headings} align={Align.Center} />}
         {isLoading ? <Title text={__('Loading data...')} level={6} align='center' /> :
             <div>
                 {projects.length > 0 ?
@@ -55,13 +56,13 @@ function ProjectList(props) {
                         <Grid container>
                             <Grid container item xs={7}>
                                 {projects.map((project, index) => {
-                                    return (<Card key={index} spacing={Spacing.Lite}>
+                                    return (<Card key={index} spacing={Spacing.Lite} onClick={() => applySnapshot(project)}>
                                         <Grid container>
                                             <Grid container item md={7}>
                                                 <Title text={project.title} level={4} color={DarkTheme.colors.headings} />
                                             </Grid>
                                             <Grid container item md={4} justify='flex-end'>
-                                                <Icon onClick={() => applySnapshot(project)}>play_arrow</Icon>
+                                                <Icon name='hyperlink' variant={Variants.Primary} size={12} strokeColor={DarkTheme.colors.headings} />
                                             </Grid>
                                         </Grid>
                                     </Card>)}
@@ -69,7 +70,7 @@ function ProjectList(props) {
                             </Grid>
                         </Grid>
                     </div> :
-                    <Title text={__('No Local projects')} level={6} align={Align.CENTER} color={DarkTheme.colors.headings} />}
+                    <Title text={__('No Local projects')} level={6} align={Align.Center} color={DarkTheme.colors.headings} />}
             </div>
         }
     </Root>)

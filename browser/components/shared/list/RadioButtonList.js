@@ -3,6 +3,11 @@ import styled from "styled-components";
 import PropTypes from 'prop-types';
 import RadioButton from '../inputs/RadioButton';
 
+RadioButtonList.propTypes = {
+    listItems: PropTypes.array.isRequired,
+    onChange: PropTypes.func,
+}
+
 function RadioButtonList(props) {
     const [selectedItem, setSelectedItem] = useState([]);
     const [listItems, setListItems] = useState([]);
@@ -45,12 +50,6 @@ function RadioButtonList(props) {
         </Root>
     )
 }
-
-RadioButtonList.propTypes = {
-    listItems: PropTypes.array.isRequired,
-    onChange: PropTypes.func,
-}
-
 
 const Root = styled.div`
     height: ${props => props.theme.layout.gutter*10}px;

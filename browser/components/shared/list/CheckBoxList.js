@@ -3,6 +3,11 @@ import styled from "styled-components";
 import PropTypes from 'prop-types';
 import Checkbox from '../inputs/CheckBox';
 
+CheckBoxList.propTypes = {
+    listItems: PropTypes.array.isRequired,
+    onChange: PropTypes.func,
+}
+
 function CheckBoxList(props) {
     const [selectedItems, setSelectedItems] = useState([]);
     const [listItems, setListItems] = useState([]);
@@ -59,11 +64,6 @@ function CheckBoxList(props) {
             })}
         </Root>
     )
-}
-
-CheckBoxList.propTypes = {
-    listItems: PropTypes.array.isRequired,
-    onChange: PropTypes.func,
 }
 
 
