@@ -4,7 +4,9 @@ import { Spacing } from '../constants/spacing';
 
 Card.propTypes = {
     spacing: PropTypes.string,
-    onClick: PropTypes.func
+    onClick: PropTypes.func,
+    onMouseEnter: PropTypes.func,
+    onMouseLeave: PropTypes.func,
 }
 
 Card.defaultProps = {
@@ -18,8 +20,22 @@ function Card(props) {
             props.onClick(event);
         }
     }
+
+    const onMouseEnter = (event) => {
+        if (props.onMouseEnter) {
+            props.onMouseEnter(event);
+        }
+    }
+
+    const onMouseLeave = (event) => {
+        if (props.onMouseLeave) {
+            props.onMouseLeave(event);
+        }
+    }
+
     return (
-        <Root spacing={props.spacing} hasClick={!!props.onClick} onClick={onClick}>
+        <Root spacing={props.spacing} hasClick={!!props.onClick} onClick={onClick}
+            onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
             {props.children}
         </Root>
     );
@@ -32,6 +48,9 @@ const Root = styled.div`
     border: 0;
     box-shadow: none;
     cursor: ${props => props.hasClick ? 'pointer' : 'inherit'};
+    &:hover {
+        background: ${props => props.hasClick ? props.theme.colors.primary[5] : props.theme.colors.primary[2]};
+    }
     ${({ spacing, theme }) => {
         const styles = {
             [Spacing.Standard]: css `

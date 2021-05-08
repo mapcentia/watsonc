@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import {connect} from 'react-redux'
+import {CopyToClipboard} from 'react-copy-to-clipboard';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import ProjectsApi from '../api/projects/ProjectsApi';
 import Card from './shared/card/Card';
 import Title from './shared/title/Title';
@@ -17,6 +20,7 @@ function ProjectList(props) {
     const [projects, setProjects] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [disableStateApply, setDisableStateApply] = useState(false);
+    const [hoveredItem, setHoveredItem] = useState();
 
     const loadProjects = () => {
         setIsLoading(true);
@@ -42,6 +46,51 @@ function ProjectList(props) {
         });
     }
 
+    const setHoverItem = (project) => {
+        setHoveredItem(project.id);
+    }
+
+    const removeHoverItem = (event) => {
+        setHoveredItem(null);
+    }
+
+    const getProjectParameters = (project) => {
+        let parameters = [];
+        let queryParameters = props.urlparser.urlVars;
+        parameters.push(`state=${project.id}`);
+        let highPriorityConfigString = false, lowPriorityConfigString = false;
+        if (`config` in queryParameters && queryParameters.config) {
+            lowPriorityConfigString = queryParameters.config;
+        }
+
+        if (project.snapshot && project.snapshot.meta) {
+            if (project.snapshot.meta.config) {
+                highPriorityConfigString = project.snapshot.meta.config;
+            }
+
+            if (project.snapshot.meta.tmpl) {
+                parameters.push(`tmpl=${project.snapshot.meta.tmpl}`);
+            }
+        }
+
+        let configParameter = ``;
+        if (highPriorityConfigString) {
+            configParameter = `config=${highPriorityConfigString}`;
+            parameters.push(configParameter);
+        } else if (lowPriorityConfigString) {
+            configParameter = `config=${lowPriorityConfigString}`;
+            parameters.push(configParameter);
+        }
+        return parameters;
+
+    }
+
+    const getPermalinkForProject = (project) => {
+        let parameters = getProjectParameters(project);
+        let permalink = `${window.location.origin}${props.anchor.getUri()}?${parameters.join('&')}`;
+        return permalink;
+    }
+
     useEffect(() => {
         loadProjects();
     }, []);
@@ -56,14 +105,19 @@ function ProjectList(props) {
                         <Grid container>
                             <Grid container item xs={12}>
                                 {projects.map((project, index) => {
-                                    return (<Card key={index} spacing={Spacing.Lite} onClick={() => applySnapshot(project)}>
+                                    return (<Card key={index} spacing={Spacing.Lite}  onClick={() => applySnapshot(project)} onMouseEnter={() => setHoverItem(project)} onMouseLeave={removeHoverItem}>
                                         <Grid container>
                                             <Grid container item md={7}>
-                                                <Icon name='dashboard' variant={Variants.Primary} strokeColor={DarkTheme.colors.primary[4]} size={24} marginRight={8} />
+                                                <Icon name='dashboard' variant={Variants.Primary} strokeColor={hoveredItem == project.id ? DarkTheme.colors.primary[3] : DarkTheme.colors.primary[4]} size={24} marginRight={8} />
                                                 <Title text={project.title} level={4} color={DarkTheme.colors.headings} />
                                             </Grid>
                                             <Grid container item md={5} justify='flex-end'>
-                                                <Icon name='hyperlink' variant={Variants.Primary} size={12} strokeColor={DarkTheme.colors.headings} />
+
+                                                <IconContainer onClick={e => e.stopPropagation()}>
+                                                    <CopyToClipboard text={getPermalinkForProject(project)} onCopy={() => toast.warning("Copied", { autoClose: 2000 })}>
+                                                        <Icon name='hyperlink' variant={Variants.Primary} size={12} strokeColor={DarkTheme.colors.headings} />
+                                                    </CopyToClipboard>
+                                                </IconContainer>
                                             </Grid>
                                         </Grid>
                                     </Card>)}
@@ -81,6 +135,19 @@ function ProjectList(props) {
 const Root = styled.div`
     margin-top: ${props => props.theme.layout.gutter/2}px;
     margin-bottom: ${props => props.theme.layout.gutter*2}px;
+`;
+
+const IconContainer = styled.div`
+    display: inline-block;
+    width: ${props => props.theme.layout.gutter * 3/4}px;
+    height: ${props => props.theme.layout.gutter * 3/4}px;
+    cursor: pointer;
+    padding: 3px;
+    padding-left: 5px;
+    &:hover {
+        border: 1px solid ${props => props.theme.colors.primary[1]};
+        border-radius: ${props => props.theme.layout.borderRadius.small}px;
+    }
 `;
 
 const mapStateToProps = state => ({
