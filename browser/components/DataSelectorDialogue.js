@@ -58,11 +58,11 @@ function DataSelectorDialogue(props) {
                 </Grid>
             </ModalHeader>
             <ModalBody>
-                {showProjectsList ? <ProjectList onStateSnapshotApply={props.onCloseButtonClick} state={props.state} /> :
+                {showProjectsList ? <ProjectList onStateSnapshotApply={props.onCloseButtonClick} {...props} /> :
                     <div>
                         <IconButton icon="cleaning-spray" label={__('Pesticider')} />
                         <IconButton icon="no3-solid" label={__('Nitrat')} />
-                        <IconButton icon="water-drop-wifi-solid" label={__('Mine stationer')} />
+                        <IconButton icon="water-wifi-solid" label={__('Mine stationer')} />
                         <IconButton icon="lab-flask-experiment" label={__('Mine favoritter')} />
 
                         <Grid container spacing={32}>

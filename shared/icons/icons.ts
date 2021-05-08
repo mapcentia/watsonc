@@ -6,5 +6,6 @@ export const IconName = {
   LAB_FLASK_EXPERIMENT: "lab-flask-experiment" as "lab-flask-experiment",
   NO3_SOLID: "no3-solid" as "no3-solid",
   WATER_DROP_WIFI_SOLID: "water-drop-wifi-solid" as "water-drop-wifi-solid",
+  WATER_WIFI_SOLID: "water-wifi-solid" as "water-wifi-solid",
 };
 export type IconName = typeof IconName[keyof typeof IconName];

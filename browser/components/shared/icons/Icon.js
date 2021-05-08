@@ -71,6 +71,7 @@ const Root = styled.div`
   display: inline-block;
   position: relative;
   margin-right: ${props => props.marginRight}px;
+  cursor: ${props => props.onClick ? 'pointer' : 'inherit'};
   ${({ variant, theme }) => {
     const styles = {
         [Variants.Primary]: css `
