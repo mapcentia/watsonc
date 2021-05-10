@@ -24,43 +24,6 @@ function ProjectListItem(props) {
         });
     }
 
-    const getProjectParameters = () => {
-        let parameters = [];
-        let queryParameters = props.urlparser.urlVars;
-        parameters.push(`state=${props.project.id}`);
-        let highPriorityConfigString = false, lowPriorityConfigString = false;
-        if (`config` in queryParameters && queryParameters.config) {
-            lowPriorityConfigString = queryParameters.config;
-        }
-
-        if (props.project.snapshot && props.project.snapshot.meta) {
-            if (props.project.snapshot.meta.config) {
-                highPriorityConfigString = props.project.snapshot.meta.config;
-            }
-
-            if (props.project.snapshot.meta.tmpl) {
-                parameters.push(`tmpl=${props.project.snapshot.meta.tmpl}`);
-            }
-        }
-
-        let configParameter = ``;
-        if (highPriorityConfigString) {
-            configParameter = `config=${highPriorityConfigString}`;
-            parameters.push(configParameter);
-        } else if (lowPriorityConfigString) {
-            configParameter = `config=${lowPriorityConfigString}`;
-            parameters.push(configParameter);
-        }
-        return parameters;
-
-    }
-
-    const getPermalinkForProject = () => {
-        let parameters = getProjectParameters(props.project);
-        let permalink = `${window.location.origin}${props.anchor.getUri()}?${parameters.join('&')}`;
-        return permalink;
-    }
-
     return (
         <Root key={index} spacing={Spacing.Lite}  onClick={() => applySnapshot()} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
             <Grid container>
@@ -71,7 +34,7 @@ function ProjectListItem(props) {
                 <Grid container item md={5} justify='flex-end'>
 
                     <IconContainer onClick={e => e.stopPropagation()}>
-                        <CopyToClipboard text={getPermalinkForProject(props.project)} onCopy={() => toast.warning("Copied", { autoClose: 2000 })}>
+                        <CopyToClipboard text={props.project.permalink} onCopy={() => toast.warning("Copied", { autoClose: 2000 })}>
                             <Icon name='hyperlink' variant={Variants.Primary} size={12} strokeColor={DarkTheme.colors.headings} />
                         </CopyToClipboard>
                     </IconContainer>
