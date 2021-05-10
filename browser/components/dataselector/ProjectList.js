@@ -3,17 +3,17 @@ import {connect} from 'react-redux'
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import ProjectsApi from '../api/projects/ProjectsApi';
-import Card from './shared/card/Card';
-import Title from './shared/title/Title';
+import ProjectsApi from '../../api/projects/ProjectsApi';
+import Card from '../shared/card/Card';
+import Title from '../shared/title/Title';
 import styled from "styled-components";
 import Grid from '@material-ui/core/Grid';
-import {DarkTheme} from '../themes/DarkTheme';
-import {Spacing} from './shared/constants/spacing';
-import {Align} from './shared/constants/align';
-import Button from './shared/button/Button';
-import Icon from './shared/icons/Icon';
-import {Variants} from './shared/constants/variants';
+import {DarkTheme} from '../../themes/DarkTheme';
+import {Spacing} from '../shared/constants/spacing';
+import {Align} from '../shared/constants/align';
+import Button from '../shared/button/Button';
+import Icon from '../shared/icons/Icon';
+import {Variants} from '../shared/constants/variants';
 
 
 function ProjectList(props) {
@@ -108,7 +108,7 @@ function ProjectList(props) {
                                     return (<Card key={index} spacing={Spacing.Lite}  onClick={() => applySnapshot(project)} onMouseEnter={() => setHoverItem(project)} onMouseLeave={removeHoverItem}>
                                         <Grid container>
                                             <Grid container item md={7}>
-                                                <Icon name='dashboard' variant={Variants.Primary} strokeColor={hoveredItem == project.id ? DarkTheme.colors.primary[3] : DarkTheme.colors.primary[4]} size={24} marginRight={8} />
+                                                <Icon name='dashboard' variant={Variants.Primary} strokeColor={hoveredItem == project.id ? DarkTheme.colors.primary[2] : DarkTheme.colors.primary[4]} size={24} marginRight={8} />
                                                 <Title text={project.title} level={4} color={DarkTheme.colors.headings} />
                                             </Grid>
                                             <Grid container item md={5} justify='flex-end'>
@@ -145,7 +145,7 @@ const IconContainer = styled.div`
     padding: 3px;
     padding-left: 5px;
     &:hover {
-        border: 1px solid ${props => props.theme.colors.primary[1]};
+        border: 1px solid ${props => props.theme.colors.primary[2]};
         border-radius: ${props => props.theme.layout.borderRadius.small}px;
     }
 `;

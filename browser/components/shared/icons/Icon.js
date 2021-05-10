@@ -53,7 +53,7 @@ function Icon(props) {
         ) : (
           <g
             strokeLinecap="round"
-            strokeWidth="1.5"
+            strokeWidth="1"
             stroke={props.strokeColor}
             fill={props.fillColor}
             strokeLinejoin="round"
