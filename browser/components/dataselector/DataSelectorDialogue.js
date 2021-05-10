@@ -1,20 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styled from "styled-components";
-import Title from './shared/title/Title';
-import CloseButton from './shared/button/CloseButton';
+import Title from '../shared/title/Title';
+import CloseButton from '../shared/button/CloseButton';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
-import Card from './shared/card/Card';
-import IconButton from './shared/button/IconButton';
-import CheckBoxList from './shared/list/CheckBoxList';
-import RadioButtonList from './shared/list/RadioButtonList';
-import Button from './shared/button/Button';
-import ButtonGroup from './shared/button/ButtonGroup';
+import Card from '../shared/card/Card';
+import CheckBoxList from '../shared/list/CheckBoxList';
+import RadioButtonList from '../shared/list/RadioButtonList';
+import Button from '../shared/button/Button';
+import ButtonGroup from '../shared/button/ButtonGroup';
 import ProjectList from './ProjectList';
-import { Variants } from './shared/constants/variants';
-import { Size } from './shared/constants/size';
-import { Align } from './shared/constants/align';
-import { hexToRgbA } from '../helpers/colors';
+import PredefinedDatasourceViews from './PredefinedDatasourceViews';
+import { Variants } from '../shared/constants/variants';
+import { Size } from '../shared/constants/size';
+import { Align } from '../shared/constants/align';
+import { hexToRgbA } from '../../helpers/colors';
+import {WATER_LEVEL_KEY} from '../../constants';
 
 const DataSources = [{ label: "Klima", value: "klima", group: "Klima"},
 	{ label: "Hav", value: "hav", group: "Overfladevand"},
@@ -23,28 +24,31 @@ const DataSources = [{ label: "Klima", value: "klima", group: "Klima"},
 	{ label: "Grundvand, boringer", value: "grundvandsboringer", group: "Grundvand"},
 	{ label: "Grundvand, moser, kær mm.", value: "grundvand", group: "Grundvand"}]
 
-const Parameters = [
-	{ label: "Vandstand", value: "vandstand", group: "Vandstand"},
-	{ label: "Lugt", value: "lugt", group: "Tilstandsparametre"},
-	{ label: "Smag", value: "smag", group: "Tilstandsparametre"},
-	{ label: "Konduktivitet", value: "konduktivitet", group: "Tilstandsparametre"},
-	{ label: "pH", value: "ph", group: "Tilstandsparametre"},
-	{ label: "Turbiditet", value: "turbiditet", group: "Tilstandsparametre"},
-	{ label: "Farvetal-Pt", value: "farvatel-pt", group: "Tilstandsparametre"},
-	{ label: "Hardhed, total", value: "hardhedtotal", group: "Tilstandsparametre"},
-	{ label: "Temperatur", value: "temperatur", group: "Tilstandsparametre"},
-    { label: "Oxygen indhold", value: "oxygenindhold", group: "Kemiske hovedbestanddele"},
-    { label: "Carbondioxid, aggr.", value: "carbondioxid", group: "Kemiske hovedbestanddele"},
-]
-
 DataSelectorDialogue.propTypes = {
     text: PropTypes.string,
     state: PropTypes.object,
+    categories: PropTypes.object,
 }
 
 function DataSelectorDialogue(props) {
     const [showProjectsList, setShowProjectsList] = useState(false);
-    console.log(props);
+    const [parameters, setParameters] = useState([]);
+    const [selectedDataSources, setSelectedDataSources] = useState([]);
+    const [selectedParameter, setSelectedParameter] = useState();
+
+    useEffect(() => {
+        let chemicals = [{label: __('Water Level'), value: WATER_LEVEL_KEY, group: __('Water Level')}];
+        for (let key in props.categories[LAYER_NAMES[0]]) {
+            if (key == 'Vandstand') {
+                continue;
+            }
+            for (let key2 in props.categories[LAYER_NAMES[0]][key]) {
+                var label = props.categories[LAYER_NAMES[0]][key][key2];
+                chemicals.push({'label': label, 'value': label, 'group': key});
+            }
+        }
+        setParameters(chemicals);
+    }, [props.categories]);
     return (
         <Root>
             <ModalHeader>
@@ -60,22 +64,18 @@ function DataSelectorDialogue(props) {
             <ModalBody>
                 {showProjectsList ? <ProjectList onStateSnapshotApply={props.onCloseButtonClick} {...props} /> :
                     <div>
-                        <IconButton icon="cleaning-spray" label={__('Pesticider')} />
-                        <IconButton icon="no3-solid" label={__('Nitrat')} />
-                        <IconButton icon="water-wifi-solid" label={__('Mine stationer')} />
-                        <IconButton icon="lab-flask-experiment" label={__('Mine favoritter')} />
-
+                        <PredefinedDatasourceViews />
                         <Grid container spacing={32}>
                             <Grid container item md={6}>
                                 <Card>
                                     <Title text={__('Datakilder')} level={3} />
-                                    <CheckBoxList listItems={DataSources} onChange={(selectedItems) => console.log(selectedItems)} />
+                                    <CheckBoxList listItems={DataSources} onChange={setSelectedDataSources} />
                                 </Card>
                             </Grid>
                             <Grid container item md={6}>
                                 <Card>
                                     <Title text={__('Måleparameter')} level={3} />
-                                    <RadioButtonList listItems={Parameters} onChange={(selectedItem) => console.log(selectedItem)} />
+                                    <RadioButtonList listItems={parameters} onChange={setSelectedParameter} />
                                 </Card>
                             </Grid>
                         </Grid>

@@ -13,7 +13,7 @@ import AnalyticsComponent from './components/AnalyticsComponent';
 import {LAYER_NAMES, WATER_LEVEL_KEY, KOMMUNER} from './constants';
 import trustedIpAddresses from './trustedIpAddresses';
 import ThemeProvider from './themes/ThemeProvider';
-import DataSelectorDialogue from './components/DataSelectorDialogue';
+import DataSelectorDialogue from './components/dataselector/DataSelectorDialogue';
 
 
 import reduxStore from './redux/store';
@@ -865,6 +865,7 @@ module.exports = module.exports = {
                 ReactDOM.render(<Provider store={reduxStore}><ThemeProvider>
                     <DataSelectorDialogue titleText={__('Welcome to Calypso')}
                         urlparser={urlparser} anchor={anchor}
+                        categories={categoriesOverall ? categoriesOverall : []}
                         onCloseButtonClick={onCloseHandler} state={state} />
                     </ThemeProvider></Provider>, document.getElementById(introlModalPlaceholderId));
             } catch (e) {
