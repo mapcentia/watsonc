@@ -15,6 +15,7 @@ function Button(props) {
         <Root
             onClick={props.onClick ?? props.onClick}
             variant={props.variant}
+            disabled={props.disabled ? props.disabled : false}
             size={props.size}>
             {props.text}
         </Root>

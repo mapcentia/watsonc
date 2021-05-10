@@ -848,6 +848,7 @@ module.exports = module.exports = {
                     <DataSelectorDialogue titleText={__('Welcome to Calypso')}
                         urlparser={urlparser} anchor={anchor}
                         categories={categoriesOverall ? categoriesOverall : []}
+                        onApply={_self.onApplyLayersAndChemical}
                         onCloseButtonClick={onCloseHandler} state={state} />
                     </ThemeProvider></Provider>, document.getElementById(introlModalPlaceholderId));
             } catch (e) {
