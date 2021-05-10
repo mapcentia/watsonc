@@ -19,14 +19,11 @@ function ProjectList(props) {
         let parameters = [];
         let queryParameters = props.urlparser.urlVars;
         parameters.push(`state=${project.id}`);
-        let highPriorityConfigString = false, lowPriorityConfigString = false;
-        if (`config` in queryParameters && queryParameters.config) {
-            lowPriorityConfigString = queryParameters.config;
-        }
+        let config = null;
 
         if (project.snapshot && project.snapshot.meta) {
             if (project.snapshot.meta.config) {
-                highPriorityConfigString = project.snapshot.meta.config;
+                config = project.snapshot.meta.config;
             }
 
             if (project.snapshot.meta.tmpl) {
@@ -34,12 +31,14 @@ function ProjectList(props) {
             }
         }
 
-        let configParameter = ``;
-        if (highPriorityConfigString) {
+        if (!config && 'config' in queryParameters && queryParameters.config) {
+            // If config is present in project meta, use that.
+            // Else take it from queryparams.
+            config = queryParameters.config;
+        }
+
+        if (config) {
             configParameter = `config=${highPriorityConfigString}`;
-            parameters.push(configParameter);
-        } else if (lowPriorityConfigString) {
-            configParameter = `config=${lowPriorityConfigString}`;
             parameters.push(configParameter);
         }
         return parameters;
