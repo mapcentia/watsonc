@@ -17,17 +17,40 @@ import { Align } from '../shared/constants/align';
 import { hexToRgbA } from '../../helpers/colors';
 import {WATER_LEVEL_KEY} from '../../constants';
 
-const DataSources = [{ label: "Klima", value: "klima", group: "Klima"},
-	{ label: "Hav", value: "hav", group: "Overfladevand"},
-	{ label: "Sø", value: "sø", group: "Overfladevand"},
-	{ label: "Fjord, hav mm.", value: "fjord", group: "Overfladevand"},
-	{ label: "Grundvand, boringer", value: "grundvandsboringer", group: "Grundvand"},
-	{ label: "Grundvand, moser, kær mm.", value: "grundvand", group: "Grundvand"}]
+const DataSources = [{
+    originalLayerKey: LAYER_NAMES[0],
+    additionalKey: ``,
+    group: __('Grundvand'),
+    label: __(`Jupiter drilling`)
+}, {
+    originalLayerKey: LAYER_NAMES[1],
+    additionalKey: `1`,
+    group: __('Grundvand'),
+    label: "Online stationer"
+}, {
+    originalLayerKey: LAYER_NAMES[1],
+    additionalKey: `3`,
+    group: __('Nedbør'),
+    label: "Online stationer"
+}, {
+    originalLayerKey: LAYER_NAMES[1],
+    additionalKey: `4`,
+    group: __('Vandløb, kyst, bassiner'),
+    label: "Online stationer"
+}, {
+    originalLayerKey: LAYER_NAMES[3],
+    additionalKey: ``,
+    group: __('Grundvand'),
+    label: "Pesticidoverblik"
+}];
+
+
 
 DataSelectorDialogue.propTypes = {
     text: PropTypes.string,
     state: PropTypes.object,
     categories: PropTypes.object,
+    onApply: PropTypes.func,
 }
 
 function DataSelectorDialogue(props) {
@@ -44,11 +67,30 @@ function DataSelectorDialogue(props) {
             }
             for (let key2 in props.categories[LAYER_NAMES[0]][key]) {
                 var label = props.categories[LAYER_NAMES[0]][key][key2];
-                chemicals.push({'label': label, 'value': label, 'group': key});
+                chemicals.push({'label': label, 'value': key2, 'group': key});
             }
         }
         setParameters(chemicals);
     }, [props.categories]);
+
+    useEffect(() => {
+        DataSources.map((source) => {
+            source.value = `${source.originalLayerKey} - ${source.additionalKey}`
+        });
+    }, [DataSources]);
+
+    const applyParameter = () => {
+        const layers = selectedDataSources.map((source) => {
+            const compoundKey = source.originalLayerKey + (source.additionalKey ? `#${source.additionalKey}` : ``)
+            return compoundKey;
+        })
+        props.onApply({
+            layers: layers,
+            chemical: (selectedParameter ? selectedParameter.value : false)
+        });
+        props.onCloseButtonClick ? props.onCloseButtonClick() : null;
+    }
+
     return (
         <Root>
             <ModalHeader>
@@ -86,7 +128,7 @@ function DataSelectorDialogue(props) {
                 </ButtonGroup> :
                 <ButtonGroup align={Align.Center}>
                     <Button text={__("Abn eksisterende")} variant={Variants.None} onClick={() => setShowProjectsList(!showProjectsList)} size={Size.Large} />
-                    <Button text={__("Start")} variant={Variants.Primary} onClick={() => console.log("Button click star")} size={Size.Large} />
+                    <Button text={__("Start")} variant={Variants.Primary} onClick={() => applyParameter()} size={Size.Large} disabled={!selectedParameter || selectedDataSources.length == 0} />
                 </ButtonGroup> }
             </ModalBody>
         </Root>
