@@ -15,12 +15,52 @@ function ProjectList(props) {
     const [isLoading, setIsLoading] = useState(false);
     const [hoveredItem, setHoveredItem] = useState();
 
+    const getProjectParameters = (project) => {
+        let parameters = [];
+        let queryParameters = props.urlparser.urlVars;
+        parameters.push(`state=${project.id}`);
+        let highPriorityConfigString = false, lowPriorityConfigString = false;
+        if (`config` in queryParameters && queryParameters.config) {
+            lowPriorityConfigString = queryParameters.config;
+        }
+
+        if (project.snapshot && project.snapshot.meta) {
+            if (project.snapshot.meta.config) {
+                highPriorityConfigString = project.snapshot.meta.config;
+            }
+
+            if (project.snapshot.meta.tmpl) {
+                parameters.push(`tmpl=${project.snapshot.meta.tmpl}`);
+            }
+        }
+
+        let configParameter = ``;
+        if (highPriorityConfigString) {
+            configParameter = `config=${highPriorityConfigString}`;
+            parameters.push(configParameter);
+        } else if (lowPriorityConfigString) {
+            configParameter = `config=${lowPriorityConfigString}`;
+            parameters.push(configParameter);
+        }
+        return parameters;
+
+    }
+
+    const getPermalinkForProject = (project) => {
+        let parameters = getProjectParameters(project);
+        let permalink = `${window.location.origin}${props.anchor.getUri()}?${parameters.join('&')}`;
+        return permalink;
+    }
+
     const loadProjects = () => {
         setIsLoading(true);
         const projectsApi = new ProjectsApi();
         projectsApi.getProjects().then((response) => {
             response.json().then((results) => {
                 console.log(results);
+                results.map((project) => {
+                    project.permalink = getPermalinkForProject(project);
+                });
                 setProjects(results);
                 setIsLoading(false);
             });
