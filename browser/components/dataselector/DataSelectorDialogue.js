@@ -16,35 +16,7 @@ import { Size } from '../shared/constants/size';
 import { Align } from '../shared/constants/align';
 import { hexToRgbA } from '../../helpers/colors';
 import {WATER_LEVEL_KEY} from '../../constants';
-
-const DataSources = [{
-    originalLayerKey: LAYER_NAMES[0],
-    additionalKey: ``,
-    group: __('Grundvand'),
-    label: __(`Jupiter drilling`)
-}, {
-    originalLayerKey: LAYER_NAMES[1],
-    additionalKey: `1`,
-    group: __('Grundvand'),
-    label: "Online stationer"
-}, {
-    originalLayerKey: LAYER_NAMES[1],
-    additionalKey: `3`,
-    group: __('Nedbør'),
-    label: "Online stationer"
-}, {
-    originalLayerKey: LAYER_NAMES[1],
-    additionalKey: `4`,
-    group: __('Vandløb, kyst, bassiner'),
-    label: "Online stationer"
-}, {
-    originalLayerKey: LAYER_NAMES[3],
-    additionalKey: ``,
-    group: __('Grundvand'),
-    label: "Pesticidoverblik"
-}];
-
-
+import MetaApi from '../../api/meta/MetaApi';
 
 DataSelectorDialogue.propTypes = {
     text: PropTypes.string,
@@ -58,6 +30,7 @@ function DataSelectorDialogue(props) {
     const [parameters, setParameters] = useState([]);
     const [selectedDataSources, setSelectedDataSources] = useState([]);
     const [selectedParameter, setSelectedParameter] = useState();
+    const [dataSources, setDataSources] = useState([]);
 
     useEffect(() => {
         let chemicals = [{label: __('Water Level'), value: WATER_LEVEL_KEY, group: __('Water Level')}];
@@ -73,16 +46,34 @@ function DataSelectorDialogue(props) {
         setParameters(chemicals);
     }, [props.categories]);
 
-    useEffect(() => {
-        DataSources.map((source) => {
-            source.value = `${source.originalLayerKey} - ${source.additionalKey}`
+    const loadDataSources = () => {
+        const api = new MetaApi();
+        api.fetchMetaData('calypso_stationer').then((response) => {
+            response.json().then((results) => {
+                console.log(results);
+                const dataSourcesList = results['data'].map((item) => {
+                    let value = `${item.f_table_schema}.${item.f_table_name}`;
+                    if (item.f_table_title == 'Jupiter boringer') {
+                        value = 'v:system.all';
+                    }
+                    return {
+                        label: item.f_table_title,
+                        group: item.layergroup,
+                        value: value
+                    }
+                });
+                setDataSources(dataSourcesList);
+            });
         });
-    }, [DataSources]);
+    }
+
+    useEffect(() => {
+        loadDataSources();
+    }, []);
 
     const applyParameter = () => {
         const layers = selectedDataSources.map((source) => {
-            const compoundKey = source.originalLayerKey + (source.additionalKey ? `#${source.additionalKey}` : ``)
-            return compoundKey;
+            return source.value;
         })
         props.onApply({
             layers: layers,
@@ -111,7 +102,7 @@ function DataSelectorDialogue(props) {
                             <Grid container item md={6}>
                                 <Card>
                                     <Title text={__('Datakilder')} level={3} />
-                                    <CheckBoxList listItems={DataSources} onChange={setSelectedDataSources} />
+                                    <CheckBoxList listItems={dataSources} onChange={setSelectedDataSources} />
                                 </Card>
                             </Grid>
                             <Grid container item md={6}>
