@@ -9,7 +9,7 @@ ButtonGroup.propTypes = {
 
 function ButtonGroup(props) {
     return (
-        <Root align={props.align}>
+        <Root align={props.align} marginTop={props.marginTop}>
             {props.children}
         </Root>
     );
@@ -17,7 +17,7 @@ function ButtonGroup(props) {
 
 const Root = styled.div`
     display: flex;
-    margin-top: ${props => props.theme.layout.gutter}px;
+    margin-top: ${props => props.marginTop || props.theme.layout.gutter}px;
     ${({ align, theme }) => {
         const styles = {
             [Align.Left]: css `

@@ -14,6 +14,7 @@ import {LAYER_NAMES, WATER_LEVEL_KEY, KOMMUNER} from './constants';
 import trustedIpAddresses from './trustedIpAddresses';
 import ThemeProvider from './themes/ThemeProvider';
 import DataSelectorDialogue from './components/dataselector/DataSelectorDialogue';
+import MapDecorator from './components/decorators/MapDecorator';
 
 
 import reduxStore from './redux/store';
@@ -54,6 +55,7 @@ var layerTree, layers, anchor, state, urlparser;
 var React = require('react');
 
 var ReactDOM = require('react-dom');
+var ReactDOMServer = require('react-dom/server');
 
 let dashboardComponentInstance = false, modalComponentInstance = false, infoModalInstance = false;
 
@@ -298,13 +300,13 @@ module.exports = module.exports = {
 
             LAYER_NAMES.map(layerName => {
                 layerTree.setOnEachFeature(layerName, (clickedFeature, layer) => {
-                    layer.on("click", function (e) {
-                        $("#" + FEATURE_CONTAINER_ID).animate({
+                    layer.on("click", (e) => {
+                        /* $("#" + FEATURE_CONTAINER_ID).animate({
                             bottom: "0"
                         }, 500, function () {
                             $("#" + FEATURE_CONTAINER_ID).find(".expand-less").show();
                             $("#" + FEATURE_CONTAINER_ID).find(".expand-more").hide();
-                        });
+                        }); */
 
                         let intersectingFeatures = [];
                         if (e.latlng) {
@@ -395,8 +397,9 @@ module.exports = module.exports = {
                                     dashboardComponentInstance.setDataSource(dataSource);
                                 }
 
-
-                                _self.createModal(response.features, false, titleAsLink, false);
+                                layer.bindPopup(ReactDOMServer.renderToString(<Provider store={reduxStore}><ThemeProvider><MapDecorator /></ThemeProvider></Provider>),
+                                    { maxWidth: 500, className: 'map-decorator-popup' });
+                                // _self.createModal(response.features, false, titleAsLink, false);
                                 if (!dashboardComponentInstance) {
                                     throw new Error(`Unable to find the component instance`);
                                 }
