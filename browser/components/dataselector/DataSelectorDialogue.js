@@ -48,22 +48,8 @@ function DataSelectorDialogue(props) {
 
     const loadDataSources = () => {
         const api = new MetaApi();
-        api.fetchMetaData('calypso_stationer').then((response) => {
-            response.json().then((results) => {
-                console.log(results);
-                const dataSourcesList = results['data'].map((item) => {
-                    let value = `${item.f_table_schema}.${item.f_table_name}`;
-                    if (item.f_table_title == 'Jupiter boringer') {
-                        value = 'v:system.all';
-                    }
-                    return {
-                        label: item.f_table_title,
-                        group: item.layergroup,
-                        value: value
-                    }
-                });
-                setDataSources(dataSourcesList);
-            });
+        api.getMetaData('calypso_stationer').then((response) => {
+            setDataSources(response);
         });
     }
 
@@ -81,7 +67,6 @@ function DataSelectorDialogue(props) {
         });
         props.onCloseButtonClick ? props.onCloseButtonClick() : null;
     }
-
     return (
         <Root>
             <ModalHeader>
@@ -106,10 +91,10 @@ function DataSelectorDialogue(props) {
                                 </Card>
                             </Grid>
                             <Grid container item md={6}>
-                                <Card>
+                                {selectedDataSources.findIndex((item) => item.value == 'v:system.all') > -1 ? <Card>
                                     <Title text={__('Måleparameter')} level={3} />
                                     <RadioButtonList listItems={parameters} onChange={setSelectedParameter} />
-                                </Card>
+                                </Card> : null}
                             </Grid>
                         </Grid>
                     </div>}
