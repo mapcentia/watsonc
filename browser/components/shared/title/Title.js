@@ -22,7 +22,7 @@ Title.defaultProps = {
 
 }
 
-const Root = styled.h4`
+const Root = styled.div`
     display: block;
     font-weight: normal;
     margin: 0;

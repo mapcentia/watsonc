@@ -44,6 +44,11 @@ const Root = styled.button`
             `,
             [Variants.None]: css `
                 background-color: ${theme.colors.gray[3]};
+            `,
+            [Variants.Transparent]: css `
+                background-color: transparent;
+                border: 1px solid ${props => props.theme.colors.headings};
+                color: ${props => props.theme.colors.headings};
             `
         };
         return styles[variant];
@@ -51,10 +56,12 @@ const Root = styled.button`
   ${({ size, theme }) => {
         const styles = {
             [Size.Small]: css `
-                width: ${theme.layout.gutter * 2}px;
+                width: ${theme.layout.gutter * 7}px;
+                font: ${theme.fonts.label};
+                height: 19px;
             `,
             [Size.Medium]: css `
-                width: ${theme.layout.gutter * 5}px;
+                width: ${theme.layout.gutter * 8}px;
             `,
             [Size.Large]: css `
                 width: ${theme.layout.gutter * 10}px;
