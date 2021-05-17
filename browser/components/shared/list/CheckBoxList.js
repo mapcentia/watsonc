@@ -35,7 +35,7 @@ function CheckBoxList(props) {
     const renderItem = (item, index) => {
         let returnData = [];
         if (item.group != currentGroup) {
-            returnData.push(<Title key={`${index}-title`} text={item.group} level={5} />);
+            returnData.push(<Title key={`${index}-title`} text={item.group} level={5} marginTop={16} />);
             currentGroup = item.group;
         }
         returnData.push(

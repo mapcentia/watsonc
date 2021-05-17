@@ -5,11 +5,15 @@ import PropTypes from 'prop-types';
 ButtonGroup.propTypes = {
     text: PropTypes.string,
     align: PropTypes.string,
+    marginTop: PropTypes.number,
+    marginLeft: PropTypes.number,
+    marginRight: PropTypes.number,
+    spacing: PropTypes.number,
 }
 
 function ButtonGroup(props) {
     return (
-        <Root align={props.align} marginTop={props.marginTop}>
+        <Root align={props.align} marginTop={props.marginTop} marginLeft={props.marginLeft} marginRight={props.marginRight} spacing={props.spacing}>
             {props.children}
         </Root>
     );
@@ -18,6 +22,8 @@ function ButtonGroup(props) {
 const Root = styled.div`
     display: flex;
     margin-top: ${props => props.marginTop || props.theme.layout.gutter}px;
+    margin-right: ${props => props.marginRight || 0}px;
+    margin-left: ${props => props.marginLeft || 0}px;
     ${({ align, theme }) => {
         const styles = {
             [Align.Left]: css `
@@ -30,20 +36,20 @@ const Root = styled.div`
             [Align.Center]: css`
                 justify-content: center;
                 align-items: center;
-                button {
-                  margin-left: ${theme.layout.gutter / 2};
-                  margin-right: ${theme.layout.gutter / 2};
-                }
             `,
             [Align.Right]: css`
                 justify-content: flex-end,
                 align-items: flex-end,
                 button {
-                    marginLeft: ${theme.layout.gutter / 2}px;
+                    margin-left: ${theme.layout.gutter / 2}px;
                 }
             `
         }
         return styles[align];
     }}
+
+    button + button {
+        margin-left: ${props => props.spacing*8}px;
+    }
 `
 export default ButtonGroup;

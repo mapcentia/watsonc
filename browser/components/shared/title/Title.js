@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 
 function Title(props) {
     return (
-        <Root level={props.level} color={props.color} align={props.align}>
+        <Root level={props.level} color={props.color} align={props.align}
+            marginTop={props.marginTop} marginLeft={props.marginLeft}>
             {props.text}
         </Root>
     );
@@ -14,11 +15,15 @@ Title.propTypes = {
     className: PropTypes.string,
     align: PropTypes.string,
     color: PropTypes.string,
+    marginTop: PropTypes.number,
+    marginLeft: PropTypes.number,
 }
 
 Title.defaultProps = {
     level: 1,
-    align: 'left'
+    align: 'left',
+    marginLeft: 0,
+    marginTop: 0
 
 }
 
@@ -28,6 +33,7 @@ const Root = styled.div`
     margin: 0;
     line-height: 1.3;
     text-align: ${props => props.align};
+    margin-left: ${props => props.marginLeft || 0}px;
     ${({ level, theme }) => {
         const styles = {
 
@@ -47,12 +53,12 @@ const Root = styled.div`
                 color: ${props => props.color || props.theme.colors.primary[5]};
             `,
             5: css `
-                margin-top: ${props => props.theme.layout.gutter/2}px;
+                margin-top: ${props => props.marginTop != null ? props.marginTop : props.theme.layout.gutter/2}px;
                 font: ${props => props.theme.fonts.subbody};
                 color: ${props => props.color || props.theme.colors.gray[4]};
             `,
             6: css `
-                margin-top: ${props => props.theme.layout.gutter/4}px;
+                margin-top: ${props => props.marginTop != null ? props.marginTop : props.theme.layout.gutter/4}px;
                 font: ${props => props.theme.fonts.label};
                 color: ${props => props.color || props.theme.colors.gray[5]};
             `,
