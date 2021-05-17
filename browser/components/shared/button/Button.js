@@ -11,9 +11,14 @@ Button.propTypes = {
 }
 
 function Button(props) {
+    const onClick = (e) => {
+        if (props.onClick) {
+            props.onClick(e);
+        }
+    }
     return (
         <Root
-            onClick={props.onClick ?? props.onClick}
+            onClick={onClick}
             variant={props.variant}
             disabled={props.disabled ? props.disabled : false}
             size={props.size}>
@@ -30,7 +35,6 @@ const Root = styled.button`
     border: 0;
     border-radius: ${props => props.theme.layout.borderRadius.small}px;
     color: black;
-    margin: 0 10px 0 10px;
     ${({ variant, theme }) => {
         const styles = {
             [Variants.Primary]: css `
@@ -58,7 +62,7 @@ const Root = styled.button`
             [Size.Small]: css `
                 width: ${theme.layout.gutter * 7}px;
                 font: ${theme.fonts.label};
-                height: 19px;
+                height: 24px;
             `,
             [Size.Medium]: css `
                 width: ${theme.layout.gutter * 8}px;
