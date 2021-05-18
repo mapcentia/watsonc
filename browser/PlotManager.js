@@ -12,8 +12,12 @@ class PlotManager {
 
     dehydratePlots(plots) {
         plots.map((plot, index) => {
-            delete plots[index].measurements;
-            delete plots[index].measurementsCachedData;
+            if (typeof plots[index]?.measurements === "object") {
+                delete plots[index].measurements;
+            }
+            if (typeof plots[index]?.measurementsCachedData === "object") {
+                delete plots[index].measurementsCachedData;
+            }
         });
 
         return plots;
