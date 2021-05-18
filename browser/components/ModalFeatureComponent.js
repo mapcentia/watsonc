@@ -83,8 +83,9 @@ class ModalFeatureComponent extends React.Component {
 
     handleHidePlot(plot) {
         let activePlots = this.state.activePlots.filter((activePlot) => {
-            return activePlot.id != plot.id;
+            return activePlot?.id !== plot.id;
         })
+        console.log("activePlots", activePlots)
         this.setState({activePlots});
         this.props.onPlotHide(plot.id);
     }
@@ -107,6 +108,7 @@ class ModalFeatureComponent extends React.Component {
     }
 
     setPlots(plots) {
+        console.log("SET: ", plots)
         this.setState({plots});
     }
 
@@ -342,9 +344,13 @@ class ModalFeatureComponent extends React.Component {
 
         if (this.state.plots && this.state.plots.length > 0) {
             plotsControls = [];
-            const activePlotIds = this.state.activePlots.map((plot) => {
-                return plot.id;
+            let activePlotIds = this.state.activePlots.map((plot) => {
+                return plot?.id;
             });
+            activePlotIds = activePlotIds.filter((id) => {
+                return !!id;
+            })
+            console.log(this.state.plots)
             this.state.plots.map((plot) => {
                 let display = true;
                 if (this.state.plotsSearchTerm.length > 0) {

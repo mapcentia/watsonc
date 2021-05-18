@@ -12,8 +12,12 @@ class PlotManager {
 
     dehydratePlots(plots) {
         plots.map((plot, index) => {
-            delete plots[index].measurements;
-            delete plots[index].measurementsCachedData;
+            if (typeof plots[index]?.measurements === "object") {
+                delete plots[index].measurements;
+            }
+            if (typeof plots[index]?.measurementsCachedData === "object") {
+                delete plots[index].measurementsCachedData;
+            }
         });
 
         return plots;
@@ -154,17 +158,19 @@ class PlotManager {
     }
 
     update(data) {
+        let clone = JSON.parse(JSON.stringify(data));
+        clone.measurementsCachedData = {};
         return new Promise((resolve, reject) => {
-            if (!data || !data.id) {
-                console.error(`Invalid plot was provided`, data);
+            if (!clone || !clone.id) {
+                console.error(`Invalid plot was provided`, clone);
                 reject(`Invalid plot was provided`);
             } else {
                 $.ajax({
-                    url: `${this.apiUrlLocal}/${data.id}`,
+                    url: `${this.apiUrlLocal}/${clone.id}`,
                     method: 'PUT',
                     dataType: 'json',
                     contentType: 'application/json; charset=utf-8',
-                    data: JSON.stringify(data),
+                    data: JSON.stringify(clone),
                     success: (body) => {
                         if (body.success) {
                             resolve();

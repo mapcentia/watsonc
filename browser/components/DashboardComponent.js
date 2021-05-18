@@ -14,7 +14,7 @@ import SortablePlotsGridComponent from './SortablePlotsGridComponent';
 import {isNumber} from 'util';
 import arrayMove from 'array-move';
 import trustedIpAddresses from '../trustedIpAddresses';
-import { getPlotData } from '../services/plot';
+import {getPlotData} from '../services/plot';
 
 let syncInProg = false;
 
@@ -445,6 +445,10 @@ class DashboardComponent extends React.Component {
             });
         }
         allPlots = unique(allPlots);
+        // Filter out profiles
+        allPlots = allPlots.filter((item) => {
+            return !!item?.id;
+        })
         return allPlots;
     }
 
@@ -580,11 +584,10 @@ class DashboardComponent extends React.Component {
         let count = 0;
         plots.forEach((e, i) => {
             if ('id' in e) {
-                let obj = e.measurementsCachedData;
+                let obj = e.measurements;
                 if (obj && Object.keys(obj).length === 0 && obj.constructor === Object) {
                     preCount++;
-                }
-                else if (!obj) {
+                } else if (!obj) {
                     preCount++;
                 } else {
                     for (let key in obj) {
@@ -600,33 +603,29 @@ class DashboardComponent extends React.Component {
                 let obj = e.measurementsCachedData;
                 let shadowI = i;
                 newPlots[shadowI] = e;
-                if (obj && Object.keys(obj).length === 0 && obj.constructor === Object) {
-                    count++;
-                } else {
-                    if (!e.measurementsCachedData) {
-                        e.measurementsCachedData = {};
-                    }
-                    for (let index in e.measurements) {
-                        let key = e.measurements[index];
-                        // Lazy load data and sync
-                        // Only load active plots
-                        if (activePlots.includes(e.id)) {
-                            getPlotData(key).then((response) => {
-                                    if (!newPlots[shadowI].measurementsCachedData[key]) {
-                                        newPlots[shadowI].measurementsCachedData[key] = {};
-                                    }
-                                    newPlots[shadowI].measurementsCachedData[key].data = response.data.features[0];
-                                    count++;
-                                    if (count === preCount) {
-                                        console.log("All plots synced");
-                                        _self.setPlots(newPlots);
-                                    }
-                            }).catch((error) => {
-                                console.log(error);
-                            })
-                        } else {
+                if (!e.measurementsCachedData) {
+                    e.measurementsCachedData = {};
+                }
+                for (let index in e.measurements) {
+                    let key = e.measurements[index];
+                    // Lazy load data and sync
+                    // Only load active plots
+                    if (activePlots.includes(e.id)) {
+                        getPlotData(key).then((response) => {
+                            if (!newPlots[shadowI].measurementsCachedData[key]) {
+                                newPlots[shadowI].measurementsCachedData[key] = {};
+                            }
+                            newPlots[shadowI].measurementsCachedData[key].data = response.data.features[0];
                             count++;
-                        }
+                            if (count === preCount) {
+                                console.log("All plots synced");
+                                _self.setPlots(newPlots);
+                            }
+                        }).catch((error) => {
+                            console.log(error);
+                        })
+                    } else {
+                        count++;
                     }
                 }
             }
@@ -876,8 +875,12 @@ class DashboardComponent extends React.Component {
     setDataSource(dataSource) {
         let plots = JSON.parse(JSON.stringify(this.state.plots));
         let updatePlotsPromises = [];
-        plots.map((plot, index) => {
+        for (let i = 0; i < plots.length; i++) {
+            let plot = plots[i];
             let plotWasUpdatedAtLeastOnce = false;
+            if (typeof plot.measurements === "undefined") {
+                break;
+            }
             plot.measurements.map(measurementIndex => {
                 let splitMeasurementIndex = measurementIndex.split(`:`);
                 if (splitMeasurementIndex.length !== 3 && splitMeasurementIndex.length !== 4) throw new Error(`Invalid measurement index`);
@@ -890,8 +893,8 @@ class DashboardComponent extends React.Component {
                 });
 
                 if (measurementData) {
-                    var currentTime = new Date();
-                    plots[index].measurementsCachedData[measurementIndex] = {
+                    let currentTime = new Date();
+                    plot.measurementsCachedData[measurementIndex] = {
                         data: measurementData,
                         created_at: currentTime.toISOString()
                     };
@@ -901,9 +904,9 @@ class DashboardComponent extends React.Component {
             });
 
             if (plotWasUpdatedAtLeastOnce) {
-                updatePlotsPromises.push(this.plotManager.update(plots[index]));
+                updatePlotsPromises.push(this.plotManager.update(plot));
             }
-        });
+        }
 
         Promise.all(updatePlotsPromises).then(() => {
             let dashboardItemsCopy = JSON.parse(JSON.stringify(this.state.dashboardItems));

@@ -222,7 +222,7 @@ class MenuPanelPlotComponent extends React.Component {
                         throw new Error(`Invalid key and intake notation: ${measurementLocationRaw}`);
                     }
                 } else {
-                    console.error(`Plot does not contain measurement ${measurementLocationRaw}`);
+                    console.info(`Plot does not contain measurement ${measurementLocationRaw}`);
                 }
             });
 
