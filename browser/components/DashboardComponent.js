@@ -445,6 +445,10 @@ class DashboardComponent extends React.Component {
             });
         }
         allPlots = unique(allPlots);
+        // Filter out profiles
+        allPlots = allPlots.filter((item) => {
+            return !!item?.id;
+        })
         return allPlots;
     }
 
