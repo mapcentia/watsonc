@@ -745,90 +745,94 @@ module.exports = module.exports = {
         });
 
         // Bind tool tip to stations
-        layerTree.setOnLoad(LAYER_NAMES[1], () => {
-            _self.bindToolTipOnStations()
-        }, "watsonc");
+        // layerTree.setOnLoad(LAYER_NAMES[1], () => {
+        //     _self.bindToolTipOnStations()
+        // }, "watsonc");
 
         // Bind tool tip to  Pesticidoverblik
-        layerTree.setOnLoad(LAYER_NAMES[3], () => {
-            _self.bindToolTipOnPesticidoverblik()
-        }, "watsonc");
+        // layerTree.setOnLoad(LAYER_NAMES[3], () => {
+        //     _self.bindToolTipOnPesticidoverblik()
+        // }, "watsonc");
 
         let filters = {};
         let filteredLayers = [];
-        filters[LAYER_NAMES[1].split(":")[1]] = {
-            match: "all", columns: [
-                {fieldname: "count", expression: ">", value: parameters.selectedMeasurementCount, restriction: false},
-                {fieldname: "startdate", expression: ">", value: parameters.selectedStartDate, restriction: false},
-                {fieldname: "enddate", expression: "<", value: parameters.selectedEndDate, restriction: false}
-            ]
-
-        }
+        // filters[LAYER_NAMES[1].split(":")[1]] = {
+        //     match: "all", columns: [
+        //         {fieldname: "count", expression: ">", value: parameters.selectedMeasurementCount, restriction: false},
+        //         {fieldname: "startdate", expression: ">", value: parameters.selectedStartDate, restriction: false},
+        //         {fieldname: "enddate", expression: "<", value: parameters.selectedEndDate, restriction: false}
+        //     ]
+        //
+        // }
 
         // Enable raster layer
-        if (parameters.layers.indexOf(LAYER_NAMES[0]) > -1) {
-            if (!parameters.chemical) return;
-            let rasterToEnable = `system._${parameters.chemical}`;
-            currentRasterLayer = rasterToEnable;
-            filters[rasterToEnable] = {
-                match: "all", columns: [
-                    {
-                        fieldname: "count",
-                        expression: ">",
-                        value: parameters.selectedMeasurementCount,
-                        restriction: false
-                    },
-                    {fieldname: "startdate", expression: ">", value: parameters.selectedStartDate, restriction: false},
-                    {fieldname: "enddate", expression: "<", value: parameters.selectedEndDate, restriction: false}
-                ]
+        for (let i = 0; i < parameters.layers.length; i++) {
 
-            }
-            console.log("filters", filters)
-            layerTree.applyFilters(filters);
-            switchLayer.init(rasterToEnable, true).then(() => {
-                if (parameters.chemical) {
-                    _self.enableChemical(parameters.chemical, filteredLayers, false, parameters);
-                } else {
-                    lastSelectedChemical = parameters.chemical;
-                    filteredLayers.map(layerName => {
-                        layerTree.reloadLayer(layerName); // TODO
-                    });
+            if (parameters.layers[i] === LAYER_NAMES[0]) {
+                if (!parameters.chemical) return;
+                let rasterToEnable = `system._${parameters.chemical}`;
+                currentRasterLayer = rasterToEnable;
+                filters[rasterToEnable] = {
+                    match: "all", columns: [
+                        {
+                            fieldname: "count",
+                            expression: ">",
+                            value: parameters.selectedMeasurementCount,
+                            restriction: false
+                        },
+                        {fieldname: "startdate", expression: ">", value: parameters.selectedStartDate, restriction: false},
+                        {fieldname: "enddate", expression: "<", value: parameters.selectedEndDate, restriction: false}
+                    ]
+
                 }
-            });
-        } else {
-            layerTree.applyFilters(filters);
+                console.log("filters", filters)
+                layerTree.applyFilters(filters);
+                switchLayer.init(rasterToEnable, true).then(() => {
+                    if (parameters.chemical) {
+                        _self.enableChemical(parameters.chemical, filteredLayers, false, parameters);
+                    } else {
+                        lastSelectedChemical = parameters.chemical;
+                        filteredLayers.map(layerName => {
+                            layerTree.reloadLayer(layerName); // TODO
+                        });
+                    }
+                });
+            } else {
+                switchLayer.init(parameters.layers[i], true);
+            }
         }
+
 
         enabledLoctypeIds = [];
         parameters.layers.map(layerName => {
             if (layerName.indexOf(LAYER_NAMES[0]) === 0) {
                 filteredLayers.push(layerName);
             }
-            if (layerName.indexOf(LAYER_NAMES[1]) === 0) {
-                if (layerName.indexOf(`#`) > -1) {
-                    if (filteredLayers.indexOf(layerName.split(`#`)[0]) === -1) {
-                        filteredLayers.push(layerName.split(`#`)[0]);
-                    }
-                    enabledLoctypeIds.push(layerName.split(`#`)[1]);
-                } else {
-                    if (filteredLayers.indexOf(layerName) === -1) {
-                        filteredLayers.push(layerName);
-                    }
-                }
-            }
-            if (layerName.indexOf(LAYER_NAMES[3]) === 0 || layerName.indexOf(LAYER_NAMES[1]) === 0) {
-                filteredLayers.push(layerName);
-                if (layerName.indexOf(LAYER_NAMES[3]) === 0) switchLayer.init(LAYER_NAMES[4], true);
-                filteredLayers.map(layerName => {
-                    layerTree.reloadLayer(layerName);
-                });
-                layerTree.setStyle(LAYER_NAMES[3], {
-                    "color": "#ffffff",
-                    "weight": 0,
-                    "opacity": 0.0,
-                    "fillOpacity": 0.0
-                });
-            }
+            // if (layerName.indexOf(LAYER_NAMES[1]) === 0) {
+            //     if (layerName.indexOf(`#`) > -1) {
+            //         if (filteredLayers.indexOf(layerName.split(`#`)[0]) === -1) {
+            //             filteredLayers.push(layerName.split(`#`)[0]);
+            //         }
+            //         enabledLoctypeIds.push(layerName.split(`#`)[1]);
+            //     } else {
+            //         if (filteredLayers.indexOf(layerName) === -1) {
+            //             filteredLayers.push(layerName);
+            //         }
+            //     }
+            // }
+            // if (layerName.indexOf(LAYER_NAMES[3]) === 0 || layerName.indexOf(LAYER_NAMES[1]) === 0) {
+            //     filteredLayers.push(layerName);
+            //     if (layerName.indexOf(LAYER_NAMES[3]) === 0) switchLayer.init(LAYER_NAMES[4], true);
+            //     filteredLayers.map(layerName => {
+            //         layerTree.reloadLayer(layerName);
+            //     });
+            //     layerTree.setStyle(LAYER_NAMES[3], {
+            //         "color": "#ffffff",
+            //         "weight": 0,
+            //         "opacity": 0.0,
+            //         "fillOpacity": 0.0
+            //     });
+            // }
         });
 
         // Wait a bit with trigger state, so this
