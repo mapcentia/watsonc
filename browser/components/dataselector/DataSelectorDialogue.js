@@ -104,7 +104,7 @@ function DataSelectorDialogue(props) {
                 </ButtonGroup> :
                 <ButtonGroup align={Align.Center} spacing={2}>
                     <Button text={__("Abn eksisterende")} variant={Variants.None} onClick={() => setShowProjectsList(!showProjectsList)} size={Size.Large} />
-                    <Button text={__("Start")} variant={Variants.Primary} onClick={() => applyParameter()} size={Size.Large} disabled={!selectedParameter || selectedDataSources.length == 0} />
+                    <Button text={__("Start")} variant={Variants.Primary} onClick={() => applyParameter()} size={Size.Large} disabled={selectedDataSources.length === 0} />
                 </ButtonGroup> }
             </ModalBody>
         </Root>
