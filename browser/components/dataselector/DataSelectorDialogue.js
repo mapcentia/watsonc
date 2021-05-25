@@ -16,6 +16,7 @@ import {Size} from '../shared/constants/size';
 import {Align} from '../shared/constants/align';
 import {hexToRgbA} from '../../helpers/colors';
 import {WATER_LEVEL_KEY} from '../../constants';
+import {DarkTheme} from '../../themes/DarkTheme'
 import MetaApi from '../../api/meta/MetaApi';
 import Searchbox from '../shared/inputs/Searchbox';
 
@@ -91,7 +92,7 @@ function DataSelectorDialogue(props) {
             <ModalHeader>
                 <Grid container>
                     <Grid container item xs={10}>
-                        <Title text={props.titleText}/>
+                        <Title text={props.titleText} color={DarkTheme.colors.headings} />
                     </Grid>
                     <Grid container justify="flex-end" item xs={2}>
                         <CloseButton onClick={props.onCloseButtonClick}/>
@@ -139,8 +140,9 @@ function DataSelectorDialogue(props) {
 }
 
 const Root = styled.div`
-  background: ${({theme}) => hexToRgbA(theme.colors.primary[1], 0.92)};
-  border-radius: ${({theme}) => `${theme.layout.borderRadius.large}px`};
+  background: ${({ theme }) => hexToRgbA(theme.colors.primary[1], 0.92)};
+  border-radius: ${({ theme }) => `${theme.layout.borderRadius.large}px`};
+  color: ${({ theme }) => `${theme.colors.headings}`};
 `;
 
 const ModalHeader = styled.div`

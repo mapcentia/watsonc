@@ -15,6 +15,7 @@ import trustedIpAddresses from './trustedIpAddresses';
 import ThemeProvider from './themes/ThemeProvider';
 import DataSelectorDialogue from './components/dataselector/DataSelectorDialogue';
 import MapDecorator from './components/decorators/MapDecorator';
+import DashboardShell from './components/dashboardshell/DashboardShell';
 
 
 import reduxStore from './redux/store';
@@ -359,7 +360,7 @@ module.exports = module.exports = {
                 if (dashboardComponentInstance) dashboardComponentInstance.onSetMin();
             };
 
-            if (document.getElementById(DASHBOARD_CONTAINER_ID)) {
+            if (!document.getElementById(DASHBOARD_CONTAINER_ID)) {
                 let initialPlots = [];
                 if (applicationState && `modules` in applicationState && MODULE_NAME in applicationState.modules && `plots` in applicationState.modules[MODULE_NAME]) {
                     initialPlots = applicationState.modules[MODULE_NAME].plots;
@@ -587,11 +588,14 @@ module.exports = module.exports = {
                     /></Provider>, document.getElementById(introlModalPlaceholderId)); */
                 ReactDOM.render(<Provider store={reduxStore}><ThemeProvider>
                     <DataSelectorDialogue titleText={__('Welcome to Calypso')}
-                                          urlparser={urlparser} anchor={anchor}
-                                          categories={categoriesOverall ? categoriesOverall : []}
-                                          onApply={_self.onApplyLayersAndChemical}
-                                          onCloseButtonClick={onCloseHandler} state={state}/>
-                </ThemeProvider></Provider>, document.getElementById(introlModalPlaceholderId));
+                        urlparser={urlparser} anchor={anchor}
+                        categories={categoriesOverall ? categoriesOverall : []}
+                        onApply={_self.onApplyLayersAndChemical}
+                        onCloseButtonClick={onCloseHandler} state={state} />
+                    </ThemeProvider></Provider>, document.getElementById(introlModalPlaceholderId));
+                ReactDOM.render(<Provider store={reduxStore}><ThemeProvider>
+                        <DashboardShell />
+                    </ThemeProvider></Provider>, document.getElementById(DASHBOARD_CONTAINER_ID));
             } catch (e) {
                 console.error(e);
             }

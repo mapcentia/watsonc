@@ -44,10 +44,11 @@ const Root = styled.button`
                 }
             `,
             [Variants.Secondary]: css `
-                background-color: ${theme.colors.primary[4]};
+                background-color: ${theme.colors.primary[3]};
+                color: ${theme.colors.headings};
             `,
             [Variants.None]: css `
-                background-color: ${theme.colors.gray[3]};
+                background-color: ${theme.colors.gray[4]};
             `,
             [Variants.Transparent]: css `
                 background-color: transparent;
@@ -60,12 +61,14 @@ const Root = styled.button`
   ${({ size, theme }) => {
         const styles = {
             [Size.Small]: css `
-                width: ${theme.layout.gutter * 7}px;
+                width: ${theme.layout.gutter * 3}px;
                 font: ${theme.fonts.label};
                 height: 24px;
             `,
             [Size.Medium]: css `
-                width: ${theme.layout.gutter * 8}px;
+                width: ${theme.layout.gutter * 5}px;
+                height: 24px;
+                font: ${theme.fonts.label};
             `,
             [Size.Large]: css `
                 width: ${theme.layout.gutter * 10}px;
