@@ -23,12 +23,12 @@ Title.defaultProps = {
     level: 1,
     align: 'left',
     marginLeft: 0,
-    marginTop: 0
-
+    marginTop: 0,
+    color: 'currentColor'
 }
 
 const Root = styled.div`
-    display: block;
+    display: inline-block;
     font-weight: normal;
     margin: 0;
     line-height: 1.3;
