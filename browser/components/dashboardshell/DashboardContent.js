@@ -6,6 +6,8 @@ import ButtonGroup from '../shared/button/ButtonGroup';
 import Button from '../shared/button/Button';
 import { Align } from '../shared/constants/align';
 import Icon from '../shared/icons/Icon';
+import Searchbox from '../shared/inputs/Searchbox';
+import ChemicalsListItem from './ChemicalsListItem';
 
 function DashboardContent(props) {
     return (
@@ -20,15 +22,15 @@ function DashboardContent(props) {
                                     <Title level={4} color={DarkTheme.colors.headings} text={__('Valgte datakilder')} marginLeft={8} />
                                 </DashboardListTitle>
                                 <DashboardListItem>
-                                    <Icon name="pin-location-solid" size={8} strokeColor={DarkTheme.colors.headings} />
+                                    <Icon name="drill" size={16} strokeColor={DarkTheme.colors.headings} />
                                     <Title level={6} text='13.344' marginLeft={8} />
                                 </DashboardListItem>
                                 <DashboardListItem>
-                                    <Icon name="pin-location-solid" size={8} strokeColor={DarkTheme.colors.headings} />
+                                    <Icon name="drill" size={16} strokeColor={DarkTheme.colors.headings} />
                                     <Title level={6} text='13.947' marginLeft={8} />
                                 </DashboardListItem>
                                 <DashboardListItem>
-                                    <Icon name="pin-location-solid" size={8} strokeColor={DarkTheme.colors.headings} />
+                                    <Icon name="drill" size={16} strokeColor={DarkTheme.colors.headings} />
                                     <Title level={6} text='13.478' marginLeft={8} />
                                 </DashboardListItem>
                                 <DashboardListItem>
@@ -45,23 +47,23 @@ function DashboardContent(props) {
                                 </DashboardListItem>
                                 <FavoritterList>
                                     <DashboardListTitle>
-                                        <Icon name="pin-location-solid" size={16} />
+                                        <Icon name="star-solid" size={16} />
                                         <Title level={4} text={__('Favoritter')} marginLeft={8} />
                                     </DashboardListTitle>
                                     <FavoritterListTitle>
-                                        <Icon name="folder-solid" size={16} />
+                                        <Icon name="drill-space-solid" size={16} />
                                         <Title level={5} text={__('Kildeplads')} marginLeft={8} />
                                     </FavoritterListTitle>
                                     <DashboardListItem>
-                                        <Icon name="pin-location-solid" size={8} strokeColor={DarkTheme.colors.headings} />
+                                        <Icon name="drill" size={16} strokeColor={DarkTheme.colors.headings} />
                                         <Title level={6} text='13.344' marginLeft={8} />
                                     </DashboardListItem>
                                     <DashboardListItem>
-                                        <Icon name="pin-location-solid" size={8} strokeColor={DarkTheme.colors.headings} />
+                                        <Icon name="drill" size={16} strokeColor={DarkTheme.colors.headings} />
                                         <Title level={6} text='13.947' marginLeft={8} />
                                     </DashboardListItem>
                                     <DashboardListItem>
-                                        <Icon name="pin-location-solid" size={8} strokeColor={DarkTheme.colors.headings} />
+                                        <Icon name="drill" size={16} strokeColor={DarkTheme.colors.headings} />
                                         <Title level={6} text='13.478' marginLeft={8} />
                                     </DashboardListItem>
                                     <FavoritterListTitle>
@@ -104,7 +106,20 @@ function DashboardContent(props) {
                                     <ButtonGroup align={Align.Right} spacing={2} marginTop={1}>
                                         <Button text={__("Jupiter")} variant={Variants.Secondary} onClick={() => console.log("Clicked")} size={Size.Small} />
                                         <Button text={__("Borpro")} variant={Variants.Secondary} onClick={() => console.log("Clicked")} size={Size.Small} />
-                                    </ButtonGroup> }
+                                    </ButtonGroup>
+                                    <SearchboxContainer>
+                                        <Searchbox placeholder={__('Søg efter dataparameter')} />
+                                    </SearchboxContainer>
+                                    <ChemicalsList>
+                                        <ChemicalsListTitle>
+                                            <Icon name="plus-solid" size={16} />
+                                            <Title level={4} text={__('Tilstandsparametre')} marginLeft={8} />
+                                        </ChemicalsListTitle>
+                                        <ChemicalsListItem label='Vandstand(sensor)' description='Historisk < 5cm | Seneste < 5cm' circleColor={DarkTheme.colors.denotive.error} />
+                                        <ChemicalsListItem label='Vandstand(model)' description='Historisk 218cm | Seneste 196cm' circleColor={DarkTheme.colors.denotive.warning} />
+                                        <ChemicalsListItem label='Flow(sensor)' description='Historisk 0.03 ltr/min | Seneste < 0.001 ltr/min' circleColor={DarkTheme.colors.denotive.success} />
+                                        <ChemicalsListItem label='Flow(model)' description='Historisk 28 ltr/min | Seneste 29 ltr/min' circleColor={DarkTheme.colors.denotive.success} />
+                                    </ChemicalsList>
                                 </ChemicalSelector>
                             </Grid>
                         </Grid>
@@ -138,9 +153,8 @@ const DashboardListTitle = styled.div`
 
 const DashboardListItem = styled.div`
     margin-top: ${props => props.theme.layout.gutter/8}px;
-    padding: ${props => props.theme.layout.gutter/8}px;
+    padding: ${props => props.theme.layout.gutter/8}px 0px;
     width: 100%;
-    margin-left: ${props => props.theme.layout.gutter/8}px;
     color: ${props => props.theme.colors.gray[4]};
     &:hover {
         background-color: ${props => props.theme.colors.primary[2]};
@@ -165,5 +179,20 @@ const FavoritterListTitle = styled.div`
     color: ${props => props.theme.colors.primary[5]};
     margin-top: ${props => props.theme.layout.gutter/2}px;
 `;
+
+const SearchboxContainer = styled.div`
+    width: 100%;
+    padding: ${props => props.theme.layout.gutter/2}px 0px;
+`;
+
+const ChemicalsList = styled.div`
+    width: 100%;
+    padding: ${props => props.theme.layout.gutter/4}px;
+`
+
+const ChemicalsListTitle = styled.div`
+    color: ${props => props.theme.colors.headings};
+`;
+
 
 export default DashboardContent;

@@ -64,6 +64,7 @@ const Root = styled.div`
             `,
             7: css `
                 font: ${props => props.theme.fonts.footnote};
+                color: ${props => props.color || props.theme.colors.gray[5]};
             `,
         }
         return styles[level];
