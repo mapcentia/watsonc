@@ -15,10 +15,13 @@ function DashboardHeader(props) {
             <Grid container>
                 <Grid container item xs={2}>
                     <IconContainer>
-                        <Icon name="dashboard" size={16} strokeColor={DarkTheme.colors.headings} />
+                        <Icon name="dashboard-minimized-solid" size={16} strokeColor={DarkTheme.colors.headings} />
                     </IconContainer>
                     <IconContainer>
-                        <Icon name="dashboard" size={16} strokeColor={DarkTheme.colors.headings} />
+                        <Icon name="dashboard-half-solid" size={16} strokeColor={DarkTheme.colors.headings} />
+                    </IconContainer>
+                    <IconContainer>
+                        <Icon name="dashboard-full-solid" size={16} strokeColor={DarkTheme.colors.headings} />
                     </IconContainer>
                 </Grid>
                 <Grid container item xs={3}>
