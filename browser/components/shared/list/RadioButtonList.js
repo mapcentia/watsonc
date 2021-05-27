@@ -9,11 +9,10 @@ RadioButtonList.propTypes = {
 }
 
 function RadioButtonList(props) {
-    const [selectedItem, setSelectedItem] = useState([]);
-    const [listItems, setListItems] = useState([]);
+    const [selectedItem, setSelectedItem] = useState(props.selectedParameter);
     var currentGroup = null;
     function onChangeRadioButton(value) {
-        let selectedObject = listItems.find(item => item.value == value);
+        let selectedObject = props.listItems.find(item => item.value == value);
         setSelectedItem(selectedObject);
     }
 
@@ -31,12 +30,6 @@ function RadioButtonList(props) {
     }
 
     useEffect(() => {
-        var _listItems = [...props.listItems];
-        _listItems.sort((a, b) => (a.group > b.group) ? 1 : -1);
-        setListItems(_listItems);
-    }, [props.listItems]);
-
-    useEffect(() => {
         if (props.onChange) {
             props.onChange(selectedItem);
         }
@@ -44,7 +37,7 @@ function RadioButtonList(props) {
 
     return (
         <Root>
-            {listItems.map((item, index) => {
+            {props.listItems.map((item, index) => {
                 return renderItem(item, index);
             })}
         </Root>
