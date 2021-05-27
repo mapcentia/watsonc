@@ -6,10 +6,15 @@ import Checkbox from '../inputs/CheckBox';
 CheckBoxList.propTypes = {
     listItems: PropTypes.array.isRequired,
     onChange: PropTypes.func,
+    selectedItems: Proptypes.array
+}
+
+CheckBoxList.defaultProps = {
+    selectedItems: []
 }
 
 function CheckBoxList(props) {
-    const [selectedItems, setSelectedItems] = useState([]);
+    const [selectedItems, setSelectedItems] = useState(props.selectedItems);
     const [listItems, setListItems] = useState([]);
     var currentGroup = null;
     function onChangeCheckbox(value) {

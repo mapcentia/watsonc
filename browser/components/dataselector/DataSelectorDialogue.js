@@ -17,6 +17,7 @@ import { Align } from '../shared/constants/align';
 import { hexToRgbA } from '../../helpers/colors';
 import {WATER_LEVEL_KEY} from '../../constants';
 import MetaApi from '../../api/meta/MetaApi';
+import Searchbox from '../shared/inputs/Searchbox';
 
 DataSelectorDialogue.propTypes = {
     text: PropTypes.string,
@@ -26,14 +27,17 @@ DataSelectorDialogue.propTypes = {
 }
 
 function DataSelectorDialogue(props) {
+    const [allParameters, setAllParameters] = useState([])
     const [showProjectsList, setShowProjectsList] = useState(false);
     const [parameters, setParameters] = useState([]);
     const [selectedDataSources, setSelectedDataSources] = useState([]);
     const [selectedParameter, setSelectedParameter] = useState();
     const [dataSources, setDataSources] = useState([]);
+    const [parameterSearchTerm, setParameterSearchTerm] = useState('');
 
     useEffect(() => {
-        let chemicals = [{label: __('Water Level'), value: WATER_LEVEL_KEY, group: __('Water Level')}];
+        const waterLevelParameter = {label: __('Water Level'), value: WATER_LEVEL_KEY, group: __('Water Level')};
+        let chemicals = [waterLevelParameter];
         for (let key in props.categories[LAYER_NAMES[0]]) {
             if (key == 'Vandstand') {
                 continue;
@@ -43,7 +47,9 @@ function DataSelectorDialogue(props) {
                 chemicals.push({'label': label, 'value': key2, 'group': key});
             }
         }
-        setParameters(chemicals);
+        console.log(chemicals);
+        setAllParameters([...chemicals]);
+        setSelectedParameter(waterLevelParameter);
     }, [props.categories]);
 
     const loadDataSources = () => {
@@ -56,6 +62,13 @@ function DataSelectorDialogue(props) {
     useEffect(() => {
         loadDataSources();
     }, []);
+
+    useEffect(() => {
+        const params = allParameters.filter((parameter) => {
+            return (parameterSearchTerm.length == 0 || parameter.label.toLowerCase().indexOf(parameterSearchTerm.toLowerCase()) > -1)
+        });
+        setParameters(params);
+    }, [parameterSearchTerm, allParameters])
 
     const applyParameter = () => {
         const layers = selectedDataSources.map((source) => {
@@ -83,20 +96,22 @@ function DataSelectorDialogue(props) {
                 {showProjectsList ? <ProjectList onStateSnapshotApply={props.onCloseButtonClick} {...props} /> :
                     <div>
                         <PredefinedDatasourceViews />
-                        <Grid container spacing={32}>
-                            <Grid container item md={6}>
-                                <Card>
-                                    <Title text={__('Datakilder')} level={3} />
-                                    <CheckBoxList listItems={dataSources} onChange={setSelectedDataSources} />
-                                </Card>
+                        <GridContainer>
+                            <Grid container spacing={32}>
+                                <Grid container item md={6}>
+                                    <Card>
+                                        <Title text={__('Datakilder')} level={3} />
+                                        <CheckBoxList listItems={dataSources} onChange={setSelectedDataSources} selectedItems={selectedDataSources} />
+                                    </Card>
+                                </Grid>
+                                <Grid container item md={6}>
+                                    {selectedDataSources.findIndex((item) => item.value == 'v:system.all') > -1 ? <Card>
+                                        <Searchbox placeholder={__('Søg efter måleparameter')} onChange={(value) => setParameterSearchTerm(value)} />
+                                        <RadioButtonList listItems={parameters} onChange={setSelectedParameter} selectedParameter={selectedParameter} />
+                                    </Card> : null}
+                                </Grid>
                             </Grid>
-                            <Grid container item md={6}>
-                                {selectedDataSources.findIndex((item) => item.value == 'v:system.all') > -1 ? <Card>
-                                    <Title text={__('Måleparameter')} level={3} />
-                                    <RadioButtonList listItems={parameters} onChange={setSelectedParameter} />
-                                </Card> : null}
-                            </Grid>
-                        </Grid>
+                        </GridContainer>
                     </div>}
                 {showProjectsList ? <ButtonGroup align={Align.Center}>
                     <Button text={__("Choose datasource and layers")} variant={Variants.None} onClick={() => setShowProjectsList(false)} size={Size.Large} />
@@ -122,6 +137,10 @@ const ModalHeader = styled.div`
 
 const ModalBody = styled.div`
     padding: ${( { theme }) => `${theme.layout.gutter}px`};
+`;
+
+const GridContainer = styled.div`
+    padding-top: ${props => props.theme.layout.gutter/2}px;
 `;
 
 export default DataSelectorDialogue;
