@@ -47,7 +47,6 @@ function DataSelectorDialogue(props) {
                 chemicals.push({'label': label, 'value': key2, 'group': key});
             }
         }
-        console.log(chemicals);
         setAllParameters([...chemicals]);
         setSelectedParameter(waterLevelParameter);
     }, [props.categories]);
