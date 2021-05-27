@@ -11,7 +11,6 @@ export default class MetaApi {
         }).then((results) => {
             return results.data.filter((item) => item.f_table_schema == parameter).map((item) => {
                 let value = `${item.f_table_schema}.${item.f_table_name}`;
-                console.log(item);
                 if (item.f_table_title == 'Jupiter boringer') {
                     value = 'v:system.all';
                 }
