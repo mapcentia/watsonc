@@ -6,7 +6,7 @@ import Checkbox from '../inputs/CheckBox';
 CheckBoxList.propTypes = {
     listItems: PropTypes.array.isRequired,
     onChange: PropTypes.func,
-    selectedItems: Proptypes.array
+    selectedItems: PropTypes.array
 }
 
 CheckBoxList.defaultProps = {
