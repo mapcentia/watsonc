@@ -4,10 +4,12 @@ import Grid from '@material-ui/core/Grid';
 import { DarkTheme } from '../../themes/DarkTheme';
 import ButtonGroup from '../shared/button/ButtonGroup';
 import Button from '../shared/button/Button';
+import { Variants } from '../shared/constants/variants';
 import { Align } from '../shared/constants/align';
 import Icon from '../shared/icons/Icon';
 import Searchbox from '../shared/inputs/Searchbox';
 import ChemicalsListItem from './ChemicalsListItem';
+import DashboardPlotCard from './DashboardPlotCard';
 
 function DashboardContent(props) {
     return (
@@ -126,6 +128,10 @@ function DashboardContent(props) {
                     </DashboardList>
                 </Grid>
                 <Grid container item xs={7}>
+                    <ChartsContainer>
+                        <DashboardPlotCard />
+                        <DashboardPlotCard />
+                    </ChartsContainer>
                 </Grid>
             </Grid>
         </Root>
@@ -194,5 +200,10 @@ const ChemicalsListTitle = styled.div`
     color: ${props => props.theme.colors.headings};
 `;
 
+const ChartsContainer = styled.div`
+    width: 100%;
+    padding-left: ${props => props.theme.layout.gutter*2}px;
+    padding-right: ${props => props.theme.layout.gutter/4}px;
+`
 
 export default DashboardContent;

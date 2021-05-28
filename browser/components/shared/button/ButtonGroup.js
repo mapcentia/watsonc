@@ -45,8 +45,6 @@ const Root = styled.div`
                 }
             `
         }
-        console.log(align);
-        console.log(styles[align]);
         return styles[align];
     }}
 
