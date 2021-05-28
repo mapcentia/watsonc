@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Icon from '../shared/icons/Icon';
 import Title from '../shared/title/Title';
@@ -14,15 +14,17 @@ function DashboardHeader(props) {
         <Root>
             <Grid container>
                 <Grid container item xs={2}>
-                    <IconContainer>
-                        <Icon name="dashboard-minimized-solid" size={16} strokeColor={DarkTheme.colors.headings} />
-                    </IconContainer>
-                    <IconContainer>
-                        <Icon name="dashboard-half-solid" size={16} strokeColor={DarkTheme.colors.headings} />
-                    </IconContainer>
-                    <IconContainer>
-                        <Icon name="dashboard-full-solid" size={16} strokeColor={DarkTheme.colors.headings} />
-                    </IconContainer>
+                    <IconsLayout>
+                        <IconContainer onClick={() => props.setDashboardMode('minimized')} active={props.dashboardMode === 'minimized'} >
+                            <Icon name="dashboard-minimized-solid" size={16} />
+                        </IconContainer>
+                        <IconContainer onClick={() => props.setDashboardMode('half')} active={props.dashboardMode === 'half'}>
+                            <Icon name="dashboard-half-solid" size={16} />
+                        </IconContainer>
+                        <IconContainer onClick={() => props.setDashboardMode('full')} active={props.dashboardMode === 'full'}>
+                            <Icon name="dashboard-full-solid" size={16} />
+                        </IconContainer>
+                    </IconsLayout>
                 </Grid>
                 <Grid container item xs={3}>
                     <Grid container>
@@ -59,10 +61,33 @@ const Root = styled.div`
     border-radius: ${props => props.theme.layout.gutter/2}px ${props => props.theme.layout.gutter/2}px 0 0;
 `
 
+const IconsLayout = styled.div`
+    height: 32px;
+    border: 1px solid ${props => props.theme.colors.primary[3]};
+    border-radius: ${props => props.theme.layout.borderRadius.small}px;
+    padding: 2px;
+`;
+
 const IconContainer = styled.div`
-    height: ${props => props.theme.layout.gutter}px;
+    display: inline-block;
+    height: 100%;
     width: ${props => props.theme.layout.gutter}px;
-    padding-top: ${props => props.theme.layout.gutter/4}px;
+    padding-left: ${props => props.theme.layout.gutter/4}px;
+    padding-top: ${props => props.theme.layout.gutter/8}px;
+    cursor: pointer;
+    color: ${props => props.theme.colors.gray[3]};
+    &:hover {
+        background-color: ${props => props.theme.colors.primary[3]};
+        color: ${props => props.theme.colors.headings};
+    }
+    ${({ active, theme }) => {
+        const styles = {
+            true: css `
+                color: ${theme.colors.interaction[4]};
+            `
+        };
+        return styles[active];
+    }}
 `
 
 export default DashboardHeader;
