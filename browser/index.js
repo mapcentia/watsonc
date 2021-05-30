@@ -82,28 +82,6 @@ let names = {};
 
 let currentRasterLayer = null;
 
-const DATA_SOURCES = [{
-    originalLayerKey: LAYER_NAMES[0],
-    additionalKey: ``,
-    title: __(`Jupiter drilling`)
-}, {
-    originalLayerKey: LAYER_NAMES[1],
-    additionalKey: `1`,
-    title: "Online stationer"
-}, {
-    originalLayerKey: LAYER_NAMES[1],
-    additionalKey: `3`,
-    title: "Online stationer"
-}, {
-    originalLayerKey: LAYER_NAMES[1],
-    additionalKey: `4`,
-    title: "Online stationer"
-}, {
-    originalLayerKey: LAYER_NAMES[3],
-    additionalKey: ``,
-    title: "Pesticidoverblik"
-}];
-
 /**
  *
  * @type {{set: module.exports.set, init: module.exports.init}}
@@ -298,181 +276,6 @@ module.exports = module.exports = {
                 left: 10%;
                 bottom: 0px;`);
 
-            LAYER_NAMES.map(layerName => {
-                layerTree.setOnEachFeature(layerName, (clickedFeature, layer) => {
-                    layer.on("click", (e) => {
-                        /* $("#" + FEATURE_CONTAINER_ID).animate({
-                            bottom: "0"
-                        }, 500, function () {
-                            $("#" + FEATURE_CONTAINER_ID).find(".expand-less").show();
-                            $("#" + FEATURE_CONTAINER_ID).find(".expand-more").hide();
-                        }); */
-
-                        let intersectingFeatures = [];
-                        if (e.latlng) {
-                            var clickBounds = L.latLngBounds(e.latlng, e.latlng);
-                            let res = [156543.033928, 78271.516964, 39135.758482, 19567.879241, 9783.9396205,
-                                4891.96981025, 2445.98490513, 1222.99245256, 611.496226281, 305.748113141, 152.87405657,
-                                76.4370282852, 38.2185141426, 19.1092570713, 9.55462853565, 4.77731426782, 2.38865713391,
-                                1.19432856696, 0.597164283478, 0.298582141739, 0.149291, 0.074645535];
-
-                            let distance = 10 * res[cloud.get().getZoom()];
-
-                            let mapObj = cloud.get().map;
-                            for (var l in mapObj._layers) {
-                                var overlay = mapObj._layers[l];
-                                if (overlay._layers) {
-                                    for (var f in overlay._layers) {
-                                        var feature = overlay._layers[f];
-                                        var bounds;
-                                        if (feature.getBounds) {
-                                            bounds = feature.getBounds();
-                                        } else if (feature._latlng) {
-                                            let circle = new L.circle(feature._latlng, {radius: distance});
-                                            // DIRTY HACK
-                                            circle.addTo(mapObj);
-                                            bounds = circle.getBounds();
-                                            circle.removeFrom(mapObj);
-                                        }
-
-                                        try {
-                                            if (bounds && clickBounds.intersects(bounds) && overlay.id) {
-                                                intersectingFeatures.push(feature.feature);
-                                            }
-                                        } catch (e) {
-                                            console.log(e);
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            // In case marker "click" event was triggered from the code
-                            intersectingFeatures.push(e.target.feature);
-                        }
-
-                        let titleAsLink = false;
-
-                        if (layerName.indexOf(LAYER_NAMES[0]) > -1) {
-                            titleAsLink = true;
-                        }
-
-                        let clickedFeatureAlreadyDetected = false;
-                        intersectingFeatures.map(feature => {
-                            if (feature.properties.boreholeno === clickedFeature.properties.boreholeno) {
-                                clickedFeatureAlreadyDetected = true;
-                            }
-                        });
-
-                        if (clickedFeatureAlreadyDetected === false) intersectingFeatures.unshift(clickedFeature);
-
-                        let boreholes = [];
-
-                        intersectingFeatures.map((feature) => {
-                            boreholes.push(feature.properties.boreholeno)
-                        });
-
-                        let qLayer;
-                        if (layerName.indexOf(LAYER_NAMES[0]) > -1 || layerName.indexOf(LAYER_NAMES[3]) > -1) {
-                            qLayer = "chemicals.boreholes_time_series_with_chemicals";
-                        } else {
-                            qLayer = "sensor.sensordata_with_correction";
-                            // Filter NaN values, so SQL doesn't return type error
-                            boreholes = boreholes.filter((v) => {
-                                if (!isNaN(v)) {
-                                    return v;
-                                }
-                            });
-                        }
-
-                        // Lazy load features
-                        $.ajax({
-                            url: "/api/sql/jupiter?srs=25832&q=SELECT * FROM " + qLayer + " WHERE boreholeno in('" + boreholes.join("','") + "')",
-                            scriptCharset: "utf-8",
-                            success: function (response) {
-
-                                dataSource = [];
-                                boreholesDataSource = response.features;
-                                dataSource = dataSource.concat(boreholesDataSource);
-                                if (dashboardComponentInstance) {
-                                    dashboardComponentInstance.setDataSource(dataSource);
-                                }
-
-                                layer.bindPopup(ReactDOMServer.renderToString(<Provider store={reduxStore}><ThemeProvider><MapDecorator /></ThemeProvider></Provider>),
-                                    { maxWidth: 500, className: 'map-decorator-popup' });
-                                // _self.createModal(response.features, false, titleAsLink, false);
-                                if (!dashboardComponentInstance) {
-                                    throw new Error(`Unable to find the component instance`);
-                                }
-                            },
-                            error: function () {
-                            }
-                        });
-                    });
-                }, "watsonc");
-
-                let svgCirclePart = symbolizer.getSymbol(layerName);
-                if (svgCirclePart) {
-                    layerTree.setPointToLayer(layerName, (feature, latlng) => {
-                        let renderIcon = true;
-                        if (layerName === LAYER_NAMES[1]) {
-                            if (feature.properties.loctypeid &&
-                                (enabledLoctypeIds.indexOf(parseInt(feature.properties.loctypeid) + '') === -1 && enabledLoctypeIds.indexOf(parseInt(feature.properties.loctypeid)) === -1)) {
-                                renderIcon = false;
-                            }
-                        } else {
-                            return L.circleMarker(latlng);
-                        }
-
-                        if (renderIcon) {
-                            let participatingIds = [];
-                            if (dashboardComponentInstance) {
-                                let plots = dashboardComponentInstance.getPlots();
-                                plots.map(plot => {
-                                    participatingIds = participatingIds.concat(_self.participatingIds(plot));
-                                });
-                            }
-
-                            let highlighted = (participatingIds.indexOf(feature.properties.boreholeno) > -1);
-                            let localSvgCirclePart = symbolizer.getSymbol(layerName, {
-                                online: feature.properties.status,
-                                shape: feature.properties.loctypeid,
-                                highlighted
-                            });
-
-                            let icon = L.icon({
-                                iconUrl: 'data:image/svg+xml;base64,' + btoa(localSvgCirclePart),
-                                iconAnchor: [8, 33],
-                                iconSize: [30, 30],
-                                watsoncStatus: `default`
-                            });
-
-                            return L.marker(latlng, {icon});
-                        } else {
-                            return null;
-                        }
-                    });
-                }
-            });
-
-            // Renewing the already created store by rebuilding the layer tree
-            setTimeout(() => {
-
-                setTimeout(() => {
-                    layerTree.create(false, [], true).then(() => {
-                        //layerTree.reloadLayer(LAYER_NAMES[0]);
-                        if (layerTree.getActiveLayers().indexOf(LAYER_NAMES[1]) > -1) {
-                            layerTree.reloadLayer(LAYER_NAMES[1]);
-                        }
-                        if (layerTree.getActiveLayers().indexOf(LAYER_NAMES[0]) > -1) {
-                            layerTree.reloadLayer(LAYER_NAMES[0]);
-                        }
-                        if (layerTree.getActiveLayers().indexOf(LAYER_NAMES[3]) > -1) {
-                            layerTree.reloadLayer(LAYER_NAMES[3]);
-                        }
-                    });
-                }, 500);
-            }, 100);
-
             const proceedWithInitialization = () => {
                 // Setting up feature dialog
                 $(`#` + FEATURE_CONTAINER_ID).find(".expand-less").on("click", function () {
@@ -500,24 +303,6 @@ module.exports = module.exports = {
                         $(`#` + FEATURE_CONTAINER_ID).find(".expand-less").show();
                         $(`#` + FEATURE_CONTAINER_ID).find(".expand-more").hide();
                     });
-                });
-
-                // Initializing data source and types selector
-                $(`[data-module-id="data-source-and-types-selector"]`).click(() => {
-                    if ($(`#data-source-and-types-selector-content`).children().length === 0) {
-                        try {
-                            ReactDOM.render(<Provider store={reduxStore}>
-                                <MenuDataSourceAndTypeSelectorComponent
-                                    onApply={_self.onApplyLayersAndChemical}
-                                    enabledLoctypeIds={enabledLoctypeIds}
-                                    urlparser={urlparser}
-                                    boreholes={layerTree.getActiveLayers().indexOf("_") > -1} // DIRTY HACK All raster layers has _ in name
-                                    layers={DATA_SOURCES}/>
-                            </Provider>, document.getElementById(`data-source-and-types-selector-content`));
-                        } catch (e) {
-                            console.log(e);
-                        }
-                    }
                 });
 
                 // Initializing TimeSeries management component
@@ -645,7 +430,7 @@ module.exports = module.exports = {
     },
 
 
-    openBorehole(boreholeIdentifier) {
+    let(boreholeIdentifier) {
         let mapLayers = layers.getMapLayers();
         let boreholeIsInViewport = false;
         mapLayers.map(layer => {
@@ -743,97 +528,28 @@ module.exports = module.exports = {
             if (layerNameToEnable !== LAYER_NAMES[2] && !layerNameToEnable.startsWith("gc2_io_dk"))
                 switchLayer.init(layerNameToEnable, false);
         });
-
-        // Bind tool tip to stations
-        // layerTree.setOnLoad(LAYER_NAMES[1], () => {
-        //     _self.bindToolTipOnStations()
-        // }, "watsonc");
-
-        // Bind tool tip to  Pesticidoverblik
-        // layerTree.setOnLoad(LAYER_NAMES[3], () => {
-        //     _self.bindToolTipOnPesticidoverblik()
-        // }, "watsonc");
-
+        let filter = {
+            match: "all", columns: [
+                {fieldname: "count", expression: ">", value: parameters.selectedMeasurementCount, restriction: false},
+                {fieldname: "startdate", expression: ">", value: parameters.selectedStartDate, restriction: false},
+                {fieldname: "enddate", expression: "<", value: parameters.selectedEndDate, restriction: false}
+            ]
+        };
         let filters = {};
-        let filteredLayers = [];
-        // filters[LAYER_NAMES[1].split(":")[1]] = {
-        //     match: "all", columns: [
-        //         {fieldname: "count", expression: ">", value: parameters.selectedMeasurementCount, restriction: false},
-        //         {fieldname: "startdate", expression: ">", value: parameters.selectedStartDate, restriction: false},
-        //         {fieldname: "enddate", expression: "<", value: parameters.selectedEndDate, restriction: false}
-        //     ]
-        //
-        // }
-
-        // Enable raster layer
         for (let i = 0; i < parameters.layers.length; i++) {
-
             if (parameters.layers[i] === LAYER_NAMES[0]) {
                 if (!parameters.chemical) return;
                 let rasterToEnable = `system._${parameters.chemical}`;
                 currentRasterLayer = rasterToEnable;
-                filters[rasterToEnable] = {
-                    match: "all", columns: [
-                        {
-                            fieldname: "count",
-                            expression: ">",
-                            value: parameters.selectedMeasurementCount,
-                            restriction: false
-                        },
-                        {fieldname: "startdate", expression: ">", value: parameters.selectedStartDate, restriction: false},
-                        {fieldname: "enddate", expression: "<", value: parameters.selectedEndDate, restriction: false}
-                    ]
-
-                }
-                console.log("filters", filters)
+                filters[rasterToEnable] = filter;
                 layerTree.applyFilters(filters);
-                switchLayer.init(rasterToEnable, true).then(() => {
-                    if (parameters.chemical) {
-                        _self.enableChemical(parameters.chemical, filteredLayers, false, parameters);
-                    } else {
-                        lastSelectedChemical = parameters.chemical;
-                        filteredLayers.map(layerName => {
-                            layerTree.reloadLayer(layerName); // TODO
-                        });
-                    }
-                });
+                switchLayer.init(rasterToEnable, true);
             } else {
                 switchLayer.init(parameters.layers[i], true);
             }
         }
 
-
         enabledLoctypeIds = [];
-        parameters.layers.map(layerName => {
-            if (layerName.indexOf(LAYER_NAMES[0]) === 0) {
-                filteredLayers.push(layerName);
-            }
-            // if (layerName.indexOf(LAYER_NAMES[1]) === 0) {
-            //     if (layerName.indexOf(`#`) > -1) {
-            //         if (filteredLayers.indexOf(layerName.split(`#`)[0]) === -1) {
-            //             filteredLayers.push(layerName.split(`#`)[0]);
-            //         }
-            //         enabledLoctypeIds.push(layerName.split(`#`)[1]);
-            //     } else {
-            //         if (filteredLayers.indexOf(layerName) === -1) {
-            //             filteredLayers.push(layerName);
-            //         }
-            //     }
-            // }
-            // if (layerName.indexOf(LAYER_NAMES[3]) === 0 || layerName.indexOf(LAYER_NAMES[1]) === 0) {
-            //     filteredLayers.push(layerName);
-            //     if (layerName.indexOf(LAYER_NAMES[3]) === 0) switchLayer.init(LAYER_NAMES[4], true);
-            //     filteredLayers.map(layerName => {
-            //         layerTree.reloadLayer(layerName);
-            //     });
-            //     layerTree.setStyle(LAYER_NAMES[3], {
-            //         "color": "#ffffff",
-            //         "weight": 0,
-            //         "opacity": 0.0,
-            //         "fillOpacity": 0.0
-            //     });
-            // }
-        });
 
         // Wait a bit with trigger state, so this
         setTimeout(() => {
@@ -871,11 +587,11 @@ module.exports = module.exports = {
                     /></Provider>, document.getElementById(introlModalPlaceholderId)); */
                 ReactDOM.render(<Provider store={reduxStore}><ThemeProvider>
                     <DataSelectorDialogue titleText={__('Welcome to Calypso')}
-                        urlparser={urlparser} anchor={anchor}
-                        categories={categoriesOverall ? categoriesOverall : []}
-                        onApply={_self.onApplyLayersAndChemical}
-                        onCloseButtonClick={onCloseHandler} state={state} />
-                    </ThemeProvider></Provider>, document.getElementById(introlModalPlaceholderId));
+                                          urlparser={urlparser} anchor={anchor}
+                                          categories={categoriesOverall ? categoriesOverall : []}
+                                          onApply={_self.onApplyLayersAndChemical}
+                                          onCloseButtonClick={onCloseHandler} state={state}/>
+                </ThemeProvider></Provider>, document.getElementById(introlModalPlaceholderId));
             } catch (e) {
                 console.error(e);
             }
@@ -1116,73 +832,6 @@ module.exports = module.exports = {
         }
     },
 
-    enableChemical(chemicalId, layersToEnable = [], onComplete = false, parameters) {
-        if (!chemicalId) throw new Error(`Chemical identifier was not provided`);
-        setTimeout(() => {
-            let layersToEnableWereProvided = (layersToEnable.length > 0);
-            if (categoriesOverall) {
-                for (let layerName in categoriesOverall) {
-                    for (let key in categoriesOverall[layerName]) {
-                        for (let key2 in categoriesOverall[layerName][key]) {
-                            if (key2.toString() === chemicalId.toString() || categoriesOverall[layerName][key][key2] === chemicalId.toString()) {
-                                if (layersToEnableWereProvided === false) {
-                                    if (layersToEnable.indexOf(layerName) === -1) {
-                                        layersToEnable.push(layerName);
-                                    }
-                                }
-                                _self.buildBreadcrumbs(key, categoriesOverall[layerName][key][key2], layerName === LAYER_NAMES[1]);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            let filter = {
-                match: "all", columns: [
-                    {fieldname: "compound", expression: "=", value: chemicalId, restriction: false},
-                    {
-                        fieldname: "count",
-                        expression: ">",
-                        value: parameters.selectedMeasurementCount,
-                        restriction: false
-                    },
-                    {
-                        fieldname: "startdate",
-                        expression: ">",
-                        value: parameters.selectedStartDate,
-                        restriction: false
-                    },
-                    {fieldname: "enddate", expression: "<", value: parameters.selectedEndDate, restriction: false}
-                ]
-
-            };
-            let filters = {};
-            filters[LAYER_NAMES[0].split(":")[1]] = filter;
-            filters[LAYER_NAMES[1].split(":")[1]] = filter;
-
-
-            layerTree.applyFilters(filters);
-            lastSelectedChemical = chemicalId;
-            backboneEvents.get().trigger(`${MODULE_NAME}:chemicalChange`);
-            let onLoadCallback = function (store) {
-                if (layersToEnable.indexOf(store.id) > -1) {
-                    _self.displayChemicalSymbols(store.id);
-                }
-            };
-            layerTree.setOnLoad(LAYER_NAMES[0], onLoadCallback, "watsonc");
-            layersToEnable.map(layerName => {
-                layerTree.reloadLayer(layerName);
-            });
-            layerTree.setStyle(LAYER_NAMES[0], {
-                "color": "#ffffff",
-                "weight": 0,
-                "opacity": 0.0,
-                "fillOpacity": 0.0
-            });
-
-            if (onComplete) onComplete();
-        }, 0);
-    },
 
 
     getExistingPlots: () => {
