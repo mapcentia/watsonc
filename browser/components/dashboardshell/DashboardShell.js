@@ -2,15 +2,20 @@ import { useState } from 'react';
 import styled, { css } from 'styled-components';
 import DashboardHeader from './DashboardHeader';
 import DashboardContent from './DashboardContent';
+import ProjectContext from '../../contexts/project/ProjectContext';
 
 function DashboardShell(props) {
     const [dashboardMode, setDashboardMode] = useState('full');
-
+    console.log(props);
     return (
-        <Root mode={dashboardMode}>
-            <DashboardHeader setDashboardMode={setDashboardMode} dashboardMode={dashboardMode} />
-            <DashboardContent />
-        </Root>
+        <ProjectContext.Consumer>
+        {context => {
+            return <Root mode={dashboardMode}>
+                <DashboardHeader setDashboardMode={setDashboardMode} dashboardMode={dashboardMode} />
+                <DashboardContent {...context} {...props} />
+            </Root>
+        }}
+        </ProjectContext.Consumer>
     )
 }
 

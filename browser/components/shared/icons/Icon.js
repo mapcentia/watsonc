@@ -55,6 +55,7 @@ function Icon(props) {
             strokeLinecap="round"
             strokeWidth="1"
             stroke={props.strokeColor}
+            fill='none'
             strokeLinejoin="round"
           >
             <path d={icon.path} />

@@ -10,8 +10,10 @@ import Icon from '../shared/icons/Icon';
 import Searchbox from '../shared/inputs/Searchbox';
 import ChemicalsListItem from './ChemicalsListItem';
 import DashboardPlotCard from './DashboardPlotCard';
+import DashboardProfileCard from './DashboardProfileCard';
 
 function DashboardContent(props) {
+    console.log(props);
     return (
         <Root>
             <Grid container>
@@ -129,8 +131,14 @@ function DashboardContent(props) {
                 </Grid>
                 <Grid container item xs={7}>
                     <ChartsContainer>
-                        <DashboardPlotCard />
-                        <DashboardPlotCard />
+                        {props.activePlots.map((plot, index) => {
+                            if (index === 0)
+                                return <DashboardPlotCard plot={plot} index={index} key={index} />
+                                return null;
+                        })}
+                        {props.activeProfiles.map((profile, index) => {
+                            return <DashboardProfileCard meta={profile} index={index} key={index} />
+                        })}
                     </ChartsContainer>
                 </Grid>
             </Grid>
@@ -142,12 +150,14 @@ const Root = styled.div`
     height: 100%;
     width: 100%;
     background-color: ${props => hexToRgbA(props.theme.colors.primary[1], 0.92)};
+    overflow: scroll;
 `
 
 const DashboardList = styled.div`
     background-color: ${props => props.theme.colors.primary[1]};
     padding: ${props => props.theme.layout.gutter/2}px ${props => props.theme.layout.gutter}px;
     width: 100%;
+    height: 100%;
     overflow: scroll;
 `;
 
@@ -204,6 +214,8 @@ const ChartsContainer = styled.div`
     width: 100%;
     padding-left: ${props => props.theme.layout.gutter*2}px;
     padding-right: ${props => props.theme.layout.gutter/4}px;
+    height: 100%;
+    overflow: scroll;
 `
 
 export default DashboardContent;

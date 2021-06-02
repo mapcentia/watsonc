@@ -5,7 +5,6 @@ import Title from '../shared/title/Title';
 import Button from '../shared/button/Button';
 import { Variants } from '../shared/constants/variants';
 import { Size } from '../shared/constants/size';
-import CheckBox from '../shared/inputs/CheckBox';
 import PlotComponent from '../PlotComponent';
 
 function DashboardPlotCard(props) {
@@ -48,21 +47,18 @@ function DashboardPlotCard(props) {
                     <Grid container item xs={5}>
                         <CardList>
                             <CardListItem>
-                                <CheckBox />
                                 <CardListLabel>
                                     <Icon name='drill' size={16} />
                                     <Title level={6} text='16.334' marginLeft={8} />
                                 </CardListLabel>
                             </CardListItem>
                             <CardListItem>
-                                <CheckBox />
                                 <CardListLabel>
                                     <Icon name='water-wifi-solid' size={16} />
                                     <Title level={6} text={__('Vandstandsmaler, syd')} marginLeft={8} />
                                 </CardListLabel>
                             </CardListItem>
                             <CardListItem>
-                                <CheckBox />
                                 <CardListLabel>
                                     <Icon name='water-wifi-solid' size={16} />
                                     <Title level={6} text={__('Vandstandmaler, nord')} marginLeft={8} />
@@ -71,7 +67,7 @@ function DashboardPlotCard(props) {
                         </CardList>
                     </Grid>
                     <Grid container item xs={7}>
-                        <PlotComponent viewMode={0} height={320} index={props.index} onDelete={() => console.log("Testing")} plotMeta={props.plot} />
+                        <ProfileComponent height={320} index={props.index} onDelete={() => console.log("Testing")} onClick={() => console.log("Testing")} plotMeta={props.plot} />
                     </Grid>
                 </Grid>
             </DashboardPlotContent>

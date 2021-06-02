@@ -1,5 +1,6 @@
 export const IconName = {
   ANALYTICS_BOARD_GRAPH_LINE: "analytics-board-graph-line" as "analytics-board-graph-line",
+  ARROW_DOWN: "arrow-down" as "arrow-down",
   CHECK_MARK_SOLID: "check-mark-solid" as "check-mark-solid",
   CLEANING_SPRAY: "cleaning-spray" as "cleaning-spray",
   CROSS: "cross" as "cross",
@@ -11,6 +12,7 @@ export const IconName = {
   DRAG_HANDLE: "drag-handle" as "drag-handle",
   DRILL_SPACE_SOLID: "drill-space-solid" as "drill-space-solid",
   DRILL: "drill" as "drill",
+  EARTH_LAYERS: "earth-layers" as "earth-layers",
   FOLDER_SOLID: "folder-solid" as "folder-solid",
   HYPERLINK: "hyperlink" as "hyperlink",
   LAB_FLASK_EXPERIMENT: "lab-flask-experiment" as "lab-flask-experiment",
@@ -19,6 +21,7 @@ export const IconName = {
   PIN_LOCATION_SOLID: "pin-location-solid" as "pin-location-solid",
   PLUS_SOLID: "plus-solid" as "plus-solid",
   RATING_STAR_SOLID: "rating-star-solid" as "rating-star-solid",
+  SEARCH: "search" as "search",
   STAR_SOLID: "star-solid" as "star-solid",
   WATER_WIFI_SOLID: "water-wifi-solid" as "water-wifi-solid",
 };
