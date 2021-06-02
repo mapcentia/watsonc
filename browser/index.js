@@ -1,5 +1,6 @@
 'use strict';
 
+import { useContext } from 'react';
 import {Provider} from 'react-redux';
 
 import PlotManager from './PlotManager';
@@ -13,6 +14,8 @@ import AnalyticsComponent from './components/AnalyticsComponent';
 import {LAYER_NAMES, WATER_LEVEL_KEY, KOMMUNER} from './constants';
 import trustedIpAddresses from './trustedIpAddresses';
 import ThemeProvider from './themes/ThemeProvider';
+import ProjectProvider from './contexts/project/ProjectProvider';
+import ProjectContext from './contexts/project/ProjectContext';
 import DataSelectorDialogue from './components/dataselector/DataSelectorDialogue';
 import MapDecorator from './components/decorators/MapDecorator';
 import DashboardShell from './components/dashboardshell/DashboardShell';
@@ -46,7 +49,6 @@ let PLOTS_ID = `#` + DASHBOARD_CONTAINER_ID;
  * @type {*|exports|module.exports}
  */
 var cloud, switchLayer, backboneEvents, session = false;
-
 /**
  *
  * @type {*|exports|module.exports}
@@ -59,6 +61,7 @@ var ReactDOM = require('react-dom');
 var ReactDOMServer = require('react-dom/server');
 
 let dashboardComponentInstance = false, modalComponentInstance = false, infoModalInstance = false;
+let dashboardShellInstance = false;
 
 let lastSelectedChemical = false, categoriesOverall = false, enabledLoctypeIds = [];
 
@@ -357,14 +360,16 @@ module.exports = module.exports = {
                     }
                 });
 
-                if (dashboardComponentInstance) dashboardComponentInstance.onSetMin();
+                // if (dashboardComponentInstance) dashboardComponentInstance.onSetMin();
             };
 
-            if (!document.getElementById(DASHBOARD_CONTAINER_ID)) {
+            if (document.getElementById(DASHBOARD_CONTAINER_ID)) {
                 let initialPlots = [];
                 if (applicationState && `modules` in applicationState && MODULE_NAME in applicationState.modules && `plots` in applicationState.modules[MODULE_NAME]) {
                     initialPlots = applicationState.modules[MODULE_NAME].plots;
                 }
+                console.log("Initial plots");
+                console.log(initialPlots);
 
                 let initialProfiles = [];
                 if (applicationState && `modules` in applicationState && MODULE_NAME in applicationState.modules && `profiles` in applicationState.modules[MODULE_NAME]) {
@@ -373,8 +378,11 @@ module.exports = module.exports = {
 
                 let plotManager = new PlotManager();
                 plotManager.hydratePlotsFromUser(initialPlots).then(hydratedInitialPlots => { // User plots
+                    dashboardShellInstance = ReactDOM.render(<ProjectProvider><Provider store={reduxStore}><ThemeProvider>
+                            <DashboardShell activeProfiles={initialProfiles} />
+                        </ThemeProvider></Provider></ProjectProvider>, document.getElementById(DASHBOARD_CONTAINER_ID));
                     try {
-                        dashboardComponentInstance = ReactDOM.render(<DashboardComponent
+                        dashboardComponentInstance = ReactDOM.render(<ProjectProvider><DashboardComponent
                             backboneEvents={backboneEvents}
                             initialPlots={hydratedInitialPlots}
                             initialProfiles={initialProfiles}
@@ -392,20 +400,26 @@ module.exports = module.exports = {
                             onProfilesChange={(profiles = false) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
                                 if (profiles && window.menuProfilesComponentInstance) window.menuProfilesComponentInstance.setProfiles(profiles);
+                                console.log("Profiles changes");
+                                console.log(profiles);
                             }}
-                            onActivePlotsChange={(activePlots, plots) => {
+                            onActivePlotsChange={(activePlots, plots, context) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
                                 if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setActivePlots(activePlots);
                                 if (modalComponentInstance) _self.createModal(false, plots);
+                                console.log("Setting context");
+                                context.setActivePlots(plots);
                             }}
                             onActiveProfilesChange={(activeProfiles) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
                                 if (window.menuProfilesComponentInstance) window.menuProfilesComponentInstance.setActiveProfiles(activeProfiles);
+                                console.log("Active Profiles changes");
+                                console.log(activeProfiles);
                             }}
                             onHighlightedPlotChange={(plotId, plots) => {
                                 _self.setStyleForHighlightedPlot(plotId, plots);
                                 if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setHighlightedPlot(plotId);
-                            }}/>, document.getElementById(DASHBOARD_CONTAINER_ID));
+                            }}/></ProjectProvider>, document.getElementById('watsonc-plots-dialog-form-hidden'));
                     } catch (e) {
                         console.error(e);
                     }
@@ -593,9 +607,6 @@ module.exports = module.exports = {
                         onApply={_self.onApplyLayersAndChemical}
                         onCloseButtonClick={onCloseHandler} state={state} />
                     </ThemeProvider></Provider>, document.getElementById(introlModalPlaceholderId));
-                ReactDOM.render(<Provider store={reduxStore}><ThemeProvider>
-                        <DashboardShell />
-                    </ThemeProvider></Provider>, document.getElementById(DASHBOARD_CONTAINER_ID));
             } catch (e) {
                 console.error(e);
             }

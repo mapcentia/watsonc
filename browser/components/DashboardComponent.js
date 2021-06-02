@@ -15,6 +15,7 @@ import {isNumber} from 'util';
 import arrayMove from 'array-move';
 import trustedIpAddresses from '../trustedIpAddresses';
 import {getPlotData} from '../services/plot';
+import ProjectContext from '../contexts/project/ProjectContext';
 
 let syncInProg = false;
 
@@ -38,6 +39,7 @@ let _self = false, resizeTimeout = false;
  * Component creates plots management form and is the source of truth for plots overall
  */
 class DashboardComponent extends React.Component {
+    static contextType = ProjectContext;
     constructor(props) {
         super(props);
         let queryParams = new URLSearchParams(window.location.search);
@@ -147,7 +149,7 @@ class DashboardComponent extends React.Component {
     }
 
     componentDidMount() {
-        this.nextDisplayType();
+        // this.nextDisplayType();
     }
 
     getLicense() {
@@ -653,7 +655,7 @@ class DashboardComponent extends React.Component {
                     activePlots: activePlotsCopy
                 });
 
-                this.props.onActivePlotsChange(activePlotsCopy, this.getPlots());
+                this.props.onActivePlotsChange(activePlotsCopy, this.getPlots(), this.context);
             } else {
                 this.setState({
                     plots: plotsCopy,
@@ -684,7 +686,7 @@ class DashboardComponent extends React.Component {
         if (activePlotsCopy.indexOf(id) > -1) activePlotsCopy.splice(activePlotsCopy.indexOf(id), 1);
 
         this.setState({activePlots: activePlotsCopy});
-        this.props.onActivePlotsChange(activePlotsCopy, this.getPlots());
+        this.props.onActivePlotsChange(activePlotsCopy, this.getPlots(), this.context);
     }
 
     handleDeletePlot(id, name) {
@@ -744,7 +746,7 @@ class DashboardComponent extends React.Component {
         if (activePlots.indexOf(plotId) === -1) activePlots.push(plotId);
         let plots = this.getPlots()
         this.setState({activePlots}, () => {
-            this.props.onActivePlotsChange(this.state.activePlots, plots);
+            this.props.onActivePlotsChange(this.state.activePlots, plots, this.context);
             setTimeout(() => {
                 // document.getElementById("syncWithDatabaseBtn").click();
                 this.syncPlotData();
@@ -758,7 +760,7 @@ class DashboardComponent extends React.Component {
         let activePlots = JSON.parse(JSON.stringify(this.state.activePlots));
         if (activePlots.indexOf(plotId) > -1) activePlots.splice(activePlots.indexOf(plotId), 1);
         this.setState({activePlots}, () => {
-            this.props.onActivePlotsChange(this.state.activePlots, this.getPlots());
+            this.props.onActivePlotsChange(this.state.activePlots, this.getPlots(), this.context);
         });
     }
 
@@ -1035,13 +1037,13 @@ class DashboardComponent extends React.Component {
         }}>{__(`No timeseries were created or set as active yet`)}</p>);
 
         // Actualize elements location
-        if (currentDisplay === DISPLAY_MIN) {
+        /* if (currentDisplay === DISPLAY_MIN) {
             this.onSetMin();
         } else if (currentDisplay === DISPLAY_HALF) {
             this.onSetHalf();
         } else if (currentDisplay === DISPLAY_MAX) {
             this.onSetMax();
-        }
+        } */
 
         let listItemHeightPx = Math.round(($(document).height() * 0.9 - modalHeaderHeight - 10) / 2);
 
@@ -1106,7 +1108,9 @@ class DashboardComponent extends React.Component {
             this.nextDisplayType();
         };
 
-        return (<div>
+        return (<ProjectContext.Consumer>
+            {context => {
+            return <div>
             <div className="modal-header" id="watsonc-plots-dialog-controls">
                 <ReactTooltip/>
                 <div className="modal-header-content">
@@ -1196,7 +1200,7 @@ class DashboardComponent extends React.Component {
             <div className="modal-body" style={{padding: `0px 20px 0px 0px`, margin: `0px`}}>
                 <div className="form-group" style={{marginBottom: `0px`, paddingBottom: `0px`}}>{plotsControls}</div>
             </div>
-        </div>);
+        </div>}}</ProjectContext.Consumer>);
     }
 }
 
