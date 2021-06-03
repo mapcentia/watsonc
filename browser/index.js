@@ -18,7 +18,7 @@ import ProjectProvider from './contexts/project/ProjectProvider';
 import ProjectContext from './contexts/project/ProjectContext';
 import DataSelectorDialogue from './components/dataselector/DataSelectorDialogue';
 import MapDecorator from './components/decorators/MapDecorator';
-import DashboardShell from './components/dashboardshell/DashboardShell';
+import DashboardWrapper from './components/DashboardWrapper';
 
 
 import reduxStore from './redux/store';
@@ -378,11 +378,11 @@ module.exports = module.exports = {
 
                 let plotManager = new PlotManager();
                 plotManager.hydratePlotsFromUser(initialPlots).then(hydratedInitialPlots => { // User plots
-                    dashboardShellInstance = ReactDOM.render(<ProjectProvider><Provider store={reduxStore}><ThemeProvider>
-                            <DashboardShell activeProfiles={initialProfiles} />
-                        </ThemeProvider></Provider></ProjectProvider>, document.getElementById(DASHBOARD_CONTAINER_ID));
+                let reactRef = React.createRef();
                     try {
-                        dashboardComponentInstance = ReactDOM.render(<ProjectProvider><DashboardComponent
+                        ReactDOM.render(<DashboardWrapper
+                            store={reduxStore}
+                            ref={reactRef}
                             backboneEvents={backboneEvents}
                             initialPlots={hydratedInitialPlots}
                             initialProfiles={initialProfiles}
@@ -407,8 +407,8 @@ module.exports = module.exports = {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
                                 if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setActivePlots(activePlots);
                                 if (modalComponentInstance) _self.createModal(false, plots);
-                                console.log("Setting context");
-                                context.setActivePlots(plots);
+
+                                context.setActivePlots(plots.filter((plot) => activePlots.indexOf(plot.id) > -1));
                             }}
                             onActiveProfilesChange={(activeProfiles) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
@@ -419,7 +419,8 @@ module.exports = module.exports = {
                             onHighlightedPlotChange={(plotId, plots) => {
                                 _self.setStyleForHighlightedPlot(plotId, plots);
                                 if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setHighlightedPlot(plotId);
-                            }}/></ProjectProvider>, document.getElementById('watsonc-plots-dialog-form-hidden'));
+                            }}/>, document.getElementById('watsonc-plots-dialog-form-hidden'));
+                        dashboardComponentInstance = reactRef.current;
                     } catch (e) {
                         console.error(e);
                     }

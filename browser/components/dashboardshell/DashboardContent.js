@@ -132,9 +132,7 @@ function DashboardContent(props) {
                 <Grid container item xs={7}>
                     <ChartsContainer>
                         {props.activePlots.map((plot, index) => {
-                            if (index === 0)
                                 return <DashboardPlotCard plot={plot} index={index} key={index} />
-                                return null;
                         })}
                         {props.activeProfiles.map((profile, index) => {
                             return <DashboardProfileCard meta={profile} index={index} key={index} />
