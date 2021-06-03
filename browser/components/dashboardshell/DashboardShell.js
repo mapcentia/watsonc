@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import styled, { css } from 'styled-components';
 import DashboardHeader from './DashboardHeader';
 import DashboardContent from './DashboardContent';
@@ -6,17 +6,14 @@ import ProjectContext from '../../contexts/project/ProjectContext';
 
 function DashboardShell(props) {
     const [dashboardMode, setDashboardMode] = useState('full');
-    console.log(props);
-    return (
-        <ProjectContext.Consumer>
-        {context => {
-            return <Root mode={dashboardMode}>
-                <DashboardHeader setDashboardMode={setDashboardMode} dashboardMode={dashboardMode} />
-                <DashboardContent {...context} {...props} />
-            </Root>
-        }}
-        </ProjectContext.Consumer>
-    )
+    return (<ProjectContext.Consumer>
+            {context => {
+                return <Root mode={dashboardMode}>
+                    <DashboardHeader setDashboardMode={setDashboardMode} dashboardMode={dashboardMode} setActivePlots={context.setActivePlots} />
+                    <DashboardContent {...props} {...context} />
+                </Root>
+            }}
+            </ProjectContext.Consumer>)
 }
 
 const Root = styled.div`
