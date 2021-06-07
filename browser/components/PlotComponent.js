@@ -187,6 +187,7 @@ class MenuPanelPlotComponent extends React.Component {
                             type: 'scattergl',
                             mode: 'lines+markers',
                             hoverinfo: 'text',
+                            visible: 'legendonly',
                             marker: {
                                 color: colors[index]
                             }
@@ -258,7 +259,8 @@ class MenuPanelPlotComponent extends React.Component {
             plot = (<Plot
                 data={data}
                 layout={layout}
-                onLegendDoubleClick={() => false}
+                onLegendDoubleClick={(param) => console.log("Legend double clicked", param)}
+                onLegendClick={(param) => console.log("Legend clicked", param)}
                 style={{width: "100%", height: `${this.props.height - 60}px`}}/>);
         }
 

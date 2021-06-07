@@ -67,7 +67,8 @@ function DashboardPlotCard(props) {
                         </CardList>
                     </Grid>
                     <Grid container item xs={7}>
-                        <ProfileComponent height={320} index={props.index} onDelete={() => console.log("Testing")} onClick={() => console.log("Testing")} plotMeta={props.plot} />
+                        <ProfileComponent height={320} index={props.index} onDelete={() => console.log("Testing")} onClick={() => console.log("Testing")} plotMeta={props.meta} onChangeDatatype={(id) => { console.log("Test")  // props.handleChangeDatatype(id)
+                        }} />
                     </Grid>
                 </Grid>
             </DashboardPlotContent>

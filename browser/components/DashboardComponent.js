@@ -244,7 +244,7 @@ class DashboardComponent extends React.Component {
                     activeProfiles: activeProfilesCopy
                 });
 
-                this.props.onActiveProfilesChange(activeProfilesCopy);
+                this.props.onActiveProfilesChange(activeProfilesCopy, this.context);
             } else {
                 this.setState({profiles: profilesCopy});
             }
@@ -409,7 +409,7 @@ class DashboardComponent extends React.Component {
         let activeProfiles = JSON.parse(JSON.stringify(this.state.activeProfiles));
         if (activeProfiles.indexOf(profileId) === -1) activeProfiles.push(profileId);
         this.setState({activeProfiles}, () => {
-            this.props.onActiveProfilesChange(this.state.activeProfiles);
+            this.props.onActiveProfilesChange(this.state.activeProfiles, this.context);
         });
     }
 
@@ -419,7 +419,7 @@ class DashboardComponent extends React.Component {
         let activeProfiles = JSON.parse(JSON.stringify(this.state.activeProfiles));
         if (activeProfiles.indexOf(profileId) > -1) activeProfiles.splice(activeProfiles.indexOf(profileId), 1);
         this.setState({activeProfiles}, () => {
-            this.props.onActiveProfilesChange(this.state.activeProfiles);
+            this.props.onActiveProfilesChange(this.state.activeProfiles, this.context);
         });
     }
 
@@ -663,7 +663,7 @@ class DashboardComponent extends React.Component {
                 });
             }
 
-            this.props.onPlotsChange(this.getPlots());
+            this.props.onPlotsChange(this.getPlots(), this.context);
         }).catch(error => {
             console.error(`Error occured while creating plot (${error})`)
         });
@@ -676,7 +676,7 @@ class DashboardComponent extends React.Component {
         if (activeProfilesCopy.indexOf(profileKey) > -1) activeProfilesCopy.splice(activeProfilesCopy.indexOf(profileKey), 1);
 
         this.setState({activeProfiles: activeProfilesCopy});
-        this.props.onActiveProfilesChange(activeProfilesCopy);
+        this.props.onActiveProfilesChange(activeProfilesCopy, this.context);
     }
 
     handleRemovePlot(id) {
@@ -723,7 +723,7 @@ class DashboardComponent extends React.Component {
                     dashboardItems: dashboardItemsCopy
                 });
 
-                this.props.onPlotsChange(this.getPlots());
+                this.props.onPlotsChange(this.getPlots(), this.context);
             }).catch(error => {
                 console.error(`Error occured while creating plot (${error})`)
             });
@@ -798,7 +798,7 @@ class DashboardComponent extends React.Component {
                 dashboardItems: dashboardItemsCopy
             });
 
-            this.props.onPlotsChange(this.getPlots());
+            this.props.onPlotsChange(this.getPlots(), this.context);
         }).catch(error => {
             console.error(`Error occured while updating plot (${error})`)
         });
@@ -868,7 +868,7 @@ class DashboardComponent extends React.Component {
                 projectPlots: plots,
                 dashboardItems: dashboardItemsCopy
             });
-            this.props.onPlotsChange(this.getPlots());
+            this.props.onPlotsChange(this.getPlots(), this.context);
         }).catch(error => {
             console.error(`Error occured while updating plot (${error})`)
         });
@@ -1108,9 +1108,7 @@ class DashboardComponent extends React.Component {
             this.nextDisplayType();
         };
 
-        return (<ProjectContext.Consumer>
-            {context => {
-            return <div>
+        return (<div>
             <div className="modal-header" id="watsonc-plots-dialog-controls">
                 <ReactTooltip/>
                 <div className="modal-header-content">
@@ -1200,7 +1198,7 @@ class DashboardComponent extends React.Component {
             <div className="modal-body" style={{padding: `0px 20px 0px 0px`, margin: `0px`}}>
                 <div className="form-group" style={{marginBottom: `0px`, paddingBottom: `0px`}}>{plotsControls}</div>
             </div>
-        </div>}}</ProjectContext.Consumer>);
+        </div>);
     }
 }
 
