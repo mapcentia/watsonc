@@ -305,12 +305,12 @@ module.exports = module.exports = {
             LAYER_NAMES.map(layerName => {
                 layerTree.setOnEachFeature(layerName, (clickedFeature, layer) => {
                     layer.on("click", (e) => {
-                        /* $("#" + FEATURE_CONTAINER_ID).animate({
+                        $("#" + FEATURE_CONTAINER_ID).animate({
                             bottom: "0"
                         }, 500, function () {
                             $("#" + FEATURE_CONTAINER_ID).find(".expand-less").show();
                             $("#" + FEATURE_CONTAINER_ID).find(".expand-more").hide();
-                        }); */
+                        });
 
                         let intersectingFeatures = [];
                         if (e.latlng) {
@@ -401,9 +401,9 @@ module.exports = module.exports = {
                                     dashboardComponentInstance.setDataSource(dataSource);
                                 }
 
-                                layer.bindPopup(ReactDOMServer.renderToString(<Provider store={reduxStore}><ThemeProvider><MapDecorator /></ThemeProvider></Provider>),
-                                    { maxWidth: 500, className: 'map-decorator-popup' });
-                                // _self.createModal(response.features, false, titleAsLink, false);
+                                /* layer.bindPopup(ReactDOMServer.renderToString(<Provider store={reduxStore}><ThemeProvider><MapDecorator /></ThemeProvider></Provider>),
+                                    { maxWidth: 500, className: 'map-decorator-popup' });  */
+                                _self.createModal(response.features, false, titleAsLink, false);
                                 if (!dashboardComponentInstance) {
                                     throw new Error(`Unable to find the component instance`);
                                 }
@@ -602,7 +602,7 @@ module.exports = module.exports = {
                             initialPlots={hydratedInitialPlots}
                             initialProfiles={initialProfiles}
                             onOpenBorehole={this.openBorehole.bind(this)}
-                            onPlotsChange={(plots = false) => {
+                            onPlotsChange={(plots = false, context) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
                                 if (plots) {
                                     _self.setStyleForPlots(plots);
@@ -610,6 +610,7 @@ module.exports = module.exports = {
                                     if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setPlots(plots);
                                     // Plots were updated from the DashboardComponent component
                                     if (modalComponentInstance) _self.createModal(false, plots);
+                                    context.setActivePlots(_self.getExistingActivePlots());
                                 }
                             }}
                             onProfilesChange={(profiles = false) => {
@@ -625,11 +626,12 @@ module.exports = module.exports = {
 
                                 context.setActivePlots(plots.filter((plot) => activePlots.indexOf(plot.id) > -1));
                             }}
-                            onActiveProfilesChange={(activeProfiles) => {
+                            onActiveProfilesChange={(activeProfiles, context) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
                                 if (window.menuProfilesComponentInstance) window.menuProfilesComponentInstance.setActiveProfiles(activeProfiles);
                                 console.log("Active Profiles changes");
                                 console.log(activeProfiles);
+                                context.setActiveProfiles(_self.getExistingActiveProfiles())
                             }}
                             onHighlightedPlotChange={(plotId, plots) => {
                                 _self.setStyleForHighlightedPlot(plotId, plots);

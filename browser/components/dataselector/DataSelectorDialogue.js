@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
+import {connect} from 'react-redux';
 import styled from "styled-components";
+import {selectChemical} from '../../redux/actions';
 import Title from '../shared/title/Title';
 import CloseButton from '../shared/button/CloseButton';
 import PropTypes from 'prop-types';
@@ -51,6 +53,11 @@ function DataSelectorDialogue(props) {
         setAllParameters([...chemicals]);
         setSelectedParameter(waterLevelParameter);
     }, [props.categories]);
+
+    const onChemicalSelect = (param) => {
+        setSelectedParameter(param);
+        props.selectChemical(param.value);
+    }
 
     const loadDataSources = () => {
         const api = new MetaApi();
@@ -107,7 +114,7 @@ function DataSelectorDialogue(props) {
                                 <Grid container item md={6}>
                                     {selectedDataSources.findIndex((item) => item.value == 'v:system.all') > -1 ? <Card>
                                         <Searchbox placeholder={__('Søg efter måleparameter')} onChange={(value) => setParameterSearchTerm(value)} />
-                                        <RadioButtonList listItems={parameters} onChange={setSelectedParameter} selectedParameter={selectedParameter} />
+                                        <RadioButtonList listItems={parameters} onChange={onChemicalSelect} selectedParameter={selectedParameter} />
                                     </Card> : null}
                                 </Grid>
                             </Grid>
@@ -144,4 +151,11 @@ const GridContainer = styled.div`
     padding-top: ${props => props.theme.layout.gutter/2}px;
 `;
 
-export default DataSelectorDialogue;
+
+const mapStateToProps = state => ({});
+
+const mapDispatchToProps = dispatch => ({
+    selectChemical: (key) => dispatch(selectChemical(key)),
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(DataSelectorDialogue);

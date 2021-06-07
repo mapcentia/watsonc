@@ -36,6 +36,7 @@ class ModalFeatureComponent extends React.Component {
         const list = this.listRef.current;
         const scroll = list.scrollHeight - list.scrollTop;
         this.props.setModalScroll(scroll);
+        return null;
     }
 
     componentDidMount() {
