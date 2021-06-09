@@ -1,8 +1,9 @@
 import Plot from 'react-plotly.js';
+import { useState, useEffect } from 'react';
 
 function PlotComponent(props) {
 
-    let plot = (<p className="text-muted">{__(`At least one y axis has to be provided`)}</p>);
+    const [plot, setPlot] = useState(<p className="text-muted">{__(`At least one y axis has to be provided`)}</p>);
     let layout = {
         displayModeBar: false,
         margin: {
@@ -27,16 +28,19 @@ function PlotComponent(props) {
         },
         autosize: true
     };
-    if (props.yAxis2LayoutSettings) {
-        layout.yaxis2 = props.yAxis2LayoutSettings;
-    }
-    console.log(props);
-    plot = (<Plot
-        data={props.plotData}
-        layout={layout}
-        onLegendDoubleClick={(param) => console.log("Legend double clicked", param)}
-        onLegendClick={(param) => console.log("Legend clicked", param)}
-        style={{width: "100%", height: `${props.height - 60}px`}}/>);
+
+    useEffect(() => {
+        setPlot(<Plot
+            data={props.plotData}
+            layout={layout}
+            onLegendDoubleClick={(param) => console.log("Legend double clicked", param)}
+            onLegendClick={(param) => console.log("Legend clicked", param)}
+            style={{width: "100%", height: `${props.height - 60}px`}}/>);
+        if (props.yAxis2LayoutSettings) {
+            layout.yaxis2 = props.yAxis2LayoutSettings;
+        }
+
+    }, [props.plotData, props.yAxis2LayoutSettings]);
 
     return (<div style={{maxHeight: ($(document).height() * 0.4 + 40) + 'px'}}>
                 <div style={{height: `${props.height - 50}px`, border: `1px solid lightgray`}}>{plot}</div>

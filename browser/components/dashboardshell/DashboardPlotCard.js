@@ -9,6 +9,7 @@ import {LIMIT_CHAR} from '../../constants';
 import { Size } from '../shared/constants/size';
 import CheckBox from '../shared/inputs/CheckBox';
 import PlotComponent from './PlotComponent';
+import CardListItem from './CardListItem';
 
 const utils = require('../../utils');
 
@@ -20,7 +21,7 @@ function DashboardPlotCard(props) {
     useEffect(() => {
         let data = [];
         let cardItems = [];
-        if (props.plot.measurements && props.plot.measurements.length > 0) {
+        if (props.plot && props.plot.measurements && props.plot.measurements.length > 0) {
             let colors = ['rgb(19,128,196)', 'rgb(16,174,140)', 'rgb(235,96,29)', 'rgb(247,168,77)', 'rgb(119,203,231)', `black`]
 
             let minTime = false;
@@ -36,6 +37,7 @@ function DashboardPlotCard(props) {
                     let feature = props.plot.measurementsCachedData[measurementLocationRaw].data;
                     if (measurementLocation.length === 3) {
                         let key = measurementLocation[1];
+                        let intakeIndex = measurementLocation[2];
                         let createdAt = props.plot.measurementsCachedData[measurementLocationRaw].created_at;
                         let measurementData = JSON.parse(feature.properties[key]);
 
@@ -78,7 +80,7 @@ function DashboardPlotCard(props) {
                         }
 
                         let title = utils.getMeasurementTitle(feature);
-                        let plotData = {
+                        let plotInfo = {
                             name: (`${title} (${measurementData.intakes ? measurementData.intakes[intakeIndex] : (intakeIndex + 1)}) - ${measurementData.title} (${measurementData.unit})`),
                             x: measurementData.timeOfMeasurement[intakeIndex],
                             y: measurementData.measurements[intakeIndex],
@@ -90,8 +92,8 @@ function DashboardPlotCard(props) {
                             }
                         };
 
-                        if (textValues.length > 0) plotData.hovertext = textValues;
-                        data.push(plotData);
+                        if (textValues.length > 0) plotInfo.hovertext = textValues;
+                        data.push(plotInfo);
                     } else if (measurementLocation.length === 4) {
                         let key = measurementLocation[1];
                         let customSpecificator = measurementLocation[2];
@@ -124,10 +126,10 @@ function DashboardPlotCard(props) {
                 }
             });
 
-            setPlotData(data);
-            setYAxis2LayoutSettings(yAxis2LayoutSettings);
 
         }
+        setPlotData(data);
+        setYAxis2LayoutSettings(yAxis2LayoutSettings);
     }, [props.plot])
 
     return (
@@ -168,24 +170,9 @@ function DashboardPlotCard(props) {
                 <Grid container>
                     <Grid container item xs={5}>
                         <CardList>
-                            {plotData.map((series) => {
+                            {props.plot?.measurements?.map((measurement, index) => {
                                 return (
-                                    <CardListItem>
-                                        <Grid container>
-                                            <Grid container item xs={11}>
-                                                <CheckBox />
-                                                <CardListLabel>
-                                                <Icon name='water-wifi-solid' size={16} />
-                                                <Title level={6} text={series.name} marginLeft={8} />
-                                                </CardListLabel>
-                                            </Grid>
-                                            <Grid container item xs={1} justify="flex-end">
-                                                <RemoveIconContainer>
-                                                    <Icon name="cross" size={16} />
-                                                </RemoveIconContainer>
-                                            </Grid>
-                                        </Grid>
-                                    </CardListItem>
+                                   <CardListItem measurement={measurement} plot={props.plot} onDeleteMeasurement={props.onDeleteMeasurement} key={index} />
                                 )
                             })}
                         </CardList>
@@ -254,35 +241,6 @@ const CardList = styled.div`
     height: 100%;
     width: 95%;
     vertical-align: middle;
-`;
-
-const RemoveIconContainer = styled.div`
-    width: 18px;
-    height: 18px;
-    margin-top: 3px;
-    border: 1px solid ${props => props.theme.colors.gray[2]};
-    border-radius: 50%;
-    display: none;
-`;
-
-const CardListItem = styled.div`
-    width: 100%;
-    padding: ${props => props.theme.layout.gutter/8}px;
-    vertical-align: middle;
-    height: ${props => props.theme.layout.gutter}px;
-    border-radius: ${props => props.theme.layout.borderRadius.small}px;
-    &:hover {
-        background: ${props => props.theme.colors.gray[4]};
-        ${RemoveIconContainer} {
-            display: block;
-        }
-    }
-`;
-
-const CardListLabel = styled.div`
-    vertical-align: middle;
-    display: inline-block;
-    margin-left: ${props => props.theme.layout.gutter/4}px;
 `;
 
 

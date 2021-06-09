@@ -11,7 +11,7 @@ const HIDDEN_DIV = 'watsonc-plots-dialog-form-hidden'
 
 const DashboardWrapper = React.forwardRef((props, ref) => {
 
-    const DashboardShellWrapper = (props) => ReactDOM.createPortal(<Provider store={props.store}><ThemeProvider><DashboardShell /></ThemeProvider></Provider>, document.getElementById(DASHBOARD_CONTAINER_ID));
+    const DashboardShellWrapper = (props) => ReactDOM.createPortal(<Provider store={props.store}><ThemeProvider><DashboardShell {...props} /></ThemeProvider></Provider>, document.getElementById(DASHBOARD_CONTAINER_ID));
 
     const DashboardComponentWrapper = React.forwardRef((props, ref) => ReactDOM.createPortal(<DashboardComponent {...props} ref={ref} />, document.getElementById(HIDDEN_DIV)));
 

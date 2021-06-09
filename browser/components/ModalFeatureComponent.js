@@ -351,7 +351,6 @@ class ModalFeatureComponent extends React.Component {
             activePlotIds = activePlotIds.filter((id) => {
                 return !!id;
             })
-            console.log(this.state.plots)
             this.state.plots.map((plot) => {
                 let display = true;
                 if (this.state.plotsSearchTerm.length > 0) {
