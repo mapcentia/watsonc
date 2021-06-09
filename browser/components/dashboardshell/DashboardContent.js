@@ -13,7 +13,6 @@ import DashboardPlotCard from './DashboardPlotCard';
 import DashboardProfileCard from './DashboardProfileCard';
 
 function DashboardContent(props) {
-    console.log(props);
     return (
         <Root>
             <Grid container>
@@ -132,7 +131,7 @@ function DashboardContent(props) {
                 <Grid container item xs={7}>
                     <ChartsContainer>
                         {props.activePlots.map((plot, index) => {
-                                return <DashboardPlotCard plot={plot} index={index} key={index} />
+                                return <DashboardPlotCard plot={plot} index={index} key={index} onDeleteMeasurement={props.onDeleteMeasurement} />
                         })}
                         {props.activeProfiles.map((profile, index) => {
                             return <DashboardProfileCard meta={profile} index={index} key={index} />

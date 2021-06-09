@@ -602,6 +602,9 @@ module.exports = module.exports = {
                             initialPlots={hydratedInitialPlots}
                             initialProfiles={initialProfiles}
                             onOpenBorehole={this.openBorehole.bind(this)}
+                            onDeleteMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex) => {
+                                dashboardComponentInstance.deleteMeasurement(plotId, featureGid, featureKey, featureIntakeIndex);
+                            }}
                             onPlotsChange={(plots = false, context) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
                                 if (plots) {
@@ -610,6 +613,7 @@ module.exports = module.exports = {
                                     if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setPlots(plots);
                                     // Plots were updated from the DashboardComponent component
                                     if (modalComponentInstance) _self.createModal(false, plots);
+                                    console.log(_self.getExistingActivePlots());
                                     context.setActivePlots(_self.getExistingActivePlots());
                                 }
                             }}
