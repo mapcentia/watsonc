@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import Switch from '@material-ui/core/Switch';
 
-import withDragDropContext from './withDragDropContext';
 import ModalMeasurementComponent from './ModalMeasurementComponent';
 import ModalPlotComponent from './ModalPlotComponent';
 import TitleFieldComponent from './../../../../browser/modules/shared/TitleFieldComponent';
@@ -458,4 +457,4 @@ const mapStateToProps = state => ({
     selectedChemical: state.global.selectedChemical
 })
 
-export default connect(mapStateToProps)(withDragDropContext(ModalFeatureComponent));
+export default connect(mapStateToProps)(ModalFeatureComponent);
