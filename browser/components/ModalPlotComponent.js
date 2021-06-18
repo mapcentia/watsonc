@@ -123,4 +123,4 @@ ModalPlotComponent.propTypes = {
     onDeleteMeasurement: PropTypes.func.isRequired
 };
 
-export default DropTarget(`MEASUREMENT`, plotTarget, collect)(ModalPlotComponent);
+export default ModalPlotComponent;
