@@ -599,8 +599,6 @@ module.exports = module.exports = {
                             onActiveProfilesChange={(activeProfiles, context) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
                                 if (window.menuProfilesComponentInstance) window.menuProfilesComponentInstance.setActiveProfiles(activeProfiles);
-                                console.log("Active Profiles changes");
-                                console.log(activeProfiles);
                                 context.setActiveProfiles(_self.getExistingActiveProfiles())
                             }}
                             onHighlightedPlotChange={(plotId, plots) => {
