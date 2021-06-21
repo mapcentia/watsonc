@@ -8,14 +8,43 @@ import ButtonGroup from '../shared/button/ButtonGroup';
 import Button from '../shared/button/Button';
 import { Variants } from '../shared/constants/variants';
 import { Align } from '../shared/constants/align';
+import arrayMove from 'array-move';
+import SortableList from '../shared/list/SortableList';
 import Icon from '../shared/icons/Icon';
 import ChemicalsListItem from './ChemicalsListItem';
 import GraphCard from './GraphCard';
 import ChemicalSelector from './ChemicalSelector';
 
+const DASHBOARD_ITEM_PLOT = 0;
+const DASHBOARD_ITEM_PROFILE = 1;
+
 function DashboardContent(props) {
     const [selectedBoreholeIndex, setSelectedBoreholeIndex] = useState(0);
     const [selectedBorehole, setSelectedBorehole] = useState();
+    const [dashboardItems, setDashboardItems] = useState([]);
+
+    const handlePlotSort = ({oldIndex, newIndex}) => {
+        setDashboardItems(arrayMove(dashboardItems, oldIndex, newIndex));
+    }
+
+    useEffect(() => {
+        const dashboardItemsCopy = [];
+
+        props.activeProfiles.map((item) => {
+            dashboardItemsCopy.push({
+                type: DASHBOARD_ITEM_PROFILE,
+                item
+            })
+        });
+
+        props.activePlots.map((item) => {
+            dashboardItemsCopy.push({
+                type: DASHBOARD_ITEM_PLOT,
+                item
+            })
+        });
+        setDashboardItems(dashboardItemsCopy);
+    }, [props.activePlots, props.activeProfiles]);
 
     useEffect(() => {
         if (props.boreholeFeatures)
@@ -115,12 +144,16 @@ function DashboardContent(props) {
                 </Grid>
                 <Grid container item xs={7}>
                     <ChartsContainer>
-                        {props.activePlots.map((plot, index) => {
-                                return <GraphCard plot={plot} index={index} key={index} onDeleteMeasurement={props.onDeleteMeasurement} cardType='plot' />
-                        })}
-                        {props.activeProfiles.map((profile, index) => {
-                            return <GraphCard meta={profile} index={index} key={index} cardType='profile' />
-                        })}
+                        <SortableList axis="xy" onSortEnd={handlePlotSort}>
+                            {dashboardItems.map((dashboardItem, index) => {
+                                if (dashboardItem.type === DASHBOARD_ITEM_PLOT) {
+                                    return <GraphCard plot={dashboardItem.item} index={index} key={index} onDeleteMeasurement={props.onDeleteMeasurement} cardType='plot' />
+                                } else if (dashboardItem.type === DASHBOARD_ITEM_PROFILE) {
+
+                                    return <GraphCard meta={dashboardItem.item} index={index} key={index} cardType='profile' />
+                                }
+                            })}
+                        </SortableList>
                     </ChartsContainer>
                 </Grid>
             </Grid>
@@ -177,7 +210,7 @@ const FavoritterListTitle = styled.div`
     margin-top: ${props => props.theme.layout.gutter/2}px;
 `;
 
-const ChartsContainer = styled.div`
+const ChartsContainer = styled.ul`
     width: 100%;
     padding-left: ${props => props.theme.layout.gutter*2}px;
     padding-right: ${props => props.theme.layout.gutter/4}px;

@@ -4,6 +4,8 @@ import Icon from '../shared/icons/Icon';
 import Title from '../shared/title/Title';
 import DashboardPlotCard from './DashboardPlotCard';
 import DashboardProfileCard from './DashboardProfileCard';
+import {sortableElement} from 'react-sortable-hoc';
+import SortHandleComponent from './SortHandleComponent';
 import PlotApi from '../../api/plots/PlotApi';
 import axios from 'axios';
 
@@ -75,7 +77,7 @@ function GraphCard(props) {
 
     }
 
-    return (<Root>
+    return (<li className='list-group-item'><Root>
         <DashboardPlotHeader>
                 <Grid container>
                     <Grid container item xs={3}>
@@ -109,7 +111,7 @@ function GraphCard(props) {
                 </Grid>
             </DashboardPlotHeader>
             {props.cardType === 'plot' ? <DashboardPlotCard {...props} /> : <DashboardProfileCard {...props} />}
-        </Root>);
+        </Root></li>);
 }
 
 
@@ -160,4 +162,4 @@ const CloseButton = styled.div`
     height: ${props => props.theme.layout.gutter * 3 / 4}px;
 `;
 
-export default GraphCard;
+export default sortableElement(GraphCard);
