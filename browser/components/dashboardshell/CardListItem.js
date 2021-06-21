@@ -8,7 +8,7 @@ import CheckBox from '../shared/inputs/CheckBox';
 const utils = require('../../utils');
 
 function CardListItem(props) {
-    const [name, setName] = useState(null);
+    const [name, setName] = useState('');
     const [infoForDeletion, setInfoForDeletion] = useState({});
     useEffect(() => {
         if (props.measurement) {

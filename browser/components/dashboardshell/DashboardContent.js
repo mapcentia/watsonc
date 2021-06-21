@@ -1,3 +1,5 @@
+import {useState, useEffect } from 'react';
+import {connect} from 'react-redux';
 import styled from 'styled-components';
 import { hexToRgbA } from '../../helpers/colors';
 import Grid from '@material-ui/core/Grid';
@@ -7,12 +9,19 @@ import Button from '../shared/button/Button';
 import { Variants } from '../shared/constants/variants';
 import { Align } from '../shared/constants/align';
 import Icon from '../shared/icons/Icon';
-import Searchbox from '../shared/inputs/Searchbox';
 import ChemicalsListItem from './ChemicalsListItem';
-import DashboardPlotCard from './DashboardPlotCard';
-import DashboardProfileCard from './DashboardProfileCard';
+import GraphCard from './GraphCard';
+import ChemicalSelector from './ChemicalSelector';
 
 function DashboardContent(props) {
+    const [selectedBoreholeIndex, setSelectedBoreholeIndex] = useState(0);
+    const [selectedBorehole, setSelectedBorehole] = useState();
+
+    useEffect(() => {
+        if (props.boreholeFeatures)
+            setSelectedBorehole(props.boreholeFeatures[selectedBoreholeIndex]);
+    }, [props.boreholeFeatures, selectedBoreholeIndex])
+
     return (
         <Root>
             <Grid container>
@@ -20,34 +29,28 @@ function DashboardContent(props) {
                     <DashboardList>
                         <Grid container>
                             <Grid container item xs={5}>
-                                <DashboardListTitle>
-                                    <Icon name="pin-location-solid" size={16} strokeColor={DarkTheme.colors.headings} />
-                                    <Title level={4} color={DarkTheme.colors.headings} text={__('Valgte datakilder')} marginLeft={8} />
-                                </DashboardListTitle>
-                                <DashboardListItem>
-                                    <Icon name="drill" size={16} strokeColor={DarkTheme.colors.headings} />
-                                    <Title level={6} text='13.344' marginLeft={8} />
-                                </DashboardListItem>
-                                <DashboardListItem>
-                                    <Icon name="drill" size={16} strokeColor={DarkTheme.colors.headings} />
-                                    <Title level={6} text='13.947' marginLeft={8} />
-                                </DashboardListItem>
-                                <DashboardListItem>
-                                    <Icon name="drill" size={16} strokeColor={DarkTheme.colors.headings} />
-                                    <Title level={6} text='13.478' marginLeft={8} />
-                                </DashboardListItem>
-                                <DashboardListItem>
-                                    <Icon name="water-wifi-solid" size={12} />
-                                    <Title level={6} text={__('Vandstandsmaler')} marginLeft={8} />
-                                </DashboardListItem>
-                                <DashboardListItem>
-                                    <Icon name="water-wifi-solid" size={12} />
-                                    <Title level={6} text={__('Lokalitet 234.432')} marginLeft={8} />
-                                </DashboardListItem>
-                                <DashboardListItem>
-                                    <Icon name="water-wifi-solid" size={12} />
-                                    <Title level={6} text={__('Lokalitet 345.543')} marginLeft={8} />
-                                </DashboardListItem>
+                                <BoreholesList>
+                                    <DashboardListTitle>
+                                        <Icon name="pin-location-solid" size={16} strokeColor={DarkTheme.colors.headings} />
+                                        <Title level={4} color={DarkTheme.colors.headings} text={__('Valgte datakilder')} marginLeft={8} />
+                                    </DashboardListTitle>
+                                    {props.boreholeFeatures ? props.boreholeFeatures.map((item, index) => {
+                                        let name;
+                                        if (typeof item.properties.alias !== "undefined") {
+                                            try {
+                                                name = item.properties.alias;
+                                            } catch (e) {
+                                                name = item.properties.boreholeno;
+                                            }
+                                        } else {
+                                            name = item.properties.boreholeno;
+                                        }
+                                        return <DashboardListItem onClick={() => setSelectedBoreholeIndex(index)} active={selectedBoreholeIndex === index} key={index}>
+                                            <Icon name="drill" size={16} strokeColor={DarkTheme.colors.headings} />
+                                            <Title level={6} text={name} marginLeft={8} />
+                                        </DashboardListItem>
+
+                                    }) : null}
                                 <FavoritterList>
                                     <DashboardListTitle>
                                         <Icon name="star-solid" size={16} />
@@ -102,28 +105,10 @@ function DashboardContent(props) {
                                         <Title level={6} text={__('Lokalitet 799.553')} marginLeft={8} />
                                     </DashboardListItem>
                                 </FavoritterList>
+                                </BoreholesList>
                             </Grid>
                             <Grid container item xs={7}>
-                                <ChemicalSelector>
-
-                                    <ButtonGroup align={Align.Right} spacing={2} marginTop={1}>
-                                        <Button text={__("Jupiter")} variant={Variants.Secondary} onClick={() => console.log("Clicked")} size={Size.Small} />
-                                        <Button text={__("Borpro")} variant={Variants.Secondary} onClick={() => console.log("Clicked")} size={Size.Small} />
-                                    </ButtonGroup>
-                                    <SearchboxContainer>
-                                        <Searchbox placeholder={__('Søg efter dataparameter')} />
-                                    </SearchboxContainer>
-                                    <ChemicalsList>
-                                        <ChemicalsListTitle>
-                                            <Icon name="plus-solid" size={16} />
-                                            <Title level={4} text={__('Tilstandsparametre')} marginLeft={8} />
-                                        </ChemicalsListTitle>
-                                        <ChemicalsListItem label='Vandstand(sensor)' description='Historisk < 5cm | Seneste < 5cm' circleColor={DarkTheme.colors.denotive.error} />
-                                        <ChemicalsListItem label='Vandstand(model)' description='Historisk 218cm | Seneste 196cm' circleColor={DarkTheme.colors.denotive.warning} />
-                                        <ChemicalsListItem label='Flow(sensor)' description='Historisk 0.03 ltr/min | Seneste < 0.001 ltr/min' circleColor={DarkTheme.colors.denotive.success} />
-                                        <ChemicalsListItem label='Flow(model)' description='Historisk 28 ltr/min | Seneste 29 ltr/min' circleColor={DarkTheme.colors.denotive.success} />
-                                    </ChemicalsList>
-                                </ChemicalSelector>
+                                <ChemicalSelector feature={selectedBorehole} limits={limits} categories={props.categories} onAddMeasurement={props.onAddMeasurement} />
                             </Grid>
                         </Grid>
                     </DashboardList>
@@ -131,10 +116,10 @@ function DashboardContent(props) {
                 <Grid container item xs={7}>
                     <ChartsContainer>
                         {props.activePlots.map((plot, index) => {
-                                return <DashboardPlotCard plot={plot} index={index} key={index} onDeleteMeasurement={props.onDeleteMeasurement} />
+                                return <GraphCard plot={plot} index={index} key={index} onDeleteMeasurement={props.onDeleteMeasurement} cardType='plot' />
                         })}
                         {props.activeProfiles.map((profile, index) => {
-                            return <DashboardProfileCard meta={profile} index={index} key={index} />
+                            return <GraphCard meta={profile} index={index} key={index} cardType='profile' />
                         })}
                     </ChartsContainer>
                 </Grid>
@@ -158,6 +143,10 @@ const DashboardList = styled.div`
     overflow: scroll;
 `;
 
+const BoreholesList = styled.div`
+    width: 100%;
+`;
+
 const DashboardListTitle = styled.div`
     margin-top: ${props => props.theme.layout.gutter/4}px;
     width: 100%;
@@ -166,21 +155,16 @@ const DashboardListTitle = styled.div`
 
 const DashboardListItem = styled.div`
     margin-top: ${props => props.theme.layout.gutter/8}px;
+    height: ${props => props.theme.layout.gutter}px;
     padding: ${props => props.theme.layout.gutter/8}px 0px;
     width: 100%;
-    color: ${props => props.theme.colors.gray[4]};
+    color: ${props => props.active ? props.theme.colors.headings : props.theme.colors.gray[4]};
+    background-color: ${props => props.active ? props.theme.colors.primary[2] : 'transparent'};
+    cursor: pointer;
     &:hover {
         background-color: ${props => props.theme.colors.primary[2]};
         color: ${props => props.theme.colors.headings};
     }
-`;
-
-const ChemicalSelector = styled.div`
-    background: ${props => props.theme.colors.primary[2]};
-    border-radius: ${props => props.theme.layout.borderRadius.small}px;
-    height: 100%;
-    width: 100%;
-    padding: ${props => props.theme.layout.gutter/2}px;
 `;
 
 const FavoritterList = styled.div`
@@ -193,20 +177,6 @@ const FavoritterListTitle = styled.div`
     margin-top: ${props => props.theme.layout.gutter/2}px;
 `;
 
-const SearchboxContainer = styled.div`
-    width: 100%;
-    padding: ${props => props.theme.layout.gutter/2}px 0px;
-`;
-
-const ChemicalsList = styled.div`
-    width: 100%;
-    padding: ${props => props.theme.layout.gutter/4}px;
-`
-
-const ChemicalsListTitle = styled.div`
-    color: ${props => props.theme.colors.headings};
-`;
-
 const ChartsContainer = styled.div`
     width: 100%;
     padding-left: ${props => props.theme.layout.gutter*2}px;
@@ -215,4 +185,10 @@ const ChartsContainer = styled.div`
     overflow: scroll;
 `
 
-export default DashboardContent;
+const mapStateToProps = state => ({
+    boreholeFeatures: state.global.boreholeFeatures
+});
+
+const mapDispatchToProps = dispatch => ({});
+
+export default connect(mapStateToProps, mapDispatchToProps)(DashboardContent);

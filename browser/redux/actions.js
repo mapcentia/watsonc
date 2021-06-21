@@ -37,3 +37,13 @@ export const selectMeasurementCount = count => ({
     type: 'SELECT_MEASUREMENT_COUNT',
     payload: count
 });
+
+export const setBoreholeFeatures = features => ({
+    type: 'SET_BOREHOLE_FEATURES',
+    payload: features
+});
+
+export const setLimits = limits => ({
+    type: 'SET_LIMITS',
+    payload: limits
+});

@@ -538,7 +538,9 @@ class DashboardComponent extends React.Component {
             });
         });
 
-        this.setState({plots, dashboardItems: dashboardItemsCopy});
+        this.setState({plots, dashboardItems: dashboardItemsCopy}, () => {
+            this.props.onPlotsChange(this.getPlots(), this.context);
+        });
     }
 
     setProjectProfiles(projectProfiles) {

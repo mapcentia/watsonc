@@ -38,7 +38,6 @@ function DashboardHeader(props) {
                     </Grid>
                 </Grid>
                 <Grid container item xs={2}>
-
                     <ButtonGroup align={Align.Center} spacing={2} marginTop={1}>
                         <Button text={__("Gem")} variant={Variants.Secondary} onClick={() => setShowProjectsList(!showProjectsList)} size={Size.Small} />
                         <Button text={__("Abn")} variant={Variants.None} onClick={() => applyParameter()} size={Size.Small} />

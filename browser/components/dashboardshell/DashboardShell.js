@@ -1,19 +1,23 @@
 import { useState, useContext } from 'react';
 import styled, { css } from 'styled-components';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import DashboardHeader from './DashboardHeader';
 import DashboardContent from './DashboardContent';
 import ProjectContext from '../../contexts/project/ProjectContext';
 
 function DashboardShell(props) {
     const [dashboardMode, setDashboardMode] = useState('full');
-    return (<ProjectContext.Consumer>
+    return (<DndProvider backend={HTML5Backend}>
+        <ProjectContext.Consumer>
             {context => {
                 return <Root mode={dashboardMode}>
                     <DashboardHeader setDashboardMode={setDashboardMode} dashboardMode={dashboardMode} setActivePlots={context.setActivePlots} />
                     <DashboardContent {...props} {...context} />
                 </Root>
             }}
-            </ProjectContext.Consumer>)
+        </ProjectContext.Consumer>
+        </DndProvider>)
 }
 
 const Root = styled.div`
