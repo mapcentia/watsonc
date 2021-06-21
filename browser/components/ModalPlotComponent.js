@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { DropTarget } from 'react-dnd';
 
 const utils = require('./../utils');
 
@@ -84,7 +83,7 @@ class ModalPlotComponent extends React.Component {
         }
 
         const isOver = this.props.isOver;
-        return this.props.connectDropTarget(<div
+        return (<div
             className="well well-sm js-plot"
             data-id="{this.props.plot.id}"
             style={{

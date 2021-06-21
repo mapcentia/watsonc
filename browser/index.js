@@ -22,7 +22,7 @@ import DashboardWrapper from './components/DashboardWrapper';
 
 
 import reduxStore from './redux/store';
-import {setAuthenticated} from './redux/actions';
+import {setAuthenticated, setBoreholeFeatures, setCategories} from './redux/actions';
 
 const symbolizer = require('./symbolizer');
 
@@ -237,6 +237,7 @@ module.exports = module.exports = {
                             }
                         });
                     }
+                    reduxStore.dispatch(setLimits(limits));
 
                     _self.buildBreadcrumbs();
 
@@ -246,6 +247,7 @@ module.exports = module.exports = {
                     categoriesOverall[LAYER_NAMES[1]] = {"Vandstand": {"0": WATER_LEVEL_KEY}};
 
                     if (infoModalInstance) infoModalInstance.setCategories(categoriesOverall);
+                    reduxStore.dispatch(setCategories(categories));
 
                     // Setup menu
                     let dd = $('li .dropdown-toggle');
@@ -353,6 +355,7 @@ module.exports = module.exports = {
                             boreholes.push(feature.properties.boreholeno)
                         });
 
+
                         let qLayer;
                         if (layerName.indexOf(LAYER_NAMES[0]) > -1 || layerName.indexOf(LAYER_NAMES[3]) > -1) {
                             qLayer = "chemicals.boreholes_time_series_with_chemicals";
@@ -381,6 +384,7 @@ module.exports = module.exports = {
 
                                 /* layer.bindPopup(ReactDOMServer.renderToString(<Provider store={reduxStore}><ThemeProvider><MapDecorator /></ThemeProvider></Provider>),
                                     { maxWidth: 500, className: 'map-decorator-popup' });  */
+                                reduxStore.dispatch(setBoreholeFeatures(response.features));
                                 _self.createModal(response.features, false, titleAsLink, false);
                                 if (!dashboardComponentInstance) {
                                     throw new Error(`Unable to find the component instance`);
@@ -556,7 +560,6 @@ module.exports = module.exports = {
                 let reactRef = React.createRef();
                     try {
                         ReactDOM.render(<DashboardWrapper
-                            store={reduxStore}
                             ref={reactRef}
                             backboneEvents={backboneEvents}
                             initialPlots={hydratedInitialPlots}
@@ -564,6 +567,9 @@ module.exports = module.exports = {
                             onOpenBorehole={this.openBorehole.bind(this)}
                             onDeleteMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex) => {
                                 dashboardComponentInstance.deleteMeasurement(plotId, featureGid, featureKey, featureIntakeIndex);
+                            }}
+                            onAddMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex) => {
+                                dashboardComponentInstance.addMeasurement(plotId, featureGid, featureKey, featureIntakeIndex);
                             }}
                             onPlotsChange={(plots = false, context) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);

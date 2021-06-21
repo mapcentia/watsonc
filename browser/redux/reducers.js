@@ -7,7 +7,10 @@ const initialState = {
     selectedChemical: "99999",
     selectedStartDate: "",
     selectedEndDate: "",
-    selectedMeasurementCount: 0
+    selectedMeasurementCount: 0,
+    boreholeFeatures: [],
+    boreholeChemicals: {},
+    limits: {},
 };
 
 const reducer = (state = initialState, action) => {
@@ -17,6 +20,12 @@ const reducer = (state = initialState, action) => {
             return Object.assign({}, state, {authenticated: action.payload});
         case 'SET_CATEGORIES':
             return Object.assign({}, state, {categories: action.payload});
+        case 'SET_BOREHOLE_FEATURES':
+            return Object.assign({}, state, {boreholeFeatures: action.payload});
+        case 'SET_LIMITS':
+            return Object.assign({}, state, {limits: action.payload});
+        case 'SET_BOREHOLE_CHEMICALS':
+            return Object.assign({}, state, {boreholeChemicals: action.payload});
         case 'SELECT_CHEMICAL':
             return Object.assign({}, state, {selectedChemical: action.payload});
         case 'SELECT_START_DATE':
