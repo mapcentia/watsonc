@@ -244,7 +244,7 @@ class DashboardComponent extends React.Component {
                     activeProfiles: activeProfilesCopy
                 });
 
-                this.props.onActiveProfilesChange(activeProfilesCopy, this.context);
+                this.props.onActiveProfilesChange(activeProfilesCopy, profilesCopy, this.context);
             } else {
                 this.setState({profiles: profilesCopy});
             }
@@ -409,7 +409,7 @@ class DashboardComponent extends React.Component {
         let activeProfiles = JSON.parse(JSON.stringify(this.state.activeProfiles));
         if (activeProfiles.indexOf(profileId) === -1) activeProfiles.push(profileId);
         this.setState({activeProfiles}, () => {
-            this.props.onActiveProfilesChange(this.state.activeProfiles, this.context);
+            this.props.onActiveProfilesChange(this.state.activeProfiles, this.state.profiles, this.context);
         });
     }
 
@@ -419,7 +419,7 @@ class DashboardComponent extends React.Component {
         let activeProfiles = JSON.parse(JSON.stringify(this.state.activeProfiles));
         if (activeProfiles.indexOf(profileId) > -1) activeProfiles.splice(activeProfiles.indexOf(profileId), 1);
         this.setState({activeProfiles}, () => {
-            this.props.onActiveProfilesChange(this.state.activeProfiles, this.context);
+            this.props.onActiveProfilesChange(this.state.activeProfiles, this.state.profiles, this.context);
         });
     }
 
@@ -684,7 +684,7 @@ class DashboardComponent extends React.Component {
         if (activeProfilesCopy.indexOf(profileKey) > -1) activeProfilesCopy.splice(activeProfilesCopy.indexOf(profileKey), 1);
 
         this.setState({activeProfiles: activeProfilesCopy});
-        this.props.onActiveProfilesChange(activeProfilesCopy, this.context);
+        this.props.onActiveProfilesChange(activeProfilesCopy, this.state.profiles, this.context);
     }
 
     handleRemovePlot(id) {
