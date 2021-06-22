@@ -1,4 +1,5 @@
 import { useState, useContext } from 'react';
+import {connect} from 'react-redux';
 import styled, { css } from 'styled-components';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -7,12 +8,11 @@ import DashboardContent from './DashboardContent';
 import ProjectContext from '../../contexts/project/ProjectContext';
 
 function DashboardShell(props) {
-    const [dashboardMode, setDashboardMode] = useState('full');
     return (<DndProvider backend={HTML5Backend}>
         <ProjectContext.Consumer>
             {context => {
-                return <Root mode={dashboardMode}>
-                    <DashboardHeader setDashboardMode={setDashboardMode} dashboardMode={dashboardMode} setActivePlots={context.setActivePlots} />
+                return <Root mode={props.dashboardMode}>
+                    <DashboardHeader setDashboardMode={props.setDashboardMode} dashboardMode={props.dashboardMode} setActivePlots={context.setActivePlots} />
                     <DashboardContent {...props} {...context} />
                 </Root>
             }}
@@ -40,4 +40,12 @@ const Root = styled.div`
     }}
 `
 
-export default DashboardShell;
+const mapStateToProps = state => ({
+    dashboardMode: state.global.dashboardMode
+})
+
+const mapDispatchToProps = dispatch => ({
+    setDashboarMode: (key) => dispatch(setDashboarMode(key)),
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(DashboardShell);
