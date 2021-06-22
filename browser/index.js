@@ -636,10 +636,16 @@ module.exports = module.exports = {
 
                                 context.setActivePlots(plots.filter((plot) => activePlots.indexOf(plot.id) > -1));
                             }}
-                            onActiveProfilesChange={(activeProfiles, context) => {
+                            getAllPlots={() => {
+                                return dashboardComponentInstance.getPlots();
+                            }}
+                            getAllProfiles={() => {
+                                return dashboardComponentInstance.getProfiles();
+                            }}
+                            onActiveProfilesChange={(activeProfiles, profiles, context) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
                                 if (window.menuProfilesComponentInstance) window.menuProfilesComponentInstance.setActiveProfiles(activeProfiles);
-                                context.setActiveProfiles(_self.getExistingActiveProfiles())
+                                context.setActiveProfiles(profiles.filter((profile) => activeProfiles.indexOf(profile.key) > -1));
                             }}
                             onHighlightedPlotChange={(plotId, plots) => {
                                 _self.setStyleForHighlightedPlot(plotId, plots);

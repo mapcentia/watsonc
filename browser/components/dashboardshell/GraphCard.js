@@ -98,13 +98,8 @@ function GraphCard(props) {
                             </IconContainer>
                             <Title marginLeft={8} level={6} text={__('Download')} />
                         </HeaderActionItem> : null}
-                        <HeaderActionItem>
-                            <IconContainer>
-                                <Icon name="drag-handle" size={16} />
-                            </IconContainer>
-                            <Title marginLeft={8} level={6} text={__('Flyt')} />
-                        </HeaderActionItem>
-                        <CloseButton>
+                        <SortHandleComponent />
+                        <CloseButton onClick={props.onRemove}>
                             <Icon name="cross" size={24} />
                         </CloseButton>
                     </Grid>
@@ -160,6 +155,7 @@ const CloseButton = styled.div`
     border-radius: ${props => props.theme.layout.borderRadius.small}px;
     border: 1px solid ${props => props.theme.colors.gray[4]};
     height: ${props => props.theme.layout.gutter * 3 / 4}px;
+    cursor: pointer;
 `;
 
 export default sortableElement(GraphCard);

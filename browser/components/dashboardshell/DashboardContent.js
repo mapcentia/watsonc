@@ -1,4 +1,4 @@
-import {useState, useEffect } from 'react';
+import {useState, useEffect, useContext } from 'react';
 import {connect} from 'react-redux';
 import styled from 'styled-components';
 import { hexToRgbA } from '../../helpers/colors';
@@ -14,6 +14,8 @@ import Icon from '../shared/icons/Icon';
 import ChemicalsListItem from './ChemicalsListItem';
 import GraphCard from './GraphCard';
 import ChemicalSelector from './ChemicalSelector';
+import ProjectContext from '../../contexts/project/ProjectContext';
+
 
 const DASHBOARD_ITEM_PLOT = 0;
 const DASHBOARD_ITEM_PROFILE = 1;
@@ -22,10 +24,24 @@ function DashboardContent(props) {
     const [selectedBoreholeIndex, setSelectedBoreholeIndex] = useState(0);
     const [selectedBorehole, setSelectedBorehole] = useState();
     const [dashboardItems, setDashboardItems] = useState([]);
-
+    const projectContext = useContext(ProjectContext);
     const handlePlotSort = ({oldIndex, newIndex}) => {
         setDashboardItems(arrayMove(dashboardItems, oldIndex, newIndex));
     }
+
+    const handleRemoveProfile = (key) => {
+        let profiles = props.activeProfiles;
+        profiles = profiles.filter((profile) => profile.key !== key);
+        const activeProfiles = profiles.map((profile) => profile.key);
+        props.onActiveProfilesChange(activeProfiles, props.getAllProfiles(), projectContext);
+    }
+
+    const handleRemovePlot = (id) => {
+        let plots = props.activePlots;
+        plots = plots.filter((plot) => plot.id !== id);
+        const activePlots = plots.map((plot) => plot.id);
+        props.onActivePlotsChange(activePlots, props.getAllPlots(), projectContext);
+    };
 
     useEffect(() => {
         const dashboardItemsCopy = [];
@@ -144,13 +160,14 @@ function DashboardContent(props) {
                 </Grid>
                 <Grid container item xs={7}>
                     <ChartsContainer>
-                        <SortableList axis="xy" onSortEnd={handlePlotSort}>
+                        <SortableList axis="xy" onSortEnd={handlePlotSort} useDragHandle>
                             {dashboardItems.map((dashboardItem, index) => {
                                 if (dashboardItem.type === DASHBOARD_ITEM_PLOT) {
-                                    return <GraphCard plot={dashboardItem.item} index={index} key={index} onDeleteMeasurement={props.onDeleteMeasurement} cardType='plot' />
+                                    return <GraphCard plot={dashboardItem.item} index={index} key={index} onDeleteMeasurement={props.onDeleteMeasurement} cardType='plot'
+                                            onRemove={() => handleRemovePlot(dashboardItem.item.id)}/>
                                 } else if (dashboardItem.type === DASHBOARD_ITEM_PROFILE) {
 
-                                    return <GraphCard meta={dashboardItem.item} index={index} key={index} cardType='profile' />
+                                    return <GraphCard meta={dashboardItem.item} index={index} key={index} cardType='profile' onRemove={() => handleRemoveProfile(dashboardItem.item.key)} />
                                 }
                             })}
                         </SortableList>

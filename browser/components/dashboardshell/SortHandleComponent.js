@@ -3,12 +3,12 @@ import Title from '../shared/title/Title';
 import {sortableHandle} from 'react-sortable-hoc';
 
 const SortHandleComponent = (props) => {
-    return (<Root>
+    return (<HeaderActionItem>
         <IconContainer>
             <Icon name="drag-handle" size={16} />
         </IconContainer>
         <Title marginLeft={8} level={6} text={__('Flyt')} />
-    </Root>)
+    </HeaderActionItem>)
 };
 
 const HeaderActionItem = styled.div`
