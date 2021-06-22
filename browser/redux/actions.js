@@ -47,3 +47,8 @@ export const setLimits = limits => ({
     type: 'SET_LIMITS',
     payload: limits
 });
+
+export const setDashboardMode = mode => ({
+    type: 'SET_DASHBOARD_MODE',
+    payload: mode
+})
