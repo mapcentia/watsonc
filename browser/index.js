@@ -22,7 +22,7 @@ import DashboardWrapper from './components/DashboardWrapper';
 
 
 import reduxStore from './redux/store';
-import {setAuthenticated, setBoreholeFeatures, setCategories, setDashboardMode} from './redux/actions';
+import {setAuthenticated, setBoreholeFeatures, setCategories} from './redux/actions';
 
 const symbolizer = require('./symbolizer');
 
@@ -407,7 +407,6 @@ module.exports = module.exports = {
                                 /* layer.bindPopup(ReactDOMServer.renderToString(<Provider store={reduxStore}><ThemeProvider><MapDecorator /></ThemeProvider></Provider>),
                                     { maxWidth: 500, className: 'map-decorator-popup' });  */
                                 reduxStore.dispatch(setBoreholeFeatures(response.features));
-                                reduxStore.dispatch(setDashboardMode('half'));
                                 _self.createModal(response.features, false, titleAsLink, false);
                                 if (!dashboardComponentInstance) {
                                     throw new Error(`Unable to find the component instance`);
