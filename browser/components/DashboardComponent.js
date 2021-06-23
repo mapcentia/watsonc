@@ -543,6 +543,10 @@ class DashboardComponent extends React.Component {
         });
     }
 
+    setActivePlots(activePlots) {
+        this.setState({ activePlots });
+    }
+
     setProjectProfiles(projectProfiles) {
         const unique = (myArr) => {
             return myArr.filter((obj, pos, arr) => {

@@ -15,7 +15,7 @@ function DashboardProfileCard(props) {
                     </Grid>
                     <Grid container item xs={10}>
                         <PlotContainer>
-                            <ProfileComponent height={320} index={props.index} onClick={() => console.log("Testing")} plotMeta={props.meta} onChangeDatatype={(id) => { console.log("Test")
+                            <ProfileComponent height={320} index={props.index} onClick={() => console.log("Testing")} plotMeta={props.plot} onChangeDatatype={(id) => { console.log("Test")
                             }} />
                         </PlotContainer>
                     </Grid>

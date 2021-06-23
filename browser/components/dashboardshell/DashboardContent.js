@@ -44,6 +44,29 @@ function DashboardContent(props) {
     };
 
     useEffect(() => {
+        window.Calypso = {
+            openDashboard: (plots) => {
+                let activePlots = projectContext.activePlots;
+                let allPlots = props.getAllPlots();
+                console.log(activePlots);
+                plots.map((plot) => {
+                    let plotData = {
+                        id: `plot_${activePlots.length + 1}`,
+                        title: plot.title,
+                        measurements: plot.measurements,
+                        measurementsCachedData: plot.measurementsCachedData
+                    };
+                    activePlots.push(plotData);
+                    allPlots.push(plotData);
+                })
+                activePlots = activePlots.map(plot => plot.id);
+                props.setPlots(allPlots, activePlots);
+                props.onActivePlotsChange(activePlots, allPlots, projectContext);
+            }
+        }
+    });
+
+    useEffect(() => {
         const dashboardItemsCopy = [];
 
         props.activeProfiles.map((item) => {
@@ -167,7 +190,7 @@ function DashboardContent(props) {
                                             onRemove={() => handleRemovePlot(dashboardItem.item.id)}/>
                                 } else if (dashboardItem.type === DASHBOARD_ITEM_PROFILE) {
 
-                                    return <GraphCard meta={dashboardItem.item} index={index} key={index} cardType='profile' onRemove={() => handleRemoveProfile(dashboardItem.item.key)} />
+                                    return <GraphCard plot={dashboardItem.item} index={index} key={index} cardType='profile' onRemove={() => handleRemoveProfile(dashboardItem.item.key)} />
                                 }
                             })}
                         </SortableList>

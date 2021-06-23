@@ -97,22 +97,6 @@ function ChemicalSelector(props) {
                     icon = measurementIcon.generate(measurementData.maxColor, measurementData.latestColor);
                 }
 
-                /* control = (<ModalMeasurementComponent
-                    key={key}
-                    icon={icon}
-                    onAddMeasurement={props.onAddMeasurement}
-                    maxMeasurement={measurementData === null ? null : Math.round((measurementData.maxMeasurement) * 100) / 100}
-                    latestMeasurement={measurementData === null ? null : Math.round((measurementData.latestMeasurement) * 100) / 100}
-                    latestMeasurementRelative={measurementData === null ? null : Math.round((measurementData.latestMeasurement / measurementData.chemicalLimits[1]) * 100) / 100}
-                    chemicalLimits={measurementData === null ? null : measurementData.chemicalLimits}
-                    detectionLimitReachedForMax={measurementData === null ? null : measurementData.detectionLimitReachedForMax}
-                    detectionLimitReachedForLatest={measurementData === null ? null : measurementData.detectionLimitReachedForLatest}
-                    gid={props.feature.properties.boreholeno}
-                    itemKey={item.key}
-                    intakeIndex={item.intakeIndex}
-                    intakeName={intakeName}
-                    unit={item.unit}
-                    title={item.title}/>); */
                     control = (<ChemicalsListItem
                         label={item.title}
                         circleColor={DarkTheme.colors.denotive.warning}
