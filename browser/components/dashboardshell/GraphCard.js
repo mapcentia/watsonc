@@ -85,7 +85,7 @@ function GraphCard(props) {
                             <HeaderSvg>
                                 <Icon name='analytics-board-graph-line' size={16} />
                             </HeaderSvg>
-                            <Title level={5} text={__('Tidsserie uden navn')} marginLeft={4} />
+                            <Title level={5} text={props.plot.title} marginLeft={4} />
                         </HeaderActionItem>
                     </Grid>
                     <Grid container item xs={2}>
