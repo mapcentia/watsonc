@@ -7,6 +7,7 @@ import ModalMeasurementComponent from '../ModalMeasurementComponent';
 
 function ChemicalSelector(props) {
     const [chemicalsList, setChemicalsList] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         if (!props.feature || !props.feature.properties) {
@@ -127,7 +128,10 @@ function ChemicalSelector(props) {
             for (let categoryName in categories) {
                 let measurementsThatBelongToCategory = Object.keys(categories[categoryName]).map(e => categories[categoryName][e]);
                 let measurementControls = [];
+                let searchTermLower = searchTerm.toLowerCase();
                 plottedProperties = plottedProperties.filter((item, index) => {
+                    if (searchTerm.length && item.title.toLowerCase().indexOf(searchTermLower) === -1)
+                        return false;
                     if (measurementsThatBelongToCategory.indexOf(item.title) !== -1) {
                         // Measurement is in current category
                         let control = createMeasurementControl(item, ('measurement_' + index));
@@ -186,7 +190,7 @@ function ChemicalSelector(props) {
             });
         }
         setChemicalsList(propertiesControls);
-    }, [props.categories, props.feature]);
+    }, [props.categories, props.feature, searchTerm]);
 
     return (
             <Root>
@@ -195,7 +199,7 @@ function ChemicalSelector(props) {
                     <Button text={__("Borpro")} variant={Variants.Secondary} onClick={() => console.log("Clicked")} size={Size.Small} />
                 </ButtonGroup>
                 <SearchboxContainer>
-                    <Searchbox placeholder={__('Søg efter dataparameter')} />
+                    <Searchbox placeholder={__('Søg efter dataparameter')} onChange={(value) => setSearchTerm(value)} />
                 </SearchboxContainer>
                 <ChemicalsList>
                     {chemicalsList}
