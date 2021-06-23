@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import {connect} from 'react-redux';
+import Collapse from '@material-ui/core/Collapse';
 import styled from 'styled-components';
 import Searchbox from '../shared/inputs/Searchbox';
 import ModalMeasurementComponent from '../ModalMeasurementComponent';
@@ -8,6 +9,12 @@ import ModalMeasurementComponent from '../ModalMeasurementComponent';
 function ChemicalSelector(props) {
     const [chemicalsList, setChemicalsList] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [openItems, setOpenItems] = useState({});
+
+    const toggleOpenItem = (key) => {
+        setOpenItems({...openItems, [key]: !!!openItems[key]});
+    }
+
 
     useEffect(() => {
         if (!props.feature || !props.feature.properties) {
@@ -122,6 +129,7 @@ function ChemicalSelector(props) {
             return control;
         };
 
+
         let propertiesControls = [];
         if (Object.keys(categories).length > 0) {
             let numberOfDisplayedCategories = 0;
@@ -151,10 +159,11 @@ function ChemicalSelector(props) {
                     let key = 'show' + categoryName.trim() + 'Measurements'
                     // Category has at least one displayed measurement
                     numberOfDisplayedCategories++;
-                    propertiesControls.push(<><ChemicalsListTitle>
+                    console.log(openItems);
+                    propertiesControls.push(<><ChemicalsListTitle onClick={() => toggleOpenItem(key)}>
                     <Icon name="plus-solid" size={16} />
                     <Title level={4} text={categoryName.trim()} marginLeft={8} />
-                </ChemicalsListTitle>{measurementControls}</>);
+                </ChemicalsListTitle><Collapse in={!!openItems[key]}>{measurementControls}</Collapse></>);
                 }
             }
 
@@ -174,12 +183,12 @@ function ChemicalSelector(props) {
                 })
                 // Category has at least one displayed measurement
                 numberOfDisplayedCategories++;
-                propertiesControls.push(<div key={`uncategorized_category_0`}>
-                    <div>
-                        <h5>{__(`Uncategorized`)}</h5>
-                    </div>
-                    <div>{uncategorizedMeasurementControls}</div>
-                </div>);
+                propertiesControls.push(<><ChemicalsListTitle onClick={() => toggleOpenItem('uncategorized')}>
+                    <Icon name="plus-solid" size={16} />
+                    <Title level={4} text={__('Uncategorized')} marginLeft={8} />
+                </ChemicalsListTitle>
+                    <Collapse in={openItems['uncategorized']}>{uncategorizedMeasurementControls}</Collapse>
+                </>);
             }
         } else {
             plottedProperties.map((item, index) => {
@@ -190,7 +199,7 @@ function ChemicalSelector(props) {
             });
         }
         setChemicalsList(propertiesControls);
-    }, [props.categories, props.feature, searchTerm]);
+    }, [props.categories, props.feature, searchTerm, openItems]);
 
     return (
             <Root>
@@ -229,6 +238,8 @@ const ChemicalsList = styled.div`
 
 const ChemicalsListTitle = styled.div`
     color: ${props => props.theme.colors.headings};
+    margin: 10px 0;
+    cursor: pointer;
 `;
 
 const mapStateToProps = state => ({
