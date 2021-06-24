@@ -11,7 +11,7 @@ const initialState = {
     boreholeFeatures: [],
     boreholeChemicals: {},
     limits: {},
-    dashboardMode: 'full',
+    dashboardMode: 'half',
 };
 
 const reducer = (state = initialState, action) => {

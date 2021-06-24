@@ -45,7 +45,7 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-    setDashboarMode: (key) => dispatch(setDashboarMode(key)),
+    setDashboardMode: (key) => dispatch(setDashboardMode(key)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(DashboardShell);
