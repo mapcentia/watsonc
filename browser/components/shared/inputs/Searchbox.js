@@ -1,5 +1,17 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import Icon from '../icons/Icon';
+import PropTypes from 'prop-types';
+
+Searchbox.propTypes = {
+    placeholder: PropTypes.string,
+    variant: PropTypes.string,
+    onChange: PropTypes.func
+}
+
+Searchbox.defaultProps = {
+    variant: Variants.Transparent
+}
+
 
 function Searchbox(props) {
 
@@ -9,7 +21,7 @@ function Searchbox(props) {
         }
     }
     return (
-        <Container>
+        <Container variant={props.variant}>
             <Icon name="search" size={16} />
             <Input placeholder={props.placeholder} onChange={onChange}>
             </Input>
@@ -27,6 +39,17 @@ const Container = styled.div`
     > div {
         margin: 10px;
     }
+    ${({ variant, theme }) => {
+        const styles = {
+            [Variants.Primary]: css `
+                background-color: ${theme.colors.headings};
+            `,
+            [Variants.Transparent]: css `
+                background-color: transparent;
+            `
+        }
+        return styles[variant];
+    }}
 `;
 
 const Input = styled.input`

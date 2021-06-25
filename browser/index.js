@@ -19,6 +19,7 @@ import ProjectContext from './contexts/project/ProjectContext';
 import DataSelectorDialogue from './components/dataselector/DataSelectorDialogue';
 import MapDecorator from './components/decorators/MapDecorator';
 import DashboardWrapper from './components/DashboardWrapper';
+import TopBar from './components/TopBar';
 
 
 import reduxStore from './redux/store';
@@ -235,6 +236,7 @@ module.exports = module.exports = {
 
         // Turn on raster layer with all boreholes.
         switchLayer.init(LAYER_NAMES[2], true, true, false);
+        ReactDOM.render(<ThemeProvider><TopBar /></ThemeProvider>, document.getElementById('top-bar'));
 
         $.ajax({
             url: '/api/sql/jupiter?q=SELECT * FROM codes.compunds_view&base64=false&lifetime=10800',
