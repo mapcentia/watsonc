@@ -10,11 +10,18 @@ function TopBar(props) {
 
     return (
         <Row container justify="center" alignItems="center">
-            <Grid item xs={3} >
+            <Grid item xs={1} >
                 <Logo src={getLogo()} alt="Calypso logo" title="Calypso logo" />
             </Grid>
+            <Grid item xs={2}>
+                <div className="js-layer-slide-breadcrumbs">
+                    <button type="button" class="navbar-toggle" id="burger-btn">
+                        <i class="fa fa-database"></i> Vælg data
+                    </button>
+                </div>
+            </Grid>
             <Grid item xs={6}>
-                <SearchBox placeholder="Søg på adresse, matrikel- eller DGU nummer" variant={Variants.Primary} />
+                <SearchBox placeholder="Søg på adresse, matrikel- eller DGU nummer" variant={Variants.Primary} inputId='custom-search' />
             </Grid>
             <Grid container item xs={2} justify="flex-end">
                 <Button

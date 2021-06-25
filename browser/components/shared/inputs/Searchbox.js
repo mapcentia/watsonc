@@ -23,7 +23,7 @@ function Searchbox(props) {
     return (
         <Container variant={props.variant}>
             <Icon name="search" size={16} />
-            <Input placeholder={props.placeholder} onChange={onChange}>
+            <Input placeholder={props.placeholder} onChange={onChange} id={props.inputId}>
             </Input>
         </Container>
     )
