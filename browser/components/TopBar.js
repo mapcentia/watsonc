@@ -30,7 +30,7 @@ function TopBar(props) {
                 onClick={() => window.alert("Godt valg")} />
             </Grid>
             <Grid container item xs={1} justify="center" >
-                <UserProfileButton text="bc" />
+                <UserProfileButton text="bc" backboneEvents={props.backboneEvents} session={props.session} />
             </Grid>
         </Row>
     );

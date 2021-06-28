@@ -2,13 +2,18 @@ import styled from "styled-components";
 
 function UserProfileOptionsList(props) {
 
+    const openAbonnement = () => {
+        $('#watsonc-limits-reached-text').hide();
+        $('#upgrade-modal').modal('show');
+    }
+
     return(
         <Root>
             <li onClick={() => {window.open("https://admin.calypso.watsonc.dk", "_blank");}}>Min profil</li>
-            <li>Abonnement</li>
-            <li>Nulstil</li>
+            <li onClick={openAbonnement}>Abonnement</li>
+            <li id="btn-reset">Nulstil</li>
             <li onClick={() => {window.open("http://watsonc.dk", "_blank");}}>Watsonc.dk</li>
-            <li>Log ud</li>
+            <li><a id="session" href="#" data-toggle="modal" data-target="#login-modal">Log ud</a></li>
         </Root>
     );
 }

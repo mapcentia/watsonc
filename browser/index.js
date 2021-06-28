@@ -236,7 +236,8 @@ module.exports = module.exports = {
 
         // Turn on raster layer with all boreholes.
         switchLayer.init(LAYER_NAMES[2], true, true, false);
-        ReactDOM.render(<ThemeProvider><TopBar /></ThemeProvider>, document.getElementById('top-bar'));
+        ReactDOM.render(<ThemeProvider><Provider store={reduxStore}>
+            <TopBar backboneEvents={backboneEvents} session={session}/></Provider></ThemeProvider>, document.getElementById('top-bar'));
 
         $.ajax({
             url: '/api/sql/jupiter?q=SELECT * FROM codes.compunds_view&base64=false&lifetime=10800',
