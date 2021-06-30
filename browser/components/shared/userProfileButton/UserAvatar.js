@@ -1,15 +1,12 @@
 import styled from "styled-components";
 import PropTypes from 'prop-types';
-
-UserAvatar.propTypes = {
-    text: PropTypes.string.isRequired
-}
+import Icon from '../icons/Icon';
 
 function UserAvatar(props) {
 
     return(
         <Avatar>
-            {props.text.toUpperCase()}
+            <Icon name='avatar' size={24} />
         </Avatar>
     );
 }
@@ -26,6 +23,7 @@ const Avatar = styled.div`
     justify-content: center;
     flex-direction: column;
     cursor: pointer;
+    padding-left: 10px;
 
     :hover {
         background: ${({ theme }) => theme.colors.primary[3]};

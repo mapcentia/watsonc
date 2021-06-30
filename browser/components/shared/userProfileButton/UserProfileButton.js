@@ -7,14 +7,9 @@ import UserAvatar from "./UserAvatar";
 import UserProfileOptionsList from "./UserProfileOptionsList";
 
 
-UserProfileButton.propTypes = {
-    text: PropTypes.string.isRequired
-}
-
 function UserProfileButton(props) {
 
     const [showPopper, setShowPopper] = useState(false);
-    const [userInitials, setUserInitials] = useState('JD');
     const buttonRef = useRef(null);
     const popperRef = useRef(null);
     const [arrowRef, setArrowRef] = useState(null);
@@ -46,39 +41,18 @@ function UserProfileButton(props) {
         }
       );
 
-    const setUserDetails = () => {
-        try {
-            if (props.authenticated) {
-                let name = props.session.getUserName();
-                console.log(name);
-                if (name)
-                    setUserInitials(name);
-            }
-        } catch(e) {
-
-        }
-
-    }
-
     useEffect(() => {
       document.addEventListener("mousedown", handleDocumentClick);
       return () => {
         document.removeEventListener("mousedown", handleDocumentClick);
       };
-      props.backboneEvents.get().on(`session:authChange`, (authenticated) => {
-        setUserDetails();
-      })
     }, []);
-
-    useEffect(() => {
-        setUserDetails();
-    }, [props.session, props.authenticated]);
 
 
     return (
         <>
             <div ref={buttonRef} onClick={() => setShowPopper(!showPopper)}>
-                <UserAvatar text={userInitials} />
+                <UserAvatar />
             </div>
 
             { showPopper ? (
@@ -135,10 +109,4 @@ const PopperContainer = styled.div`
   }
 `;
 
-const mapStateToProps = state => ({
-    authenticated: state.global.authenticated
-})
-
-const mapDispatchToProps = dispatch => ({});
-
-export default connect(mapStateToProps, mapDispatchToProps)(UserProfileButton);
+export default UserProfileButton;
