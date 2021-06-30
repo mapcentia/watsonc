@@ -1,10 +1,20 @@
 import styled from "styled-components";
+import SubscriptionDialogue from '../../SubscriptionDialogue';
+import {connect} from 'react-redux';
+
+var ReactDOM = require('react-dom');
 
 function UserProfileOptionsList(props) {
+    var subscriptionDialoguePlaceholderId = 'upgrade-modal'
+    const onCloseButtonClick = () => {
+        $('#' + subscriptionDialoguePlaceholderId).modal('hide');
+    }
 
     const openAbonnement = () => {
+        props.setDashboardMode('minimized');
         $('#watsonc-limits-reached-text').hide();
-        $('#upgrade-modal').modal('show');
+        ReactDOM.render(<SubscriptionDialogue onCloseButtonClick={onCloseButtonClick } />, document.getElementById(subscriptionDialoguePlaceholderId));
+        $('#' + subscriptionDialoguePlaceholderId).modal('show');
     }
 
     return(
@@ -36,4 +46,13 @@ const Root = styled.ul`
     }
 `;
 
-export default UserProfileOptionsList;
+const mapStateToProps = state => ({
+
+});
+
+const mapDispatchToProps = dispatch => ({
+    setDashboardMode:  (key) => dispatch(setDashboardMode(key))
+});
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserProfileOptionsList);

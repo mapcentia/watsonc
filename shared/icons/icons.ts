@@ -2,6 +2,7 @@ export const IconName = {
   ANALYTICS_BOARD_GRAPH_LINE:
     "analytics-board-graph-line" as "analytics-board-graph-line",
   ARROW_DOWN: "arrow-down" as "arrow-down",
+  AVATAR: "avatar" as "avatar",
   CHECK_MARK_SOLID: "check-mark-solid" as "check-mark-solid",
   CLEANING_SPRAY: "cleaning-spray" as "cleaning-spray",
   CROSS: "cross" as "cross",
