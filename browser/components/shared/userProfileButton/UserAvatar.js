@@ -14,6 +14,7 @@ function UserAvatar(props) {
 const Avatar = styled.div`
     background: ${({ theme }) => theme.colors.primary[5]};
     border-radius: 50%;
+    padding-left: 10px;
     height: 44px;
     width: 44px;
     color: white;

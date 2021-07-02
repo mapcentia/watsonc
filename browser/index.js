@@ -567,7 +567,7 @@ module.exports = module.exports = {
                             backboneEvents={backboneEvents}
                             initialPlots={hydratedInitialPlots}
                             initialProfiles={initialProfiles}
-                            onOpenBorehole={this.openBorehole.bind(this)}
+                            onOpenBorehole={this.openBorehole}
                             onDeleteMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex) => {
                                 dashboardComponentInstance.deleteMeasurement(plotId, featureGid, featureKey, featureIntakeIndex);
                             }}

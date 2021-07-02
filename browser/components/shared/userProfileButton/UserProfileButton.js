@@ -48,7 +48,6 @@ function UserProfileButton(props) {
       };
     }, []);
 
-
     return (
         <>
             <div ref={buttonRef} onClick={() => setShowPopper(!showPopper)}>
