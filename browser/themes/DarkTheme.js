@@ -1,16 +1,9 @@
 export const DarkTheme = {
   branding: null, // Defined in custom brandings
-  buttons: {
-    background: '#ffa137',
-    color: '#fff'
-  },
-  padding: {
-    titlePadding: '30px'
-  },
   colors: {
     background: "#F8F8F8",
     text: "#242323",
-    headings: "#292A2C",
+    headings: "#FFFFFF",
     primary: { // Low index = low brightness
       1: "#001E1B",
       2: "#003C36",
@@ -54,11 +47,12 @@ export const DarkTheme = {
     }
   },
   fonts: {
-    title: "'bold 40px Lato'",
-    subtitle: "'regular 24px Lato'",
-    heading: "'bold 18px Open Sans'",
-    body: "'regular 15px Open Sans'",
-    subbody: "'regular 13px Open Sans'",
-    footnote: "'regular 11px Open Sans'",
-  }
+    title: "bold 40px Lato",
+    subtitle: "normal 24px Lato",
+    heading: "normal 20px Open Sans",
+    body: "normal 15px Open Sans",
+    subbody: "normal 13px Lato",
+    label: "normal 11px Open Sans",
+    footnote: "normal 9px Open Sans",
+  },
 };

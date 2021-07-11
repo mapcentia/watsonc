@@ -1,5 +1,6 @@
 'use strict';
 
+import { useContext } from 'react';
 import {Provider} from 'react-redux';
 
 import PlotManager from './PlotManager';
@@ -9,14 +10,20 @@ import MenuTimeSeriesComponent from './components/MenuTimeSeriesComponent';
 import MenuDataSourceAndTypeSelectorComponent from './components/MenuDataSourceAndTypeSelectorComponent';
 import MenuProfilesComponent from './components/MenuProfilesComponent';
 import IntroModal from './components/IntroModal';
-import Modal from './components/modal/Modal';
 import AnalyticsComponent from './components/AnalyticsComponent';
 import {LAYER_NAMES, WATER_LEVEL_KEY, KOMMUNER} from './constants';
 import trustedIpAddresses from './trustedIpAddresses';
+import ThemeProvider from './themes/ThemeProvider';
+import ProjectProvider from './contexts/project/ProjectProvider';
+import ProjectContext from './contexts/project/ProjectContext';
+import DataSelectorDialogue from './components/dataselector/DataSelectorDialogue';
+import MapDecorator from './components/decorators/MapDecorator';
+import DashboardWrapper from './components/DashboardWrapper';
+import TopBar from './components/TopBar';
 
 
 import reduxStore from './redux/store';
-import {setAuthenticated} from './redux/actions';
+import {setAuthenticated, setBoreholeFeatures, setCategories} from './redux/actions';
 
 const symbolizer = require('./symbolizer');
 
@@ -43,7 +50,6 @@ let PLOTS_ID = `#` + DASHBOARD_CONTAINER_ID;
  * @type {*|exports|module.exports}
  */
 var cloud, switchLayer, backboneEvents, session = false;
-
 /**
  *
  * @type {*|exports|module.exports}
@@ -53,8 +59,10 @@ var layerTree, layers, anchor, state, urlparser;
 var React = require('react');
 
 var ReactDOM = require('react-dom');
+var ReactDOMServer = require('react-dom/server');
 
 let dashboardComponentInstance = false, modalComponentInstance = false, infoModalInstance = false;
+let dashboardShellInstance = false;
 
 let lastSelectedChemical = false, categoriesOverall = false, enabledLoctypeIds = [];
 
@@ -78,28 +86,6 @@ let limits = {};
 let names = {};
 
 let currentRasterLayer = null;
-
-const DATA_SOURCES = [{
-    originalLayerKey: LAYER_NAMES[0],
-    additionalKey: ``,
-    title: __(`Jupiter drilling`)
-}, {
-    originalLayerKey: LAYER_NAMES[1],
-    additionalKey: `1`,
-    title: "Online stationer"
-}, {
-    originalLayerKey: LAYER_NAMES[1],
-    additionalKey: `3`,
-    title: "Online stationer"
-}, {
-    originalLayerKey: LAYER_NAMES[1],
-    additionalKey: `4`,
-    title: "Online stationer"
-}, {
-    originalLayerKey: LAYER_NAMES[3],
-    additionalKey: ``,
-    title: "Pesticidoverblik"
-}];
 
 /**
  *
@@ -228,6 +214,8 @@ module.exports = module.exports = {
 
         // Turn on raster layer with all boreholes.
         switchLayer.init(LAYER_NAMES[2], true, true, false);
+        ReactDOM.render(<ThemeProvider><Provider store={reduxStore}>
+            <TopBar backboneEvents={backboneEvents} session={session}/></Provider></ThemeProvider>, document.getElementById('top-bar'));
 
         $.ajax({
             url: '/api/sql/jupiter?q=SELECT * FROM codes.compunds_view&base64=false&lifetime=10800',
@@ -252,6 +240,7 @@ module.exports = module.exports = {
                             }
                         });
                     }
+                    reduxStore.dispatch(setLimits(limits));
 
                     _self.buildBreadcrumbs();
 
@@ -261,6 +250,7 @@ module.exports = module.exports = {
                     categoriesOverall[LAYER_NAMES[1]] = {"Vandstand": {"0": WATER_LEVEL_KEY}};
 
                     if (infoModalInstance) infoModalInstance.setCategories(categoriesOverall);
+                    reduxStore.dispatch(setCategories(categories));
 
                     // Setup menu
                     let dd = $('li .dropdown-toggle');
@@ -297,7 +287,7 @@ module.exports = module.exports = {
 
             LAYER_NAMES.map(layerName => {
                 layerTree.setOnEachFeature(layerName, (clickedFeature, layer) => {
-                    layer.on("click", function (e) {
+                    layer.on("click", (e) => {
                         $("#" + FEATURE_CONTAINER_ID).animate({
                             bottom: "0"
                         }, 500, function () {
@@ -368,6 +358,7 @@ module.exports = module.exports = {
                             boreholes.push(feature.properties.boreholeno)
                         });
 
+
                         let qLayer;
                         if (layerName.indexOf(LAYER_NAMES[0]) > -1 || layerName.indexOf(LAYER_NAMES[3]) > -1) {
                             qLayer = "chemicals.boreholes_time_series_with_chemicals";
@@ -394,7 +385,9 @@ module.exports = module.exports = {
                                     dashboardComponentInstance.setDataSource(dataSource);
                                 }
 
-
+                                /* layer.bindPopup(ReactDOMServer.renderToString(<Provider store={reduxStore}><ThemeProvider><MapDecorator /></ThemeProvider></Provider>),
+                                    { maxWidth: 500, className: 'map-decorator-popup' });  */
+                                reduxStore.dispatch(setBoreholeFeatures(response.features));
                                 _self.createModal(response.features, false, titleAsLink, false);
                                 if (!dashboardComponentInstance) {
                                     throw new Error(`Unable to find the component instance`);
@@ -498,24 +491,6 @@ module.exports = module.exports = {
                     });
                 });
 
-                // Initializing data source and types selector
-                $(`[data-module-id="data-source-and-types-selector"]`).click(() => {
-                    if ($(`#data-source-and-types-selector-content`).children().length === 0) {
-                        try {
-                            ReactDOM.render(<Provider store={reduxStore}>
-                                <MenuDataSourceAndTypeSelectorComponent
-                                    onApply={_self.onApplyLayersAndChemical}
-                                    enabledLoctypeIds={enabledLoctypeIds}
-                                    urlparser={urlparser}
-                                    boreholes={layerTree.getActiveLayers().indexOf("_") > -1} // DIRTY HACK All raster layers has _ in name
-                                    layers={DATA_SOURCES}/>
-                            </Provider>, document.getElementById(`data-source-and-types-selector-content`));
-                        } catch (e) {
-                            console.log(e);
-                        }
-                    }
-                });
-
                 // Initializing TimeSeries management component
                 $(`[data-module-id="timeseries"]`).click(() => {
                     if ($(`#watsonc-timeseries`).children().length === 0) {
@@ -567,7 +542,7 @@ module.exports = module.exports = {
                     }
                 });
 
-                if (dashboardComponentInstance) dashboardComponentInstance.onSetMin();
+                // if (dashboardComponentInstance) dashboardComponentInstance.onSetMin();
             };
 
             if (document.getElementById(DASHBOARD_CONTAINER_ID)) {
@@ -575,6 +550,8 @@ module.exports = module.exports = {
                 if (applicationState && `modules` in applicationState && MODULE_NAME in applicationState.modules && `plots` in applicationState.modules[MODULE_NAME]) {
                     initialPlots = applicationState.modules[MODULE_NAME].plots;
                 }
+                console.log("Initial plots");
+                console.log(initialPlots);
 
                 let initialProfiles = [];
                 if (applicationState && `modules` in applicationState && MODULE_NAME in applicationState.modules && `profiles` in applicationState.modules[MODULE_NAME]) {
@@ -583,13 +560,21 @@ module.exports = module.exports = {
 
                 let plotManager = new PlotManager();
                 plotManager.hydratePlotsFromUser(initialPlots).then(hydratedInitialPlots => { // User plots
+                let reactRef = React.createRef();
                     try {
-                        dashboardComponentInstance = ReactDOM.render(<DashboardComponent
+                        ReactDOM.render(<DashboardWrapper
+                            ref={reactRef}
                             backboneEvents={backboneEvents}
                             initialPlots={hydratedInitialPlots}
                             initialProfiles={initialProfiles}
-                            onOpenBorehole={this.openBorehole.bind(this)}
-                            onPlotsChange={(plots = false) => {
+                            onOpenBorehole={this.openBorehole}
+                            onDeleteMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex) => {
+                                dashboardComponentInstance.deleteMeasurement(plotId, featureGid, featureKey, featureIntakeIndex);
+                            }}
+                            onAddMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex) => {
+                                dashboardComponentInstance.addMeasurement(plotId, featureGid, featureKey, featureIntakeIndex);
+                            }}
+                            onPlotsChange={(plots = false, context) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
                                 if (plots) {
                                     _self.setStyleForPlots(plots);
@@ -597,25 +582,43 @@ module.exports = module.exports = {
                                     if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setPlots(plots);
                                     // Plots were updated from the DashboardComponent component
                                     if (modalComponentInstance) _self.createModal(false, plots);
+                                    console.log(_self.getExistingActivePlots());
+                                    context.setActivePlots(_self.getExistingActivePlots());
                                 }
                             }}
                             onProfilesChange={(profiles = false) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
                                 if (profiles && window.menuProfilesComponentInstance) window.menuProfilesComponentInstance.setProfiles(profiles);
+                                console.log("Profiles changes");
+                                console.log(profiles);
                             }}
-                            onActivePlotsChange={(activePlots, plots) => {
+                            onActivePlotsChange={(activePlots, plots, context) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
                                 if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setActivePlots(activePlots);
                                 if (modalComponentInstance) _self.createModal(false, plots);
+
+                                context.setActivePlots(plots.filter((plot) => activePlots.indexOf(plot.id) > -1));
                             }}
-                            onActiveProfilesChange={(activeProfiles) => {
+                            getAllPlots={() => {
+                                return dashboardComponentInstance.getPlots();
+                            }}
+                            getAllProfiles={() => {
+                                return dashboardComponentInstance.getProfiles();
+                            }}
+                            setPlots={(plots, activePlots) => {
+                                dashboardComponentInstance.setPlots(plots);
+                                dashboardComponentInstance.setActivePlots(activePlots);
+                            }}
+                            onActiveProfilesChange={(activeProfiles, profiles, context) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
                                 if (window.menuProfilesComponentInstance) window.menuProfilesComponentInstance.setActiveProfiles(activeProfiles);
+                                context.setActiveProfiles(profiles.filter((profile) => activeProfiles.indexOf(profile.key) > -1));
                             }}
                             onHighlightedPlotChange={(plotId, plots) => {
                                 _self.setStyleForHighlightedPlot(plotId, plots);
                                 if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setHighlightedPlot(plotId);
-                            }}/>, document.getElementById(DASHBOARD_CONTAINER_ID));
+                            }}/>, document.getElementById('watsonc-plots-dialog-form-hidden'));
+                        dashboardComponentInstance = reactRef.current;
                     } catch (e) {
                         console.error(e);
                     }
@@ -641,7 +644,7 @@ module.exports = module.exports = {
     },
 
 
-    openBorehole(boreholeIdentifier) {
+    let(boreholeIdentifier) {
         let mapLayers = layers.getMapLayers();
         let boreholeIsInViewport = false;
         mapLayers.map(layer => {
@@ -739,93 +742,28 @@ module.exports = module.exports = {
             if (layerNameToEnable !== LAYER_NAMES[2] && !layerNameToEnable.startsWith("gc2_io_dk"))
                 switchLayer.init(layerNameToEnable, false);
         });
-
-        // Bind tool tip to stations
-        layerTree.setOnLoad(LAYER_NAMES[1], () => {
-            _self.bindToolTipOnStations()
-        }, "watsonc");
-
-        // Bind tool tip to  Pesticidoverblik
-        layerTree.setOnLoad(LAYER_NAMES[3], () => {
-            _self.bindToolTipOnPesticidoverblik()
-        }, "watsonc");
-
-        let filters = {};
-        let filteredLayers = [];
-        filters[LAYER_NAMES[1].split(":")[1]] = {
+        let filter = {
             match: "all", columns: [
                 {fieldname: "count", expression: ">", value: parameters.selectedMeasurementCount, restriction: false},
                 {fieldname: "startdate", expression: ">", value: parameters.selectedStartDate, restriction: false},
                 {fieldname: "enddate", expression: "<", value: parameters.selectedEndDate, restriction: false}
             ]
-
-        }
-
-        // Enable raster layer
-        if (parameters.layers.indexOf(LAYER_NAMES[0]) > -1) {
-            if (!parameters.chemical) return;
-            let rasterToEnable = `system._${parameters.chemical}`;
-            currentRasterLayer = rasterToEnable;
-            filters[rasterToEnable] = {
-                match: "all", columns: [
-                    {
-                        fieldname: "count",
-                        expression: ">",
-                        value: parameters.selectedMeasurementCount,
-                        restriction: false
-                    },
-                    {fieldname: "startdate", expression: ">", value: parameters.selectedStartDate, restriction: false},
-                    {fieldname: "enddate", expression: "<", value: parameters.selectedEndDate, restriction: false}
-                ]
-
+        };
+        let filters = {};
+        for (let i = 0; i < parameters.layers.length; i++) {
+            if (parameters.layers[i] === LAYER_NAMES[0]) {
+                if (!parameters.chemical) return;
+                let rasterToEnable = `system._${parameters.chemical}`;
+                currentRasterLayer = rasterToEnable;
+                filters[rasterToEnable] = filter;
+                layerTree.applyFilters(filters);
+                switchLayer.init(rasterToEnable, true);
+            } else {
+                switchLayer.init(parameters.layers[i], true);
             }
-            console.log("filters", filters)
-            layerTree.applyFilters(filters);
-            switchLayer.init(rasterToEnable, true).then(() => {
-                if (parameters.chemical) {
-                    _self.enableChemical(parameters.chemical, filteredLayers, false, parameters);
-                } else {
-                    lastSelectedChemical = parameters.chemical;
-                    filteredLayers.map(layerName => {
-                        layerTree.reloadLayer(layerName); // TODO
-                    });
-                }
-            });
-        } else {
-            layerTree.applyFilters(filters);
         }
 
         enabledLoctypeIds = [];
-        parameters.layers.map(layerName => {
-            if (layerName.indexOf(LAYER_NAMES[0]) === 0) {
-                filteredLayers.push(layerName);
-            }
-            if (layerName.indexOf(LAYER_NAMES[1]) === 0) {
-                if (layerName.indexOf(`#`) > -1) {
-                    if (filteredLayers.indexOf(layerName.split(`#`)[0]) === -1) {
-                        filteredLayers.push(layerName.split(`#`)[0]);
-                    }
-                    enabledLoctypeIds.push(layerName.split(`#`)[1]);
-                } else {
-                    if (filteredLayers.indexOf(layerName) === -1) {
-                        filteredLayers.push(layerName);
-                    }
-                }
-            }
-            if (layerName.indexOf(LAYER_NAMES[3]) === 0 || layerName.indexOf(LAYER_NAMES[1]) === 0) {
-                filteredLayers.push(layerName);
-                if (layerName.indexOf(LAYER_NAMES[3]) === 0) switchLayer.init(LAYER_NAMES[4], true);
-                filteredLayers.map(layerName => {
-                    layerTree.reloadLayer(layerName);
-                });
-                layerTree.setStyle(LAYER_NAMES[3], {
-                    "color": "#ffffff",
-                    "weight": 0,
-                    "opacity": 0.0,
-                    "fillOpacity": 0.0
-                });
-            }
-        });
 
         // Wait a bit with trigger state, so this
         setTimeout(() => {
@@ -847,7 +785,7 @@ module.exports = module.exports = {
         const introlModalPlaceholderId = `watsonc-intro-modal-placeholder`;
         if ($(`#${introlModalPlaceholderId}`).is(`:empty`)) {
             try {
-                ReactDOM.render(<Provider store={reduxStore}>
+                /* ReactDOM.render(<Provider store={reduxStore}>
                     <IntroModal
                         ref={inst => {
                             infoModalInstance = inst;
@@ -860,7 +798,14 @@ module.exports = module.exports = {
                         categories={categoriesOverall ? categoriesOverall : []}
                         onApply={_self.onApplyLayersAndChemical}
                         onClose={onCloseHandler}
-                    /></Provider>, document.getElementById(introlModalPlaceholderId));
+                    /></Provider>, document.getElementById(introlModalPlaceholderId)); */
+                ReactDOM.render(<Provider store={reduxStore}><ThemeProvider>
+                    <DataSelectorDialogue titleText={__('Welcome to Calypso')}
+                        urlparser={urlparser} anchor={anchor}
+                        categories={categoriesOverall ? categoriesOverall : []}
+                        onApply={_self.onApplyLayersAndChemical}
+                        onCloseButtonClick={onCloseHandler} state={state} />
+                    </ThemeProvider></Provider>, document.getElementById(introlModalPlaceholderId));
             } catch (e) {
                 console.error(e);
             }
@@ -1101,73 +1046,6 @@ module.exports = module.exports = {
         }
     },
 
-    enableChemical(chemicalId, layersToEnable = [], onComplete = false, parameters) {
-        if (!chemicalId) throw new Error(`Chemical identifier was not provided`);
-        setTimeout(() => {
-            let layersToEnableWereProvided = (layersToEnable.length > 0);
-            if (categoriesOverall) {
-                for (let layerName in categoriesOverall) {
-                    for (let key in categoriesOverall[layerName]) {
-                        for (let key2 in categoriesOverall[layerName][key]) {
-                            if (key2.toString() === chemicalId.toString() || categoriesOverall[layerName][key][key2] === chemicalId.toString()) {
-                                if (layersToEnableWereProvided === false) {
-                                    if (layersToEnable.indexOf(layerName) === -1) {
-                                        layersToEnable.push(layerName);
-                                    }
-                                }
-                                _self.buildBreadcrumbs(key, categoriesOverall[layerName][key][key2], layerName === LAYER_NAMES[1]);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            let filter = {
-                match: "all", columns: [
-                    {fieldname: "compound", expression: "=", value: chemicalId, restriction: false},
-                    {
-                        fieldname: "count",
-                        expression: ">",
-                        value: parameters.selectedMeasurementCount,
-                        restriction: false
-                    },
-                    {
-                        fieldname: "startdate",
-                        expression: ">",
-                        value: parameters.selectedStartDate,
-                        restriction: false
-                    },
-                    {fieldname: "enddate", expression: "<", value: parameters.selectedEndDate, restriction: false}
-                ]
-
-            };
-            let filters = {};
-            filters[LAYER_NAMES[0].split(":")[1]] = filter;
-            filters[LAYER_NAMES[1].split(":")[1]] = filter;
-
-
-            layerTree.applyFilters(filters);
-            lastSelectedChemical = chemicalId;
-            backboneEvents.get().trigger(`${MODULE_NAME}:chemicalChange`);
-            let onLoadCallback = function (store) {
-                if (layersToEnable.indexOf(store.id) > -1) {
-                    _self.displayChemicalSymbols(store.id);
-                }
-            };
-            layerTree.setOnLoad(LAYER_NAMES[0], onLoadCallback, "watsonc");
-            layersToEnable.map(layerName => {
-                layerTree.reloadLayer(layerName);
-            });
-            layerTree.setStyle(LAYER_NAMES[0], {
-                "color": "#ffffff",
-                "weight": 0,
-                "opacity": 0.0,
-                "fillOpacity": 0.0
-            });
-
-            if (onComplete) onComplete();
-        }, 0);
-    },
 
 
     getExistingPlots: () => {

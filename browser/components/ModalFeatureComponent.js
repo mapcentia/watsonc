@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import Switch from '@material-ui/core/Switch';
 
-import withDragDropContext from './withDragDropContext';
 import ModalMeasurementComponent from './ModalMeasurementComponent';
 import ModalPlotComponent from './ModalPlotComponent';
 import TitleFieldComponent from './../../../../browser/modules/shared/TitleFieldComponent';
@@ -36,6 +35,7 @@ class ModalFeatureComponent extends React.Component {
         const list = this.listRef.current;
         const scroll = list.scrollHeight - list.scrollTop;
         this.props.setModalScroll(scroll);
+        return null;
     }
 
     componentDidMount() {
@@ -83,8 +83,9 @@ class ModalFeatureComponent extends React.Component {
 
     handleHidePlot(plot) {
         let activePlots = this.state.activePlots.filter((activePlot) => {
-            return activePlot.id != plot.id;
+            return activePlot?.id !== plot.id;
         })
+        console.log("activePlots", activePlots)
         this.setState({activePlots});
         this.props.onPlotHide(plot.id);
     }
@@ -107,6 +108,7 @@ class ModalFeatureComponent extends React.Component {
     }
 
     setPlots(plots) {
+        console.log("SET: ", plots)
         this.setState({plots});
     }
 
@@ -455,4 +457,4 @@ const mapStateToProps = state => ({
     selectedChemical: state.global.selectedChemical
 })
 
-export default connect(mapStateToProps)(withDragDropContext(ModalFeatureComponent));
+export default connect(mapStateToProps)(ModalFeatureComponent);

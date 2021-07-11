@@ -1,20 +1,30 @@
 import styled, { css } from "styled-components";
-import { Variants } from "../../../constants";
+import { Variants } from "../constants/variants";
+import { Size } from '../constants/size';
 import PropTypes from 'prop-types';
 
-function Button(props) {
-    return (
-        <Root
-            onClick={props.onClick ?? props.onClick}
-            variant={props.variant}>
-            {props.text}
-        </Root>
-    );
-}
 Button.propTypes = {
     text: PropTypes.string,
     variant: PropTypes.oneOf(Object.keys(Variants)),
+    size: PropTypes.oneOf(Object.keys(Size)),
     onClick: PropTypes.func.isRequired
+}
+
+function Button(props) {
+    const onClick = (e) => {
+        if (props.onClick) {
+            props.onClick(e);
+        }
+    }
+    return (
+        <Root
+            onClick={onClick}
+            variant={props.variant}
+            disabled={props.disabled ? props.disabled : false}
+            size={props.size}>
+            {props.text}
+        </Root>
+    );
 }
 
 const Root = styled.button`
@@ -25,7 +35,6 @@ const Root = styled.button`
     border: 0;
     border-radius: ${props => props.theme.layout.borderRadius.small}px;
     color: black;
-    margin: 0 10px 0 10px;
     ${({ variant, theme }) => {
         const styles = {
             [Variants.Primary]: css `
@@ -35,13 +44,37 @@ const Root = styled.button`
                 }
             `,
             [Variants.Secondary]: css `
-                background-color: ${theme.colors.primary[4]};
+                background-color: ${theme.colors.primary[3]};
+                color: ${theme.colors.headings};
             `,
             [Variants.None]: css `
-                background-color: ${theme.colors.gray[3]};
+                background-color: ${theme.colors.gray[4]};
+            `,
+            [Variants.Transparent]: css `
+                background-color: transparent;
+                border: 1px solid ${props => props.theme.colors.headings};
+                color: ${props => props.theme.colors.headings};
             `
         };
         return styles[variant];
+  }}
+  ${({ size, theme }) => {
+        const styles = {
+            [Size.Small]: css `
+                width: ${theme.layout.gutter * 3}px;
+                font: ${theme.fonts.label};
+                height: 24px;
+            `,
+            [Size.Medium]: css `
+                width: ${theme.layout.gutter * 5}px;
+                height: 24px;
+                font: ${theme.fonts.label};
+            `,
+            [Size.Large]: css `
+                width: ${theme.layout.gutter * 10}px;
+            `
+        };
+        return styles[size];
   }}
 `
 export default Button;
