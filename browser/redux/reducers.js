@@ -12,6 +12,7 @@ const initialState = {
     boreholeChemicals: {},
     limits: {},
     dashboardMode: 'half',
+    dashboardContent: 'charts'
 };
 
 const reducer = (state = initialState, action) => {
@@ -27,6 +28,8 @@ const reducer = (state = initialState, action) => {
             return Object.assign({}, state, {limits: action.payload});
         case 'SET_DASHBOARD_MODE':
             return Object.assign({}, state, {dashboardMode: action.payload});
+        case 'SET_DASHBOARD_CONTENT':
+            return Object.assign({}, state, {dashboardContent: action.payload});
         case 'SET_BOREHOLE_CHEMICALS':
             return Object.assign({}, state, {boreholeChemicals: action.payload});
         case 'SELECT_CHEMICAL':

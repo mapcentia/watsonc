@@ -6,14 +6,19 @@ import styled from "styled-components";
 import Grid from '@material-ui/core/Grid';
 import {DarkTheme} from '../../themes/DarkTheme';
 import {Align} from '../shared/constants/align';
+import {Variants} from '../shared/constants/variants';
+import {Size} from '../shared/constants/size';
 import Button from '../shared/button/Button';
 import ProjectListItem from './ProjectListItem';
+import Searchbox from '../shared/inputs/Searchbox';
 
 
 function ProjectList(props) {
     const [projects, setProjects] = useState([]);
+    const [allProjects, setAllProjects] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [hoveredItem, setHoveredItem] = useState();
+    const [searchTerm, setSearchTerm] = useState('');
 
     const getProjectParameters = (project) => {
         let parameters = [];
@@ -60,7 +65,7 @@ function ProjectList(props) {
                 results.map((project) => {
                     project.permalink = getPermalinkForProject(project);
                 });
-                setProjects(results);
+                setAllProjects(results);
                 setIsLoading(false);
             });
         })
@@ -70,13 +75,35 @@ function ProjectList(props) {
         loadProjects();
     }, []);
 
+    useEffect(() => {
+        let term = searchTerm.toLowerCase();
+        let projectsToShow = allProjects.filter((project) => {
+            if (searchTerm.length === 0) {
+                return true;
+            }
+            return project.title.toLowerCase().indexOf(searchTerm) > -1;
+        });
+        setProjects(projectsToShow);
+    }, [allProjects, searchTerm]);
+
     return (<Root>
         {props.authenticated ? null : <Title text={__('Sign in in order to access user projects')} level={5} color={DarkTheme.colors.headings} align={Align.Center} />}
         {isLoading ? <Title text={__('Loading data...')} level={6} align='center' /> :
             <div>
+                <SearchContainer>
+                    <Searchbox placeholder={__('Søg efter dataparameter')} onChange={(value) => setSearchTerm(value)} />
+                </SearchContainer>
                 {projects.length > 0 ?
                     <div>
-                        <Title text={__('My projects')} level={4} />
+                        <Grid container>
+                            <Grid container item xs={6}>
+
+                                <Title text={__('My projects')} level={4} color={DarkTheme.colors.primary[4]} />
+                            </Grid>
+                            <Grid container item xs={6} justify='flex-end'>
+                                {props.showBackButton ? <Button variant={Variants.None} onClick={() => props.setDashboardContent('charts') } text={__('Back') } size={Size.Small} /> : null}
+                            </Grid>
+                        </Grid>
                         <Grid container>
                             <Grid container item xs={12}>
                                 {projects.map((project, index) => {
@@ -96,6 +123,12 @@ function ProjectList(props) {
 const Root = styled.div`
     margin-top: ${props => props.theme.layout.gutter/2}px;
     margin-bottom: ${props => props.theme.layout.gutter*2}px;
+    width: 100%;
+`;
+
+const SearchContainer = styled.div`
+    width: 100%;
+    margin: 10px 0px;
 `;
 
 const mapStateToProps = state => ({
@@ -103,6 +136,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
+    setDashboardContent: (value) => dispatch(setDashboardContent(value))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProjectList);

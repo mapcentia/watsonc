@@ -15,6 +15,7 @@ import ChemicalsListItem from './ChemicalsListItem';
 import GraphCard from './GraphCard';
 import ChemicalSelector from './ChemicalSelector';
 import ProjectContext from '../../contexts/project/ProjectContext';
+import ProjectList from '../dataselector/ProjectList';
 
 
 const DASHBOARD_ITEM_PLOT = 0;
@@ -92,7 +93,7 @@ function DashboardContent(props) {
 
     return (
         <Root>
-            <Grid container>
+            {props.dashboardContent === 'charts' ? <Grid container>
                 <Grid container item xs={5}>
                     <DashboardList>
                         <Grid container>
@@ -196,7 +197,13 @@ function DashboardContent(props) {
                         </SortableList>
                     </ChartsContainer>
                 </Grid>
-            </Grid>
+            </Grid> : props.dashboardContent === 'projects' ? <Grid container>
+                <Grid container item xs={6}>
+                    <ProjectsContainer>
+                        <ProjectList {...props} showBackButton={true} />
+                    </ProjectsContainer>
+                </Grid>
+            </Grid>: null }
         </Root>
     )
 }
@@ -258,8 +265,14 @@ const ChartsContainer = styled.ul`
     overflow: scroll;
 `
 
+const ProjectsContainer = styled.div`
+    padding: ${props => props.theme.layout.gutter/2}px;
+    width: 80%;
+`;
+
 const mapStateToProps = state => ({
-    boreholeFeatures: state.global.boreholeFeatures
+    boreholeFeatures: state.global.boreholeFeatures,
+    dashboardContent: state.global.dashboardContent
 });
 
 const mapDispatchToProps = dispatch => ({});

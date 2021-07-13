@@ -51,4 +51,9 @@ export const setLimits = limits => ({
 export const setDashboardMode = mode => ({
     type: 'SET_DASHBOARD_MODE',
     payload: mode
-})
+});
+
+export const setDashboardContent = contentType => ({
+    type: 'SET_DASHBOARD_CONTENT',
+    payload: contentType
+});

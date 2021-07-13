@@ -1,3 +1,5 @@
+import { useState, useEffect} from 'react';
+import {connect} from 'react-redux';
 import styled, { css } from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Icon from '../shared/icons/Icon';
@@ -10,22 +12,19 @@ import ButtonGroup from '../shared/button/ButtonGroup';
 import {DarkTheme} from '../../themes/DarkTheme';
 
 function DashboardHeader(props) {
+    const [showSaveButtons, setShowSaveButtons] = useState(true);
+
+    useEffect(() => {
+        let canShowSaveButtons = true;
+        if (props.dashboardMode === 'minimized' || props.dashboardContent === 'projects') {
+            canShowSaveButtons = false;
+        }
+        setShowSaveButtons(canShowSaveButtons);
+    }, [props.dashboardMode, props.dashboardContent])
+
     return (
         <Root>
             <Grid container>
-                <Grid container item xs={2}>
-                    <IconsLayout>
-                        <IconContainer onClick={() => props.setDashboardMode('minimized')} active={props.dashboardMode === 'minimized'} >
-                            <Icon name="dashboard-minimized-solid" size={16} />
-                        </IconContainer>
-                        <IconContainer onClick={() => props.setDashboardMode('half')} active={props.dashboardMode === 'half'}>
-                            <Icon name="dashboard-half-solid" size={16} />
-                        </IconContainer>
-                        <IconContainer onClick={() => props.setDashboardMode('full')} active={props.dashboardMode === 'full'}>
-                            <Icon name="dashboard-full-solid" size={16} />
-                        </IconContainer>
-                    </IconsLayout>
-                </Grid>
                 <Grid container item xs={3}>
                     <Grid container>
                         <Grid container item xs={1}>
@@ -37,16 +36,29 @@ function DashboardHeader(props) {
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid container item xs={2}>
-                    <ButtonGroup align={Align.Center} spacing={2} marginTop={1}>
+                <Grid container item xs={3}>
+                    {showSaveButtons ? <ButtonGroup align={Align.Center} spacing={2} marginTop={1}>
                         <Button text={__("Gem")} variant={Variants.Secondary} onClick={() => setShowProjectsList(!showProjectsList)} size={Size.Small} />
                         <Button text={__("Abn")} variant={Variants.None} onClick={() => applyParameter()} size={Size.Small} />
-                    </ButtonGroup> }
+                    </ButtonGroup> : null }
                 </Grid>
-                <Grid container item xs={5} justify='flex-end'>
-                    <ButtonGroup align={Align.Center} spacing={2} marginTop={1}>
+                <Grid container item xs={2} justify='flex-end'>
+                </Grid>
+                <Grid container item xs={4} justify='flex-end'>
+                    {showSaveButtons ? <ButtonGroup align={Align.Center} spacing={2} marginTop={1} marginRight={8}>
                         <Button text={__('Ny graf')} size={Size.Medium} variant={Variants.Primary} />
-                    </ButtonGroup>
+                    </ButtonGroup> : null }
+                    <IconsLayout>
+                        <IconContainer onClick={() => props.setDashboardMode('minimized')} active={props.dashboardMode === 'minimized'} >
+                            <Icon name="dashboard-minimized-solid" size={16} />
+                        </IconContainer>
+                        <IconContainer onClick={() => props.setDashboardMode('half')} active={props.dashboardMode === 'half'}>
+                            <Icon name="dashboard-half-solid" size={16} />
+                        </IconContainer>
+                        <IconContainer onClick={() => props.setDashboardMode('full')} active={props.dashboardMode === 'full'}>
+                            <Icon name="dashboard-full-solid" size={16} />
+                        </IconContainer>
+                    </IconsLayout>
                 </Grid>
             </Grid>
         </Root>
@@ -89,4 +101,14 @@ const IconContainer = styled.div`
     }}
 `
 
-export default DashboardHeader;
+const mapStateToProps = state => ({
+    dashboardMode: state.global.dashboardMode,
+    dashboardContent: state.global.dashboardContent
+})
+
+const mapDispatchToProps = dispatch => ({
+    setDashboardMode: (key) => dispatch(setDashboardMode(key)),
+})
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(DashboardHeader);

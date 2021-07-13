@@ -449,7 +449,7 @@ class MenuProfilesComponent extends React.Component {
         });
 
         if (plotRows.length > 0) {
-            existingProfilesControls = (<table className="table table-striped">
+            existingProfilesControls = (<table className="table">
                 <thead style={{color: `rgb(0, 150, 136)`}}>
                 <tr>
                     <th>

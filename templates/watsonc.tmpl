@@ -389,10 +389,29 @@
     }
 
     #upgrade-modal {
-        width: 60%;
-        top: 20vh;
-        left: 20%;
+        width: 70%;
+        top: 10%;
+        left: 15%;
     }
+
+    #module-container {
+        background: #001e1b;
+        color: #fff;
+    }
+
+    #module-container .modal-header .close {
+        color: #fff;
+    }
+
+    #module-container .list-group-item {
+        color: #000;
+    }
+
+    #module-container .tab-pane a {
+        color: #fff;
+    }
+
+
 </style>
 <!-- map -->
 <style>
@@ -957,6 +976,7 @@
 
     .help-btn {
         top: 79px !important;
+        color: #fff;
     }
 
     #watsonc-features-dialog-form {
@@ -1088,7 +1108,7 @@
                 <div id="module-container" class="slide-right" style="margin-top: 60px;">
                     <div class="modal-header">
                         <label style="margin-bottom: 0px; margin-top: 4px;" class="js-module-title"></label>
-                        <button type="button" class="close" aria-hidden="true" title={{Close}}>×</button>
+                        <button data-extraClickHandlerIsEnabled=true type="button" class="close" aria-hidden="true" title={{Close}}>×</button>
                         <h2 class="modal-title"></h2>
                     </div>
                     <div id="module-container-wrapper">
@@ -1151,7 +1171,7 @@
                         <!-- Nav tabs -->
                         <ul class="" role="tablist" id="main-tabs">
                             <li role="presentation">
-                                <a href="#data-source-and-types-selector-content" aria-controls="" data-module-title="{{Data sources and -types}}" data-module-id="data-source-and-types-selector" data-module-ignore-errors="true" role="tab" data-toggle="tab">
+                                <a href="#data-source-and-types-selector-content" aria-controls="" data-module-ignore=true data-module-title="{{Data sources and -types}}" data-module-id="data-source-and-types-selector" data-module-ignore-errors="true" role="tab" data-toggle="tab">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M12.068 9.448C17.0761 9.448 21.136 8.00457 21.136 6.224C21.136 4.44343 17.0761 3 12.068 3C7.05988 3 3 4.44343 3 6.224C3 8.00457 7.05988 9.448 12.068 9.448Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M3 6.62701V11.827C3 13.741 7.06 15.293 12.068 15.293C17.076 15.293 21.136 13.742 21.136 11.827V6.62701" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1162,7 +1182,7 @@
                             </li>
 
                             <li role="presentation">
-                                <a href="#state-snapshots-content" data-module-title="{{Dashboards}}"  aria-controls="" role="tab" data-toggle="tab">
+                                <a href="" id="projects-trigger" data-module-title="{{Dashboards}}" data-module-ignore=true  aria-controls="" role="tab" data-toggle="tab">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path fill-rule="evenodd" clip-rule="evenodd" d="M7 1.9H3C2.44772 1.9 2 2.30294 2 2.8V8.2C2 8.69706 2.44772 9.1 3 9.1H7C7.55228 9.1 8 8.69706 8 8.2V2.8C8 2.30294 7.55228 1.9 7 1.9ZM3 1C1.89543 1 1 1.80589 1 2.8V8.2C1 9.19411 1.89543 10 3 10H7C8.10457 10 9 9.19411 9 8.2V2.8C9 1.80589 8.10457 1 7 1H3Z" fill="white"/>
 <path fill-rule="evenodd" clip-rule="evenodd" d="M21.1667 1.9H13.8333C13.3271 1.9 12.9167 2.30294 12.9167 2.8V8.2C12.9167 8.69706 13.3271 9.1 13.8333 9.1H21.1667C21.6729 9.1 22.0833 8.69706 22.0833 8.2V2.8C22.0833 2.30294 21.6729 1.9 21.1667 1.9ZM13.8333 1C12.8208 1 12 1.80589 12 2.8V8.2C12 9.19411 12.8208 10 13.8333 10H21.1667C22.1792 10 23 9.19411 23 8.2V2.8C23 1.80589 22.1792 1 21.1667 1H13.8333Z" fill="white"/>
@@ -1175,7 +1195,7 @@
                             </li>
 
                             <li role="presentation">
-                                <a data-module-id="layerTree" href="#layer-content" data-module-title="{{Layers}}" aria-controls="" role="tab" data-toggle="tab">
+                                <a data-module-id="layerTree" href="#layer-content" data-module-ignore="true" data-module-title="{{Layers}}" aria-controls="" role="tab" data-toggle="tab">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M20.8592 8.66156L12.6362 5.11556C12.4557 5.03929 12.2617 5 12.0657 5C11.8698 5 11.6758 5.03929 11.4952 5.11556L3.27024 8.66156C3.19191 8.68602 3.12345 8.73487 3.07483 8.80098C3.02622 8.86709 3 8.947 3 9.02906C3 9.11112 3.02622 9.19103 3.07483 9.25714C3.12345 9.32325 3.19191 9.3721 3.27024 9.39656L11.4962 12.9426C11.6768 13.0188 11.8708 13.0581 12.0667 13.0581C12.2627 13.0581 12.4567 13.0188 12.6372 12.9426L20.8592 9.40056C20.9371 9.37556 21.0049 9.32651 21.0531 9.26046C21.1012 9.19442 21.1272 9.11479 21.1272 9.03306C21.1272 8.95133 21.1012 8.8717 21.0531 8.80566C21.0049 8.73962 20.9371 8.69056 20.8592 8.66556V8.66156Z" fill="white" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M3.01422 12.4536L11.4962 16.1536C11.6751 16.2362 11.8697 16.279 12.0667 16.279C12.2637 16.279 12.4584 16.2362 12.6372 16.1536L21.1432 12.4536" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1186,7 +1206,7 @@
                             </li>
 
                             <li role="presentation">
-                                <a data-module-id="baseLayer" href="#baselayer-content" data-module-title="{{Baselayers}}"  aria-controls="" role="tab" data-toggle="tab">
+                                <a data-module-id="baseLayer" href="#baselayer-content" data-module-ignore=true data-module-title="{{Baselayers}}"  aria-controls="" role="tab" data-toggle="tab">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g clip-path="url(#clip0)">
 <path d="M19.0009 20.996H17.746L16.006 13.408L20.9989 11.373V18.996C20.9989 19.5261 20.7886 20.0345 20.414 20.4095C20.0393 20.7845 19.531 20.9955 19.0009 20.996ZM16.571 20.996H4.99991C4.46948 20.996 3.96092 20.7853 3.58585 20.4102C3.21077 20.0351 2.99991 19.5264 2.99991 18.996V18.71L14.9311 13.846L16.57 20.994L16.571 20.996ZM3.00211 17.141V4.996C3.00169 4.62582 3.1042 4.26283 3.29849 3.94773C3.49278 3.63263 3.77101 3.37787 4.10196 3.212L10.4789 14.095L3.00699 17.141H3.00211ZM11.6271 13.625L5.39908 2.996H12.445L14.6039 12.412L11.6281 13.625H11.6271ZM15.6801 11.973L13.622 2.996H19.0031C19.5335 2.996 20.0421 3.20672 20.4171 3.58179C20.7922 3.95686 21.0031 4.46557 21.0031 4.996V9.804L15.682 11.974L15.6801 11.973Z" fill="white"/>
@@ -1212,13 +1232,13 @@
                             <hr/>
 
                             <li>
-                                <a href="#timeseries-content" aria-controls="" role="tab" data-toggle="tab" data-module-title="{{Timeseries}}" data-module-id="timeseries" data-module-ignore-errors="true">
+                                <a href="#timeseries-content" aria-controls="" role="tab" data-module-ignore=true data-toggle="tab" data-module-title="{{Timeseries}}" data-module-id="timeseries" data-module-ignore-errors="true">
                                     <i data-container="body" data-toggle="tooltip" data-placement="left" title="{{Timeseries}}" class="fas fa-chart-bar fas-material-adapt"></i>
                                     <span class="module-title">{{Timeseries}}</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="#profile-drawing-content" aria-controls="" role="tab" data-toggle="tab" data-module-title="{{Profiles}}" data-module-id="profile-drawing" data-module-ignore-errors="true">
+                                <a href="#profile-drawing-content" aria-controls="" role="tab" data-module-ignore=true data-toggle="tab" data-module-title="{{Profiles}}" data-module-id="profile-drawing" data-module-ignore-errors="true">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g clip-path="url(#clip0)">
 <path d="M22.754 18.281H1V17.349H22.753V18.28L22.754 18.281ZM1 7.908V4.508L5.554 3.405L10.524 4.557L12.95 3.154L16.072 4L21.134 3L22.755 3.833V5.551L16.406 5.168L10.859 6.977L8.559 5.861L1 7.908Z" fill="white"/>
@@ -1236,7 +1256,7 @@
                             </li>
 
                             <li role="presentation">
-                                <a data-module-id="analytics" href="#watsonc-analytics-content" data-module-title="Rapporter" aria-controls="" role="tab" data-toggle="tab">
+                                <a data-module-id="analytics" href="#watsonc-analytics-content" data-module-ignore=true data-module-title="Rapporter" aria-controls="" role="tab" data-toggle="tab">
                                     <i data-container="body" data-toggle="tooltip" data-placement="left" title="Rapporter" class="fas fa-file-excel-o fas-material-adapt"></i>
                                     <span class="module-title">Rapporter</span>
                                 </a>

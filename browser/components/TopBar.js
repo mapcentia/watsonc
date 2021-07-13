@@ -16,7 +16,7 @@ function TopBar(props) {
             <Grid item xs={2}>
                 <div className="js-layer-slide-breadcrumbs">
                     <button type="button" className="navbar-toggle" id="burger-btn">
-                        <i class="fa fa-database"></i> Vælg data
+                        <i className="fa fa-database"></i> Vælg data
                     </button>
                 </div>
             </Grid>

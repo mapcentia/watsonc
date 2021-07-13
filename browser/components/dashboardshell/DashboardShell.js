@@ -12,7 +12,7 @@ function DashboardShell(props) {
         <ProjectContext.Consumer>
             {context => {
                 return <Root mode={props.dashboardMode}>
-                    <DashboardHeader setDashboardMode={props.setDashboardMode} dashboardMode={props.dashboardMode} setActivePlots={context.setActivePlots} />
+                    <DashboardHeader setActivePlots={context.setActivePlots} />
                     <DashboardContent {...props} {...context} />
                 </Root>
             }}

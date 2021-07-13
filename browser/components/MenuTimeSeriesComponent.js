@@ -154,7 +154,7 @@ class MenuTimeSeriesComponent extends React.Component {
             }}/>
         </div>;
         if (Array.isArray(plotsTable) && plotsTable.length > 0) {
-            plotsTable = (<table className="table table-striped table-hover">
+            plotsTable = (<table className="table">
                 <thead>
                 <tr style={{color: `rgb(0, 150, 136)`}}>
                     <td style={{width: `40px`}}><i className="material-icons">border_all</i></td>

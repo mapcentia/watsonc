@@ -23,7 +23,7 @@ import TopBar from './components/TopBar';
 
 
 import reduxStore from './redux/store';
-import {setAuthenticated, setBoreholeFeatures, setCategories} from './redux/actions';
+import {setAuthenticated, setBoreholeFeatures, setCategories, setDashboardContent} from './redux/actions';
 
 const symbolizer = require('./symbolizer');
 
@@ -204,6 +204,24 @@ module.exports = module.exports = {
 
         $(`#js-open-state-snapshots-panel`).click(() => {
             $(`[href="#state-snapshots-content"]`).trigger(`click`);
+        });
+
+        $('#projects-trigger').click((e) => {
+            e.preventDefault();
+            reduxStore.dispatch(setDashboardContent('projects'));
+        });
+
+        $('#main-tabs a').on('click', function(e) {
+            $("#module-container.slide-right").css("right", "0");
+        });
+
+        $(document).on('click', '#module-container .modal-header button', function(e) {
+            e.preventDefault();
+            $("#module-container.slide-right").css("right", "-" + (466) + "px");
+            $("#side-panel ul li").removeClass("active");
+            $('#search-ribbon').css('right', '-550px');
+            $('#pane').css('right', '0');
+            $('#map').css('width', '100%');
         });
 
         $(`#js-open-watsonc-panel`).click(() => {
@@ -565,6 +583,8 @@ module.exports = module.exports = {
                         ReactDOM.render(<DashboardWrapper
                             ref={reactRef}
                             backboneEvents={backboneEvents}
+                            urlparser={urlparser} anchor={anchor}
+                            onApply={_self.onApplyLayersAndChemical}
                             initialPlots={hydratedInitialPlots}
                             initialProfiles={initialProfiles}
                             onOpenBorehole={this.openBorehole}
