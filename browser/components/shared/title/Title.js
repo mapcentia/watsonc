@@ -23,12 +23,12 @@ Title.defaultProps = {
     level: 1,
     align: 'left',
     marginLeft: 0,
-    marginTop: 0
-
+    marginTop: 0,
+    color: 'currentColor'
 }
 
 const Root = styled.div`
-    display: block;
+    display: inline-block;
     font-weight: normal;
     margin: 0;
     line-height: 1.3;
@@ -64,6 +64,7 @@ const Root = styled.div`
             `,
             7: css `
                 font: ${props => props.theme.fonts.footnote};
+                color: ${props => props.color || props.theme.colors.gray[5]};
             `,
         }
         return styles[level];

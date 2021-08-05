@@ -15,6 +15,7 @@ import {isNumber} from 'util';
 import arrayMove from 'array-move';
 import trustedIpAddresses from '../trustedIpAddresses';
 import {getPlotData} from '../services/plot';
+import ProjectContext from '../contexts/project/ProjectContext';
 
 let syncInProg = false;
 
@@ -38,6 +39,7 @@ let _self = false, resizeTimeout = false;
  * Component creates plots management form and is the source of truth for plots overall
  */
 class DashboardComponent extends React.Component {
+    static contextType = ProjectContext;
     constructor(props) {
         super(props);
         let queryParams = new URLSearchParams(window.location.search);
@@ -147,7 +149,7 @@ class DashboardComponent extends React.Component {
     }
 
     componentDidMount() {
-        this.nextDisplayType();
+        // this.nextDisplayType();
     }
 
     getLicense() {
@@ -242,7 +244,7 @@ class DashboardComponent extends React.Component {
                     activeProfiles: activeProfilesCopy
                 });
 
-                this.props.onActiveProfilesChange(activeProfilesCopy);
+                this.props.onActiveProfilesChange(activeProfilesCopy, profilesCopy, this.context);
             } else {
                 this.setState({profiles: profilesCopy});
             }
@@ -407,7 +409,7 @@ class DashboardComponent extends React.Component {
         let activeProfiles = JSON.parse(JSON.stringify(this.state.activeProfiles));
         if (activeProfiles.indexOf(profileId) === -1) activeProfiles.push(profileId);
         this.setState({activeProfiles}, () => {
-            this.props.onActiveProfilesChange(this.state.activeProfiles);
+            this.props.onActiveProfilesChange(this.state.activeProfiles, this.state.profiles, this.context);
         });
     }
 
@@ -417,7 +419,7 @@ class DashboardComponent extends React.Component {
         let activeProfiles = JSON.parse(JSON.stringify(this.state.activeProfiles));
         if (activeProfiles.indexOf(profileId) > -1) activeProfiles.splice(activeProfiles.indexOf(profileId), 1);
         this.setState({activeProfiles}, () => {
-            this.props.onActiveProfilesChange(this.state.activeProfiles);
+            this.props.onActiveProfilesChange(this.state.activeProfiles, this.state.profiles, this.context);
         });
     }
 
@@ -453,13 +455,19 @@ class DashboardComponent extends React.Component {
     }
 
     getActivePlots() {
+        let addedPlots = [];
         let activePlots = this.state.plots.filter((item) => {
-            if (this.state.activePlots.indexOf(item.id) !== -1) {
+            if (this.state.activePlots.indexOf(item.id) !== -1 && addedPlots.indexOf(item.id) === -1) {
+                addedPlots.push(item.id);
                 return item.id;
+
             }
         });
         this.state.projectPlots.map((item) => {
-            activePlots.push(item.id);
+            if (this.state.activePlots.indexOf(item.id) !== -1 && addedPlots.indexOf(item.id) === -1) {
+                addedPlots.push(item.id);
+                activePlots.push(item);
+            }
         });
         return JSON.parse(JSON.stringify(activePlots));
     }
@@ -530,7 +538,13 @@ class DashboardComponent extends React.Component {
             });
         });
 
-        this.setState({plots, dashboardItems: dashboardItemsCopy});
+        this.setState({plots, dashboardItems: dashboardItemsCopy}, () => {
+            this.props.onPlotsChange(this.getPlots(), this.context);
+        });
+    }
+
+    setActivePlots(activePlots) {
+        this.setState({ activePlots });
     }
 
     setProjectProfiles(projectProfiles) {
@@ -653,7 +667,7 @@ class DashboardComponent extends React.Component {
                     activePlots: activePlotsCopy
                 });
 
-                this.props.onActivePlotsChange(activePlotsCopy, this.getPlots());
+                this.props.onActivePlotsChange(activePlotsCopy, this.getPlots(), this.context);
             } else {
                 this.setState({
                     plots: plotsCopy,
@@ -661,7 +675,7 @@ class DashboardComponent extends React.Component {
                 });
             }
 
-            this.props.onPlotsChange(this.getPlots());
+            this.props.onPlotsChange(this.getPlots(), this.context);
         }).catch(error => {
             console.error(`Error occured while creating plot (${error})`)
         });
@@ -674,7 +688,7 @@ class DashboardComponent extends React.Component {
         if (activeProfilesCopy.indexOf(profileKey) > -1) activeProfilesCopy.splice(activeProfilesCopy.indexOf(profileKey), 1);
 
         this.setState({activeProfiles: activeProfilesCopy});
-        this.props.onActiveProfilesChange(activeProfilesCopy);
+        this.props.onActiveProfilesChange(activeProfilesCopy, this.state.profiles, this.context);
     }
 
     handleRemovePlot(id) {
@@ -684,7 +698,7 @@ class DashboardComponent extends React.Component {
         if (activePlotsCopy.indexOf(id) > -1) activePlotsCopy.splice(activePlotsCopy.indexOf(id), 1);
 
         this.setState({activePlots: activePlotsCopy});
-        this.props.onActivePlotsChange(activePlotsCopy, this.getPlots());
+        this.props.onActivePlotsChange(activePlotsCopy, this.getPlots(), this.context);
     }
 
     handleDeletePlot(id, name) {
@@ -721,7 +735,7 @@ class DashboardComponent extends React.Component {
                     dashboardItems: dashboardItemsCopy
                 });
 
-                this.props.onPlotsChange(this.getPlots());
+                this.props.onPlotsChange(this.getPlots(), this.context);
             }).catch(error => {
                 console.error(`Error occured while creating plot (${error})`)
             });
@@ -744,7 +758,7 @@ class DashboardComponent extends React.Component {
         if (activePlots.indexOf(plotId) === -1) activePlots.push(plotId);
         let plots = this.getPlots()
         this.setState({activePlots}, () => {
-            this.props.onActivePlotsChange(this.state.activePlots, plots);
+            this.props.onActivePlotsChange(this.state.activePlots, plots, this.context);
             setTimeout(() => {
                 // document.getElementById("syncWithDatabaseBtn").click();
                 this.syncPlotData();
@@ -758,7 +772,7 @@ class DashboardComponent extends React.Component {
         let activePlots = JSON.parse(JSON.stringify(this.state.activePlots));
         if (activePlots.indexOf(plotId) > -1) activePlots.splice(activePlots.indexOf(plotId), 1);
         this.setState({activePlots}, () => {
-            this.props.onActivePlotsChange(this.state.activePlots, this.getPlots());
+            this.props.onActivePlotsChange(this.state.activePlots, this.getPlots(), this.context);
         });
     }
 
@@ -796,7 +810,7 @@ class DashboardComponent extends React.Component {
                 dashboardItems: dashboardItemsCopy
             });
 
-            this.props.onPlotsChange(this.getPlots());
+            this.props.onPlotsChange(this.getPlots(), this.context);
         }).catch(error => {
             console.error(`Error occured while updating plot (${error})`)
         });
@@ -866,7 +880,7 @@ class DashboardComponent extends React.Component {
                 projectPlots: plots,
                 dashboardItems: dashboardItemsCopy
             });
-            this.props.onPlotsChange(this.getPlots());
+            this.props.onPlotsChange(this.getPlots(), this.context);
         }).catch(error => {
             console.error(`Error occured while updating plot (${error})`)
         });
@@ -1035,13 +1049,13 @@ class DashboardComponent extends React.Component {
         }}>{__(`No timeseries were created or set as active yet`)}</p>);
 
         // Actualize elements location
-        if (currentDisplay === DISPLAY_MIN) {
+        /* if (currentDisplay === DISPLAY_MIN) {
             this.onSetMin();
         } else if (currentDisplay === DISPLAY_HALF) {
             this.onSetHalf();
         } else if (currentDisplay === DISPLAY_MAX) {
             this.onSetMax();
-        }
+        } */
 
         let listItemHeightPx = Math.round(($(document).height() * 0.9 - modalHeaderHeight - 10) / 2);
 

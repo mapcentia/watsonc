@@ -21,7 +21,7 @@ class ModalMeasurementComponent extends React.Component {
         }
 
         if (this.props.chemicalLimits === null) {
-            return this.props.connectDragSource(<div
+            return (<div
                 title={__(`Drag and drop measurement to add it to time series`)}
                 className="btn btn-sm btn-primary js-plotted-property"
                 data-gid="{this.props.boreholeno}"
@@ -40,7 +40,7 @@ class ModalMeasurementComponent extends React.Component {
                 <i className="fa fa-arrows-alt"></i> {circleIcon} {this.props.title} ({this.props.intakeName})
             </div>);
         } else {
-            return this.props.connectDragSource(<div
+            return (<div
                 title={__(`Drag and drop measurement to add it to time series`)}
                 className="btn btn-sm btn-primary js-plotted-property"
                 data-gid="{this.props.boreholeno}"
@@ -95,4 +95,4 @@ ModalMeasurementComponent.propTypes = {
     onAddMeasurement: PropTypes.func.isRequired,
 };
 
-export default DragSource(`MEASUREMENT`, measurementSource, collect)(ModalMeasurementComponent);
+export default ModalMeasurementComponent;

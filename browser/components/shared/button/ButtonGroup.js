@@ -38,8 +38,8 @@ const Root = styled.div`
                 align-items: center;
             `,
             [Align.Right]: css`
-                justify-content: flex-end,
-                align-items: flex-end,
+                justify-content: flex-end;
+                align-items: flex-end;
                 button {
                     margin-left: ${theme.layout.gutter / 2}px;
                 }

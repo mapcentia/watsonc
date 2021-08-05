@@ -75,10 +75,12 @@ function CheckBoxList(props) {
 const Root = styled.div`
     height:  ${props => props.theme.layout.gutter*10}px;
     overflow-y: scroll;
+    color: ${props => props.theme.colors.gray[4]};
 `;
 
 const ListItem = styled.div`
     margin-left: ${props => props.theme.layout.gutter/4}px;
+    color: ${props => props.theme.colors.gray[5]};
 `;
 
 export default CheckBoxList;

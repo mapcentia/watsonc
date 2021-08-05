@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import {Provider} from 'react-redux';
 import reduxStore from '../redux/store';
 
-import withDragDropContext from './withDragDropContext';
 import ModalFeatureComponent from './ModalFeatureComponent';
 
 /**
@@ -72,4 +71,4 @@ ModalComponent.propTypes = {
     onDeleteMeasurement: PropTypes.func.isRequired
 };
 
-export default withDragDropContext(ModalComponent);
+export default ModalComponent;

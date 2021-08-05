@@ -17,7 +17,7 @@ Icon.propTypes = {
 
 Icon.defaultProps = {
     strokeColor: 'currentColor',
-    fillColor: 'none',
+    fillColor: 'currentColor',
     size: 24,
     variant: 'Primary',
     marginRight: 0
@@ -55,7 +55,7 @@ function Icon(props) {
             strokeLinecap="round"
             strokeWidth="1"
             stroke={props.strokeColor}
-            fill={props.fillColor}
+            fill='none'
             strokeLinejoin="round"
           >
             <path d={icon.path} />

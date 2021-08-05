@@ -1,5 +1,6 @@
 'use strict';
 
+import { useContext } from 'react';
 import {Provider} from 'react-redux';
 
 import PlotManager from './PlotManager';
@@ -13,12 +14,16 @@ import AnalyticsComponent from './components/AnalyticsComponent';
 import {LAYER_NAMES, WATER_LEVEL_KEY, KOMMUNER} from './constants';
 import trustedIpAddresses from './trustedIpAddresses';
 import ThemeProvider from './themes/ThemeProvider';
+import ProjectProvider from './contexts/project/ProjectProvider';
+import ProjectContext from './contexts/project/ProjectContext';
 import DataSelectorDialogue from './components/dataselector/DataSelectorDialogue';
 import MapDecorator from './components/decorators/MapDecorator';
+import DashboardWrapper from './components/DashboardWrapper';
+import TopBar from './components/TopBar';
 
 
 import reduxStore from './redux/store';
-import {setAuthenticated} from './redux/actions';
+import {setAuthenticated, setBoreholeFeatures, setCategories, setDashboardContent} from './redux/actions';
 
 const symbolizer = require('./symbolizer');
 
@@ -45,7 +50,6 @@ let PLOTS_ID = `#` + DASHBOARD_CONTAINER_ID;
  * @type {*|exports|module.exports}
  */
 var cloud, switchLayer, backboneEvents, session = false;
-
 /**
  *
  * @type {*|exports|module.exports}
@@ -58,6 +62,7 @@ var ReactDOM = require('react-dom');
 var ReactDOMServer = require('react-dom/server');
 
 let dashboardComponentInstance = false, modalComponentInstance = false, infoModalInstance = false;
+let dashboardShellInstance = false;
 
 let lastSelectedChemical = false, categoriesOverall = false, enabledLoctypeIds = [];
 
@@ -201,6 +206,24 @@ module.exports = module.exports = {
             $(`[href="#state-snapshots-content"]`).trigger(`click`);
         });
 
+        $('#projects-trigger').click((e) => {
+            e.preventDefault();
+            reduxStore.dispatch(setDashboardContent('projects'));
+        });
+
+        $('#main-tabs a').on('click', function(e) {
+            $("#module-container.slide-right").css("right", "0");
+        });
+
+        $(document).on('click', '#module-container .modal-header button', function(e) {
+            e.preventDefault();
+            $("#module-container.slide-right").css("right", "-" + (466) + "px");
+            $("#side-panel ul li").removeClass("active");
+            $('#search-ribbon').css('right', '-550px');
+            $('#pane').css('right', '0');
+            $('#map').css('width', '100%');
+        });
+
         $(`#js-open-watsonc-panel`).click(() => {
             $(`[href="#watsonc-content"]`).trigger(`click`);
         });
@@ -209,6 +232,8 @@ module.exports = module.exports = {
 
         // Turn on raster layer with all boreholes.
         switchLayer.init(LAYER_NAMES[2], true, true, false);
+        ReactDOM.render(<ThemeProvider><Provider store={reduxStore}>
+            <TopBar backboneEvents={backboneEvents} session={session}/></Provider></ThemeProvider>, document.getElementById('top-bar'));
 
         $.ajax({
             url: '/api/sql/jupiter?q=SELECT * FROM codes.compunds_view&base64=false&lifetime=10800',
@@ -233,6 +258,7 @@ module.exports = module.exports = {
                             }
                         });
                     }
+                    reduxStore.dispatch(setLimits(limits));
 
                     _self.buildBreadcrumbs();
 
@@ -242,6 +268,7 @@ module.exports = module.exports = {
                     categoriesOverall[LAYER_NAMES[1]] = {"Vandstand": {"0": WATER_LEVEL_KEY}};
 
                     if (infoModalInstance) infoModalInstance.setCategories(categoriesOverall);
+                    reduxStore.dispatch(setCategories(categories));
 
                     // Setup menu
                     let dd = $('li .dropdown-toggle');
@@ -275,6 +302,183 @@ module.exports = module.exports = {
                 right: 10%;
                 left: 10%;
                 bottom: 0px;`);
+
+            LAYER_NAMES.map(layerName => {
+                layerTree.setOnEachFeature(layerName, (clickedFeature, layer) => {
+                    layer.on("click", (e) => {
+                        $("#" + FEATURE_CONTAINER_ID).animate({
+                            bottom: "0"
+                        }, 500, function () {
+                            $("#" + FEATURE_CONTAINER_ID).find(".expand-less").show();
+                            $("#" + FEATURE_CONTAINER_ID).find(".expand-more").hide();
+                        });
+
+                        let intersectingFeatures = [];
+                        if (e.latlng) {
+                            var clickBounds = L.latLngBounds(e.latlng, e.latlng);
+                            let res = [156543.033928, 78271.516964, 39135.758482, 19567.879241, 9783.9396205,
+                                4891.96981025, 2445.98490513, 1222.99245256, 611.496226281, 305.748113141, 152.87405657,
+                                76.4370282852, 38.2185141426, 19.1092570713, 9.55462853565, 4.77731426782, 2.38865713391,
+                                1.19432856696, 0.597164283478, 0.298582141739, 0.149291, 0.074645535];
+
+                            let distance = 10 * res[cloud.get().getZoom()];
+
+                            let mapObj = cloud.get().map;
+                            for (var l in mapObj._layers) {
+                                var overlay = mapObj._layers[l];
+                                if (overlay._layers) {
+                                    for (var f in overlay._layers) {
+                                        var feature = overlay._layers[f];
+                                        var bounds;
+                                        if (feature.getBounds) {
+                                            bounds = feature.getBounds();
+                                        } else if (feature._latlng) {
+                                            let circle = new L.circle(feature._latlng, {radius: distance});
+                                            // DIRTY HACK
+                                            circle.addTo(mapObj);
+                                            bounds = circle.getBounds();
+                                            circle.removeFrom(mapObj);
+                                        }
+
+                                        try {
+                                            if (bounds && clickBounds.intersects(bounds) && overlay.id) {
+                                                intersectingFeatures.push(feature.feature);
+                                            }
+                                        } catch (e) {
+                                            console.log(e);
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            // In case marker "click" event was triggered from the code
+                            intersectingFeatures.push(e.target.feature);
+                        }
+
+                        let titleAsLink = false;
+
+                        if (layerName.indexOf(LAYER_NAMES[0]) > -1) {
+                            titleAsLink = true;
+                        }
+
+                        let clickedFeatureAlreadyDetected = false;
+                        intersectingFeatures.map(feature => {
+                            if (feature.properties.boreholeno === clickedFeature.properties.boreholeno) {
+                                clickedFeatureAlreadyDetected = true;
+                            }
+                        });
+
+                        if (clickedFeatureAlreadyDetected === false) intersectingFeatures.unshift(clickedFeature);
+
+                        let boreholes = [];
+
+                        intersectingFeatures.map((feature) => {
+                            boreholes.push(feature.properties.boreholeno)
+                        });
+
+
+                        let qLayer;
+                        if (layerName.indexOf(LAYER_NAMES[0]) > -1 || layerName.indexOf(LAYER_NAMES[3]) > -1) {
+                            qLayer = "chemicals.boreholes_time_series_with_chemicals";
+                        } else {
+                            qLayer = "sensor.sensordata_with_correction";
+                            // Filter NaN values, so SQL doesn't return type error
+                            boreholes = boreholes.filter((v) => {
+                                if (!isNaN(v)) {
+                                    return v;
+                                }
+                            });
+                        }
+
+                        // Lazy load features
+                        $.ajax({
+                            url: "/api/sql/jupiter?srs=25832&q=SELECT * FROM " + qLayer + " WHERE boreholeno in('" + boreholes.join("','") + "')",
+                            scriptCharset: "utf-8",
+                            success: function (response) {
+
+                                dataSource = [];
+                                boreholesDataSource = response.features;
+                                dataSource = dataSource.concat(boreholesDataSource);
+                                if (dashboardComponentInstance) {
+                                    dashboardComponentInstance.setDataSource(dataSource);
+                                }
+
+                                /* layer.bindPopup(ReactDOMServer.renderToString(<Provider store={reduxStore}><ThemeProvider><MapDecorator /></ThemeProvider></Provider>),
+                                    { maxWidth: 500, className: 'map-decorator-popup' });  */
+                                reduxStore.dispatch(setBoreholeFeatures(response.features));
+                                _self.createModal(response.features, false, titleAsLink, false);
+                                if (!dashboardComponentInstance) {
+                                    throw new Error(`Unable to find the component instance`);
+                                }
+                            },
+                            error: function () {
+                            }
+                        });
+                    });
+                }, "watsonc");
+
+                let svgCirclePart = symbolizer.getSymbol(layerName);
+                if (svgCirclePart) {
+                    layerTree.setPointToLayer(layerName, (feature, latlng) => {
+                        let renderIcon = true;
+                        if (layerName === LAYER_NAMES[1]) {
+                            if (feature.properties.loctypeid &&
+                                (enabledLoctypeIds.indexOf(parseInt(feature.properties.loctypeid) + '') === -1 && enabledLoctypeIds.indexOf(parseInt(feature.properties.loctypeid)) === -1)) {
+                                renderIcon = false;
+                            }
+                        } else {
+                            return L.circleMarker(latlng);
+                        }
+
+                        if (renderIcon) {
+                            let participatingIds = [];
+                            if (dashboardComponentInstance) {
+                                let plots = dashboardComponentInstance.getPlots();
+                                plots.map(plot => {
+                                    participatingIds = participatingIds.concat(_self.participatingIds(plot));
+                                });
+                            }
+
+                            let highlighted = (participatingIds.indexOf(feature.properties.boreholeno) > -1);
+                            let localSvgCirclePart = symbolizer.getSymbol(layerName, {
+                                online: feature.properties.status,
+                                shape: feature.properties.loctypeid,
+                                highlighted
+                            });
+
+                            let icon = L.icon({
+                                iconUrl: 'data:image/svg+xml;base64,' + btoa(localSvgCirclePart),
+                                iconAnchor: [8, 33],
+                                iconSize: [30, 30],
+                                watsoncStatus: `default`
+                            });
+
+                            return L.marker(latlng, {icon});
+                        } else {
+                            return null;
+                        }
+                    });
+                }
+            });
+
+            // Renewing the already created store by rebuilding the layer tree
+            setTimeout(() => {
+
+                setTimeout(() => {
+                    layerTree.create(false, [], true).then(() => {
+                        //layerTree.reloadLayer(LAYER_NAMES[0]);
+                        if (layerTree.getActiveLayers().indexOf(LAYER_NAMES[1]) > -1) {
+                            layerTree.reloadLayer(LAYER_NAMES[1]);
+                        }
+                        if (layerTree.getActiveLayers().indexOf(LAYER_NAMES[0]) > -1) {
+                            layerTree.reloadLayer(LAYER_NAMES[0]);
+                        }
+                        if (layerTree.getActiveLayers().indexOf(LAYER_NAMES[3]) > -1) {
+                            layerTree.reloadLayer(LAYER_NAMES[3]);
+                        }
+                    });
+                }, 500);
+            }, 100);
 
             const proceedWithInitialization = () => {
                 // Setting up feature dialog
@@ -356,7 +560,7 @@ module.exports = module.exports = {
                     }
                 });
 
-                if (dashboardComponentInstance) dashboardComponentInstance.onSetMin();
+                // if (dashboardComponentInstance) dashboardComponentInstance.onSetMin();
             };
 
             if (document.getElementById(DASHBOARD_CONTAINER_ID)) {
@@ -364,6 +568,8 @@ module.exports = module.exports = {
                 if (applicationState && `modules` in applicationState && MODULE_NAME in applicationState.modules && `plots` in applicationState.modules[MODULE_NAME]) {
                     initialPlots = applicationState.modules[MODULE_NAME].plots;
                 }
+                console.log("Initial plots");
+                console.log(initialPlots);
 
                 let initialProfiles = [];
                 if (applicationState && `modules` in applicationState && MODULE_NAME in applicationState.modules && `profiles` in applicationState.modules[MODULE_NAME]) {
@@ -372,13 +578,23 @@ module.exports = module.exports = {
 
                 let plotManager = new PlotManager();
                 plotManager.hydratePlotsFromUser(initialPlots).then(hydratedInitialPlots => { // User plots
+                let reactRef = React.createRef();
                     try {
-                        dashboardComponentInstance = ReactDOM.render(<DashboardComponent
+                        ReactDOM.render(<DashboardWrapper
+                            ref={reactRef}
                             backboneEvents={backboneEvents}
+                            urlparser={urlparser} anchor={anchor}
+                            onApply={_self.onApplyLayersAndChemical}
                             initialPlots={hydratedInitialPlots}
                             initialProfiles={initialProfiles}
-                            onOpenBorehole={this.openBorehole.bind(this)}
-                            onPlotsChange={(plots = false) => {
+                            onOpenBorehole={this.openBorehole}
+                            onDeleteMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex) => {
+                                dashboardComponentInstance.deleteMeasurement(plotId, featureGid, featureKey, featureIntakeIndex);
+                            }}
+                            onAddMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex) => {
+                                dashboardComponentInstance.addMeasurement(plotId, featureGid, featureKey, featureIntakeIndex);
+                            }}
+                            onPlotsChange={(plots = false, context) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
                                 if (plots) {
                                     _self.setStyleForPlots(plots);
@@ -386,25 +602,43 @@ module.exports = module.exports = {
                                     if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setPlots(plots);
                                     // Plots were updated from the DashboardComponent component
                                     if (modalComponentInstance) _self.createModal(false, plots);
+                                    console.log(_self.getExistingActivePlots());
+                                    context.setActivePlots(_self.getExistingActivePlots());
                                 }
                             }}
                             onProfilesChange={(profiles = false) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
                                 if (profiles && window.menuProfilesComponentInstance) window.menuProfilesComponentInstance.setProfiles(profiles);
+                                console.log("Profiles changes");
+                                console.log(profiles);
                             }}
-                            onActivePlotsChange={(activePlots, plots) => {
+                            onActivePlotsChange={(activePlots, plots, context) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
                                 if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setActivePlots(activePlots);
                                 if (modalComponentInstance) _self.createModal(false, plots);
+
+                                context.setActivePlots(plots.filter((plot) => activePlots.indexOf(plot.id) > -1));
                             }}
-                            onActiveProfilesChange={(activeProfiles) => {
+                            getAllPlots={() => {
+                                return dashboardComponentInstance.getPlots();
+                            }}
+                            getAllProfiles={() => {
+                                return dashboardComponentInstance.getProfiles();
+                            }}
+                            setPlots={(plots, activePlots) => {
+                                dashboardComponentInstance.setPlots(plots);
+                                dashboardComponentInstance.setActivePlots(activePlots);
+                            }}
+                            onActiveProfilesChange={(activeProfiles, profiles, context) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
                                 if (window.menuProfilesComponentInstance) window.menuProfilesComponentInstance.setActiveProfiles(activeProfiles);
+                                context.setActiveProfiles(profiles.filter((profile) => activeProfiles.indexOf(profile.key) > -1));
                             }}
                             onHighlightedPlotChange={(plotId, plots) => {
                                 _self.setStyleForHighlightedPlot(plotId, plots);
                                 if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setHighlightedPlot(plotId);
-                            }}/>, document.getElementById(DASHBOARD_CONTAINER_ID));
+                            }}/>, document.getElementById('watsonc-plots-dialog-form-hidden'));
+                        dashboardComponentInstance = reactRef.current;
                     } catch (e) {
                         console.error(e);
                     }
@@ -587,11 +821,11 @@ module.exports = module.exports = {
                     /></Provider>, document.getElementById(introlModalPlaceholderId)); */
                 ReactDOM.render(<Provider store={reduxStore}><ThemeProvider>
                     <DataSelectorDialogue titleText={__('Welcome to Calypso')}
-                                          urlparser={urlparser} anchor={anchor}
-                                          categories={categoriesOverall ? categoriesOverall : []}
-                                          onApply={_self.onApplyLayersAndChemical}
-                                          onCloseButtonClick={onCloseHandler} state={state}/>
-                </ThemeProvider></Provider>, document.getElementById(introlModalPlaceholderId));
+                        urlparser={urlparser} anchor={anchor}
+                        categories={categoriesOverall ? categoriesOverall : []}
+                        onApply={_self.onApplyLayersAndChemical}
+                        onCloseButtonClick={onCloseHandler} state={state} />
+                    </ThemeProvider></Provider>, document.getElementById(introlModalPlaceholderId));
             } catch (e) {
                 console.error(e);
             }
