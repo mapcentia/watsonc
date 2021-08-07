@@ -16,6 +16,7 @@ import GraphCard from './GraphCard';
 import ChemicalSelector from './ChemicalSelector';
 import ProjectContext from '../../contexts/project/ProjectContext';
 import ProjectList from '../dataselector/ProjectList';
+import MapDecorator from '../decorators/MapDecorator';
 
 
 const DASHBOARD_ITEM_PLOT = 0;
@@ -63,6 +64,9 @@ function DashboardContent(props) {
                 activePlots = activePlots.map(plot => plot.id);
                 props.setPlots(allPlots, activePlots);
                 props.onActivePlotsChange(activePlots, allPlots, projectContext);
+            },
+            render: (id, popupType) => {
+                ReactDOM.render(<ThemeProvider><MapDecorator /></ThemeProvider>, document.getElementById(`pop_up_${id}`));
             }
         }
     });
