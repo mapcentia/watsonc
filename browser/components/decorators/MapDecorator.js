@@ -10,6 +10,8 @@ import {Size} from '../shared/constants/size';
 import {Align} from '../shared/constants/align';
 import Icon from '../shared/icons/Icon';
 import ProjectContext from '../../contexts/project/ProjectContext';
+import reduxStore from "../../redux/store";
+import {addBoreholeFeature} from "../../redux/actions";
 
 function MapDecorator(props) {
     const [showMoreInfo, setShowMoreInfo] = useState(false);
@@ -61,6 +63,9 @@ function MapDecorator(props) {
         props.setPlots(allPlots, activePlots);
         props.onActivePlotsChange(activePlots, allPlots, projectContext);
     }
+    const addToDashboard = () => {
+        reduxStore.dispatch(addBoreholeFeature(props.data));
+    }
     return (
         <Root>
             {showMoreInfo ? <LabelsContainer>
@@ -89,6 +94,8 @@ function MapDecorator(props) {
                 <ButtonGroup align={Align.Center} marginTop={16} marginRight={16} marginLeft={16} spacing={4}>
                     <Button text={__("Vis alle tidsserier")} variant={Variants.Primary} size={Size.Small}
                             onClick={() => plot()} disabled={false}/>
+                    <Button text={__("Tilføj Dashboard")} variant={Variants.Primary} size={Size.Small}
+                            onClick={() => addToDashboard()} disabled={false}/>
                     <Button text={__("Mere info")} variant={Variants.Transparent} size={Size.Small}
                             onClick={() => setShowMoreInfo(true)} disabled={false}/>
                 </ButtonGroup></>}

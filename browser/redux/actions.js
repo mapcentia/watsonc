@@ -43,6 +43,11 @@ export const setBoreholeFeatures = features => ({
     payload: features
 });
 
+export const addBoreholeFeature = feature => ({
+    type: 'ADD_BOREHOLE_FEATURE',
+    payload: feature
+});
+
 export const setLimits = limits => ({
     type: 'SET_LIMITS',
     payload: limits
