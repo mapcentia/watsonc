@@ -142,12 +142,7 @@ class ChemicalSelector extends React.Component {
         }
 
         return (<div>
-            {this.props.selectedLayers.length > 0 ? (<div>
-                <SearchFieldComponent onSearch={this.handleSearch}/>
-                {layerGroupsList.length > 0 ? (
-                    <div style={{maxHeight: `400px`, overflowY: `scroll`}}>{layerGroupsList}</div>) : (
-                    <p>{__(`Nothing found`)}</p>)}
-            </div>) : false}
+         test
         </div>);
     }
 }

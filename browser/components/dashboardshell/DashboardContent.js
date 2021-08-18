@@ -94,8 +94,9 @@ function DashboardContent(props) {
     }, [props.activePlots, props.activeProfiles]);
 
     useEffect(() => {
-        if (props.boreholeFeatures)
+        if (props.boreholeFeatures) {
             setSelectedBorehole(props.boreholeFeatures[selectedBoreholeIndex]);
+        }
     }, [props.boreholeFeatures, selectedBoreholeIndex])
 
     return (
