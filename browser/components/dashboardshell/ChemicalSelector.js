@@ -22,52 +22,15 @@ function ChemicalSelector(props) {
         }
         let plottedProperties = [];
         let categories = JSON.parse(JSON.stringify(props.categories));
-        for (let key in props.feature.properties) {
-             try {
-                let data = JSON.parse(props.feature.properties[key]);
-                if (typeof data === `object` && data !== null && `boreholeno` in data && `unit` in data && `title` in data
-                    && `measurements` in data && `timeOfMeasurement` in data) {
-                    // Regular properties ("measurements" and "timeOfMeasurement" exist)
-                    let isPlottableProperty = true;
-                    if (Array.isArray(data.measurements) === false) {
-                        data.measurements = JSON.parse(data.measurements);
-                    }
-
-                    // Checking if number of measurements corresponds to the number of time measurements for each intake
-                    data.measurements.map((measurements, intakeIndex) => {
-                        if (data.measurements[intakeIndex].length !== data.timeOfMeasurement[intakeIndex].length) {
-                            console.warn(`${data.title} property has not corresponding number of measurements and time measurements for intake ${intakeIndex + 1}`);
-                            isPlottableProperty = false;
-                        }
-                    });
-
-                    if (isPlottableProperty) {
-                        for (let i = 0; i < data.measurements.length; i++) {
-                            plottedProperties.push({
-                                key,
-                                intakeIndex: i,
-                                boreholeno: data.boreholeno,
-                                title: data.title,
-                                unit: data.unit
-                            });
-                        }
-                    }
-                } else if (typeof data === `object` && data !== null && `title` in data && `data` in data) {
-                    for (let key in data.data) {
-                        for (let i = 0; i < data.data[key].data.length; i++) {
-                            plottedProperties.push({
-                                custom: true,
-                                key: data.key + ':' + key,
-                                intakeIndex: i,
-                                boreholeno: props.feature.properties.boreholeno ? props.feature.properties.boreholeno : ``,
-                                title: data.data[key].data[i].name,
-                                data: data.data[key]
-                            });
-                        }
-                    }
-                }
-            } catch (e) {
-            }
+        var parameters = props.feature.properties.parameter;
+        for (let i=0; i < parameters.length; i++) {
+            plottedProperties.push({
+                key: i,
+                intakeIndex: i,
+                boreholeno: props.feature.loc_id,
+                title: parameters[i],
+                unit: props.feature.properties.unit[0]
+            });
         }
 
         const createMeasurementControl = (item, key) => {
@@ -80,9 +43,9 @@ function ChemicalSelector(props) {
 
             let control = false;
             if (display) {
-                let json;
+                let json = item;
                 // Checking if the item is the custom one
-                if (item.key.indexOf(':') > -1) {
+                /* if (item.key.indexOf(':') > -1) {
                     json = item;
                 } else {
                     try {
@@ -91,7 +54,7 @@ function ChemicalSelector(props) {
                         console.error(item);
                         throw new Error(`Unable to parse measurements data`);
                     }
-                }
+                } */
 
                 let intakeName = `#` + (parseInt(item.intakeIndex) + 1);
                 if (`intakes` in json && Array.isArray(json.intakes) && json.intakes[item.intakeIndex] !== null) {
@@ -100,10 +63,10 @@ function ChemicalSelector(props) {
 
                 let icon = false;
                 let measurementData = null;
-                if (!item.custom) {
+                /* if (!item.custom) {
                     measurementData = evaluateMeasurement(json, props.limits, item.key, item.intakeIndex);
                     icon = measurementIcon.generate(measurementData.maxColor, measurementData.latestColor);
-                }
+                } */
 
                     control = (<ChemicalsListItem
                         label={item.title}
@@ -117,7 +80,7 @@ function ChemicalSelector(props) {
                         detectionLimitReachedForLatest={measurementData === null ? null : measurementData.detectionLimitReachedForLatest}
                         unit={item.unit}
                         icon={icon}
-                        gid={props.feature.properties.boreholeno}
+                        gid={props.feature.properties.loc_id}
                         itemKey={item.key}
                         intakeIndex={item.intakeIndex}
                         intakeName={intakeName}
