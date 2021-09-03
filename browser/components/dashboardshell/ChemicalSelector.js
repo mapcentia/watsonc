@@ -29,7 +29,9 @@ function ChemicalSelector(props) {
                 intakeIndex: i,
                 boreholeno: props.feature.loc_id,
                 title: parameters[i],
-                unit: props.feature.properties.unit[0]
+                unit: props.feature.properties.unit[0],
+                measurements: props.feature.properties.data[0].y,
+                timeOfMeasurement: props.feature.properties.data[0].x
             });
         }
 
@@ -63,10 +65,10 @@ function ChemicalSelector(props) {
 
                 let icon = false;
                 let measurementData = null;
-                /* if (!item.custom) {
+                if (!item.custom) {
                     measurementData = evaluateMeasurement(json, props.limits, item.key, item.intakeIndex);
                     icon = measurementIcon.generate(measurementData.maxColor, measurementData.latestColor);
-                } */
+                }
 
                     control = (<ChemicalsListItem
                         label={item.title}
