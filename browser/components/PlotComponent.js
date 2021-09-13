@@ -227,6 +227,7 @@ class MenuPanelPlotComponent extends React.Component {
                 }
             });
 
+            // TODO Skal i config
             let layout = {
                 displayModeBar: false,
                 margin: {
