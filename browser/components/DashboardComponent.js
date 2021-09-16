@@ -816,7 +816,7 @@ class DashboardComponent extends React.Component {
         });
     }
 
-    _modifyAxes(plotId, gid, measurementKey, measurementIntakeIndex, action) {
+    _modifyAxes(plotId, gid, measurementKey, measurementIntakeIndex, action, measurementsData) {
         if (!plotId) throw new Error(`Invalid plot identifier`);
         if ((!gid && gid !== 0) || !measurementKey || (!measurementIntakeIndex && measurementIntakeIndex !== 0)) throw new Error(`Invalid measurement location parameters`);
 
@@ -831,10 +831,13 @@ class DashboardComponent extends React.Component {
         });
 
         if (correspondingPlot === false) throw new Error(`Plot with id ${plotId} does not exist`);
-        let measurementIndex = gid + ':' + measurementKey + ':' + measurementIntakeIndex;
+        let measurementIndex = gid + ':_0:' + measurementIntakeIndex;
         if (action === `add`) {
             if (correspondingPlot.measurements.indexOf(measurementIndex) === -1) {
                 let measurementData = this.getFeatureByGidFromDataSource(gid);
+                if (measurementsData) {
+                    measurementData = measurementsData;
+                }
                 if (measurementData) {
                     var currentTime = new Date();
                     correspondingPlot.measurements.push(measurementIndex);
@@ -957,8 +960,8 @@ class DashboardComponent extends React.Component {
         return featureWasFound;
     }
 
-    addMeasurement(plotId, gid, measurementKey, measurementIntakeIndex) {
-        this._modifyAxes(plotId, gid, measurementKey, measurementIntakeIndex, `add`);
+    addMeasurement(plotId, gid, measurementKey, measurementIntakeIndex, measurementsData) {
+        this._modifyAxes(plotId, gid, measurementKey, measurementIntakeIndex, `add`, measurementsData);
     }
 
     deleteMeasurement(plotId, gid, measurementKey, measurementIntakeIndex) {
