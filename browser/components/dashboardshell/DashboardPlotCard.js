@@ -21,7 +21,32 @@ function DashboardPlotCard(props) {
     const [collectedProps, drop] = useDrop(() => ({
         accept: 'MEASUREMENT',
         drop: (item) => {
-            item.onAddMeasurement(props.plot.id, item.gid, item.itemKey, item.intakeIndex);
+            let measurementsData = {
+                data: {
+                    type: "Feature",
+                    geometry: {
+                        type: "Point",
+                        coordinates: [
+                            530079.34,
+                            6224647.55
+                        ]
+                    },
+                    properties: {
+                        "_0": JSON.stringify({
+                            unit: item.feature.unit[0],
+                            title: props.plot.title,
+                            intakes: [1],
+                            boreholeno: item.feature.loc_id,
+                            measurements: item.feature.data.map(i => i.y),
+                            timeOfMeasurement: item.feature.data.map(i => i.x)
+                        }),
+                        "boreholeno": item.feature.loc_id,
+                        "numofintakes": 1
+                    }
+                },
+                "created_at": "2020-09-17T07:46:53.524Z"
+            }
+            item.onAddMeasurement(props.plot.id, item.gid, item.itemKey, item.intakeIndex, measurementsData);
         }
     }));
     useEffect(() => {

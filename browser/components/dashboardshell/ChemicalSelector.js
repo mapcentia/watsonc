@@ -25,7 +25,7 @@ function ChemicalSelector(props) {
         var parameters = props.feature.properties.parameter;
         for (let i=0; i < parameters.length; i++) {
             plottedProperties.push({
-                key: i,
+                key: props.feature.properties.data[0].name,
                 intakeIndex: i,
                 boreholeno: props.feature.loc_id,
                 title: parameters[i],
@@ -88,6 +88,7 @@ function ChemicalSelector(props) {
                         intakeName={intakeName}
                         unit={item.unit}
                         title={item.title}
+                        feature={props.feature.properties}
                     />)
             }
 

@@ -591,8 +591,8 @@ module.exports = module.exports = {
                             onDeleteMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex) => {
                                 dashboardComponentInstance.deleteMeasurement(plotId, featureGid, featureKey, featureIntakeIndex);
                             }}
-                            onAddMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex) => {
-                                dashboardComponentInstance.addMeasurement(plotId, featureGid, featureKey, featureIntakeIndex);
+                            onAddMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex, measurementsData) => {
+                                dashboardComponentInstance.addMeasurement(plotId, featureGid, featureKey, featureIntakeIndex, measurementsData);
                             }}
                             onPlotsChange={(plots = false, context) => {
                                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
