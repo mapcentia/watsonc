@@ -841,10 +841,7 @@ class DashboardComponent extends React.Component {
                 if (measurementData) {
                     var currentTime = new Date();
                     correspondingPlot.measurements.push(measurementIndex);
-                    correspondingPlot.measurementsCachedData[measurementIndex] = {
-                        data: measurementData,
-                        created_at: currentTime.toISOString()
-                    }
+                    correspondingPlot.measurementsCachedData[measurementIndex] = measurementData;
                 } else {
                     throw new Error(`Unable to find data for measurement index ${measurementIndex}`);
                 }
