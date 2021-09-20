@@ -28,7 +28,6 @@ function Button(props) {
 }
 
 const Root = styled.button`
-    height: 40px;
     padding: 0 24px 0 24px;
     font-size: 16px;
     cursor: pointer;
@@ -63,11 +62,11 @@ const Root = styled.button`
             [Size.Small]: css `
                 width: ${theme.layout.gutter * 3}px;
                 font: ${theme.fonts.label};
-                height: 24px;
+                min-height: 24px;
             `,
             [Size.Medium]: css `
                 width: ${theme.layout.gutter * 5}px;
-                height: 24px;
+                min-height: 24px;
                 font: ${theme.fonts.label};
             `,
             [Size.Large]: css `
