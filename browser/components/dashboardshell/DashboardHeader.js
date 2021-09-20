@@ -46,7 +46,7 @@ function DashboardHeader(props) {
                 </Grid>
                 <Grid container item xs={4} justify='flex-end'>
                     {showSaveButtons ? <ButtonGroup align={Align.Center} spacing={2} marginTop={1} marginRight={8}>
-                        <Button text={__('Ny graf')} size={Size.Medium} variant={Variants.Primary} />
+                        <Button text={__('Ny graf')} size={Size.Medium} onClick={()=>{}} variant={Variants.Primary} />
                     </ButtonGroup> : null }
                     <IconsLayout>
                         <IconContainer onClick={() => props.setDashboardMode('minimized')} active={props.dashboardMode === 'minimized'} >
