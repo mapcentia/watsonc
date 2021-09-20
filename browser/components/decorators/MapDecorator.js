@@ -18,19 +18,19 @@ function MapDecorator(props) {
     const projectContext = useContext(ProjectContext);
     console.log(showMoreInfo)
     const plot = () => {
-        console.log(props.data)
+        console.log("props", props)
         let activePlots = projectContext.activePlots;
         let allPlots = props.getAllPlots();
-        [props.data].map((o) => {
-            let plot = o.properties
-            let plotData = {
-                id: `plot_${activePlots.length + 1}`,
-                title: plot.ts_name[0],
-                measurements: [plot.loc_id + ":_0:0"],
-                measurementsCachedData: {}
-            }
-
-            plotData.measurementsCachedData[plot.loc_id + ":_0:0"] =
+        let plotData = {
+            id: `plot_${activePlots.length + 1}`,
+            title: props.data.properties.locname,
+            measurements: [],
+            measurementsCachedData: {}
+        }
+        let plot = props.data.properties;
+        for (let u = 0; u < props.data.properties.data.length; u++) {
+            plotData.measurements.push(plot.loc_id + ":_0:" + u.toString());
+            plotData.measurementsCachedData[plot.loc_id + ":_0:" + u.toString()] =
                 {
                     "data": {
                         "type": "Feature",
@@ -43,12 +43,12 @@ function MapDecorator(props) {
                         },
                         "properties": {
                             "_0": JSON.stringify({
-                                unit: plot.unit[0],
-                                title: plot.parameter[0],
+                                unit: plot.unit[u],
+                                title: plot.parameter[u],
                                 intakes: [1],
                                 boreholeno: plot.loc_id,
                                 measurements: plot.data.map(i => i.y),
-                                timeOfMeasurement: plot.data.map(i => i.x)
+                                timeOfMeasurement:plot.data.map(i => i.x)
                             }),
                             "boreholeno": plot.loc_id,
                             "numofintakes": 1
@@ -56,9 +56,12 @@ function MapDecorator(props) {
                     },
                     "created_at": "2020-09-17T07:46:53.524Z"
                 };
-            activePlots.push(plotData);
-            allPlots.push(plotData);
-        })
+
+        }
+        activePlots.push(plotData);
+        allPlots.push(plotData);
+        console.log("plotData", plotData)
+
         activePlots = activePlots.map(plot => plot.id);
         props.setPlots(allPlots, activePlots);
         props.onActivePlotsChange(activePlots, allPlots, projectContext);
@@ -66,30 +69,36 @@ function MapDecorator(props) {
     const addToDashboard = () => {
         reduxStore.dispatch(addBoreholeFeature(props.data));
     }
+    let links = [];
+
+
+    links.push(props.data.properties.parameter.map((v) => {
+        return (
+            <Grid container>
+                <Icon name="analytics-board-graph-line" strokeColor={DarkTheme.colors.headings} size={16}/>
+                <Title marginTop={0} marginLeft={4} level={5} color={DarkTheme.colors.headings}
+                       text={v}/>
+            </Grid>
+
+        )
+    }))
+
     return (
         <Root>
             {showMoreInfo ? <LabelsContainer>
-                <Title level={4} text={__('Nord for Tega 6B')} color={DarkTheme.colors.headings}/>
+                <Title level={4} text={props.data.properties.locname} color={DarkTheme.colors.headings}/>
             </LabelsContainer> : <><RatingStarContainer>
                 <Icon name="rating-star-solid" strokeColor={DarkTheme.colors.headings} size={16}/>
             </RatingStarContainer>
                 <Img
                     src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1VUaMszH67lgK2I_K2bh6TxDdM9sxHmj5eqlQRbtx6nMETiwKpdPC7QlqfVslDjCkAGued1jHt54&usqp=CAU"/>
                 <LabelsContainer>
-                    <Title level={4} text={__('Nord for Tega 6B')} color={DarkTheme.colors.headings}/>
+                    <Title level={4} text={props.data.properties.locname} color={DarkTheme.colors.headings}/>
+                    <br/>
                     <Title level={6} color={DarkTheme.colors.primary[5]} text={__('Tidsserier')} marginTop={16}/>
                 </LabelsContainer>
                 <LinksContainer>
-                    <Grid container>
-                        <Icon name="analytics-board-graph-line" strokeColor={DarkTheme.colors.headings} size={16}/>
-                        <Title marginTop={0} marginLeft={4} level={5} color={DarkTheme.colors.headings}
-                               text={__('Filter 1 - vandstand')}/>
-                    </Grid>
-                    <Grid container>
-                        <Icon name="analytics-board-graph-line" strokeColor={DarkTheme.colors.headings} size={16}/>
-                        <Title marginTop={0} marginLeft={4} level={5} color={DarkTheme.colors.headings}
-                               text={__('Filter 2 - vandstand')}/>
-                    </Grid>
+                    {links}
                 </LinksContainer>
                 <ButtonGroup align={Align.Center} marginTop={16} marginRight={16} marginLeft={16} spacing={4}>
                     <Button text={__("Vis alle tidsserier")} variant={Variants.Primary} size={Size.Small}
