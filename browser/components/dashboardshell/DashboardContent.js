@@ -114,7 +114,7 @@ function DashboardContent(props) {
                                                text={__('Valgte datakilder')} marginLeft={8}/>
                                     </DashboardListTitle>
                                     {props.boreholeFeatures ? props.boreholeFeatures.map((item, index) => {
-                                        let name = item.properties.loc_id.toString();
+                                        let name = item.properties.locname;
                                         return <DashboardListItem onClick={() => setSelectedBoreholeIndex(index)}
                                                                   active={selectedBoreholeIndex === index} key={index}>
                                             <Icon name="drill" size={16} strokeColor={DarkTheme.colors.headings}/>
