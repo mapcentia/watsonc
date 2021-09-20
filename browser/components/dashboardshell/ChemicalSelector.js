@@ -80,7 +80,6 @@ function ChemicalSelector(props) {
                         latestMeasurementRelative={measurementData === null ? null : Math.round((measurementData.latestMeasurement / measurementData.chemicalLimits[1]) * 100) / 100}
                         detectionLimitReachedForMax={measurementData === null ? null : measurementData.detectionLimitReachedForMax}
                         detectionLimitReachedForLatest={measurementData === null ? null : measurementData.detectionLimitReachedForLatest}
-                        unit={item.unit}
                         icon={icon}
                         gid={props.feature.properties.loc_id}
                         itemKey={item.key}
@@ -108,7 +107,7 @@ function ChemicalSelector(props) {
                         return false;
                     if (measurementsThatBelongToCategory.indexOf(item.title) !== -1) {
                         // Measurement is in current category
-                        let control = createMeasurementControl(item, ('measurement_' + index));
+                        let control = createMeasurementControl(item, (item.key + '_measurement_' + index));
                         if (control) {
                             measurementControls.push(control);
                         }
@@ -136,7 +135,7 @@ function ChemicalSelector(props) {
             // Placing uncategorized measurements in separate category
             let uncategorizedMeasurementControls = [];
             plottedProperties.slice().map((item, index) => {
-                let control = createMeasurementControl(item, ('measurement_' + index));
+                let control = createMeasurementControl(item, (item.key + '_measurement_' + index));
                 plottedProperties.splice(index, 1);
                 if (control) {
                     uncategorizedMeasurementControls.push(control);
@@ -158,7 +157,7 @@ function ChemicalSelector(props) {
             }
         } else {
             plottedProperties.map((item, index) => {
-                let control = createMeasurementControl(item, (`measurement_` + index));
+                let control = createMeasurementControl(item, (item.key + '_measurement_' + index));
                 if (control) {
                     propertiesControls.push(control);
                 }
