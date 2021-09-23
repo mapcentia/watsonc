@@ -1,4 +1,4 @@
-import { useState, useEffect} from 'react';
+import { useContext, useState, useEffect} from 'react';
 import {connect} from 'react-redux';
 import styled, { css } from 'styled-components';
 import Grid from '@material-ui/core/Grid';
@@ -10,9 +10,11 @@ import {Size} from '../shared/constants/size';
 import Button from '../shared/button/Button';
 import ButtonGroup from '../shared/button/ButtonGroup';
 import {DarkTheme} from '../../themes/DarkTheme';
+import ProjectContext from '../../contexts/project/ProjectContext';
 
 function DashboardHeader(props) {
     const [showSaveButtons, setShowSaveButtons] = useState(true);
+    const projectContext = useContext(ProjectContext);
 
     useEffect(() => {
         let canShowSaveButtons = true;
@@ -21,6 +23,22 @@ function DashboardHeader(props) {
         }
         setShowSaveButtons(canShowSaveButtons);
     }, [props.dashboardMode, props.dashboardContent])
+
+    const addNewPlot = () => {
+        let allPlots = props.getAllPlots();
+        let activePlots = projectContext.activePlots;
+        let plotData = {
+            id: `plot_${allPlots.length + 1}`,
+            title: `Graph ${allPlots.length + 1}`,
+            measurements: [],
+            measurementsCachedData: {}
+        };
+        activePlots.unshift(plotData);
+        allPlots.unshift(plotData);
+        activePlots = activePlots.map(plot => plot.id);
+        props.setPlots(allPlots, activePlots);
+        props.onActivePlotsChange(activePlots, allPlots, projectContext);
+    }
 
     return (
         <Root>
@@ -46,7 +64,7 @@ function DashboardHeader(props) {
                 </Grid>
                 <Grid container item xs={4} justify='flex-end'>
                     {showSaveButtons ? <ButtonGroup align={Align.Center} spacing={2} marginTop={1} marginRight={8}>
-                        <Button text={__('Ny graf')} size={Size.Medium} onClick={()=>{}} variant={Variants.Primary} />
+                        <Button text={__('Ny graf')} size={Size.Medium} onClick={()=>addNewPlot()} variant={Variants.Primary} />
                     </ButtonGroup> : null }
                     <IconsLayout>
                         <IconContainer onClick={() => props.setDashboardMode('minimized')} active={props.dashboardMode === 'minimized'} >
