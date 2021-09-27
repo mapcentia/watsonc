@@ -102,7 +102,7 @@ function DashboardContent(props) {
     return (
         <Root>
             {props.dashboardContent === 'charts' ? <Grid container>
-                <Grid container item xs={5}>
+                <Grid container item xs={4}>
                     <DashboardList>
                         <Grid container>
                             <Grid container item xs={5}>
@@ -192,7 +192,7 @@ function DashboardContent(props) {
                         </Grid>
                     </DashboardList>
                 </Grid>
-                <Grid container item xs={7}>
+                <Grid container item xs={8}>
                     <ChartsContainer>
                         <SortableList axis="xy" onSortEnd={handlePlotSort} useDragHandle>
                             {dashboardItems.map((dashboardItem, index) => {
@@ -273,7 +273,7 @@ const FavoritterListTitle = styled.div`
 
 const ChartsContainer = styled.ul`
   width: 100%;
-  padding-left: ${props => props.theme.layout.gutter * 2}px;
+  padding-left: ${props => props.theme.layout.gutter / 4}px;
   padding-right: ${props => props.theme.layout.gutter / 4}px;
   height: 100%;
   overflow: scroll;

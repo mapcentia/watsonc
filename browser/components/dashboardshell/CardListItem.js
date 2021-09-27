@@ -42,9 +42,7 @@ function CardListItem(props) {
         <Root>
             <Grid container>
                 <Grid container item xs={11}>
-                    <CheckBox />
                     <CardListLabel>
-                    <Icon name='water-wifi-solid' size={16} />
                         <Title level={6} text={name} marginLeft={8} />
                     </CardListLabel>
                 </Grid>

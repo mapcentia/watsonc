@@ -297,10 +297,10 @@ module.exports = module.exports = {
         state.getState().then(applicationState => {
             $(PLOTS_ID).attr(`style`, `
                 margin-bottom: 0px;
-                width: 80%;
-                max-width: 80%;
-                right: 10%;
-                left: 10%;
+                width: 96%;
+                max-width: 96%;
+                right: 2%;
+                left: 2%;
                 bottom: 0px;`);
 
             LAYER_NAMES.map(layerName => {

@@ -163,7 +163,7 @@ function DashboardPlotCard(props) {
     return (
         <DashboardPlotContent ref={drop}>
             <Grid container>
-                <Grid container item xs={5}>
+                <Grid container item xs={2}>
                     <CardList>
                         {props.plot?.measurements?.map((measurement, index) => {
                             return (
@@ -173,7 +173,7 @@ function DashboardPlotCard(props) {
                         })}
                     </CardList>
                 </Grid>
-                <Grid container item xs={7}>
+                <Grid container item xs={10}>
                     <PlotContainer>
                         <PlotComponent viewMode={0} height={320} index={props.index}
                                        onDelete={() => console.log("Testing")} plotMeta={props.plot} plotData={plotData}
@@ -197,8 +197,8 @@ const CardList = styled.div`
 
 
 const PlotContainer = styled.div`
-  width: 90%;
-  margin-left: 5%;
+  width: 100%;
+  margin-left: 10px;
 `;
 
 export default DashboardPlotCard;
