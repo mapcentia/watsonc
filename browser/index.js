@@ -941,7 +941,6 @@ module.exports = module.exports = {
     },
 
     participatingIds(plot) {
-        console.log("plot", plot)
         let participatingIds = [];
         if ("measurements" in plot) {
             plot.measurements.map(measurement => {
