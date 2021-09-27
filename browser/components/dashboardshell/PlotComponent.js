@@ -1,33 +1,11 @@
 import Plot from 'react-plotly.js';
 import { useState, useEffect } from 'react';
+const config = require('../../../../../config/config.js');
 
 function PlotComponent(props) {
 
     const [plot, setPlot] = useState(<p className="text-muted">{__(`At least one y axis has to be provided`)}</p>);
-    let layout = {
-        displayModeBar: false,
-        margin: {
-            l: 30,
-            r: (props.yAxis2LayoutSettings ? 30 : 5),
-            b: 30,
-            t: 5,
-            pad: 4
-        },
-        xaxis: {
-            autorange: true,
-            margin: 0,
-            type: 'date'
-        },
-        yaxis: {
-            autorange: true,
-        },
-        showlegend: true,
-        legend: {
-            orientation: "h",
-            y: -0.2
-        },
-        autosize: true
-    };
+    let layout = config?.extensionConfig?.watsonc?.plotLayout || {};
 
     useEffect(() => {
         setPlot(<Plot
