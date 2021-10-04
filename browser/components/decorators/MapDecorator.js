@@ -22,7 +22,7 @@ function MapDecorator(props) {
         let activePlots = projectContext.activePlots;
         let allPlots = props.getAllPlots();
         let plotData = {
-            id: `plot_${activePlots.length + 1}`,
+            id: `plot_${allPlots.length + 1}`,
             title: props.data.properties.locname,
             measurements: [],
             measurementsCachedData: {}
@@ -59,8 +59,8 @@ function MapDecorator(props) {
                 };
 
         }
-        activePlots.push(plotData);
-        allPlots.push(plotData);
+        activePlots.unshift(plotData);
+        allPlots.unshift(plotData);
         console.log("plotData", plotData)
 
         activePlots = activePlots.map(plot => plot.id);

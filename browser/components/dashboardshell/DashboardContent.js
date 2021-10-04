@@ -40,9 +40,12 @@ function DashboardContent(props) {
 
     const handleRemovePlot = (id) => {
         let plots = props.activePlots;
+        let allPlots = props.getAllPlots();
         plots = plots.filter((plot) => plot.id !== id);
+        allPlots = allPlots.filter((plot) => plot.id !== id);
         const activePlots = plots.map((plot) => plot.id);
         props.onActivePlotsChange(activePlots, props.getAllPlots(), projectContext);
+        props.setPlots(allPlots, plots);
     };
 
     useEffect(() => {
