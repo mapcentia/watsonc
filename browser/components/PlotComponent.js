@@ -49,7 +49,7 @@ class MenuPanelPlotComponent extends React.Component {
                     }
                     let formatedDates = measurementData.timeOfMeasurement[intakeIndex].map(x => x.replace("T", " "));
                     data.push({
-                        name: (`${feature.properties.boreholeno} - ${measurementData.title} (${measurementData.unit})`),
+                        name: measurementData.title,
                         x: formatedDates,
                         y: measurementData.measurements[intakeIndex],
                     });

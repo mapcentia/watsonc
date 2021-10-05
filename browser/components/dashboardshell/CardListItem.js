@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Icon from '../shared/icons/Icon';
 import Title from '../shared/title/Title';
-import CheckBox from '../shared/inputs/CheckBox';
 
 const utils = require('../../utils');
 
@@ -28,8 +27,8 @@ function CardListItem(props) {
             if (props.plot.measurementsCachedData && props.plot.measurementsCachedData[props.measurement]) {
                 feature = props.plot.measurementsCachedData[props.measurement].data;
                 let measurementData = JSON.parse(feature.properties[key]);
-                let title = utils.getMeasurementTitle(feature);
-                setName(`${title} (${measurementData.intakes ? measurementData.intakes[intakeIndex] : (intakeIndex + 1)}) - ${measurementData.title} (${measurementData.unit})`);
+                setName(`${measurementData.title}`);
+                // setName(`${measurementData.title} (${measurementData.unit})`);
             }
             setInfoForDeletion({
                 plotId: props.plot.id,

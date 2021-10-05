@@ -44,7 +44,9 @@ function MapDecorator(props) {
                         "properties": {
                             "_0": JSON.stringify({
                                 unit: plot.unit[u],
-                                title: plot.parameter[u],
+                                //TODO brug ts_name
+                                title: plot.data[u].name,
+                                // title: plot.ts_name[u],
                                 intakes: [1],
                                 boreholeno: plot.loc_id,
                                 measurements: plot.data.map(i => i.y),
@@ -72,13 +74,13 @@ function MapDecorator(props) {
     }
     let links = [];
 
-
-    links.push(props.data.properties.parameter.map((v) => {
+    //TODO brug ts_name
+    links.push(props.data.properties.data.map((v) => {
         return (
             <Grid container>
                 <Icon name="analytics-board-graph-line" strokeColor={DarkTheme.colors.headings} size={16}/>
                 <Title marginTop={0} marginLeft={4} level={5} color={DarkTheme.colors.headings}
-                       text={v}/>
+                       text={v.name}/>
             </Grid>
 
         )

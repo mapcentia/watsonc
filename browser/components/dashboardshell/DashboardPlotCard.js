@@ -21,6 +21,7 @@ function DashboardPlotCard(props) {
     const [collectedProps, drop] = useDrop(() => ({
         accept: 'MEASUREMENT',
         drop: (item) => {
+            console.log("item", item)
             let measurementsData = {
                 data: {
                     type: "Feature",
@@ -33,8 +34,10 @@ function DashboardPlotCard(props) {
                     },
                     properties: {
                         "_0": JSON.stringify({
-                            unit: item.feature.unit[0],
-                            title: props.plot.title,
+                            unit: item.feature.unit[item.intakeIndex],
+                            //TODO brug ts_name
+                            title: item.feature.data[item.intakeIndex].name,
+                            // title: item.feature.ts_name[item.intakeIndex],
                             intakes: [1],
                             boreholeno: item.feature.loc_id,
                             measurements: item.feature.data.map(i => i.y),

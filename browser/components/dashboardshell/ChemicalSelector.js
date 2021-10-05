@@ -25,10 +25,12 @@ function ChemicalSelector(props) {
         var parameters = props.feature.properties.parameter;
         for (let i=0; i < parameters.length; i++) {
             plottedProperties.push({
-                key: props.feature.properties.data[0].name,
+                key: props.feature.properties.ts_name[i] + "_" + i,
                 intakeIndex: i,
-                boreholeno: props.feature.loc_id,
-                title: parameters[i],
+                boreholeno: props.feature.properties.loc_id,
+                //TODO brug ts_name
+                title: props.feature.properties.data[i].name,
+                // title: props.feature.properties.ts_name[i],
                 unit: props.feature.properties.unit[0],
                 measurements: props.feature.properties.data[0].y,
                 timeOfMeasurement: props.feature.properties.data[0].x
