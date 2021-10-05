@@ -20,7 +20,10 @@ function DashboardPlotCard(props) {
     const [yAxis2LayoutSettings, setYAxis2LayoutSettings] = useState(null);
     const [collectedProps, drop] = useDrop(() => ({
         accept: 'MEASUREMENT',
-        drop: (item) => {
+        drop: (item, monitor) => {
+            if (monitor.didDrop()) {
+                return;
+            }
             let measurementsData = {
                 data: {
                     type: "Feature",
