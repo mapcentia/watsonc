@@ -11,6 +11,7 @@ import Button from '../shared/button/Button';
 import ButtonGroup from '../shared/button/ButtonGroup';
 import {DarkTheme} from '../../themes/DarkTheme';
 import ProjectContext from '../../contexts/project/ProjectContext';
+import {getNewPlotId} from '../../helpers/common';
 
 function DashboardHeader(props) {
     const [showSaveButtons, setShowSaveButtons] = useState(true);
@@ -27,9 +28,10 @@ function DashboardHeader(props) {
     const addNewPlot = () => {
         let allPlots = props.getAllPlots();
         let activePlots = projectContext.activePlots;
+        let newPlotId = getNewPlotId(allPlots);
         let plotData = {
-            id: `plot_${allPlots.length + 1}`,
-            title: `Graph ${allPlots.length + 1}`,
+            id: `plot_${newPlotId}`,
+            title: `Graph ${newPlotId}`,
             measurements: [],
             measurementsCachedData: {}
         };

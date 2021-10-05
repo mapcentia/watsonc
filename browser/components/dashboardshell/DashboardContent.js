@@ -17,6 +17,7 @@ import ChemicalSelector from './ChemicalSelector';
 import ProjectContext from '../../contexts/project/ProjectContext';
 import ProjectList from '../dataselector/ProjectList';
 import MapDecorator from '../decorators/MapDecorator';
+import {getNewPlotId} from '../../helpers/common';
 
 
 const DASHBOARD_ITEM_PLOT = 0;
@@ -39,13 +40,13 @@ function DashboardContent(props) {
     }
 
     const handleRemovePlot = (id) => {
-        let plots = props.activePlots;
+        let activePlots = props.activePlots;
         let allPlots = props.getAllPlots();
-        plots = plots.filter((plot) => plot.id !== id);
+        activePlots = activePlots.filter((plot) => plot.id !== id);
         allPlots = allPlots.filter((plot) => plot.id !== id);
-        const activePlots = plots.map((plot) => plot.id);
-        props.onActivePlotsChange(activePlots, props.getAllPlots(), projectContext);
-        props.setPlots(allPlots, plots);
+        activePlots = activePlots.map((plot) => plot.id);
+        props.onActivePlotsChange(activePlots, allPlots, projectContext);
+        props.setPlots(allPlots, activePlots);
     };
 
     useEffect(() => {
@@ -58,8 +59,9 @@ function DashboardContent(props) {
                 let allPlots = props.getAllPlots();
                 console.log(activePlots);
                 plots.map((plot) => {
+                    let newPlotId = getNewPlotId(allPlots);
                     let plotData = {
-                        id: `plot_${activePlots.length + 1}`,
+                        id: `plot_${newPlotId}`,
                         title: plot.title,
                         measurements: plot.measurements,
                         measurementsCachedData: plot.measurementsCachedData

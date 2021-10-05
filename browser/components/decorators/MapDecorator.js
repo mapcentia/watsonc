@@ -12,6 +12,7 @@ import Icon from '../shared/icons/Icon';
 import ProjectContext from '../../contexts/project/ProjectContext';
 import reduxStore from "../../redux/store";
 import {addBoreholeFeature} from "../../redux/actions";
+import {getNewPlotId} from '../../helpers/common';
 
 function MapDecorator(props) {
     const [showMoreInfo, setShowMoreInfo] = useState(false);
@@ -19,10 +20,9 @@ function MapDecorator(props) {
     console.log(showMoreInfo)
     const plot = () => {
         console.log("props", props)
-        let activePlots = projectContext.activePlots;
         let allPlots = props.getAllPlots();
         let plotData = {
-            id: `plot_${allPlots.length + 1}`,
+            id: `plot_${getNewPlotId(allPlots)}`,
             title: props.data.properties.locname,
             measurements: [],
             measurementsCachedData: {}
@@ -61,11 +61,10 @@ function MapDecorator(props) {
                 };
 
         }
-        activePlots.unshift(plotData);
         allPlots.unshift(plotData);
         console.log("plotData", plotData)
 
-        activePlots = activePlots.map(plot => plot.id);
+        let activePlots = allPlots.map(plot => plot.id);
         props.setPlots(allPlots, activePlots);
         props.onActivePlotsChange(activePlots, allPlots, projectContext);
     }
