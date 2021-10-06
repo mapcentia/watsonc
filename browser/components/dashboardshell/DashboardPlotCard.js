@@ -20,40 +20,11 @@ function DashboardPlotCard(props) {
     const [yAxis2LayoutSettings, setYAxis2LayoutSettings] = useState(null);
     const [collectedProps, drop] = useDrop(() => ({
         accept: 'MEASUREMENT',
-        drop: (item, monitor) => {
-            if (monitor.didDrop()) {
-                return;
-            }
-            let measurementsData = {
-                data: {
-                    type: "Feature",
-                    geometry: {
-                        type: "Point",
-                        coordinates: [
-                            530079.34,
-                            6224647.55
-                        ]
-                    },
-                    properties: {
-                        "_0": JSON.stringify({
-                            unit: item.feature.unit[item.intakeIndex],
-                            //TODO brug ts_name
-                            title: item.feature.data[item.intakeIndex].name,
-                            // title: item.feature.ts_name[item.intakeIndex],
-                            intakes: [1],
-                            boreholeno: item.feature.loc_id,
-                            measurements: item.feature.data.map(i => i.y),
-                            timeOfMeasurement: item.feature.data.map(i => i.x),
-                            trace: item.feature.trace
-                        }),
-                        "boreholeno": item.feature.loc_id,
-                        "numofintakes": 1,
-                    }
-                },
-                "created_at": "2020-09-17T07:46:53.524Z"
-            }
-            item.onAddMeasurement(props.plot.id, item.gid, item.itemKey, item.intakeIndex, measurementsData);
-        }
+        drop: props.onDrop,
+        collect: (monitor) => ({
+            isOver: monitor.isOver(),
+            canDrop: monitor.canDrop(),
+        })
     }));
     useEffect(() => {
         let data = [];

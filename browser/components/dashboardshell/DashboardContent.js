@@ -1,4 +1,4 @@
-import {useState, useEffect, useContext} from 'react';
+import {useState, useEffect, useContext, useCallback} from 'react';
 import {connect} from 'react-redux';
 import styled from 'styled-components';
 import {hexToRgbA} from '../../helpers/colors';
@@ -49,6 +49,40 @@ function DashboardContent(props) {
         props.setPlots(allPlots, activePlots);
     };
 
+    const handleDrop = useCallback((index, item) => {
+        let plot = props.activePlots[index];
+        let measurementsData = {
+            data: {
+                type: "Feature",
+                geometry: {
+                    type: "Point",
+                    coordinates: [
+                        530079.34,
+                        6224647.55
+                    ]
+                },
+                properties: {
+                    "_0": JSON.stringify({
+                        unit: item.feature.unit[item.intakeIndex],
+                        //TODO brug ts_name
+                        title: item.feature.data[item.intakeIndex].name,
+                        // title: item.feature.ts_name[item.intakeIndex],
+                        intakes: [1],
+                        boreholeno: item.feature.loc_id,
+                        measurements: item.feature.data.map(i => i.y),
+                        timeOfMeasurement: item.feature.data.map(i => i.x),
+                        trace: item.feature.trace
+                    }),
+                    "boreholeno": item.feature.loc_id,
+                    "numofintakes": 1,
+                }
+            },
+            "created_at": "2020-09-17T07:46:53.524Z"
+        }
+        item.onAddMeasurement(plot.id, item.gid, item.itemKey, item.intakeIndex, measurementsData);
+
+    });
+
     useEffect(() => {
         window.Calypso = {
             test: () => {
@@ -89,10 +123,11 @@ function DashboardContent(props) {
             })
         });
 
-        props.activePlots.map((item) => {
+        props.activePlots.map((item, index) => {
             dashboardItemsCopy.push({
                 type: DASHBOARD_ITEM_PLOT,
-                item
+                item,
+                plotsIndex: index
             })
         });
         setDashboardItems(dashboardItemsCopy);
@@ -204,7 +239,8 @@ function DashboardContent(props) {
                                 if (dashboardItem.type === DASHBOARD_ITEM_PLOT) {
                                     return <GraphCard plot={dashboardItem.item} index={index} key={index}
                                                       onDeleteMeasurement={props.onDeleteMeasurement} cardType='plot'
-                                                      onRemove={() => handleRemovePlot(dashboardItem.item.id)}/>
+                                                      onRemove={() => handleRemovePlot(dashboardItem.item.id)}
+                                                      onDrop={(item) => handleDrop(dashboardItem.plotsIndex, item)}/>
                                 } else if (dashboardItem.type === DASHBOARD_ITEM_PROFILE) {
 
                                     return <GraphCard plot={dashboardItem.item} index={index} key={index}
