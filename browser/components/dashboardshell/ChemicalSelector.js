@@ -154,7 +154,8 @@ function ChemicalSelector(props) {
                     <Icon name="plus-solid" size={16} />
                     <Title level={4} text={__('Uncategorized')} marginLeft={8} />
                 </ChemicalsListTitle>
-                    <Collapse in={openItems['uncategorized']}>{uncategorizedMeasurementControls}</Collapse>
+                    {/*<Collapse in={openItems['uncategorized']}>{uncategorizedMeasurementControls}</Collapse>*/}
+                    <Collapse in={true}>{uncategorizedMeasurementControls}</Collapse>
                 </>);
             }
         } else {

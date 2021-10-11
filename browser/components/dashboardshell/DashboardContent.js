@@ -162,66 +162,66 @@ function DashboardContent(props) {
                                         </DashboardListItem>
 
                                     }) : null}
-                                    <FavoritterList>
-                                        <DashboardListTitle>
-                                            <Icon name="star-solid" size={16}/>
-                                            <Title level={4} text={__('Favoritter')} marginLeft={8}/>
-                                        </DashboardListTitle>
-                                        <FavoritterListTitle>
-                                            <Icon name="drill-space-solid" size={16}/>
-                                            <Title level={5} text={__('Kildeplads')} marginLeft={8}/>
-                                        </FavoritterListTitle>
-                                        <DashboardListItem>
-                                            <Icon name="drill" size={16} strokeColor={DarkTheme.colors.headings}/>
-                                            <Title level={6} text='13.344' marginLeft={8}/>
-                                        </DashboardListItem>
-                                        <DashboardListItem>
-                                            <Icon name="drill" size={16} strokeColor={DarkTheme.colors.headings}/>
-                                            <Title level={6} text='13.947' marginLeft={8}/>
-                                        </DashboardListItem>
-                                        <DashboardListItem>
-                                            <Icon name="drill" size={16} strokeColor={DarkTheme.colors.headings}/>
-                                            <Title level={6} text='13.478' marginLeft={8}/>
-                                        </DashboardListItem>
-                                        <FavoritterListTitle>
-                                            <Icon name="folder-solid" size={16}/>
-                                            <Title level={5} text={__('Omrade B')} marginLeft={8}/>
-                                        </FavoritterListTitle>
-                                        <DashboardListItem>
-                                            <Icon name="water-wifi-solid" size={8}
-                                                  strokeColor={DarkTheme.colors.headings}/>
-                                            <Title level={6} text={__('Lokalitet 213.312')} marginLeft={8}/>
-                                        </DashboardListItem>
-                                        <DashboardListItem>
-                                            <Icon name="water-wifi-solid" size={8}
-                                                  strokeColor={DarkTheme.colors.headings}/>
-                                            <Title level={6} text={__('Lokalitet 243.442')} marginLeft={8}/>
-                                        </DashboardListItem>
-                                        <DashboardListItem>
-                                            <Icon name="water-wifi-solid" size={8}
-                                                  strokeColor={DarkTheme.colors.headings}/>
-                                            <Title level={6} text={__('Lokalitet 745.553')} marginLeft={8}/>
-                                        </DashboardListItem>
-                                        <FavoritterListTitle>
-                                            <Icon name="folder-solid" size={16}/>
-                                            <Title level={5} text={__('Omrade C')} marginLeft={8}/>
-                                        </FavoritterListTitle>
-                                        <DashboardListItem>
-                                            <Icon name="water-wifi-solid" size={8}
-                                                  strokeColor={DarkTheme.colors.headings}/>
-                                            <Title level={6} text={__('Lokalitet 773.312')} marginLeft={8}/>
-                                        </DashboardListItem>
-                                        <DashboardListItem>
-                                            <Icon name="water-wifi-solid" size={8}
-                                                  strokeColor={DarkTheme.colors.headings}/>
-                                            <Title level={6} text={__('Lokalitet 883.442')} marginLeft={8}/>
-                                        </DashboardListItem>
-                                        <DashboardListItem>
-                                            <Icon name="water-wifi-solid" size={8}
-                                                  strokeColor={DarkTheme.colors.headings}/>
-                                            <Title level={6} text={__('Lokalitet 799.553')} marginLeft={8}/>
-                                        </DashboardListItem>
-                                    </FavoritterList>
+                                    {/*<FavoritterList>*/}
+                                    {/*    <DashboardListTitle>*/}
+                                    {/*        <Icon name="star-solid" size={16}/>*/}
+                                    {/*        <Title level={4} text={__('Favoritter')} marginLeft={8}/>*/}
+                                    {/*    </DashboardListTitle>*/}
+                                    {/*    <FavoritterListTitle>*/}
+                                    {/*        <Icon name="drill-space-solid" size={16}/>*/}
+                                    {/*        <Title level={5} text={__('Kildeplads')} marginLeft={8}/>*/}
+                                    {/*    </FavoritterListTitle>*/}
+                                    {/*    <DashboardListItem>*/}
+                                    {/*        <Icon name="drill" size={16} strokeColor={DarkTheme.colors.headings}/>*/}
+                                    {/*        <Title level={6} text='13.344' marginLeft={8}/>*/}
+                                    {/*    </DashboardListItem>*/}
+                                    {/*    <DashboardListItem>*/}
+                                    {/*        <Icon name="drill" size={16} strokeColor={DarkTheme.colors.headings}/>*/}
+                                    {/*        <Title level={6} text='13.947' marginLeft={8}/>*/}
+                                    {/*    </DashboardListItem>*/}
+                                    {/*    <DashboardListItem>*/}
+                                    {/*        <Icon name="drill" size={16} strokeColor={DarkTheme.colors.headings}/>*/}
+                                    {/*        <Title level={6} text='13.478' marginLeft={8}/>*/}
+                                    {/*    </DashboardListItem>*/}
+                                    {/*    <FavoritterListTitle>*/}
+                                    {/*        <Icon name="folder-solid" size={16}/>*/}
+                                    {/*        <Title level={5} text={__('Omrade B')} marginLeft={8}/>*/}
+                                    {/*    </FavoritterListTitle>*/}
+                                    {/*    <DashboardListItem>*/}
+                                    {/*        <Icon name="water-wifi-solid" size={8}*/}
+                                    {/*              strokeColor={DarkTheme.colors.headings}/>*/}
+                                    {/*        <Title level={6} text={__('Lokalitet 213.312')} marginLeft={8}/>*/}
+                                    {/*    </DashboardListItem>*/}
+                                    {/*    <DashboardListItem>*/}
+                                    {/*        <Icon name="water-wifi-solid" size={8}*/}
+                                    {/*              strokeColor={DarkTheme.colors.headings}/>*/}
+                                    {/*        <Title level={6} text={__('Lokalitet 243.442')} marginLeft={8}/>*/}
+                                    {/*    </DashboardListItem>*/}
+                                    {/*    <DashboardListItem>*/}
+                                    {/*        <Icon name="water-wifi-solid" size={8}*/}
+                                    {/*              strokeColor={DarkTheme.colors.headings}/>*/}
+                                    {/*        <Title level={6} text={__('Lokalitet 745.553')} marginLeft={8}/>*/}
+                                    {/*    </DashboardListItem>*/}
+                                    {/*    <FavoritterListTitle>*/}
+                                    {/*        <Icon name="folder-solid" size={16}/>*/}
+                                    {/*        <Title level={5} text={__('Omrade C')} marginLeft={8}/>*/}
+                                    {/*    </FavoritterListTitle>*/}
+                                    {/*    <DashboardListItem>*/}
+                                    {/*        <Icon name="water-wifi-solid" size={8}*/}
+                                    {/*              strokeColor={DarkTheme.colors.headings}/>*/}
+                                    {/*        <Title level={6} text={__('Lokalitet 773.312')} marginLeft={8}/>*/}
+                                    {/*    </DashboardListItem>*/}
+                                    {/*    <DashboardListItem>*/}
+                                    {/*        <Icon name="water-wifi-solid" size={8}*/}
+                                    {/*              strokeColor={DarkTheme.colors.headings}/>*/}
+                                    {/*        <Title level={6} text={__('Lokalitet 883.442')} marginLeft={8}/>*/}
+                                    {/*    </DashboardListItem>*/}
+                                    {/*    <DashboardListItem>*/}
+                                    {/*        <Icon name="water-wifi-solid" size={8}*/}
+                                    {/*              strokeColor={DarkTheme.colors.headings}/>*/}
+                                    {/*        <Title level={6} text={__('Lokalitet 799.553')} marginLeft={8}/>*/}
+                                    {/*    </DashboardListItem>*/}
+                                    {/*</FavoritterList>*/}
                                 </BoreholesList>
                             </Grid>
                             <Grid container item xs={7}>
