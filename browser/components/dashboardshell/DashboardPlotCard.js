@@ -151,7 +151,7 @@ function DashboardPlotCard(props) {
                 </Grid>
                 <Grid container item xs={10}>
                     <PlotContainer>
-                        <PlotComponent viewMode={0} height={320} index={props.index}
+                        <PlotComponent viewMode={0} height={370} index={props.index}
                                        onDelete={() => console.log("Testing")} plotMeta={props.plot} plotData={plotData}
                                        yAxis2LayoutSettings={yAxis2LayoutSettings}/>
                     </PlotContainer>

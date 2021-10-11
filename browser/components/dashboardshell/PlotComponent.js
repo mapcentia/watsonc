@@ -13,7 +13,7 @@ function PlotComponent(props) {
             layout={layout}
             onLegendDoubleClick={(param) => console.log("Legend double clicked", param)}
             onLegendClick={(param) => console.log("Legend clicked", param)}
-            style={{width: "100%", height: `${props.height - 60}px`}}/>);
+            style={{width: "100%", height: `100%`}}/>);
         if (props.yAxis2LayoutSettings) {
             layout.yaxis2 = props.yAxis2LayoutSettings;
         }
