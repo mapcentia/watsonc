@@ -89,7 +89,7 @@ function DashboardPlotCard(props) {
 
                         let title = utils.getMeasurementTitle(feature);
                         let plotInfo = {
-                            name: (`${title} (${measurementData.intakes ? measurementData.intakes[intakeIndex] : (intakeIndex + 1)}) - ${measurementData.title} (${measurementData.unit})`),
+                            name: (measurementData.title),
                             x: measurementData.timeOfMeasurement[intakeIndex],
                             y: measurementData.measurements[intakeIndex],
                             hoverinfo: 'text'
