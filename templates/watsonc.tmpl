@@ -412,6 +412,13 @@
         color: #fff;
     }
 
+    .module-title {
+        vertical-align: super;
+    }
+    #main-tabs li a {
+        text-decoration: none !important;
+    }
+
 
 </style>
 <!-- map -->
@@ -1087,7 +1094,7 @@
 </style>
 <!-- map -->
 <div id="pane">
-    <div id="search-ribbon" style="margin-top: 60px;">
+    <div id="search-ribbon" style="margin-top: 64px;">
         <!-- <div id="search-border">
             <span class="floatRight cursorPointer slide-collapsed slider-btn"><span class="material-icons">keyboard_arrow_left</span></span>
             <span style="display: none" class="floatRight cursorPointer slide-expanded slider-btn"><span class="material-icons">keyboard_arrow_right</span></span>
@@ -1158,11 +1165,19 @@
                     </div>
                 </div>
 
-                <div class="navbar navbar-default">
+                <div class="navbar navbar-default" style="padding-top: 12px">
                     <div class="container-fluid">
-                        <div class="navbar-header">
-                            <a class="navbar-brand" href="javascript:void(0)"><i class="material-icons brand-icon">fullscreen</i>{{brandName}}
-                            </a>
+                        <div id="watsonc-data-sources" class="navbar-header" style="cursor: pointer">
+                            <span style="padding: 2px; margin-right: 14px">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12.068 9.448C17.0761 9.448 21.136 8.00457 21.136 6.224C21.136 4.44343 17.0761 3 12.068 3C7.05988 3 3 4.44343 3 6.224C3 8.00457 7.05988 9.448 12.068 9.448Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M3 6.62701V11.827C3 13.741 7.06 15.293 12.068 15.293C17.076 15.293 21.136 13.742 21.136 11.827V6.62701" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M3 12.068V17.268C3 19.182 7.06 20.734 12.068 20.734C17.076 20.734 21.136 19.182 21.136 17.268V12.068" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            </span>
+                            <span style="vertical-align: super; cursor: pointer">
+                                Datakilder
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -1170,17 +1185,7 @@
                 <div id="side-panel">
                     <div role="tabpanel">
                         <!-- Nav tabs -->
-                        <ul class="" role="tablist" id="main-tabs">
-                            <li role="presentation">
-                                <a href="#data-source-and-types-selector-content" aria-controls="" data-module-ignore=true data-module-title="{{Data sources and -types}}" data-module-id="data-source-and-types-selector" data-module-ignore-errors="true" role="tab" data-toggle="tab">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M12.068 9.448C17.0761 9.448 21.136 8.00457 21.136 6.224C21.136 4.44343 17.0761 3 12.068 3C7.05988 3 3 4.44343 3 6.224C3 8.00457 7.05988 9.448 12.068 9.448Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M3 6.62701V11.827C3 13.741 7.06 15.293 12.068 15.293C17.076 15.293 21.136 13.742 21.136 11.827V6.62701" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M3 12.068V17.268C3 19.182 7.06 20.734 12.068 20.734C17.076 20.734 21.136 19.182 21.136 17.268V12.068" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                                    <span class="module-title">{{Data sources and -types}}</span>
-                                </a>
-                            </li>
+                        <ul class="" role="tablist" id="main-tabs" style="margin-top: 10px">
 
                             <li role="presentation">
                                 <a href="" id="projects-trigger" data-module-title="{{Dashboards}}" data-module-ignore=true  aria-controls="" role="tab" data-toggle="tab">
@@ -1232,12 +1237,6 @@
 -->
                             <hr/>
 
-                            <li>
-                                <a href="#timeseries-content" aria-controls="" role="tab" data-module-ignore=true data-toggle="tab" data-module-title="{{Timeseries}}" data-module-id="timeseries" data-module-ignore-errors="true">
-                                    <i data-container="body" data-toggle="tooltip" data-placement="left" title="{{Timeseries}}" class="fas fa-chart-bar fas-material-adapt"></i>
-                                    <span class="module-title">{{Timeseries}}</span>
-                                </a>
-                            </li>
                             <li>
                                 <a href="#profile-drawing-content" aria-controls="" role="tab" data-module-ignore=true data-toggle="tab" data-module-title="{{Profiles}}" data-module-id="profile-drawing" data-module-ignore-errors="true">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

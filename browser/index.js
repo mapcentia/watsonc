@@ -148,6 +148,7 @@ module.exports = module.exports = {
             $('#upgrade-modal').modal('show');
         })
 
+
         backboneEvents.get().on(`session:authChange`, authenticated => {
             reduxStore.dispatch(setAuthenticated(authenticated));
         });
@@ -179,6 +180,10 @@ module.exports = module.exports = {
         $('#watsonc-features-dialog').click(function () {
             _self.bringFeaturesDialogToFront();
         });
+
+        $("#watsonc-data-sources").on("click", ()=>{
+            $('#watsonc-menu-dialog').modal('show');
+        })
 
         $('#search-ribbon').click(function () {
             if ($('#watsonc-plots-dialog-form').css('z-index') === '1000') {

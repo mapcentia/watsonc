@@ -58,8 +58,8 @@ function DashboardHeader(props) {
                 </Grid>
                 <Grid container item xs={3}>
                     {showSaveButtons ? <ButtonGroup align={Align.Center} spacing={2} marginTop={1}>
-                        <Button text={__("Gem")} variant={Variants.Secondary} onClick={() => setShowProjectsList(!showProjectsList)} size={Size.Small} />
-                        <Button text={__("Abn")} variant={Variants.None} onClick={() => applyParameter()} size={Size.Small} />
+                        {/*<Button text={__("Gem")} variant={Variants.Secondary} onClick={() => setShowProjectsList(!showProjectsList)} size={Size.Small} />*/}
+                        {/*<Button text={__("Abn")} variant={Variants.None} onClick={() => applyParameter()} size={Size.Small} />*/}
                     </ButtonGroup> : null }
                 </Grid>
                 <Grid container item xs={2} justify='flex-end'>

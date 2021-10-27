@@ -92,8 +92,10 @@ function MapDecorator(props) {
             </LabelsContainer> : <><RatingStarContainer>
                 <Icon name="rating-star-solid" strokeColor={DarkTheme.colors.headings} size={16}/>
             </RatingStarContainer>
+{/*
                 <Img
                     src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1VUaMszH67lgK2I_K2bh6TxDdM9sxHmj5eqlQRbtx6nMETiwKpdPC7QlqfVslDjCkAGued1jHt54&usqp=CAU"/>
+*/}
                 <LabelsContainer>
                     <Title level={4} text={props.data.properties.locname} color={DarkTheme.colors.headings}/>
                     <br/>
@@ -107,8 +109,10 @@ function MapDecorator(props) {
                             onClick={() => plot()} disabled={false}/>
                     <Button text={__("Tilføj Dashboard")} variant={Variants.Primary} size={Size.Small}
                             onClick={() => addToDashboard()} disabled={false}/>
+{/*
                     <Button text={__("Mere info")} variant={Variants.Transparent} size={Size.Small}
                             onClick={() => setShowMoreInfo(true)} disabled={false}/>
+*/}
                 </ButtonGroup></>}
         </Root>
     )
@@ -116,9 +120,11 @@ function MapDecorator(props) {
 
 const Root = styled.div`
   width: 340px;
-  height: 292px;
+  //height: 292px;
   background-color: ${props => props.theme.colors.primary[2]};
   border-radius: ${props => props.theme.layout.borderRadius.medium}px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 
   img {
     border-radius: ${props => props.theme.layout.borderRadius.medium}px;

@@ -141,7 +141,7 @@ function DashboardContent(props) {
 
     return (
         <Root>
-            {props.dashboardContent === 'charts' ? <Grid container>
+            {props.dashboardContent === 'charts' ? <Grid container spacing={2}>
                 <Grid container item xs={4}>
                     <DashboardList>
                         <Grid container>

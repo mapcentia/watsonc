@@ -382,6 +382,7 @@ class ModalFeatureComponent extends React.Component {
         return (<div style={{height: `inherit`}}>
             <div>
                 <div className="measurements-modal_left-column">
+{/*
                     <div style={{display: 'flex', height: '50px'}}>
                         <div style={{width: '30px', height: '30px', marginLeft: '25px'}}>
                             <a target="_blank"
@@ -405,6 +406,7 @@ class ModalFeatureComponent extends React.Component {
                             Fold ind/ud
                         </div>
                     </div>
+*/}
                     <div>{measurementsText}</div>
                     <div className="form-group">
                         <SearchFieldComponent id="measurements-search-control" onSearch={(measurementsSearchTerm) => {

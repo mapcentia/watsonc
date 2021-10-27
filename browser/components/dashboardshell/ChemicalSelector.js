@@ -151,8 +151,8 @@ function ChemicalSelector(props) {
                 // Category has at least one displayed measurement
                 numberOfDisplayedCategories++;
                 propertiesControls.push(<><ChemicalsListTitle onClick={() => toggleOpenItem('uncategorized')}>
-                    <Icon name="plus-solid" size={16} />
-                    <Title level={4} text={__('Uncategorized')} marginLeft={8} />
+                    {/*<Icon name="plus-solid" size={16} />*/}
+                    {/*<Title level={4} text={__('Uncategorized')} marginLeft={8} />*/}
                 </ChemicalsListTitle>
                     {/*<Collapse in={openItems['uncategorized']}>{uncategorizedMeasurementControls}</Collapse>*/}
                     <Collapse in={true}>{uncategorizedMeasurementControls}</Collapse>
@@ -171,10 +171,10 @@ function ChemicalSelector(props) {
 
     return (
             <Root>
-                <ButtonGroup align={Align.Right} spacing={2} marginTop={1}>
-                    <Button text={__("Jupiter")} variant={Variants.Secondary} onClick={() => console.log("Clicked")} size={Size.Small} />
-                    <Button text={__("Borpro")} variant={Variants.Secondary} onClick={() => console.log("Clicked")} size={Size.Small} />
-                </ButtonGroup>
+                {/*<ButtonGroup align={Align.Right} spacing={2} marginTop={1}>*/}
+                {/*    <Button text={__("Jupiter")} variant={Variants.Secondary} onClick={() => console.log("Clicked")} size={Size.Small} />*/}
+                {/*    <Button text={__("Borpro")} variant={Variants.Secondary} onClick={() => console.log("Clicked")} size={Size.Small} />*/}
+                {/*</ButtonGroup>*/}
                 <SearchboxContainer>
                     <Searchbox placeholder={__('Søg efter dataparameter')} onChange={(value) => setSearchTerm(value)} />
                 </SearchboxContainer>
