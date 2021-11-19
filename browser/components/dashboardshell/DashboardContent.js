@@ -29,6 +29,11 @@ function DashboardContent(props) {
     const [dashboardItems, setDashboardItems] = useState([]);
     const projectContext = useContext(ProjectContext);
     const handlePlotSort = ({oldIndex, newIndex}) => {
+        let allPlots = arrayMove(props.getAllPlots(), oldIndex, newIndex);
+        let activePlots = projectContext.activePlots;
+        activePlots = arrayMove(activePlots.map(plot => plot.id), oldIndex, newIndex);
+        props.setPlots(allPlots, activePlots);
+        props.onActivePlotsChange(activePlots, allPlots, projectContext);
         setDashboardItems(arrayMove(dashboardItems, oldIndex, newIndex));
     }
 
@@ -49,8 +54,10 @@ function DashboardContent(props) {
         props.setPlots(allPlots, activePlots);
     };
 
-    const handleDrop = useCallback((index, item) => {
-        let plot = props.activePlots[index];
+    const handleDrop = (id, item) => {
+        let plot = props.getAllPlots().filter((p) => {
+            if (p.id === id) return true;
+        })[0];
         let measurementsData = {
             data: {
                 type: "Feature",
@@ -80,8 +87,7 @@ function DashboardContent(props) {
             "created_at": "2020-09-17T07:46:53.524Z"
         }
         item.onAddMeasurement(plot.id, item.gid, item.itemKey, item.intakeIndex, measurementsData);
-
-    });
+    };
 
     useEffect(() => {
         window.Calypso = {
@@ -91,7 +97,6 @@ function DashboardContent(props) {
             openDashboard: (plots) => {
                 let activePlots = projectContext.activePlots;
                 let allPlots = props.getAllPlots();
-                console.log(activePlots);
                 plots.map((plot) => {
                     let newPlotId = getNewPlotId(allPlots);
                     let plotData = {
@@ -108,7 +113,10 @@ function DashboardContent(props) {
                 props.onActivePlotsChange(activePlots, allPlots, projectContext);
             },
             render: (id, popupType, trace, data) => {
-                ReactDOM.render(<ThemeProvider><MapDecorator trace={trace} data={data} getAllPlots={props.getAllPlots} setPlots={props.setPlots} onActivePlotsChange={props.onActivePlotsChange}/></ThemeProvider>, document.getElementById(`pop_up_${id}`));
+                ReactDOM.render(<ThemeProvider><MapDecorator trace={trace} data={data}
+                                                             getAllPlots={props.getAllPlots}
+                                                             setPlots={props.setPlots}
+                                                             onActivePlotsChange={props.onActivePlotsChange}/></ThemeProvider>, document.getElementById(`pop_up_${id}`));
             }
         }
     });
@@ -156,7 +164,8 @@ function DashboardContent(props) {
                                     {props.boreholeFeatures ? props.boreholeFeatures.map((item, index) => {
                                         let name = item.properties.locname;
                                         return <DashboardListItem onClick={() => setSelectedBoreholeIndex(index)}
-                                                                  active={selectedBoreholeIndex === index} key={index}>
+                                                                  active={selectedBoreholeIndex === index}
+                                                                  key={item.properties.locid}>
                                             <Icon name="drill" size={16} strokeColor={DarkTheme.colors.headings}/>
                                             <Title level={6} text={name} marginLeft={8}/>
                                         </DashboardListItem>
@@ -236,11 +245,13 @@ function DashboardContent(props) {
                     <ChartsContainer>
                         <SortableList axis="xy" onSortEnd={handlePlotSort} useDragHandle>
                             {dashboardItems.map((dashboardItem, index) => {
+                                let id = dashboardItem.item.id;
                                 if (dashboardItem.type === DASHBOARD_ITEM_PLOT) {
-                                    return <GraphCard plot={dashboardItem.item} index={index} key={index}
-                                                      onDeleteMeasurement={props.onDeleteMeasurement} cardType='plot'
-                                                      onRemove={() => handleRemovePlot(dashboardItem.item.id)}
-                                                      onDrop={(item) => handleDrop(dashboardItem.plotsIndex, item)}/>
+                                    return <GraphCard plot={dashboardItem.item} index={index} key={id} id={id}
+                                                      onDeleteMeasurement={props.onDeleteMeasurement}
+                                                      cardType='plot'
+                                                      onRemove={() => handleRemovePlot(id)}
+                                                      onDrop={(item) => handleDrop(id, item)}/>
                                 } else if (dashboardItem.type === DASHBOARD_ITEM_PROFILE) {
 
                                     return <GraphCard plot={dashboardItem.item} index={index} key={index}

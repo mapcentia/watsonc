@@ -573,9 +573,6 @@ module.exports = module.exports = {
                 if (applicationState && `modules` in applicationState && MODULE_NAME in applicationState.modules && `plots` in applicationState.modules[MODULE_NAME]) {
                     initialPlots = applicationState.modules[MODULE_NAME].plots;
                 }
-                console.log("Initial plots");
-                console.log(initialPlots);
-
                 let initialProfiles = [];
                 if (applicationState && `modules` in applicationState && MODULE_NAME in applicationState.modules && `profiles` in applicationState.modules[MODULE_NAME]) {
                     initialProfiles = applicationState.modules[MODULE_NAME].profiles;
@@ -607,7 +604,6 @@ module.exports = module.exports = {
                                     if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setPlots(plots);
                                     // Plots were updated from the DashboardComponent component
                                     if (modalComponentInstance) _self.createModal(false, plots);
-                                    console.log(_self.getExistingActivePlots());
                                     context.setActivePlots(_self.getExistingActivePlots());
                                 }
                             }}
