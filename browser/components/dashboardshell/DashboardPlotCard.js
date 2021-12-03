@@ -46,58 +46,11 @@ function DashboardPlotCard(props) {
                     if (measurementLocation.length === 3) {
                         let key = measurementLocation[1];
                         let intakeIndex = measurementLocation[2];
-                        let createdAt = props.plot.measurementsCachedData[measurementLocationRaw].created_at;
                         let measurementData = JSON.parse(feature.properties[key]);
-
-                        let textValues = [];
-                        // if (measurementData.attributes && Array.isArray(measurementData.attributes[intakeIndex]) && measurementData.attributes[intakeIndex].length > 0) {
-                        //     let xValues = [], yValues = [];
-                        //
-                        //     measurementData.attributes[intakeIndex].map((item, index) => {
-                        //         if (item === LIMIT_CHAR) {
-                        //             xValues.push(measurementData.timeOfMeasurement[intakeIndex][index]);
-                        //             yValues.push(measurementData.measurements[intakeIndex][index]);
-                        //             textValues.push(measurementData.measurements[intakeIndex][index] + ' ' + LIMIT_CHAR);
-                        //         } else {
-                        //             textValues.push(measurementData.measurements[intakeIndex][index]);
-                        //         }
-                        //     });
-                        //
-                        //     if (xValues.length > 0) {
-                        //         data.push({
-                        //             x: xValues,
-                        //             y: yValues,
-                        //             type: 'scattergl',
-                        //             mode: 'markers',
-                        //             hoverinfo: 'none',
-                        //             showlegend: false,
-                        //             marker: {
-                        //                 color: 'rgba(17, 157, 255, 0)',
-                        //                 size: 20,
-                        //                 line: {
-                        //                     color: 'rgb(231, 0, 0)',
-                        //                     width: 3
-                        //                 }
-                        //             },
-                        //         });
-                        //     }
-                        // } else { // Calypso stations
-                            measurementData.measurements[intakeIndex].map((item, index) => {
-                                textValues.push(Math.round(measurementData.measurements[intakeIndex][index] * 100) / 100);
-                            });
-                        // }
-
-                        let title = utils.getMeasurementTitle(feature);
-                        let plotInfo = {
-                            name: (measurementData.title),
-                            x: measurementData.timeOfMeasurement[intakeIndex],
-                            y: measurementData.measurements[intakeIndex],
-                            hoverinfo: 'text'
-                        };
                         // Merge trace and data
-                        const plotInfoMergedWithTrace = {...plotInfo, ...measurementData.trace[intakeIndex]}
-                        if (textValues.length > 0) plotInfoMergedWithTrace.hovertext = textValues;
+                        const plotInfoMergedWithTrace = {...measurementData.data[intakeIndex], ...measurementData.trace[intakeIndex]}
                         data.push(plotInfoMergedWithTrace);
+
                     } else if (measurementLocation.length === 4) {
                         let key = measurementLocation[1];
                         let customSpecificator = measurementLocation[2];

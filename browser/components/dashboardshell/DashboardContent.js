@@ -60,14 +60,6 @@ function DashboardContent(props) {
         })[0];
         let measurementsData = {
             data: {
-                type: "Feature",
-                geometry: {
-                    type: "Point",
-                    coordinates: [
-                        530079.34,
-                        6224647.55
-                    ]
-                },
                 properties: {
                     "_0": JSON.stringify({
                         unit: item.feature.unit[item.intakeIndex],
@@ -78,13 +70,13 @@ function DashboardContent(props) {
                         boreholeno: item.feature.loc_id,
                         measurements: item.feature.data.map(i => i.y),
                         timeOfMeasurement: item.feature.data.map(i => i.x),
+                        data: item.feature.data,
                         trace: item.feature.trace
                     }),
                     "boreholeno": item.feature.loc_id,
                     "numofintakes": 1,
                 }
-            },
-            "created_at": "2020-09-17T07:46:53.524Z"
+            }
         }
         item.onAddMeasurement(plot.id, item.gid, item.itemKey, item.intakeIndex, measurementsData);
     };
