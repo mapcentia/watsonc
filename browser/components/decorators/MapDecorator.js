@@ -51,6 +51,7 @@ function MapDecorator(props) {
                                 boreholeno: plot.loc_id,
                                 measurements: plot.data.map(i => i.y),
                                 timeOfMeasurement:plot.data.map(i => i.x),
+                                data: plot.data,
                                 trace: plot.trace
                             }),
                             "boreholeno": plot.loc_id,
