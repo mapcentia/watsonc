@@ -64,14 +64,13 @@ function DashboardContent(props) {
                     "_0": JSON.stringify({
                         unit: item.feature.unit[item.intakeIndex],
                         //TODO brug ts_name
-                        title: item.feature.data[item.intakeIndex].name,
-                        // title: item.feature.ts_name[item.intakeIndex],
+                        // title: item.feature.data[item.intakeIndex].name,
+                        title: item.feature.ts_name[item.intakeIndex],
                         intakes: [1],
                         boreholeno: item.feature.loc_id,
-                        measurements: [],
-                        timeOfMeasurement: [],
                         data: item.feature.data,
-                        trace: item.feature.trace
+                        trace: item.feature.trace,
+                        relation: item.feature.relation
                     }),
                     "boreholeno": item.feature.loc_id,
                     "numofintakes": 1,
@@ -83,31 +82,12 @@ function DashboardContent(props) {
 
     useEffect(() => {
         window.Calypso = {
-            test: () => {
-                alert()
-            },
-            openDashboard: (plots) => {
-                let activePlots = projectContext.activePlots;
-                let allPlots = props.getAllPlots();
-                plots.map((plot) => {
-                    let newPlotId = getNewPlotId(allPlots);
-                    let plotData = {
-                        id: `plot_${newPlotId}`,
-                        title: plot.title,
-                        measurements: plot.measurements,
-                        measurementsCachedData: plot.measurementsCachedData
-                    };
-                    activePlots.push(plotData);
-                    allPlots.push(plotData);
-                })
-                activePlots = activePlots.map(plot => plot.id);
-                props.setPlots(allPlots, activePlots);
-                props.onActivePlotsChange(activePlots, allPlots, projectContext);
-            },
             render: (id, popupType, trace, data) => {
+                data.properties.relation = popupType; // add relation name to feature properties
                 ReactDOM.render(<ThemeProvider><MapDecorator trace={trace} data={data}
                                                              getAllPlots={props.getAllPlots}
                                                              setPlots={props.setPlots}
+                                                             relation={popupType}
                                                              onActivePlotsChange={props.onActivePlotsChange}/></ThemeProvider>, document.getElementById(`pop_up_${id}`));
             }
         }

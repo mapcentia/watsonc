@@ -28,7 +28,6 @@ function DashboardPlotCard(props) {
     }));
     useEffect(() => {
         let data = [];
-        let cardItems = [];
         if (props.plot && props.plot.measurements && props.plot.measurements.length > 0) {
             props.plot.measurements.map((measurementLocationRaw, index) => {
                 if (props.plot.measurementsCachedData && measurementLocationRaw in props.plot.measurementsCachedData &&
@@ -40,6 +39,7 @@ function DashboardPlotCard(props) {
                     let key = measurementLocation[1];
                     let intakeIndex = measurementLocation[2];
                     let measurementData = JSON.parse(feature.properties[key]);
+                    // TODO load data
                     console.log(measurementData );
                     // Merge trace and data
                     const plotInfoMergedWithTrace = {...measurementData.data[intakeIndex], ...measurementData.trace[intakeIndex]}

@@ -15,11 +15,10 @@ import {addBoreholeFeature} from "../../redux/actions";
 import {getNewPlotId} from '../../helpers/common';
 
 function MapDecorator(props) {
+    console.log("props", props)
     const [showMoreInfo, setShowMoreInfo] = useState(false);
     const projectContext = useContext(ProjectContext);
-    console.log(showMoreInfo)
     const plot = () => {
-        console.log("props", props)
         let allPlots = props.getAllPlots();
         let plotData = {
             id: `plot_${getNewPlotId(allPlots)}`,
@@ -32,16 +31,8 @@ function MapDecorator(props) {
             plotData.measurements.push(plot.loc_id + ":_0:" + u.toString());
             plotData.measurementsCachedData[plot.loc_id + ":_0:" + u.toString()] =
                 {
-                    "data": {
-                        "type": "Feature",
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [
-                                530079.34,
-                                6224647.55
-                            ]
-                        },
-                        "properties": {
+                    data: {
+                        properties: {
                             "_0": JSON.stringify({
                                 unit: plot.unit[u],
                                 //TODO brug ts_name
@@ -49,16 +40,14 @@ function MapDecorator(props) {
                                 // title: plot.ts_name[u],
                                 intakes: [1],
                                 boreholeno: plot.loc_id,
-                                measurements: plot.data.map(i => i.y),
-                                timeOfMeasurement:plot.data.map(i => i.x),
                                 data: plot.data,
-                                trace: plot.trace
+                                trace: plot.trace,
+                                relation: props.relation
                             }),
                             "boreholeno": plot.loc_id,
                             "numofintakes": 1
                         }
-                    },
-                    "created_at": "2020-09-17T07:46:53.524Z"
+                    }
                 };
 
         }
