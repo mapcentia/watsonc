@@ -68,8 +68,8 @@ function DashboardContent(props) {
                         // title: item.feature.ts_name[item.intakeIndex],
                         intakes: [1],
                         boreholeno: item.feature.loc_id,
-                        measurements: item.feature.data.map(i => i.y),
-                        timeOfMeasurement: item.feature.data.map(i => i.x),
+                        measurements: [],
+                        timeOfMeasurement: [],
                         data: item.feature.data,
                         trace: item.feature.trace
                     }),

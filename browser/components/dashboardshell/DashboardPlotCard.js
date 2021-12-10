@@ -30,12 +30,6 @@ function DashboardPlotCard(props) {
         let data = [];
         let cardItems = [];
         if (props.plot && props.plot.measurements && props.plot.measurements.length > 0) {
-            let colors = ['rgb(19,128,196)', 'rgb(16,174,140)', 'rgb(235,96,29)', 'rgb(247,168,77)', 'rgb(119,203,231)', `black`]
-
-            let minTime = false;
-            let maxTime = false;
-
-            let yAxis2LayoutSettingsObj = false;
             props.plot.measurements.map((measurementLocationRaw, index) => {
                 if (props.plot.measurementsCachedData && measurementLocationRaw in props.plot.measurementsCachedData &&
                     props.plot.measurementsCachedData[measurementLocationRaw] &&
@@ -43,47 +37,17 @@ function DashboardPlotCard(props) {
                 ) {
                     let measurementLocation = measurementLocationRaw.split(':');
                     let feature = props.plot.measurementsCachedData[measurementLocationRaw].data;
-                    if (measurementLocation.length === 3) {
-                        let key = measurementLocation[1];
-                        let intakeIndex = measurementLocation[2];
-                        let measurementData = JSON.parse(feature.properties[key]);
-                        // Merge trace and data
-                        const plotInfoMergedWithTrace = {...measurementData.data[intakeIndex], ...measurementData.trace[intakeIndex]}
-                        data.push(plotInfoMergedWithTrace);
-
-                    } else if (measurementLocation.length === 4) {
-                        let key = measurementLocation[1];
-                        let customSpecificator = measurementLocation[2];
-
-                        if ([`daily`, `weekly`, `monthly`].indexOf(customSpecificator) === -1) {
-                            throw new Error(`The custom specificator (${customSpecificator}) is invalid`);
-                        }
-
-                        let measurementData = JSON.parse(feature.properties[key]);
-                        let measurementDataCopy = JSON.parse(JSON.stringify(measurementData.data));
-                        data.push(measurementDataCopy[customSpecificator].data[0]);
-
-                        let range = [0, 0];
-                        for (let key in measurementDataCopy) {
-                            if (measurementDataCopy[key].layout.yaxis2.range) {
-                                if (measurementDataCopy[key].layout.yaxis2.range[0] < range[0]) range[0] = measurementDataCopy[key].layout.yaxis2.range[0];
-                                if (measurementDataCopy[key].layout.yaxis2.range[1] > range[1]) range[1] = measurementDataCopy[key].layout.yaxis2.range[1];
-                            }
-
-                            yAxis2LayoutSettingsObj = measurementDataCopy[key].layout.yaxis2;
-                        }
-
-                        yAxis2LayoutSettingsObj.range = range;
-                        yAxis2LayoutSettingsObj.showgrid = false;
-                    } else {
-                        throw new Error(`Invalid key and intake notation: ${measurementLocationRaw}`);
-                    }
+                    let key = measurementLocation[1];
+                    let intakeIndex = measurementLocation[2];
+                    let measurementData = JSON.parse(feature.properties[key]);
+                    console.log(measurementData );
+                    // Merge trace and data
+                    const plotInfoMergedWithTrace = {...measurementData.data[intakeIndex], ...measurementData.trace[intakeIndex]}
+                    data.push(plotInfoMergedWithTrace);
                 } else {
                     console.info(`Plot does not contain measurement ${measurementLocationRaw}`);
                 }
             });
-
-
         }
         setPlotData(data);
         setYAxis2LayoutSettings(yAxis2LayoutSettings);

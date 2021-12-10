@@ -1,23 +1,13 @@
 'use strict';
 
-import { useContext } from 'react';
+import {useContext} from 'react';
 import {Provider} from 'react-redux';
 
-import PlotManager from './PlotManager';
-import ModalComponent from './components/ModalComponent';
-import DashboardComponent from './components/DashboardComponent';
-import MenuTimeSeriesComponent from './components/MenuTimeSeriesComponent';
-import MenuDataSourceAndTypeSelectorComponent from './components/MenuDataSourceAndTypeSelectorComponent';
-import MenuProfilesComponent from './components/MenuProfilesComponent';
-import IntroModal from './components/IntroModal';
 import AnalyticsComponent from './components/AnalyticsComponent';
 import {LAYER_NAMES, WATER_LEVEL_KEY, KOMMUNER} from './constants';
 import trustedIpAddresses from './trustedIpAddresses';
 import ThemeProvider from './themes/ThemeProvider';
-import ProjectProvider from './contexts/project/ProjectProvider';
-import ProjectContext from './contexts/project/ProjectContext';
 import DataSelectorDialogue from './components/dataselector/DataSelectorDialogue';
-import MapDecorator from './components/decorators/MapDecorator';
 import DashboardWrapper from './components/DashboardWrapper';
 import TopBar from './components/TopBar';
 
@@ -29,15 +19,12 @@ const symbolizer = require('./symbolizer');
 
 const utils = require('./utils');
 
-const evaluateMeasurement = require('./evaluateMeasurement');
-
 const MODULE_NAME = `watsonc`;
 
 /**
  * The feature dialog constants
  */
 const FEATURE_CONTAINER_ID = 'watsonc-features-dialog';
-const FORM_FEATURE_CONTAINER_ID = 'watsonc-features-dialog-form';
 
 /**
  * The plots dialog constants
@@ -75,9 +62,7 @@ let lastTitleAsLink = null;
 let dataSource = [];
 
 let boreholesDataSource = [];
-let waterLevelDataSource = [];
 
-let previousZoom = -1;
 
 let store;
 
@@ -181,7 +166,7 @@ module.exports = module.exports = {
             _self.bringFeaturesDialogToFront();
         });
 
-        $("#watsonc-data-sources").on("click", ()=>{
+        $("#watsonc-data-sources").on("click", () => {
             $('#watsonc-menu-dialog').modal('show');
         })
 
@@ -216,11 +201,11 @@ module.exports = module.exports = {
             reduxStore.dispatch(setDashboardContent('projects'));
         });
 
-        $('#main-tabs a').on('click', function(e) {
+        $('#main-tabs a').on('click', function (e) {
             $("#module-container.slide-right").css("right", "0");
         });
 
-        $(document).on('click', '#module-container .modal-header button', function(e) {
+        $(document).on('click', '#module-container .modal-header button', function (e) {
             e.preventDefault();
             $("#module-container.slide-right").css("right", "-" + (466) + "px");
             $("#side-panel ul li").removeClass("active");
@@ -238,7 +223,8 @@ module.exports = module.exports = {
         // Turn on raster layer with all boreholes.
         switchLayer.init(LAYER_NAMES[2], true, true, false);
         ReactDOM.render(<ThemeProvider><Provider store={reduxStore}>
-            <TopBar backboneEvents={backboneEvents} session={session}/></Provider></ThemeProvider>, document.getElementById('top-bar'));
+            <TopBar backboneEvents={backboneEvents}
+                    session={session}/></Provider></ThemeProvider>, document.getElementById('top-bar'));
 
         $.ajax({
             url: '/api/sql/jupiter?q=SELECT * FROM codes.compunds_view&base64=false&lifetime=10800',
@@ -515,55 +501,11 @@ module.exports = module.exports = {
                 });
 
                 // Initializing TimeSeries management component
-                $(`[data-module-id="timeseries"]`).click(() => {
-                    if ($(`#watsonc-timeseries`).children().length === 0) {
-                        try {
-                            ReactDOM.render(<Provider store={reduxStore}>
-                                <MenuTimeSeriesComponent
-                                    backboneEvents={backboneEvents}
-                                    license={dashboardComponentInstance.getLicense()}
-                                    initialPlots={dashboardComponentInstance.getPlots()}
-                                    initialActivePlots={dashboardComponentInstance.getActivePlots()}
-                                    onPlotCreate={dashboardComponentInstance.handleCreatePlot}
-                                    onPlotDelete={dashboardComponentInstance.handleDeletePlot}
-                                    onPlotHighlight={dashboardComponentInstance.handleHighlightPlot}
-                                    onPlotShow={dashboardComponentInstance.handleShowPlot}
-                                    onPlotArchive={dashboardComponentInstance.handleArchivePlot}
-                                    onPlotHide={dashboardComponentInstance.handleHidePlot}/></Provider>, document.getElementById(`watsonc-timeseries`));
-                        } catch (e) {
-                            console.error(e);
-                        }
-                    }
-                });
 
                 // Initializing profiles tab
                 if ($(`#profile-drawing-content`).length === 0) throw new Error(`Unable to get the profile drawing tab`);
 
                 // Initializing TimeSeries management component
-                $(`[data-module-id="profile-drawing"]`).click(() => {
-                    try {
-                        ReactDOM.render(<Provider store={reduxStore}>
-                            <MenuProfilesComponent
-                                cloud={cloud}
-                                backboneEvents={backboneEvents}
-                                license={dashboardComponentInstance.getLicense()}
-                                categories={categoriesOverall ? categoriesOverall : []}
-                                initialProfiles={dashboardComponentInstance.getProfiles()}
-                                initialActiveProfiles={dashboardComponentInstance.getActiveProfiles()}
-                                onProfileCreate={dashboardComponentInstance.handleCreateProfile}
-                                onProfileDelete={dashboardComponentInstance.handleDeleteProfile}
-                                onProfileHighlight={dashboardComponentInstance.handleHighlightProfile}
-                                onProfileShow={dashboardComponentInstance.handleShowProfile}
-                                onProfileHide={dashboardComponentInstance.handleHideProfile}/>
-                        </Provider>, document.getElementById(`profile-drawing-content`));
-
-                        backboneEvents.get().on(`reset:all reset:profile-drawing off:all`, () => {
-                            window.menuProfilesComponentInstance.stopDrawing();
-                        });
-                    } catch (e) {
-                        console.error(e);
-                    }
-                });
 
                 // if (dashboardComponentInstance) dashboardComponentInstance.onSetMin();
             };
@@ -578,75 +520,70 @@ module.exports = module.exports = {
                     initialProfiles = applicationState.modules[MODULE_NAME].profiles;
                 }
 
-                let plotManager = new PlotManager();
-                plotManager.hydratePlotsFromUser(initialPlots).then(hydratedInitialPlots => { // User plots
                 let reactRef = React.createRef();
-                    try {
-                        ReactDOM.render(<DashboardWrapper
-                            ref={reactRef}
-                            backboneEvents={backboneEvents}
-                            urlparser={urlparser} anchor={anchor}
-                            onApply={_self.onApplyLayersAndChemical}
-                            initialPlots={hydratedInitialPlots}
-                            initialProfiles={initialProfiles}
-                            onOpenBorehole={this.openBorehole}
-                            onDeleteMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex) => {
-                                dashboardComponentInstance.deleteMeasurement(plotId, featureGid, featureKey, featureIntakeIndex);
-                            }}
-                            onAddMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex, measurementsData) => {
-                                dashboardComponentInstance.addMeasurement(plotId, featureGid, featureKey, featureIntakeIndex, measurementsData);
-                            }}
-                            onPlotsChange={(plots = false, context) => {
-                                backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
-                                if (plots) {
-                                    _self.setStyleForPlots(plots);
+                try {
+                    ReactDOM.render(<DashboardWrapper
+                        ref={reactRef}
+                        backboneEvents={backboneEvents}
+                        urlparser={urlparser} anchor={anchor}
+                        onApply={_self.onApplyLayersAndChemical}
+                        initialPlots={[]}
+                        initialProfiles={initialProfiles}
+                        onOpenBorehole={this.openBorehole}
+                        onDeleteMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex) => {
+                            dashboardComponentInstance.deleteMeasurement(plotId, featureGid, featureKey, featureIntakeIndex);
+                        }}
+                        onAddMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex, measurementsData) => {
+                            dashboardComponentInstance.addMeasurement(plotId, featureGid, featureKey, featureIntakeIndex, measurementsData);
+                        }}
+                        onPlotsChange={(plots = false, context) => {
+                            backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
+                            if (plots) {
+                                _self.setStyleForPlots(plots);
 
-                                    if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setPlots(plots);
-                                    // Plots were updated from the DashboardComponent component
-                                    if (modalComponentInstance) _self.createModal(false, plots);
-                                    context.setActivePlots(_self.getExistingActivePlots());
-                                }
-                            }}
-                            onProfilesChange={(profiles = false) => {
-                                backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
-                                if (profiles && window.menuProfilesComponentInstance) window.menuProfilesComponentInstance.setProfiles(profiles);
-                                console.log("Profiles changes");
-                                console.log(profiles);
-                            }}
-                            onActivePlotsChange={(activePlots, plots, context) => {
-                                backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
-                                if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setActivePlots(activePlots);
+                                if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setPlots(plots);
+                                // Plots were updated from the DashboardComponent component
                                 if (modalComponentInstance) _self.createModal(false, plots);
+                                context.setActivePlots(_self.getExistingActivePlots());
+                            }
+                        }}
+                        onProfilesChange={(profiles = false) => {
+                            backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
+                            if (profiles && window.menuProfilesComponentInstance) window.menuProfilesComponentInstance.setProfiles(profiles);
+                            console.log("Profiles changes");
+                            console.log(profiles);
+                        }}
+                        onActivePlotsChange={(activePlots, plots, context) => {
+                            backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
+                            if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setActivePlots(activePlots);
+                            if (modalComponentInstance) _self.createModal(false, plots);
 
-                                context.setActivePlots(plots.filter((plot) => activePlots.indexOf(plot.id) > -1));
-                            }}
-                            getAllPlots={() => {
-                                return dashboardComponentInstance.getPlots();
-                            }}
-                            getAllProfiles={() => {
-                                return dashboardComponentInstance.getProfiles();
-                            }}
-                            setPlots={(plots, activePlots) => {
-                                dashboardComponentInstance.setPlots(plots);
-                                dashboardComponentInstance.setActivePlots(activePlots);
-                            }}
-                            onActiveProfilesChange={(activeProfiles, profiles, context) => {
-                                backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
-                                if (window.menuProfilesComponentInstance) window.menuProfilesComponentInstance.setActiveProfiles(activeProfiles);
-                                context.setActiveProfiles(profiles.filter((profile) => activeProfiles.indexOf(profile.key) > -1));
-                            }}
-                            onHighlightedPlotChange={(plotId, plots) => {
-                                _self.setStyleForHighlightedPlot(plotId, plots);
-                                if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setHighlightedPlot(plotId);
-                            }}/>, document.getElementById('watsonc-plots-dialog-form-hidden'));
-                        dashboardComponentInstance = reactRef.current;
-                    } catch (e) {
-                        console.error(e);
-                    }
-                    proceedWithInitialization();
-                }).catch(() => {
-                    console.error(`Unable to hydrate initial plots`, initialPlots);
-                });
+                            context.setActivePlots(plots.filter((plot) => activePlots.indexOf(plot.id) > -1));
+                        }}
+                        getAllPlots={() => {
+                            return dashboardComponentInstance.getPlots();
+                        }}
+                        getAllProfiles={() => {
+                            return dashboardComponentInstance.getProfiles();
+                        }}
+                        setPlots={(plots, activePlots) => {
+                            dashboardComponentInstance.setPlots(plots);
+                            dashboardComponentInstance.setActivePlots(activePlots);
+                        }}
+                        onActiveProfilesChange={(activeProfiles, profiles, context) => {
+                            backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
+                            if (window.menuProfilesComponentInstance) window.menuProfilesComponentInstance.setActiveProfiles(activeProfiles);
+                            context.setActiveProfiles(profiles.filter((profile) => activeProfiles.indexOf(profile.key) > -1));
+                        }}
+                        onHighlightedPlotChange={(plotId, plots) => {
+                            _self.setStyleForHighlightedPlot(plotId, plots);
+                            if (window.menuTimeSeriesComponentInstance) window.menuTimeSeriesComponentInstance.setHighlightedPlot(plotId);
+                        }}/>, document.getElementById('watsonc-plots-dialog-form-hidden'));
+                    dashboardComponentInstance = reactRef.current;
+                } catch (e) {
+                    console.error(e);
+                }
+                proceedWithInitialization();
             } else {
                 console.warn(`Unable to find the container for watsonc extension (element id: ${DASHBOARD_CONTAINER_ID})`);
             }
@@ -822,11 +759,11 @@ module.exports = module.exports = {
                     /></Provider>, document.getElementById(introlModalPlaceholderId)); */
                 ReactDOM.render(<Provider store={reduxStore}><ThemeProvider>
                     <DataSelectorDialogue titleText={__('Welcome to Calypso')}
-                        urlparser={urlparser} anchor={anchor}
-                        categories={categoriesOverall ? categoriesOverall : []}
-                        onApply={_self.onApplyLayersAndChemical}
-                        onCloseButtonClick={onCloseHandler} state={state} />
-                    </ThemeProvider></Provider>, document.getElementById(introlModalPlaceholderId));
+                                          urlparser={urlparser} anchor={anchor}
+                                          categories={categoriesOverall ? categoriesOverall : []}
+                                          onApply={_self.onApplyLayersAndChemical}
+                                          onCloseButtonClick={onCloseHandler} state={state}/>
+                </ThemeProvider></Provider>, document.getElementById(introlModalPlaceholderId));
             } catch (e) {
                 console.error(e);
             }
@@ -878,41 +815,6 @@ module.exports = module.exports = {
                 $("#" + FEATURE_CONTAINER_ID).find(`.modal-title`).html('');
             }
 
-            if (document.getElementById(FORM_FEATURE_CONTAINER_ID)) {
-                try {
-                    let existingPlots = dashboardComponentInstance.getPlots(false);
-
-                    setTimeout(() => {
-                        ReactDOM.unmountComponentAtNode(document.getElementById(FORM_FEATURE_CONTAINER_ID));
-                        modalComponentInstance = ReactDOM.render(<ModalComponent
-                            features={features}
-                            categories={categories}
-                            dataSource={dataSource}
-                            names={names}
-                            limits={limits}
-                            initialPlots={(existingPlots ? existingPlots : [])}
-                            initialActivePlots={dashboardComponentInstance.getActivePlots()}
-                            onPlotHide={dashboardComponentInstance.handleHidePlot}
-                            onPlotShow={dashboardComponentInstance.handleShowPlot}
-                            license={dashboardComponentInstance.getLicense()}
-                            modalScroll={dashboardComponentInstance.getModalScroll()}
-                            setModalScroll={dashboardComponentInstance.setModalScroll}
-                            onAddMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex) => {
-                                dashboardComponentInstance.addMeasurement(plotId, featureGid, featureKey, featureIntakeIndex);
-                            }}
-                            onDeleteMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex) => {
-                                dashboardComponentInstance.deleteMeasurement(plotId, featureGid, featureKey, featureIntakeIndex);
-                            }}
-                            onPlotAdd={((newPlotTitle) => {
-                                dashboardComponentInstance.addPlot(newPlotTitle, true);
-                            })}/>, document.getElementById(FORM_FEATURE_CONTAINER_ID));
-                    }, 100);
-                } catch (e) {
-                    console.error(e);
-                }
-            } else {
-                console.warn(`Unable to find the container for borehole component (element id: ${FORM_FEATURE_CONTAINER_ID})`);
-            }
         }
 
         _self.bringFeaturesDialogToFront();
@@ -1068,7 +970,6 @@ module.exports = module.exports = {
     },
 
 
-
     getExistingPlots: () => {
         if (dashboardComponentInstance) {
             return dashboardComponentInstance.getPlots();
@@ -1085,26 +986,11 @@ module.exports = module.exports = {
         }
     },
 
-    getExistingActiveProfiles: () => {
-        if (dashboardComponentInstance) {
-            return dashboardComponentInstance.getActiveProfileObjects();
-        } else {
-            throw new Error('Unable to find the component instance');
-        }
-    },
 
     /**
      * Returns current module state
      */
     getState: () => {
-        let plots = dashboardComponentInstance.dehydratePlots(_self.getExistingActivePlots());
-        let profiles = _self.getExistingActiveProfiles();
-        return {
-            plots,
-            profiles,
-            selectedChemical: lastSelectedChemical,
-            enabledLoctypeIds
-        };
     },
 
     /**

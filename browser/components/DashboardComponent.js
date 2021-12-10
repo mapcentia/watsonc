@@ -3,21 +3,14 @@ import PropTypes from 'prop-types';
 import {Provider} from 'react-redux';
 import reduxStore from './../redux/store';
 
-import ReactTooltip from 'react-tooltip';
 import {SELECT_CHEMICAL_DIALOG_PREFIX, TEXT_FIELD_DIALOG_PREFIX, VIEW_MATRIX, VIEW_ROW} from './../constants';
 import PlotManager from './../PlotManager';
 import ProfileManager from './../ProfileManager';
 import TextFieldModal from './TextFieldModal';
-import SortablePlotComponent from './SortablePlotComponent';
-import SortableProfileComponent from './SortableProfileComponent';
-import SortablePlotsGridComponent from './SortablePlotsGridComponent';
-import {isNumber} from 'util';
 import arrayMove from 'array-move';
 import trustedIpAddresses from '../trustedIpAddresses';
 import {getPlotData} from '../services/plot';
 import ProjectContext from '../contexts/project/ProjectContext';
-
-let syncInProg = false;
 
 const uuidv1 = require('uuid/v1');
 
@@ -40,6 +33,7 @@ let _self = false, resizeTimeout = false;
  */
 class DashboardComponent extends React.Component {
     static contextType = ProjectContext;
+
     constructor(props) {
         super(props);
         let queryParams = new URLSearchParams(window.location.search);
@@ -87,27 +81,20 @@ class DashboardComponent extends React.Component {
         this.plotManager = new PlotManager();
         this.profileManager = new ProfileManager();
 
-        this.handleShowPlot = this.handleShowPlot.bind(this);
-        this.handleHidePlot = this.handleHidePlot.bind(this);
-        this.handleCreatePlot = this.handleCreatePlot.bind(this);
-        this.handleRemovePlot = this.handleRemovePlot.bind(this);
-        this.handleDeletePlot = this.handleDeletePlot.bind(this);
-        this.handleHighlightPlot = this.handleHighlightPlot.bind(this);
-        this.handleArchivePlot = this.handleArchivePlot.bind(this);
+        // this.handleHighlightPlot = this.handleHighlightPlot.bind(this);
 
-        this.handleShowProfile = this.handleShowProfile.bind(this);
-        this.handleHideProfile = this.handleHideProfile.bind(this);
-        this.handleCreateProfile = this.handleCreateProfile.bind(this);
-        this.handleRemoveProfile = this.handleRemoveProfile.bind(this);
-        this.handleDeleteProfile = this.handleDeleteProfile.bind(this);
-        this.handleProfileClick = this.handleProfileClick.bind(this);
-        this.handleChangeDatatypeProfile = this.handleChangeDatatypeProfile.bind(this);
-        this.setProjectProfiles = this.setProjectProfiles.bind(this);
-        this.getProfilesLength = this.getProfilesLength.bind(this);
-        this.getPlotsLength = this.getPlotsLength.bind(this);
+        // this.handleShowProfile = this.handleShowProfile.bind(this);
+        // this.handleHideProfile = this.handleHideProfile.bind(this);
+        // this.handleCreateProfile = this.handleCreateProfile.bind(this);
+        // this.handleDeleteProfile = this.handleDeleteProfile.bind(this);
+        // this.handleProfileClick = this.handleProfileClick.bind(this);
+        // this.handleChangeDatatypeProfile = this.handleChangeDatatypeProfile.bind(this);
+        // this.setProjectProfiles = this.setProjectProfiles.bind(this);
+        // this.getProfilesLength = this.getProfilesLength.bind(this);
+        // this.getPlotsLength = this.getPlotsLength.bind(this);
 
-        this.getFeatureByGidFromDataSource = this.getFeatureByGidFromDataSource.bind(this);
-        this.handleNewPlotNameChange = this.handleNewPlotNameChange.bind(this);
+        // this.getFeatureByGidFromDataSource = this.getFeatureByGidFromDataSource.bind(this);
+        // this.handleNewPlotNameChange = this.handleNewPlotNameChange.bind(this);
         this.handlePlotSort = this.handlePlotSort.bind(this);
         this.getLicense = this.getLicense.bind(this);
 
@@ -127,8 +114,6 @@ class DashboardComponent extends React.Component {
 
         this.props.backboneEvents.get().on(`session:authChange`, (authenticated) => {
             if (authenticated) {
-                _self.refreshProfilesList();
-                _self.hydratePlotsFromIds();
             } else {
                 let newDashboardItems = [];
                 _self.state.dashboardItems.map(item => {
@@ -145,7 +130,6 @@ class DashboardComponent extends React.Component {
             }
         });
 
-        this.refreshProfilesList();
     }
 
     componentDidMount() {
@@ -164,38 +148,6 @@ class DashboardComponent extends React.Component {
         this.setState({modalScroll});
     }
 
-    refreshProfilesList() {
-        this.profileManager.getAll().then(profiles => {
-            let newDashboardItems = [];
-            this.state.dashboardItems.map(item => {
-                if (item.type !== DASHBOARD_ITEM_PROFILE) {
-                    newDashboardItems.push(JSON.parse(JSON.stringify(item)));
-                }
-            });
-
-            profiles.map(item => {
-                newDashboardItems.push({
-                    type: DASHBOARD_ITEM_PROFILE,
-                    item
-                });
-            });
-
-            this.setState({
-                profiles,
-                dashboardItems: newDashboardItems
-            });
-            this.props.onProfilesChange(this.getProfiles());
-
-        });
-    }
-
-    dehydratePlots(plots) {
-        return this.plotManager.dehydratePlots(plots);
-    }
-
-    hydratePlotsFromIds(plots) {
-        return this.plotManager.hydratePlotsFromIds(plots);
-    }
 
     getProfiles() {
         let allProfiles = [];
@@ -210,9 +162,6 @@ class DashboardComponent extends React.Component {
         return allProfiles;
     }
 
-    getActiveProfiles() {
-        return JSON.parse(JSON.stringify(this.state.activeProfiles));
-    }
 
     getActiveProfileObjects() {
         let activeProfiles = this.getProfiles().filter((item) => {
@@ -473,10 +422,6 @@ class DashboardComponent extends React.Component {
     }
 
 
-    addPlot(newPlotName, activateOnCreate = false) {
-        this.handleCreatePlot(newPlotName, activateOnCreate);
-    }
-
     setProjectPlots(projectPlots) {
         let dashboardItemsCopy = [];
         let plotsNotOnDashboard = [];
@@ -544,7 +489,7 @@ class DashboardComponent extends React.Component {
     }
 
     setActivePlots(activePlots) {
-        this.setState({ activePlots });
+        this.setState({activePlots});
     }
 
     setProjectProfiles(projectProfiles) {
@@ -590,158 +535,6 @@ class DashboardComponent extends React.Component {
         return this.state.plots.length + this.state.projectPlots.length;
     }
 
-    syncPlotData() {
-        let activePlots = this.state.activePlots;
-        let plots = this.state.dashboardItems.map(e => e.item);
-        let newPlots = plots;
-        let preCount = 0;
-        let count = 0;
-        plots.forEach((e, i) => {
-            if ('id' in e) {
-                let obj = e.measurements;
-                if (obj && Object.keys(obj).length === 0 && obj.constructor === Object) {
-                    preCount++;
-                } else if (!obj) {
-                    preCount++;
-                } else {
-                    for (let key in obj) {
-                        if (obj.hasOwnProperty(key)) {
-                            preCount++;
-                        }
-                    }
-                }
-            }
-        });
-        plots.forEach((e, i) => {
-            if ('id' in e) {
-                let obj = e.measurementsCachedData;
-                let shadowI = i;
-                newPlots[shadowI] = e;
-                if (!e.measurementsCachedData) {
-                    e.measurementsCachedData = {};
-                }
-                for (let index in e.measurements) {
-                    let key = e.measurements[index];
-                    // Lazy load data and sync
-                    // Only load active plots
-                    if (activePlots.includes(e.id)) {
-                        getPlotData(key).then((response) => {
-                            if (!newPlots[shadowI].measurementsCachedData[key]) {
-                                newPlots[shadowI].measurementsCachedData[key] = {};
-                            }
-                            newPlots[shadowI].measurementsCachedData[key].data = response.data.features[0];
-                            count++;
-                            if (count === preCount) {
-                                console.log("All plots synced");
-                                _self.setPlots(newPlots);
-                            }
-                        }).catch((error) => {
-                            console.log(error);
-                        })
-                    } else {
-                        count++;
-                    }
-                }
-            }
-        });
-    }
-
-    handleCreatePlot(title, activateOnCreate = false) {
-        this.plotManager.create(title).then(newPlot => {
-            let plotsCopy = JSON.parse(JSON.stringify(this.state.plots));
-            plotsCopy.unshift(newPlot);
-
-            let dashboardItemsCopy = JSON.parse(JSON.stringify(this.state.dashboardItems));
-            dashboardItemsCopy.push({
-                type: DASHBOARD_ITEM_PLOT,
-                item: newPlot
-            });
-
-            if (activateOnCreate) {
-                let activePlotsCopy = JSON.parse(JSON.stringify(this.state.activePlots));
-                if (activePlotsCopy.indexOf(newPlot.id) === -1) activePlotsCopy.push(newPlot.id);
-
-                this.setState({
-                    plots: plotsCopy,
-                    dashboardItems: dashboardItemsCopy,
-                    activePlots: activePlotsCopy
-                });
-
-                this.props.onActivePlotsChange(activePlotsCopy, this.getPlots(), this.context);
-            } else {
-                this.setState({
-                    plots: plotsCopy,
-                    dashboardItems: dashboardItemsCopy
-                });
-            }
-
-            this.props.onPlotsChange(this.getPlots(), this.context);
-        }).catch(error => {
-            console.error(`Error occured while creating plot (${error})`)
-        });
-    }
-
-    handleRemoveProfile(profileKey) {
-        if (!profileKey) throw new Error(`Empty profile key`);
-
-        let activeProfilesCopy = JSON.parse(JSON.stringify(this.state.activeProfiles));
-        if (activeProfilesCopy.indexOf(profileKey) > -1) activeProfilesCopy.splice(activeProfilesCopy.indexOf(profileKey), 1);
-
-        this.setState({activeProfiles: activeProfilesCopy});
-        this.props.onActiveProfilesChange(activeProfilesCopy, this.state.profiles, this.context);
-    }
-
-    handleRemovePlot(id) {
-        if (!id) throw new Error(`Empty plot identifier`);
-
-        let activePlotsCopy = JSON.parse(JSON.stringify(this.state.activePlots));
-        if (activePlotsCopy.indexOf(id) > -1) activePlotsCopy.splice(activePlotsCopy.indexOf(id), 1);
-
-        this.setState({activePlots: activePlotsCopy});
-        this.props.onActivePlotsChange(activePlotsCopy, this.getPlots(), this.context);
-    }
-
-    handleDeletePlot(id, name) {
-        if (!id) throw new Error(`Empty plot identifier`);
-
-        if (confirm(__(`Delete plot`) + ` ${name ? name : id}?`)) {
-            this.plotManager.delete(id).then(() => {
-                let plotsCopy = JSON.parse(JSON.stringify(this.state.plots));
-                let plotWasDeleted = false;
-                plotsCopy.map((plot, index) => {
-                    if (plot.id === id) {
-                        plotsCopy.splice(index, 1);
-                        plotWasDeleted = true;
-                        return false;
-                    }
-                });
-
-                let dashboardItemsCopy = JSON.parse(JSON.stringify(this.state.dashboardItems));
-                dashboardItemsCopy.map((item, index) => {
-                    if (item.type === DASHBOARD_ITEM_PLOT || item.type === DASHBOARD_ITEM_PROJECT_PLOT) {
-                        if (item.item.id === id) {
-                            dashboardItemsCopy.splice(index, 1);
-                            return false;
-                        }
-                    }
-                });
-
-                if (plotWasDeleted === false) {
-                    console.warn(`Plot ${id} was deleted only from backend storage`);
-                }
-
-                this.setState({
-                    plots: plotsCopy,
-                    dashboardItems: dashboardItemsCopy
-                });
-
-                this.props.onPlotsChange(this.getPlots(), this.context);
-            }).catch(error => {
-                console.error(`Error occured while creating plot (${error})`)
-            });
-        }
-    }
-
     handleHighlightPlot(plotId) {
         if (!plotId) throw new Error(`Empty plot identifier`);
 
@@ -750,70 +543,8 @@ class DashboardComponent extends React.Component {
         });
     }
 
-    handleShowPlot(plotId) {
-        if (!plotId) throw new Error(`Empty plot identifier`);
-
-        let activePlots = JSON.parse(JSON.stringify(this.state.activePlots));
-
-        if (activePlots.indexOf(plotId) === -1) activePlots.push(plotId);
-        let plots = this.getPlots()
-        this.setState({activePlots}, () => {
-            this.props.onActivePlotsChange(this.state.activePlots, plots, this.context);
-            setTimeout(() => {
-                // document.getElementById("syncWithDatabaseBtn").click();
-                this.syncPlotData();
-            }, 200);
-        });
-    }
-
-    handleHidePlot(plotId) {
-        if (!plotId) throw new Error(`Empty plot identifier`);
-
-        let activePlots = JSON.parse(JSON.stringify(this.state.activePlots));
-        if (activePlots.indexOf(plotId) > -1) activePlots.splice(activePlots.indexOf(plotId), 1);
-        this.setState({activePlots}, () => {
-            this.props.onActivePlotsChange(this.state.activePlots, this.getPlots(), this.context);
-        });
-    }
-
     handleNewPlotNameChange(event) {
         this.setState({newPlotName: event.target.value});
-    }
-
-    handleArchivePlot(plotId, isArchived) {
-        let plots = JSON.parse(JSON.stringify(this.state.plots));
-        let correspondingPlot = false;
-        let correspondingPlotIndex = false;
-        plots.map((plot, index) => {
-            if (plot.id == plotId) {
-                correspondingPlot = plot;
-                correspondingPlotIndex = index;
-            }
-
-        });
-        if (correspondingPlot === false) throw new Error(`Plot with id ${plotId} does not exist`);
-        correspondingPlot.isArchived = isArchived;
-        plots[correspondingPlotIndex] = correspondingPlot;
-
-        let dashboardItemsCopy = JSON.parse(JSON.stringify(this.state.dashboardItems));
-        dashboardItemsCopy.map((item, index) => {
-            if (item.type === DASHBOARD_ITEM_PLOT || item.type === DASHBOARD_ITEM_PROJECT_PLOT) {
-                if (item.item.id === correspondingPlot.id) {
-                    dashboardItemsCopy[index].item = correspondingPlot;
-                    return false;
-                }
-            }
-        });
-        this.plotManager.update(correspondingPlot).then(() => {
-            this.setState({
-                plots,
-                dashboardItems: dashboardItemsCopy
-            });
-
-            this.props.onPlotsChange(this.getPlots(), this.context);
-        }).catch(error => {
-            console.error(`Error occured while updating plot (${error})`)
-        });
     }
 
     _modifyAxes(plotId, gid, measurementKey, measurementIntakeIndex, action, measurementsData) {
@@ -1033,184 +764,8 @@ class DashboardComponent extends React.Component {
     }
 
     render() {
-        setTimeout(() => {
-            if (!syncInProg) {
-                //console.log("Syncing plots")
-                //this.syncPlotData();
-            }
-            // Debounce sync
-            syncInProg = true;
-            setTimeout(() => syncInProg = false, 2000);
-        }, 500);
 
-        let plotsControls = (<p style={{
-            textAlign: `center`,
-            paddingTop: `20px`
-        }}>{__(`No timeseries were created or set as active yet`)}</p>);
-
-        // Actualize elements location
-        /* if (currentDisplay === DISPLAY_MIN) {
-            this.onSetMin();
-        } else if (currentDisplay === DISPLAY_HALF) {
-            this.onSetHalf();
-        } else if (currentDisplay === DISPLAY_MAX) {
-            this.onSetMax();
-        } */
-
-        let listItemHeightPx = Math.round(($(document).height() * 0.9 - modalHeaderHeight - 10) / 2);
-
-        let localPlotsControls = [];
-        let plottedProfiles = [];
-        this.state.dashboardItems.map((item, index) => {
-            if (item.type === DASHBOARD_ITEM_PLOT || item.type === DASHBOARD_ITEM_PROJECT_PLOT) {
-                let plot = item.item;
-                let plotId = plot.id || plot.key;
-                if (this.state.activePlots.indexOf(plotId) > -1) {
-                    localPlotsControls.push(<SortablePlotComponent
-                        key={`sortable_${index}`}
-                        viewMode={this.state.view}
-                        height={listItemHeightPx}
-                        index={index}
-                        handleDelete={this.handleRemovePlot}
-                        meta={plot}/>);
-                }
-            } else if (item.type === DASHBOARD_ITEM_PROFILE || item.type === DASHBOARD_ITEM_PROJECT_PROFILE) {
-                if (plottedProfiles.indexOf(item.item.key) > -1) {
-                    return;
-                }
-                let profile = item.item;
-                if (this.state.activeProfiles.indexOf(profile.key) > -1) {
-                    localPlotsControls.push(<SortableProfileComponent
-                        key={`sortable_${index}`}
-                        viewMode={this.state.view}
-                        height={listItemHeightPx}
-                        index={index}
-                        handleChangeDatatype={this.handleChangeDatatypeProfile}
-                        handleDelete={this.handleRemoveProfile}
-                        handleClick={this.handleProfileClick}
-                        meta={profile}/>);
-                    plottedProfiles.push(profile.key);
-                }
-            } else {
-                throw new Error(`Unrecognized dashboard item type ${item.type}`);
-            }
-        });
-
-        if (localPlotsControls.length > 0) {
-            plotsControls = (
-                <SortablePlotsGridComponent axis="xy" onSortEnd={this.handlePlotSort}
-                                            useDragHandle>{localPlotsControls}</SortablePlotsGridComponent>);
-        }
-
-        const setNoExpanded = () => {
-            currentDisplay = DISPLAY_HALF;
-            previousDisplay = DISPLAY_MAX;
-            this.nextDisplayType();
-        };
-
-        const setHalfExpanded = () => {
-            currentDisplay = DISPLAY_MIN;
-            previousDisplay = DISPLAY_HALF;
-            this.nextDisplayType();
-        };
-
-        const setFullExpanded = () => {
-            currentDisplay = DISPLAY_HALF;
-            previousDisplay = DISPLAY_MIN;
-            this.nextDisplayType();
-        };
-
-        return (<div>
-            <div className="modal-header" id="watsonc-plots-dialog-controls">
-                <ReactTooltip/>
-                <div className="modal-header-content">
-                    <div style={{height: `40px`, display: `flex`}}>
-                        <div style={{paddingRight: `20px`}}>
-                            <div>
-                                <button
-                                    type="button"
-                                    className="close js-expand-more expand-more"
-                                    aria-hidden="true"
-                                    onClick={setFullExpanded}
-                                    style={{opacity: `1`}}
-                                    title={__(`Expand dashboard`)}>
-                                    <i className="material-icons" style={{fontWeight: `900`}}>expand_less</i>
-                                </button>
-                                <button
-                                    type="button"
-                                    className="close js-expand-half expand-half"
-                                    aria-hidden="true"
-                                    onClick={setHalfExpanded}
-                                    style={{opacity: `1`}}
-                                    title={__(`Open dashboard halfway`)}>
-                                    <i className="material-icons" style={{fontWeight: `900`}}>swap_vert</i>
-                                </button>
-                                <button
-                                    type="button"
-                                    className="close js-expand-less expand-less"
-                                    aria-hidden="true"
-                                    onClick={setNoExpanded}
-                                    style={{opacity: `1`}}
-                                    title={__(`Minimize dashboard`)}>
-                                    <i className="material-icons" style={{fontWeight: `900`}}>expand_more</i>
-                                </button>
-                            </div>
-                        </div>
-                        <div
-                            style={{cursor: `pointer`}}
-                            data-delay-show="500"
-                            data-tip={__(`Click on the modal header to expand or minify the Dashboard`)}
-                            onClick={this.nextDisplayType.bind(this)}>
-                            {__(`Calypso dashboard`)}
-                        </div>
-                        <div
-                            style={{paddingLeft: `10px`, cursor: `pointer`}}
-                            data-delay-show="500"
-                            data-tip={__(`Click on the modal header to expand or minify the Dashboard`)}
-                            onClick={this.nextDisplayType.bind(this)}>
-                            <p className="text-muted" style={{margin: `0px`}}>
-                                ({__(`Timeseries total`).toLowerCase()}: {this.getPlotsLength()}, {__(`timeseries active`)}: {this.state.activePlots.length}; {__(`Profiles total`).toLowerCase()}: {this.getProfilesLength()}, {__(`profiles active`)}: {this.state.activeProfiles.length})
-                            </p>
-                        </div>
-                        <div style={{
-                            flexGrow: `1`,
-                            textAlign: `right`
-                        }}>
-                            <div className="btn-group" role="group" style={{margin: `0px`}}>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        _self.syncPlotData();
-                                    }}
-                                    id="syncWithDatabaseBtn"
-                                    className="btn btn-sm btn-primary btn-default">{__(`Sync med database`)}</button>
-                            </div>
-                            <div className="btn-group btn-group-raised" role="group" style={{margin: `0px`}}>
-                                <button
-                                    type="button"
-                                    disabled={this.state.view === VIEW_MATRIX}
-                                    onClick={() => {
-                                        this.setState({view: VIEW_MATRIX});
-                                    }}
-                                    style={this.state.view === VIEW_MATRIX ? {color: `black`} : {}}
-                                    className="btn btn-sm btn-primary btn-default">{__(`Matrix view`)}</button>
-                                <button
-                                    type="button"
-                                    disabled={this.state.view === VIEW_ROW}
-                                    onClick={() => {
-                                        this.setState({view: VIEW_ROW});
-                                    }}
-                                    style={this.state.view === VIEW_ROW ? {color: `black`} : {}}
-                                    className="btn btn-sm btn-primary btn-default">{__(`Row view`)}</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="modal-body" style={{padding: `0px 20px 0px 0px`, margin: `0px`}}>
-                <div className="form-group" style={{marginBottom: `0px`, paddingBottom: `0px`}}>{plotsControls}</div>
-            </div>
-        </div>);
+        return (<div></div>);
     }
 }
 

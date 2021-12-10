@@ -39,6 +39,7 @@ function ChemicalSelector(props) {
 
         const createMeasurementControl = (item, key) => {
             let display = true;
+            const evaluateMeasurement = require('./../../evaluateMeasurement');
             /* if (this.state.measurementsSearchTerm.length > 0) {
                 if (item.title.toLowerCase().indexOf(this.state.measurementsSearchTerm.toLowerCase()) === -1) {
                     display = false;
@@ -69,7 +70,7 @@ function ChemicalSelector(props) {
                 let measurementData = null;
                 if (!item.custom) {
                     measurementData = evaluateMeasurement(json, props.limits, item.key, item.intakeIndex);
-                    icon = measurementIcon.generate(measurementData.maxColor, measurementData.latestColor);
+                    // icon = measurementIcon.generate(measurementData.maxColor, measurementData.latestColor);
                 }
 
                     control = (<ChemicalsListItem
