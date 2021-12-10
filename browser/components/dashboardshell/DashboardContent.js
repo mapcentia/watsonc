@@ -55,6 +55,8 @@ function DashboardContent(props) {
     };
 
     const handleDrop = (id, item) => {
+        // TODO Lazy load
+        console.log("LAZY LOAD")
         let plot = props.getAllPlots().filter((p) => {
             if (p.id === id) return true;
         })[0];

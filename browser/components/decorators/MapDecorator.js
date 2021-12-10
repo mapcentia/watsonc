@@ -19,6 +19,8 @@ function MapDecorator(props) {
     const [showMoreInfo, setShowMoreInfo] = useState(false);
     const projectContext = useContext(ProjectContext);
     const plot = () => {
+        // TODO Lazy load
+        console.log("LAZY LOAD")
         let allPlots = props.getAllPlots();
         let plotData = {
             id: `plot_${getNewPlotId(allPlots)}`,
@@ -52,7 +54,6 @@ function MapDecorator(props) {
 
         }
         allPlots.unshift(plotData);
-        console.log("plotData", plotData)
 
         let activePlots = allPlots.map(plot => plot.id);
         props.setPlots(allPlots, activePlots);
