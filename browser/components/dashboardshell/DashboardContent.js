@@ -60,26 +60,32 @@ function DashboardContent(props) {
         let plot = props.getAllPlots().filter((p) => {
             if (p.id === id) return true;
         })[0];
-        let measurementsData = {
-            data: {
-                properties: {
-                    "_0": JSON.stringify({
-                        unit: item.feature.unit[item.intakeIndex],
-                        //TODO brug ts_name
-                        // title: item.feature.data[item.intakeIndex].name,
-                        title: item.feature.ts_name[item.intakeIndex],
-                        intakes: [1],
+        $.ajax({
+            url: `/api/sql/jupiter?q=SELECT * FROM ${item.feature.relation} WHERE loc_id=${item.feature.loc_id}&base64=false&lifetime=60&srs=4326`,
+            method: 'GET',
+            dataType: 'json'
+        }).then(response => {
+            let measurementsData = {
+                data: {
+                    properties: {
+                        _0: JSON.stringify({
+                            unit: item.feature.unit[item.intakeIndex],
+                            title: item.feature.ts_name[item.intakeIndex],
+                            intakes: [1],
+                            boreholeno: item.feature.loc_id,
+                            data: response.features[0].properties.data,
+                            trace: item.feature.trace,
+                            relation: item.feature.relation
+                        }),
                         boreholeno: item.feature.loc_id,
-                        data: item.feature.data,
-                        trace: item.feature.trace,
-                        relation: item.feature.relation
-                    }),
-                    "boreholeno": item.feature.loc_id,
-                    "numofintakes": 1,
+                        numofintakes: 1,
+                    }
                 }
             }
-        }
-        item.onAddMeasurement(plot.id, item.gid, item.itemKey, item.intakeIndex, measurementsData);
+            item.onAddMeasurement(plot.id, item.gid, item.itemKey, item.intakeIndex, measurementsData);
+        }, (jqXHR) => {
+            console.error(`Error occured while getting data`);
+        });
     };
 
     useEffect(() => {
