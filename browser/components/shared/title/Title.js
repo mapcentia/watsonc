@@ -10,7 +10,7 @@ function Title(props) {
     );
 }
 Title.propTypes = {
-    text: PropTypes.string.isRequired,
+    //text: PropTypes.string.isRequired,
     level: PropTypes.number,
     className: PropTypes.string,
     align: PropTypes.string,

@@ -102,14 +102,8 @@ function DashboardContent(props) {
     });
 
     useEffect(() => {
+        console.log("props.activePlots", props.activePlots)
         const dashboardItemsCopy = [];
-
-        props.activeProfiles.map((item) => {
-            dashboardItemsCopy.push({
-                type: DASHBOARD_ITEM_PROFILE,
-                item
-            })
-        });
 
         props.activePlots.map((item, index) => {
             dashboardItemsCopy.push({
@@ -119,7 +113,7 @@ function DashboardContent(props) {
             })
         });
         setDashboardItems(dashboardItemsCopy);
-    }, [props.activePlots, props.activeProfiles]);
+    }, [props.activePlots]);
 
     useEffect(() => {
         if (props.boreholeFeatures) {
@@ -129,7 +123,7 @@ function DashboardContent(props) {
 
     return (
         <Root>
-            {props.dashboardContent === 'charts' ? <Grid container spacing={2}>
+            {props.dashboardContent === 'charts' ? <Grid container spacing={8}>
                 <Grid container item xs={4}>
                     <DashboardList>
                         <Grid container>

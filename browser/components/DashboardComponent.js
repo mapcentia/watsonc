@@ -469,6 +469,7 @@ class DashboardComponent extends React.Component {
     }
 
     setPlots(plots) {
+        console.log("plots", plots)
         let dashboardItemsCopy = [];
         this.state.dashboardItems.map(item => {
             if (item.type !== DASHBOARD_ITEM_PLOT /* type 0 */ && item.type !== DASHBOARD_ITEM_PROJECT_PLOT /* type 3*/) {
@@ -489,6 +490,7 @@ class DashboardComponent extends React.Component {
     }
 
     setActivePlots(activePlots) {
+        console.log("activePlots", activePlots)
         this.setState({activePlots});
     }
 
@@ -771,7 +773,7 @@ class DashboardComponent extends React.Component {
 
 DashboardComponent.propTypes = {
     initialPlots: PropTypes.array.isRequired,
-    onOpenBorehole: PropTypes.func.isRequired,
+    //onOpenBorehole: PropTypes.func.isRequired,
     onPlotsChange: PropTypes.func.isRequired,
     onActivePlotsChange: PropTypes.func.isRequired,
     onHighlightedPlotChange: PropTypes.func.isRequired,

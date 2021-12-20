@@ -15,12 +15,10 @@ import {addBoreholeFeature} from "../../redux/actions";
 import {getNewPlotId} from '../../helpers/common';
 
 function MapDecorator(props) {
-    console.log("props", props)
     const [showMoreInfo, setShowMoreInfo] = useState(false);
     const projectContext = useContext(ProjectContext);
     const plot = () => {
-        // TODO Lazy load
-        console.log("LAZY LOAD")
+        let plot = props.data.properties;
         let allPlots = props.getAllPlots();
         let plotData = {
             id: `plot_${getNewPlotId(allPlots)}`,
@@ -28,36 +26,41 @@ function MapDecorator(props) {
             measurements: [],
             measurementsCachedData: {}
         }
-        let plot = props.data.properties;
-        for (let u = 0; u < props.data.properties.data.length; u++) {
-            plotData.measurements.push(plot.loc_id + ":_0:" + u.toString());
-            plotData.measurementsCachedData[plot.loc_id + ":_0:" + u.toString()] =
-                {
-                    data: {
-                        properties: {
-                            "_0": JSON.stringify({
-                                unit: plot.unit[u],
-                                //TODO brug ts_name
-                                title: plot.data[u].name,
-                                // title: plot.ts_name[u],
-                                intakes: [1],
-                                boreholeno: plot.loc_id,
-                                data: plot.data,
-                                trace: plot.trace,
-                                relation: props.relation
-                            }),
-                            "boreholeno": plot.loc_id,
-                            "numofintakes": 1
-                        }
-                    }
-                };
-
-        }
         allPlots.unshift(plotData);
-
         let activePlots = allPlots.map(plot => plot.id);
         props.setPlots(allPlots, activePlots);
         props.onActivePlotsChange(activePlots, allPlots, projectContext);
+        $.ajax({
+            url: `/api/sql/jupiter?q=SELECT * FROM ${props.relation} WHERE loc_id=${props.data.properties.loc_id}&base64=false&lifetime=60&srs=4326`,
+            method: 'GET',
+            dataType: 'json',
+        }).then(response => {
+            let data = response.features[0].properties.data;
+            for (let u = 0; u < data.length; u++) {
+                plotData.measurements.push(plot.loc_id + ":_0:" + u.toString());
+                plotData.measurementsCachedData[plot.loc_id + ":_0:" + u.toString()] =
+                    {
+                        data: {
+                            properties: {
+                                _0: JSON.stringify({
+                                    unit: plot.unit[u],
+                                    title: plot.ts_name[u],
+                                    intakes: [1],
+                                    boreholeno: plot.loc_id,
+                                    data: data,
+                                    trace: plot.trace,
+                                    relation: props.relation
+                                }),
+                                boreholeno: plot.loc_id,
+                                numofintakes: 1
+                            }
+                        }
+                    };
+            }
+            props.setPlots(allPlots, activePlots);
+        }, (jqXHR) => {
+            console.error(`Error occured while getting data`);
+        });
     }
     const addToDashboard = () => {
         reduxStore.dispatch(addBoreholeFeature(props.data));
@@ -65,12 +68,12 @@ function MapDecorator(props) {
     let links = [];
 
     //TODO brug ts_name
-    links.push(props.data.properties.data.map((v) => {
+    links.push(props.data.properties.ts_name.map((v) => {
         return (
-            <Grid container>
+            <Grid container key={v}>
                 <Icon name="analytics-board-graph-line" strokeColor={DarkTheme.colors.headings} size={16}/>
                 <Title marginTop={0} marginLeft={4} level={5} color={DarkTheme.colors.headings}
-                       text={v.name}/>
+                       text={v}/>
             </Grid>
 
         )
