@@ -28,12 +28,10 @@ function ChemicalSelector(props) {
                 key: props.feature.properties.ts_name[i] + "_" + i,
                 intakeIndex: i,
                 boreholeno: props.feature.properties.loc_id,
-                //TODO brug ts_name
-                title: props.feature.properties.data[i].name,
-                // title: props.feature.properties.ts_name[i],
+                title: props.feature.properties.ts_name[i],
                 unit: props.feature.properties.unit[0],
-                measurements: props.feature.properties.data[0].y,
-                timeOfMeasurement: props.feature.properties.data[0].x
+                measurements: [],
+                timeOfMeasurement: []
             });
         }
 
@@ -69,7 +67,7 @@ function ChemicalSelector(props) {
                 let icon = false;
                 let measurementData = null;
                 if (!item.custom) {
-                    measurementData = evaluateMeasurement(json, props.limits, item.key, item.intakeIndex);
+                    // measurementData = evaluateMeasurement(json, props.limits, item.key, item.intakeIndex);
                     // icon = measurementIcon.generate(measurementData.maxColor, measurementData.latestColor);
                 }
 
@@ -78,11 +76,11 @@ function ChemicalSelector(props) {
                         circleColor={DarkTheme.colors.denotive.warning}
                         key={key}
                         onAddMeasurement={props.onAddMeasurement}
-                        maxMeasurement={measurementData === null ? null : Math.round((measurementData.maxMeasurement) * 100) / 100}
-                        latestMeasurement={measurementData === null ? null : Math.round((measurementData.latestMeasurement) * 100) / 100}
-                        latestMeasurementRelative={measurementData === null ? null : Math.round((measurementData.latestMeasurement / measurementData.chemicalLimits[1]) * 100) / 100}
-                        detectionLimitReachedForMax={measurementData === null ? null : measurementData.detectionLimitReachedForMax}
-                        detectionLimitReachedForLatest={measurementData === null ? null : measurementData.detectionLimitReachedForLatest}
+                        // maxMeasurement={measurementData === null ? null : Math.round((measurementData.maxMeasurement) * 100) / 100}
+                        // latestMeasurement={measurementData === null ? null : Math.round((measurementData.latestMeasurement) * 100) / 100}
+                        // latestMeasurementRelative={measurementData === null ? null : Math.round((measurementData.latestMeasurement / measurementData.chemicalLimits[1]) * 100) / 100}
+                        // detectionLimitReachedForMax={measurementData === null ? null : measurementData.detectionLimitReachedForMax}
+                        // detectionLimitReachedForLatest={measurementData === null ? null : measurementData.detectionLimitReachedForLatest}
                         icon={icon}
                         gid={props.feature.properties.loc_id}
                         itemKey={item.key}
