@@ -20,8 +20,8 @@ function ChemicalsListItem(props) {
     const [descriptionText, setDescriptionText] = useState('');
 
     useEffect(() => {
-        let description = `Historisk: ${props.detectionLimitReachedForMax ? "<" : ""}${props.maxMeasurement === 0 ? "-" : props.maxMeasurement} ${props.maxMeasurement === 0 ? "" : props.unit.toLowerCase()}`;
-        description += ` | Seneste: ${props.detectionLimitReachedForLatest ? "<" : ""}${props.latestMeasurement} ${props.unit.toLowerCase()}`;
+        // TODO brug nyt felt
+        let description = '';
         setDescriptionText(description);
     }, [props.detectionLimitReachedForMax, props.maxMeasurement, props.detectionLimitReachedForLatest, props.latestMeasurement, props.unit]);
     return (
