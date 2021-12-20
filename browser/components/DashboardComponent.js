@@ -372,35 +372,8 @@ class DashboardComponent extends React.Component {
         });
     }
 
-    getPlots(getArchived = true) {
-        let allPlots = [];
-        this.state.projectPlots.map((item) => {
-            item.fromProject = true;
-            allPlots.push(item);
-        });
-        this.state.plots.map((item) => {
-            item.fromProject = false;
-            allPlots.push(item);
-        })
-        allPlots = allPlots.filter((item) => {
-            if (getArchived) {
-                return item;
-            } else if (!item.isArchived) {
-                return item;
-            }
-        })
-        allPlots = allPlots.sort((a, b) => b['created_at'] - a['created_at']);
-        const unique = (myArr) => {
-            return myArr.filter((obj, pos, arr) => {
-                return arr.map(mapObj => mapObj["id"]).indexOf(obj["id"]) === pos;
-            });
-        }
-        allPlots = unique(allPlots);
-        // Filter out profiles
-        allPlots = allPlots.filter((item) => {
-            return !!item?.id;
-        })
-        return allPlots;
+    getPlots() {
+        return this.state.plots;
     }
 
     getActivePlots() {

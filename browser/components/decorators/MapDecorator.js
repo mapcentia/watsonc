@@ -67,7 +67,6 @@ function MapDecorator(props) {
     }
     let links = [];
 
-    //TODO brug ts_name
     links.push(props.data.properties.ts_name.map((v) => {
         return (
             <Grid container key={v}>
