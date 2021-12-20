@@ -3,7 +3,6 @@ import {connect} from 'react-redux';
 import Collapse from '@material-ui/core/Collapse';
 import styled from 'styled-components';
 import Searchbox from '../shared/inputs/Searchbox';
-import ModalMeasurementComponent from '../ModalMeasurementComponent';
 
 
 function ChemicalSelector(props) {
