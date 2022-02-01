@@ -102,7 +102,7 @@ function GraphCard(props) {
 
   return (
     <li className="list-group-item">
-      <Root {...fullscreen}>
+      <Root>
         <DashboardPlotHeader>
           <Grid container>
             <Grid container item xs={3}>
@@ -131,7 +131,7 @@ function GraphCard(props) {
                 </HeaderActionItem>
               ) : null}
               <SortHandleComponent />
-              <HeaderActionItem onClick={full_screen}>
+              <HeaderActionItem>
                 <IconContainer>
                   <Icon name="full-screen" size={16} />
                 </IconContainer>
