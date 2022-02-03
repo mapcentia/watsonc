@@ -18,6 +18,9 @@ import ProjectContext from "../../contexts/project/ProjectContext";
 import ProjectList from "../dataselector/ProjectList";
 import MapDecorator from "../decorators/MapDecorator";
 import { getNewPlotId } from "../../helpers/common";
+import Collapse from "@material-ui/core/Collapse";
+import ExpandLess from "@material-ui/icons/ExpandLess";
+import ExpandMore from "@material-ui/icons/ExpandMore";
 
 const DASHBOARD_ITEM_PLOT = 0;
 const DASHBOARD_ITEM_PROFILE = 1;
@@ -26,7 +29,16 @@ function DashboardContent(props) {
   const [selectedBoreholeIndex, setSelectedBoreholeIndex] = useState(0);
   const [selectedBorehole, setSelectedBorehole] = useState();
   const [dashboardItems, setDashboardItems] = useState([]);
+  const [groups, setGroups] = useState([]);
+  const [myStations, setMyStations] = useState([]);
   const projectContext = useContext(ProjectContext);
+
+  const [open, setOpen] = React.useState(true);
+
+  const handleClick = () => {
+    setOpen(!open);
+  };
+
   const handlePlotSort = ({ oldIndex, newIndex }) => {
     let allPlots = arrayMove(props.getAllPlots(), oldIndex, newIndex);
     let activePlots = projectContext.activePlots;
@@ -140,16 +152,77 @@ function DashboardContent(props) {
   }, [props.activePlots]);
 
   useEffect(() => {
+    console.log(props);
+    $.ajax({
+      url: `/api/sql/watsonc?q=SELECT * FROM calypso_stationer.calypso_my_stations WHERE user_id in (137180100000547) &base64=false&lifetime=60&srs=4326`,
+      method: "GET",
+      dataType: "json",
+    }).then((response) => {
+      console.log(response);
+      var features = response.features;
+      var relations = [];
+      var loc_ids = [];
+      console.log(features);
+      features.forEach((element) => {
+        relations = relations.concat(element.properties.relation);
+
+        loc_ids = loc_ids.concat(element.properties.loc_id);
+      });
+
+      relations = [...new Set(relations)];
+      loc_ids = [...new Set(loc_ids)];
+      // var grp = [];
+      // var mystat = [];
+      console.log(relations);
+      console.log(loc_ids);
+      relations.forEach((element) => {
+        console.log(loc_ids);
+        $.ajax({
+          url: `/api/sql/jupiter?q=SELECT the_geom, gid, loc_id, locname, groupname, mouseover, ts_name, ts_id, unit, parameter, trace, count, startdate, enddate FROM ${element} WHERE loc_id in (${loc_ids}) &base64=false&lifetime=60&srs=4326`,
+          method: "GET",
+          dataType: "json",
+        }).then((response) => {
+          console.log(response);
+
+          grp = grp.concat(
+            response.features.map((item) => item.properties.groupname)
+          );
+          console.log(grp);
+          // mystat = mystat.concat(
+          //   response.features.map((elem) => {
+          //     var x = {
+          //       ...elem.properties,
+          //       relation: element,
+          //     };
+          //     return { ...elem, properties: x };
+          //   })
+          // );
+        });
+      });
+      console.log(grp);
+      console.log(mystat);
+      setGroups([...new Set(grp)]);
+      setMyStations(mystat);
+    });
+  }, []);
+
+  useEffect(() => {
     if (props.boreholeFeatures) {
-      setSelectedBorehole(props.boreholeFeatures[selectedBoreholeIndex]);
+      if (selectedBoreholeIndex >= props.boreholeFeatures.length) {
+        setSelectedBorehole(
+          myStations[selectedBoreholeIndex - props.boreholeFeatures.length]
+        );
+      } else {
+        setSelectedBorehole(props.boreholeFeatures[selectedBoreholeIndex]);
+      }
     }
   }, [props.boreholeFeatures, selectedBoreholeIndex]);
 
   return (
     <Root>
       {props.dashboardContent === "charts" ? (
-        <Grid container>
-          <Grid container item xs={4}>
+        <Grid container style={{ height: "100%" }}>
+          <Grid item xs={4}>
             <DashboardList>
               <Grid container>
                 <Grid container item xs={5}>
@@ -246,6 +319,100 @@ function DashboardContent(props) {
                     {/*        <Title level={6} text={__('Lokalitet 799.553')} marginLeft={8}/>*/}
                     {/*    </DashboardListItem>*/}
                     {/*</FavoritterList>*/}
+
+                    <DashboardListTitle>
+                      <Icon
+                        name="rating-star-solid"
+                        size={16}
+                        strokeColor={DarkTheme.colors.headings}
+                      />
+                      <Title
+                        level={4}
+                        color={DarkTheme.colors.headings}
+                        text={__("Mine stationer")}
+                        marginLeft={8}
+                      />
+                    </DashboardListTitle>
+
+                    {groups.map((group) => {
+                      return (
+                        <div key={group}>
+                          <DashboardListItem
+                            onClick={handleClick}
+                            key={group + "1"}
+                          >
+                            <Title level={4} text={group} marginLeft={8} />
+                            {open ? <ExpandLess /> : <ExpandMore />}
+                          </DashboardListItem>
+                          <Collapse in={open} timeout="auto" unmountOnExit>
+                            {myStations.map((item, index) => {
+                              let name = item.properties.locname;
+                              return item.properties.groupname === group ? (
+                                <DashboardListItem
+                                  onClick={() =>
+                                    setSelectedBoreholeIndex(
+                                      index + props.boreholeFeatures.length
+                                    )
+                                  }
+                                  active={
+                                    selectedBoreholeIndex ===
+                                    index + props.boreholeFeatures.length
+                                  }
+                                  key={item.properties.locid}
+                                >
+                                  <Icon
+                                    name="drill"
+                                    size={16}
+                                    strokeColor={DarkTheme.colors.headings}
+                                    paddingLeft={16}
+                                  />
+                                  <Title
+                                    level={6}
+                                    text={name}
+                                    marginLeft={16}
+                                  />
+                                </DashboardListItem>
+                              ) : null;
+                            })}
+                          </Collapse>
+                        </div>
+                      );
+                    })}
+
+                    {/* <DashboardListItem
+                      onClick={handleClick}
+                      key={1254123123123}
+                    >
+                      <Title level={6} text="Gruppe" marginLeft={8} />
+                    </DashboardListItem>
+                    <Collapse in={open} timeout="auto" unmountOnExit>
+                      {myStations.length > 0
+                        ? myStations.map((item, index) => {
+                            let name = item.properties.locname;
+                            return (
+                              <DashboardListItem
+                                onClick={() =>
+                                  setSelectedBoreholeIndex(
+                                    index + props.boreholeFeatures.length
+                                  )
+                                }
+                                active={
+                                  selectedBoreholeIndex ===
+                                  index + props.boreholeFeatures.length
+                                }
+                                key={item.properties.locid}
+                              >
+                                <Icon
+                                  name="drill"
+                                  size={16}
+                                  strokeColor={DarkTheme.colors.headings}
+                                />
+                                <Title level={6} text={name} marginLeft={8} />
+                              </DashboardListItem>
+                            );
+                          })
+                        : null}
+                    </Collapse> */}
                   </BoreholesList>
                 </Grid>
                 <Grid container item xs={7}>
@@ -322,7 +489,7 @@ const DashboardList = styled.div`
     ${(props) => props.theme.layout.gutter}px;
   width: 100%;
   height: 100%;
-  overflow-y: auto;
+  // overflow-y: auto;
 `;
 
 const BoreholesList = styled.div`
