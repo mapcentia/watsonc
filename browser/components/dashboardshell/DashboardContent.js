@@ -21,6 +21,7 @@ import { getNewPlotId } from "../../helpers/common";
 import Collapse from "@material-ui/core/Collapse";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
+import Title from "../shared/title/Title";
 
 const DASHBOARD_ITEM_PLOT = 0;
 const DASHBOARD_ITEM_PROFILE = 1;
@@ -33,10 +34,13 @@ function DashboardContent(props) {
   const [myStations, setMyStations] = useState([]);
   const projectContext = useContext(ProjectContext);
 
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = useState({});
 
-  const handleClick = () => {
-    setOpen(!open);
+  const handleClick = (group) => {
+    return () =>
+      setOpen((prev_state) => {
+        return { ...prev_state, [group]: !prev_state[group] };
+      });
   };
 
   const handlePlotSort = ({ oldIndex, newIndex }) => {
@@ -154,7 +158,7 @@ function DashboardContent(props) {
   useEffect(() => {
     console.log(props);
     $.ajax({
-      url: `/api/sql/watsonc?q=SELECT * FROM calypso_stationer.calypso_my_stations WHERE user_id in (137180100000547) &base64=false&lifetime=60&srs=4326`,
+      url: `/api/sql/watsonc?q=SELECT * FROM calypso_stationer.calypso_my_stations WHERE user_id in (137180100000547, 137180100000622) &base64=false&lifetime=60&srs=4326`,
       method: "GET",
       dataType: "json",
     }).then((response) => {
@@ -183,28 +187,43 @@ function DashboardContent(props) {
           dataType: "json",
         }).then((response) => {
           console.log(response);
-
-          grp = grp.concat(
-            response.features.map((item) => item.properties.groupname)
+          const grp = response.features.map(
+            (item) => item.properties.groupname
           );
-          console.log(grp);
-          // mystat = mystat.concat(
-          //   response.features.map((elem) => {
-          //     var x = {
-          //       ...elem.properties,
-          //       relation: element,
-          //     };
-          //     return { ...elem, properties: x };
-          //   })
-          // );
+          setGroups((prev_state) =>
+            [...new Set([...grp, ...prev_state])].sort()
+          );
+
+          const mystat = response.features.map((elem) => {
+            var x = {
+              ...elem.properties,
+              relation: element,
+            };
+            return { ...elem, properties: x };
+          });
+
+          setMyStations((prev_state) =>
+            [...prev_state, ...mystat].sort((a, b) =>
+              a.properties.locname.localeCompare(b.properties.locname)
+            )
+          );
         });
       });
-      console.log(grp);
-      console.log(mystat);
-      setGroups([...new Set(grp)]);
-      setMyStations(mystat);
+      // console.log(grp);
+      // console.log(mystat);
+      // setGroups([...new Set(grp)]);
+      // setMyStations(mystat);
     });
   }, []);
+
+  useEffect(() => {
+    setOpen(
+      groups.map((elem) => {
+        return { [elem]: false };
+      })
+    );
+    console.log(groups);
+  }, [groups]);
 
   useEffect(() => {
     if (props.boreholeFeatures) {
@@ -337,44 +356,84 @@ function DashboardContent(props) {
                     {groups.map((group) => {
                       return (
                         <div key={group}>
-                          <DashboardListItem
-                            onClick={handleClick}
-                            key={group + "1"}
-                          >
-                            <Title level={4} text={group} marginLeft={8} />
-                            {open ? <ExpandLess /> : <ExpandMore />}
-                          </DashboardListItem>
-                          <Collapse in={open} timeout="auto" unmountOnExit>
-                            {myStations.map((item, index) => {
-                              let name = item.properties.locname;
-                              return item.properties.groupname === group ? (
-                                <DashboardListItem
-                                  onClick={() =>
-                                    setSelectedBoreholeIndex(
+                          {group !== null ? (
+                            <div>
+                              <DashboardListItem
+                                onClick={handleClick(group)}
+                                key={group + "1"}
+                              >
+                                {open[group] ? <ExpandLess /> : <ExpandMore />}
+                                <Title level={5} text={group} marginLeft={4} />
+                              </DashboardListItem>
+                              <Collapse
+                                in={open[group]}
+                                timeout="auto"
+                                unmountOnExit
+                              >
+                                {myStations.map((item, index) => {
+                                  let name = item.properties.locname;
+                                  return item.properties.groupname === group ? (
+                                    <DashboardListItem
+                                      onClick={() =>
+                                        setSelectedBoreholeIndex(
+                                          index + props.boreholeFeatures.length
+                                        )
+                                      }
+                                      active={
+                                        selectedBoreholeIndex ===
+                                        index + props.boreholeFeatures.length
+                                      }
+                                      key={item.properties.locid}
+                                    >
+                                      <Icon
+                                        name="drill"
+                                        size={16}
+                                        strokeColor={DarkTheme.colors.headings}
+                                        paddingLeft={16}
+                                      />
+                                      <Title
+                                        level={6}
+                                        text={name}
+                                        marginLeft={16}
+                                      />
+                                    </DashboardListItem>
+                                  ) : null;
+                                })}
+                              </Collapse>
+                            </div>
+                          ) : (
+                            <div>
+                              {myStations.map((item, index) => {
+                                let name = item.properties.locname;
+                                return item.properties.groupname === group ? (
+                                  <DashboardListItem
+                                    onClick={() =>
+                                      setSelectedBoreholeIndex(
+                                        index + props.boreholeFeatures.length
+                                      )
+                                    }
+                                    active={
+                                      selectedBoreholeIndex ===
                                       index + props.boreholeFeatures.length
-                                    )
-                                  }
-                                  active={
-                                    selectedBoreholeIndex ===
-                                    index + props.boreholeFeatures.length
-                                  }
-                                  key={item.properties.locid}
-                                >
-                                  <Icon
-                                    name="drill"
-                                    size={16}
-                                    strokeColor={DarkTheme.colors.headings}
-                                    paddingLeft={16}
-                                  />
-                                  <Title
-                                    level={6}
-                                    text={name}
-                                    marginLeft={16}
-                                  />
-                                </DashboardListItem>
-                              ) : null;
-                            })}
-                          </Collapse>
+                                    }
+                                    key={item.properties.locid}
+                                  >
+                                    <Icon
+                                      name="drill"
+                                      size={16}
+                                      strokeColor={DarkTheme.colors.headings}
+                                      // paddingLeft={16}
+                                    />
+                                    <Title
+                                      level={6}
+                                      text={name}
+                                      marginLeft={8}
+                                    />
+                                  </DashboardListItem>
+                                ) : null;
+                              })}
+                            </div>
+                          )}
                         </div>
                       );
                     })}
