@@ -158,7 +158,7 @@ function DashboardContent(props) {
   useEffect(() => {
     console.log(props);
     $.ajax({
-      url: `/api/sql/watsonc?q=SELECT * FROM calypso_stationer.calypso_my_stations WHERE user_id in (137180100000547, 137180100000622) &base64=false&lifetime=60&srs=4326`,
+      url: `/api/sql/watsonc?q=SELECT * FROM calypso_stationer.calypso_my_stations WHERE user_id in (137180100004363) &base64=false&lifetime=60&srs=4326`,
       method: "GET",
       dataType: "json",
     }).then((response) => {
@@ -182,7 +182,7 @@ function DashboardContent(props) {
       relations.forEach((element) => {
         console.log(loc_ids);
         $.ajax({
-          url: `/api/sql/jupiter?q=SELECT the_geom, gid, loc_id, locname, groupname, mouseover, ts_name, ts_id, unit, parameter, trace, count, startdate, enddate FROM ${element} WHERE loc_id in (${loc_ids}) &base64=false&lifetime=60&srs=4326`,
+          url: `/api/sql/jupiter?q=SELECT the_geom, gid, loc_id, locname, groupname, ts_name, ts_id, unit, parameter, trace FROM ${element} WHERE loc_id in (${loc_ids}) &base64=false&lifetime=60&srs=4326`,
           method: "GET",
           dataType: "json",
         }).then((response) => {
@@ -241,10 +241,15 @@ function DashboardContent(props) {
     <Root>
       {props.dashboardContent === "charts" ? (
         <Grid container style={{ height: "100%" }}>
-          <Grid item xs={4}>
+          <Grid item xs={4} style={{ height: "100%" }}>
             <DashboardList>
-              <Grid container>
-                <Grid container item xs={5}>
+              <Grid container style={{ height: "100%" }}>
+                <Grid
+                  container
+                  item
+                  xs={5}
+                  style={{ height: "100%", overflow: "auto" }}
+                >
                   <BoreholesList>
                     <DashboardListTitle>
                       <Icon
@@ -341,7 +346,7 @@ function DashboardContent(props) {
 
                     <DashboardListTitle>
                       <Icon
-                        name="rating-star-solid"
+                        name="avatar"
                         size={16}
                         strokeColor={DarkTheme.colors.headings}
                       />
@@ -474,7 +479,12 @@ function DashboardContent(props) {
                     </Collapse> */}
                   </BoreholesList>
                 </Grid>
-                <Grid container item xs={7}>
+                <Grid
+                  container
+                  item
+                  xs={7}
+                  style={{ height: "100%", overflow: "auto" }}
+                >
                   <ChemicalSelector
                     feature={selectedBorehole}
                     limits={limits}
@@ -485,7 +495,12 @@ function DashboardContent(props) {
               </Grid>
             </DashboardList>
           </Grid>
-          <Grid container item xs={8}>
+          <Grid
+            container
+            item
+            xs={8}
+            style={{ height: "100%", overflow: "auto" }}
+          >
             <ChartsContainer>
               <SortableList axis="xy" onSortEnd={handlePlotSort} useDragHandle>
                 {dashboardItems.map((dashboardItem, index) => {
@@ -535,11 +550,11 @@ function DashboardContent(props) {
 }
 
 const Root = styled.div`
-  height: 100%;
+  height: calc(100% - ${(props) => props.theme.layout.gutter * 2}px);
   width: 100%;
   background-color: ${(props) =>
     hexToRgbA(props.theme.colors.primary[1], 0.92)};
-  overflow-y: auto;
+  // overflow-y: auto;
 `;
 
 const DashboardList = styled.div`
@@ -554,6 +569,7 @@ const DashboardList = styled.div`
 const BoreholesList = styled.div`
   width: 100%;
   height: 100%;
+  // overflow-y: auto;
 `;
 
 const DashboardListTitle = styled.div`
@@ -591,11 +607,12 @@ const FavoritterListTitle = styled.div`
 `;
 
 const ChartsContainer = styled.ul`
+  padding-top: 0px;
+  padding-bottom: 0px;
   width: 100%;
   padding-left: ${(props) => props.theme.layout.gutter / 4}px;
   padding-right: ${(props) => props.theme.layout.gutter / 4}px;
   height: 100%;
-  overflow-y: auto;
 `;
 
 const ProjectsContainer = styled.div`
