@@ -25,6 +25,7 @@ import Title from "../shared/title/Title";
 
 const DASHBOARD_ITEM_PLOT = 0;
 const DASHBOARD_ITEM_PROFILE = 1;
+const session = require("./../../../../session/browser/index");
 
 function DashboardContent(props) {
   const [selectedBoreholeIndex, setSelectedBoreholeIndex] = useState(0);
@@ -33,8 +34,20 @@ function DashboardContent(props) {
   const [groups, setGroups] = useState([]);
   const [myStations, setMyStations] = useState([]);
   const projectContext = useContext(ProjectContext);
+  const [orgId, setorgId] = useState(null);
 
   const [open, setOpen] = useState({});
+
+  useEffect(() => {
+    $.ajax({
+      dataType: "json",
+      url: "/api/session/status",
+      type: "GET",
+      success: function (data) {
+        setorgId(data.status.properties.organisation.id);
+      },
+    });
+  }, []);
 
   const handleClick = (group) => {
     return () =>
@@ -158,7 +171,7 @@ function DashboardContent(props) {
   useEffect(() => {
     console.log(props);
     $.ajax({
-      url: `/api/sql/watsonc?q=SELECT * FROM calypso_stationer.calypso_my_stations WHERE user_id in (137180100004363) &base64=false&lifetime=60&srs=4326`,
+      url: `/api/sql/watsonc?q=SELECT * FROM calypso_stationer.calypso_my_stations WHERE user_id in (${orgId}, ${session.getUserName()}) &base64=false&lifetime=60&srs=4326`,
       method: "GET",
       dataType: "json",
     }).then((response) => {
@@ -191,7 +204,22 @@ function DashboardContent(props) {
             (item) => item.properties.groupname
           );
           setGroups((prev_state) =>
-            [...new Set([...grp, ...prev_state])].sort()
+            [...new Set([...grp, ...prev_state])].sort(function (a, b) {
+              // equal items sort equally
+              if (a === b) {
+                return 0;
+              }
+              // nulls sort after anything else
+              else if (a === null) {
+                return 1;
+              } else if (b === null) {
+                return -1;
+              }
+              // otherwise, if we're ascending, lowest sorts first
+              else {
+                return a < b ? -1 : 1;
+              }
+            })
           );
 
           const mystat = response.features.map((elem) => {
@@ -214,7 +242,7 @@ function DashboardContent(props) {
       // setGroups([...new Set(grp)]);
       // setMyStations(mystat);
     });
-  }, []);
+  }, [orgId]);
 
   useEffect(() => {
     setOpen(
