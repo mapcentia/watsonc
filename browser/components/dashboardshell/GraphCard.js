@@ -7,8 +7,14 @@ import DashboardProfileCard from "./DashboardProfileCard";
 import { sortableElement } from "react-sortable-hoc";
 import SortHandleComponent from "./SortHandleComponent";
 import PlotApi from "../../api/plots/PlotApi";
+import { useState } from "react";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import Button from "@material-ui/core/Button";
 
 function GraphCard(props) {
+  const [fullscreen, setFullscreen] = useState(false);
+
   const download = () => {
     if (!props.plot) {
       return;
@@ -98,6 +104,14 @@ function GraphCard(props) {
       });
   };
 
+  const handleFullScreen = () => {
+    setFullscreen(true);
+  };
+
+  const handleClose = () => {
+    setFullscreen(false);
+  };
+
   //TODO add full screen functionality
 
   return (
@@ -131,7 +145,7 @@ function GraphCard(props) {
                 </HeaderActionItem>
               ) : null}
               <SortHandleComponent />
-              <HeaderActionItem>
+              <HeaderActionItem onClick={handleFullScreen}>
                 <IconContainer>
                   <Icon name="full-screen" size={16} />
                 </IconContainer>
@@ -149,6 +163,19 @@ function GraphCard(props) {
           <DashboardProfileCard {...props} />
         )}
       </Root>
+      <Dialog
+        fullWidth={true}
+        maxWidth={false}
+        open={fullscreen}
+        onClose={handleClose}
+      >
+        <DashboardPlotCard {...{ ...props, plotHeight: 1000 }} />
+        <DialogActions>
+          <Button onClick={handleClose}>
+            <Title marginLeft={8} level={6} text={__("Luk vindue")} />
+          </Button>
+        </DialogActions>
+      </Dialog>
     </li>
   );
 }
