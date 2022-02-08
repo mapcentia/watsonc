@@ -524,6 +524,7 @@ module.exports = module.exports = {
                 try {
                     ReactDOM.render(<DashboardWrapper
                         ref={reactRef}
+                        session={session}
                         backboneEvents={backboneEvents}
                         urlparser={urlparser} anchor={anchor}
                         onApply={_self.onApplyLayersAndChemical}

@@ -25,7 +25,7 @@ import Title from "../shared/title/Title";
 
 const DASHBOARD_ITEM_PLOT = 0;
 const DASHBOARD_ITEM_PROFILE = 1;
-const session = require("./../../../../session/browser/index");
+// const session = require("./../../../../session/browser/index");
 
 function DashboardContent(props) {
   const [selectedBoreholeIndex, setSelectedBoreholeIndex] = useState(0);
@@ -38,6 +38,7 @@ function DashboardContent(props) {
 
   const [open, setOpen] = useState({});
 
+  // TODO ændrer dette til at få org id fra Session
   useEffect(() => {
     $.ajax({
       dataType: "json",
@@ -168,10 +169,13 @@ function DashboardContent(props) {
     setDashboardItems(dashboardItemsCopy);
   }, [props.activePlots]);
 
+  //TODO skift orgId ud med det der kan fåes fra session
   useEffect(() => {
     console.log(props);
     $.ajax({
-      url: `/api/sql/watsonc?q=SELECT * FROM calypso_stationer.calypso_my_stations WHERE user_id in (${orgId}, ${session.getUserName()}) &base64=false&lifetime=60&srs=4326`,
+      url: `/api/sql/watsonc?q=SELECT * FROM calypso_stationer.calypso_my_stations WHERE user_id in (${
+        props.session.getProperties().organisation.id
+      }, ${props.session.getUserName()}) &base64=false&lifetime=60&srs=4326`,
       method: "GET",
       dataType: "json",
     }).then((response) => {
