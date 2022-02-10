@@ -13,7 +13,15 @@ import TopBar from './components/TopBar';
 
 
 import reduxStore from './redux/store';
-import {setAuthenticated, setBoreholeFeatures, setCategories, setDashboardContent} from './redux/actions';
+import {
+    addBoreholeFeature,
+    setAuthenticated,
+    setBoreholeFeatures,
+    setCategories,
+    setDashboardContent
+} from './redux/actions';
+import {getNewPlotId} from "./helpers/common";
+import ProjectContext from "./contexts/project/ProjectContext";
 
 const symbolizer = require('./symbolizer');
 
@@ -99,6 +107,10 @@ module.exports = module.exports = {
         state.listen(MODULE_NAME, `plotsUpdate`);
         state.listen(MODULE_NAME, `chemicalChange`);
         state.listen(MODULE_NAME, `enabledLoctypeIdsChange`);
+
+        state.getModuleState(MODULE_NAME).then(initialState => {
+            _self.applyState(initialState)
+        });
 
         this.initializeSearchBar();
 
@@ -991,92 +1003,47 @@ module.exports = module.exports = {
      * Returns current module state
      */
     getState: () => {
+        const plotsClone = JSON.parse(JSON.stringify(dashboardComponentInstance.state.plots));
+        return state = {
+            plots: plotsClone.map((o) => {
+                // delete o.measurementsCachedData;
+                return o;
+            }),
+            sources: reduxStore.getState().global.boreholeFeatures,
+        }
     },
 
     /**
      * Applies externally provided state
      */
     applyState: (newState) => {
-        return new Promise((resolve, reject) => {
-            let plotsWereProvided = false;
-            if (newState && `plots` in newState && newState.plots.length > 0) {
-                plotsWereProvided = true;
-            }
+        setTimeout(() => {
+            console.log("newState", newState)
+            // dashboardComponentInstance.setPlots(newState.plots);
+            newState.sources.forEach((feature) => {
+                reduxStore.dispatch(addBoreholeFeature(feature))
+            });
 
-            let profilesWereProvided = false;
-            if (newState && `profiles` in newState && newState.profiles.length > 0) {
-                profilesWereProvided = true;
-            }
-
-            const continueWithInitialization = (populatedPlots) => {
-                if (populatedPlots) {
-                    dashboardComponentInstance.setProjectPlots(populatedPlots);
-                    populatedPlots.map((item) => {
-                        dashboardComponentInstance.handleShowPlot(item.id);
-                    });
-                    if (window.menuTimeSeriesComponentInstance) {
-                        window.menuTimeSeriesComponentInstance.setPlots(dashboardComponentInstance.getPlots());
-                    }
+            let allPlots = [];
+            newState.plots.forEach((plot) => {
+                // let plot = props.data.properties;
+                let plotData = {
+                    id: plot.id,
+                    title: plot.title,
+                    measurements: plot.measurements,
+                    measurementsCachedData: plot.measurementsCachedData
                 }
 
-                if (newState.enabledLoctypeIds && Array.isArray(newState.enabledLoctypeIds)) {
-                    enabledLoctypeIds = newState.enabledLoctypeIds;
-                }
+                allPlots.push(plotData);
+            })
+            let activePlots = allPlots.map(plot => plot.id);
+            dashboardComponentInstance.setPlots(allPlots);
+            // dashboardComponentInstance.setActivePlots(activePlots);
+            // backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
 
-                if (newState.selectedChemical) {
-                    lastSelectedChemical = newState.selectedChemical;
 
-                    if (plotsWereProvided) {
-                        $(`[href="#watsonc-content"]`).trigger(`click`);
-                    }
 
-                    backboneEvents.get().once("allDoneLoading:layers", e => {
-                        setTimeout(() => {
-                            _self.enableChemical(newState.selectedChemical);
-                            resolve();
-                        }, 1000);
-                    });
-                } else {
-                    $(`.js-clear-breadcrubms`).trigger(`click`);
-                    if (plotsWereProvided) {
-                        $(`[href="#watsonc-content"]`).trigger(`click`);
-                    }
+        }, 3000)
 
-                    resolve();
-                }
-            };
-
-            if (plotsWereProvided) {
-                (function poll() {
-                    if (typeof dashboardComponentInstance === "object") {
-                        dashboardComponentInstance.hydratePlotsFromIds(newState.plots).then(continueWithInitialization).catch(error => {
-                            console.error(`Error occured while hydrating plots at state application`, error);
-                        });
-                    } else {
-                        setTimeout(() => {
-                            poll();
-                        }, 100)
-                    }
-                }());
-
-            } else {
-                continueWithInitialization();
-            }
-
-            if (profilesWereProvided) {
-                (function poll() {
-                    if (typeof dashboardComponentInstance === "object") {
-                        dashboardComponentInstance.setProjectProfiles(newState.profiles);
-                        if (window.menuProfilesComponentInstance) {
-                            window.menuProfilesComponentInstance.setProfiles(dashboardComponentInstance.getProfiles());
-                        }
-                    } else {
-                        setTimeout(() => {
-                            poll();
-                        }, 100)
-                    }
-                }());
-            }
-        });
     }
 };

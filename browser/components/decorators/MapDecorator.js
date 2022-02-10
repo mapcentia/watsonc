@@ -27,9 +27,6 @@ function MapDecorator(props) {
             measurementsCachedData: {}
         }
         allPlots.unshift(plotData);
-        let activePlots = allPlots.map(plot => plot.id);
-        props.setPlots(allPlots, activePlots);
-        props.onActivePlotsChange(activePlots, allPlots, projectContext);
         $.ajax({
             url: `/api/sql/jupiter?q=SELECT * FROM ${props.relation} WHERE loc_id=${props.data.properties.loc_id}&base64=false&lifetime=60&srs=4326`,
             method: 'GET',
@@ -57,7 +54,9 @@ function MapDecorator(props) {
                         }
                     };
             }
+            let activePlots = allPlots.map(plot => plot.id);
             props.setPlots(allPlots, activePlots);
+            //props.onActivePlotsChange(activePlots, allPlots, projectContext);
         }, (jqXHR) => {
             console.error(`Error occured while getting data`);
         });

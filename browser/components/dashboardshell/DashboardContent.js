@@ -126,10 +126,8 @@ function DashboardContent(props) {
   });
 
   useEffect(() => {
-    console.log("props.activePlots", props.activePlots);
     const dashboardItemsCopy = [];
-
-    props.activePlots.map((item, index) => {
+    props.getAllPlots().map((item, index) => {
       dashboardItemsCopy.push({
         type: DASHBOARD_ITEM_PLOT,
         item,
@@ -143,6 +141,7 @@ function DashboardContent(props) {
     if (props.boreholeFeatures) {
       setSelectedBorehole(props.boreholeFeatures[selectedBoreholeIndex]);
     }
+    props.onPlotsChange();
   }, [props.boreholeFeatures, selectedBoreholeIndex]);
 
   return (
@@ -174,7 +173,7 @@ function DashboardContent(props) {
                             <DashboardListItem
                               onClick={() => setSelectedBoreholeIndex(index)}
                               active={selectedBoreholeIndex === index}
-                              key={item.properties.locid}
+                              key={item.properties.gid}
                             >
                               <Icon
                                 name="drill"
