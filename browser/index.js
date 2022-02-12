@@ -1,10 +1,10 @@
 'use strict';
 
-import {useContext} from 'react';
 import {Provider} from 'react-redux';
+import 'regenerator-runtime/runtime';
 
 import AnalyticsComponent from './components/AnalyticsComponent';
-import {LAYER_NAMES, WATER_LEVEL_KEY, KOMMUNER} from './constants';
+import {KOMMUNER, LAYER_NAMES, WATER_LEVEL_KEY} from './constants';
 import trustedIpAddresses from './trustedIpAddresses';
 import ThemeProvider from './themes/ThemeProvider';
 import DataSelectorDialogue from './components/dataselector/DataSelectorDialogue';
@@ -15,13 +15,11 @@ import TopBar from './components/TopBar';
 import reduxStore from './redux/store';
 import {
     addBoreholeFeature,
+    clearBoreholeFeatures,
     setAuthenticated,
     setBoreholeFeatures,
-    setCategories,
-    setDashboardContent
+    setCategories
 } from './redux/actions';
-import {getNewPlotId} from "./helpers/common";
-import ProjectContext from "./contexts/project/ProjectContext";
 
 const symbolizer = require('./symbolizer');
 
@@ -205,12 +203,12 @@ module.exports = module.exports = {
         $(`#search-border`).trigger(`click`);
 
         $(`#js-open-state-snapshots-panel`).click(() => {
-            $(`[href="#state-snapshots-content"]`).trigger(`click`);
+            //$(`[href="#state-snapshots-content"]`).trigger(`click`);
         });
 
         $('#projects-trigger').click((e) => {
             e.preventDefault();
-            reduxStore.dispatch(setDashboardContent('projects'));
+            //reduxStore.dispatch(setDashboardContent('projects'));
         });
 
         $('#main-tabs a').on('click', function (e) {
@@ -1006,7 +1004,7 @@ module.exports = module.exports = {
         const plotsClone = JSON.parse(JSON.stringify(dashboardComponentInstance.state.plots));
         return state = {
             plots: plotsClone.map((o) => {
-                // delete o.measurementsCachedData;
+                //delete o.measurementsCachedData;
                 return o;
             }),
             sources: reduxStore.getState().global.boreholeFeatures,
@@ -1018,32 +1016,61 @@ module.exports = module.exports = {
      */
     applyState: (newState) => {
         setTimeout(() => {
-            console.log("newState", newState)
-            // dashboardComponentInstance.setPlots(newState.plots);
+            reduxStore.dispatch(clearBoreholeFeatures())
             newState.sources.forEach((feature) => {
                 reduxStore.dispatch(addBoreholeFeature(feature))
             });
 
-            let allPlots = [];
-            newState.plots.forEach((plot) => {
-                // let plot = props.data.properties;
-                let plotData = {
-                    id: plot.id,
-                    title: plot.title,
-                    measurements: plot.measurements,
-                    measurementsCachedData: plot.measurementsCachedData
+            //async function fetchData(loc_id) {
+            //    return await fetch(`/api/sql/jupiter?q=SELECT * FROM calypso_stationer.lake WHERE loc_id=${loc_id}&base64=false&lifetime=60&srs=4326`);
+            //}
+
+            function loop() {
+                let allPlots = [];
+                for (let u = 0; u < newState.plots.length; u++) {
+                    let plot = newState.plots[u];
+                    let plotData = {
+                        id: plot.id,
+                        title: plot.title,
+                        measurements: plot.measurements,
+                        measurementsCachedData: plot.measurementsCachedData
+                        //measurementsCachedData: []
+                    }
+                    // for (let i = 0; i < plotData.measurements.length; i++) {
+                    //     let loc_id = plotData.measurements[i].split(':')[0];
+                    //     let index = plotData.measurements[i].split(':')[2];
+                    //     const res = await fetchData(loc_id);
+                    //     const json = await res.json();
+                    //     const props = json.features[0].properties;
+                    //     console.log("PROPS", props)
+                    //     plotData.measurementsCachedData[loc_id + ":_0:" + index] =
+                    //         {
+                    //             data: {
+                    //                 properties: {
+                    //                     _0: JSON.stringify({
+                    //                         unit: props.unit[i],
+                    //                         title: props.ts_name[i],
+                    //                         intakes: [1],
+                    //                         boreholeno: loc_id,
+                    //                         data: props.data,
+                    //                         trace: props.trace
+                    //                     }),
+                    //                     boreholeno: loc_id,
+                    //                     numofintakes: 1
+                    //                 }
+                    //             }
+                    //         };
+                    // }
+                    allPlots.push(plotData);
                 }
+                return allPlots;
+            }
 
-                allPlots.push(plotData);
-            })
-            let activePlots = allPlots.map(plot => plot.id);
-            dashboardComponentInstance.setPlots(allPlots);
-            // dashboardComponentInstance.setActivePlots(activePlots);
-            // backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
-
-
-
-        }, 3000)
-
+            // loop().then((plots) => {
+            //     console.log("allPlots", plots)
+            //     dashboardComponentInstance.setPlots(plots);
+            // });
+            dashboardComponentInstance.setPlots(loop());
+        }, 2000);
     }
 };

@@ -28,6 +28,8 @@ const reducer = (state = initialState, action) => {
             let features = state.boreholeFeatures.slice(0);
              features.push(action.payload);
             return Object.assign({}, state, {boreholeFeatures: features});
+        case 'CLEAR_BOREHOLE_FEATURES':
+            return Object.assign({}, state, {boreholeFeatures: []});
         case 'SET_LIMITS':
             return Object.assign({}, state, {limits: action.payload});
         case 'SET_DASHBOARD_MODE':
