@@ -38,7 +38,6 @@ function DashboardContent(props) {
 
   const [open, setOpen] = useState({});
 
-  // TODO ændrer dette til at få org id fra Session
   useEffect(() => {
     $.ajax({
       dataType: "json",
@@ -92,8 +91,7 @@ function DashboardContent(props) {
   };
 
   const handleDrop = (id, item) => {
-    // TODO Lazy load
-    console.log("LAZY LOAD");
+    console.log(item);
     let plot = props.getAllPlots().filter((p) => {
       if (p.id === id) return true;
     })[0];
@@ -156,10 +154,8 @@ function DashboardContent(props) {
   });
 
   useEffect(() => {
-    console.log("props.activePlots", props.activePlots);
     const dashboardItemsCopy = [];
-
-    props.activePlots.map((item, index) => {
+    props.getAllPlots().map((item, index) => {
       dashboardItemsCopy.push({
         type: DASHBOARD_ITEM_PLOT,
         item,
@@ -169,13 +165,10 @@ function DashboardContent(props) {
     setDashboardItems(dashboardItemsCopy);
   }, [props.activePlots]);
 
-  //TODO skift orgId ud med det der kan fåes fra session
   useEffect(() => {
     console.log(props);
     $.ajax({
-      url: `/api/sql/watsonc?q=SELECT * FROM calypso_stationer.calypso_my_stations WHERE user_id in (${
-        props.session.getProperties().organisation.id
-      }, ${props.session.getUserName()}) &base64=false&lifetime=60&srs=4326`,
+      url: `/api/sql/watsonc?q=SELECT * FROM calypso_stationer.calypso_my_stations WHERE user_id in (${orgId}, ${session.getUserName()}) &base64=false&lifetime=60&srs=4326`,
       method: "GET",
       dataType: "json",
     }).then((response) => {
@@ -267,6 +260,7 @@ function DashboardContent(props) {
         setSelectedBorehole(props.boreholeFeatures[selectedBoreholeIndex]);
       }
     }
+    props.onPlotsChange();
   }, [props.boreholeFeatures, selectedBoreholeIndex]);
 
   return (
@@ -283,7 +277,7 @@ function DashboardContent(props) {
                   style={{ height: "100%", overflow: "auto" }}
                 >
                   <BoreholesList>
-                    <DashboardListTitle>
+                    <DashboardListTitle key={"selected_data_sourced"}>
                       <Icon
                         name="pin-location-solid"
                         size={16}
@@ -299,11 +293,12 @@ function DashboardContent(props) {
                     {props.boreholeFeatures
                       ? props.boreholeFeatures.map((item, index) => {
                           let name = item.properties.locname;
+                          let id = item.properties.loc_id + "_" + index;
                           return (
                             <DashboardListItem
                               onClick={() => setSelectedBoreholeIndex(index)}
                               active={selectedBoreholeIndex === index}
-                              key={item.properties.locid}
+                              key={id}
                             >
                               <Icon
                                 name="drill"
@@ -315,68 +310,7 @@ function DashboardContent(props) {
                           );
                         })
                       : null}
-                    {/*<FavoritterList>*/}
-                    {/*    <DashboardListTitle>*/}
-                    {/*        <Icon name="star-solid" size={16}/>*/}
-                    {/*        <Title level={4} text={__('Favoritter')} marginLeft={8}/>*/}
-                    {/*    </DashboardListTitle>*/}
-                    {/*    <FavoritterListTitle>*/}
-                    {/*        <Icon name="drill-space-solid" size={16}/>*/}
-                    {/*        <Title level={5} text={__('Kildeplads')} marginLeft={8}/>*/}
-                    {/*    </FavoritterListTitle>*/}
-                    {/*    <DashboardListItem>*/}
-                    {/*        <Icon name="drill" size={16} strokeColor={DarkTheme.colors.headings}/>*/}
-                    {/*        <Title level={6} text='13.344' marginLeft={8}/>*/}
-                    {/*    </DashboardListItem>*/}
-                    {/*    <DashboardListItem>*/}
-                    {/*        <Icon name="drill" size={16} strokeColor={DarkTheme.colors.headings}/>*/}
-                    {/*        <Title level={6} text='13.947' marginLeft={8}/>*/}
-                    {/*    </DashboardListItem>*/}
-                    {/*    <DashboardListItem>*/}
-                    {/*        <Icon name="drill" size={16} strokeColor={DarkTheme.colors.headings}/>*/}
-                    {/*        <Title level={6} text='13.478' marginLeft={8}/>*/}
-                    {/*    </DashboardListItem>*/}
-                    {/*    <FavoritterListTitle>*/}
-                    {/*        <Icon name="folder-solid" size={16}/>*/}
-                    {/*        <Title level={5} text={__('Omrade B')} marginLeft={8}/>*/}
-                    {/*    </FavoritterListTitle>*/}
-                    {/*    <DashboardListItem>*/}
-                    {/*        <Icon name="water-wifi-solid" size={8}*/}
-                    {/*              strokeColor={DarkTheme.colors.headings}/>*/}
-                    {/*        <Title level={6} text={__('Lokalitet 213.312')} marginLeft={8}/>*/}
-                    {/*    </DashboardListItem>*/}
-                    {/*    <DashboardListItem>*/}
-                    {/*        <Icon name="water-wifi-solid" size={8}*/}
-                    {/*              strokeColor={DarkTheme.colors.headings}/>*/}
-                    {/*        <Title level={6} text={__('Lokalitet 243.442')} marginLeft={8}/>*/}
-                    {/*    </DashboardListItem>*/}
-                    {/*    <DashboardListItem>*/}
-                    {/*        <Icon name="water-wifi-solid" size={8}*/}
-                    {/*              strokeColor={DarkTheme.colors.headings}/>*/}
-                    {/*        <Title level={6} text={__('Lokalitet 745.553')} marginLeft={8}/>*/}
-                    {/*    </DashboardListItem>*/}
-                    {/*    <FavoritterListTitle>*/}
-                    {/*        <Icon name="folder-solid" size={16}/>*/}
-                    {/*        <Title level={5} text={__('Omrade C')} marginLeft={8}/>*/}
-                    {/*    </FavoritterListTitle>*/}
-                    {/*    <DashboardListItem>*/}
-                    {/*        <Icon name="water-wifi-solid" size={8}*/}
-                    {/*              strokeColor={DarkTheme.colors.headings}/>*/}
-                    {/*        <Title level={6} text={__('Lokalitet 773.312')} marginLeft={8}/>*/}
-                    {/*    </DashboardListItem>*/}
-                    {/*    <DashboardListItem>*/}
-                    {/*        <Icon name="water-wifi-solid" size={8}*/}
-                    {/*              strokeColor={DarkTheme.colors.headings}/>*/}
-                    {/*        <Title level={6} text={__('Lokalitet 883.442')} marginLeft={8}/>*/}
-                    {/*    </DashboardListItem>*/}
-                    {/*    <DashboardListItem>*/}
-                    {/*        <Icon name="water-wifi-solid" size={8}*/}
-                    {/*              strokeColor={DarkTheme.colors.headings}/>*/}
-                    {/*        <Title level={6} text={__('Lokalitet 799.553')} marginLeft={8}/>*/}
-                    {/*    </DashboardListItem>*/}
-                    {/*</FavoritterList>*/}
-
-                    <DashboardListTitle>
+                    <DashboardListTitle key={"user_data_sourced"}>
                       <Icon
                         name="avatar"
                         size={16}
@@ -420,7 +354,7 @@ function DashboardContent(props) {
                                         selectedBoreholeIndex ===
                                         index + props.boreholeFeatures.length
                                       }
-                                      key={item.properties.locid}
+                                      key={item.properties.loc_id}
                                     >
                                       <Icon
                                         name="drill"
@@ -453,7 +387,7 @@ function DashboardContent(props) {
                                       selectedBoreholeIndex ===
                                       index + props.boreholeFeatures.length
                                     }
-                                    key={item.properties.locid}
+                                    key={item.properties.loc_id}
                                   >
                                     <Icon
                                       name="drill"
@@ -474,41 +408,6 @@ function DashboardContent(props) {
                         </div>
                       );
                     })}
-
-                    {/* <DashboardListItem
-                      onClick={handleClick}
-                      key={1254123123123}
-                    >
-                      <Title level={6} text="Gruppe" marginLeft={8} />
-                    </DashboardListItem>
-                    <Collapse in={open} timeout="auto" unmountOnExit>
-                      {myStations.length > 0
-                        ? myStations.map((item, index) => {
-                            let name = item.properties.locname;
-                            return (
-                              <DashboardListItem
-                                onClick={() =>
-                                  setSelectedBoreholeIndex(
-                                    index + props.boreholeFeatures.length
-                                  )
-                                }
-                                active={
-                                  selectedBoreholeIndex ===
-                                  index + props.boreholeFeatures.length
-                                }
-                                key={item.properties.locid}
-                              >
-                                <Icon
-                                  name="drill"
-                                  size={16}
-                                  strokeColor={DarkTheme.colors.headings}
-                                />
-                                <Title level={6} text={name} marginLeft={8} />
-                              </DashboardListItem>
-                            );
-                          })
-                        : null}
-                    </Collapse> */}
                   </BoreholesList>
                 </Grid>
                 <Grid

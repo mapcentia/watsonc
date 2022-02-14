@@ -1,10 +1,10 @@
 'use strict';
 
-import {useContext} from 'react';
 import {Provider} from 'react-redux';
+import 'regenerator-runtime/runtime';
 
 import AnalyticsComponent from './components/AnalyticsComponent';
-import {LAYER_NAMES, WATER_LEVEL_KEY, KOMMUNER} from './constants';
+import {KOMMUNER, LAYER_NAMES, WATER_LEVEL_KEY} from './constants';
 import trustedIpAddresses from './trustedIpAddresses';
 import ThemeProvider from './themes/ThemeProvider';
 import DataSelectorDialogue from './components/dataselector/DataSelectorDialogue';
@@ -13,7 +13,13 @@ import TopBar from './components/TopBar';
 
 
 import reduxStore from './redux/store';
-import {setAuthenticated, setBoreholeFeatures, setCategories, setDashboardContent} from './redux/actions';
+import {
+    addBoreholeFeature,
+    clearBoreholeFeatures,
+    setAuthenticated,
+    setBoreholeFeatures,
+    setCategories
+} from './redux/actions';
 
 const symbolizer = require('./symbolizer');
 
@@ -99,6 +105,10 @@ module.exports = module.exports = {
         state.listen(MODULE_NAME, `plotsUpdate`);
         state.listen(MODULE_NAME, `chemicalChange`);
         state.listen(MODULE_NAME, `enabledLoctypeIdsChange`);
+
+        state.getModuleState(MODULE_NAME).then(initialState => {
+            _self.applyState(initialState)
+        });
 
         this.initializeSearchBar();
 
@@ -193,12 +203,12 @@ module.exports = module.exports = {
         $(`#search-border`).trigger(`click`);
 
         $(`#js-open-state-snapshots-panel`).click(() => {
-            $(`[href="#state-snapshots-content"]`).trigger(`click`);
+            //$(`[href="#state-snapshots-content"]`).trigger(`click`);
         });
 
         $('#projects-trigger').click((e) => {
             e.preventDefault();
-            reduxStore.dispatch(setDashboardContent('projects'));
+            //reduxStore.dispatch(setDashboardContent('projects'));
         });
 
         $('#main-tabs a').on('click', function (e) {
@@ -992,92 +1002,74 @@ module.exports = module.exports = {
      * Returns current module state
      */
     getState: () => {
+        const plotsClone = JSON.parse(JSON.stringify(dashboardComponentInstance.state.plots));
+        return state = {
+            plots: plotsClone.map((o) => {
+                //delete o.measurementsCachedData;
+                return o;
+            }),
+            sources: reduxStore.getState().global.boreholeFeatures,
+        }
     },
 
     /**
      * Applies externally provided state
      */
     applyState: (newState) => {
-        return new Promise((resolve, reject) => {
-            let plotsWereProvided = false;
-            if (newState && `plots` in newState && newState.plots.length > 0) {
-                plotsWereProvided = true;
+        setTimeout(() => {
+            reduxStore.dispatch(clearBoreholeFeatures())
+            newState.sources.forEach((feature) => {
+                reduxStore.dispatch(addBoreholeFeature(feature))
+            });
+
+            async function fetchData(loc_id) {
+               return await fetch(`/api/sql/jupiter?q=SELECT * FROM calypso_stationer.lake WHERE loc_id=${loc_id}&base64=false&lifetime=60&srs=4326`);
             }
 
-            let profilesWereProvided = false;
-            if (newState && `profiles` in newState && newState.profiles.length > 0) {
-                profilesWereProvided = true;
-            }
-
-            const continueWithInitialization = (populatedPlots) => {
-                if (populatedPlots) {
-                    dashboardComponentInstance.setProjectPlots(populatedPlots);
-                    populatedPlots.map((item) => {
-                        dashboardComponentInstance.handleShowPlot(item.id);
-                    });
-                    if (window.menuTimeSeriesComponentInstance) {
-                        window.menuTimeSeriesComponentInstance.setPlots(dashboardComponentInstance.getPlots());
+            async function loop() {
+                let allPlots = [];
+                for (let u = 0; u < newState.plots.length; u++) {
+                    let plot = newState.plots[u];
+                    let plotData = {
+                        id: plot.id,
+                        title: plot.title,
+                        measurements: [],
+                        measurementsCachedData: {}
                     }
+                    for (let i = 0; i < plot.measurements.length; i++) {
+                        let loc_id = plot.measurements[i].split(':')[0];
+                        let index = plot.measurements[i].split(':')[2];
+                        const res = await fetchData(loc_id);
+                        const json = await res.json();
+                        const props = json.features[0].properties;
+                        const measurement = loc_id + ":_0:" + index;
+                        plotData.measurements.push(measurement);
+                        plotData.measurementsCachedData[measurement] =
+                            {
+                                data: {
+                                    properties: {
+                                        _0: JSON.stringify({
+                                            unit: props.unit[index],
+                                            title: props.ts_name[index],
+                                            intakes: [1],
+                                            boreholeno: loc_id,
+                                            data: props.data,
+                                            trace: props.trace
+                                        }),
+                                        boreholeno: loc_id,
+                                        numofintakes: 1
+                                    }
+                                }
+                            };
+                    }
+                    allPlots.push(plotData);
                 }
-
-                if (newState.enabledLoctypeIds && Array.isArray(newState.enabledLoctypeIds)) {
-                    enabledLoctypeIds = newState.enabledLoctypeIds;
-                }
-
-                if (newState.selectedChemical) {
-                    lastSelectedChemical = newState.selectedChemical;
-
-                    if (plotsWereProvided) {
-                        $(`[href="#watsonc-content"]`).trigger(`click`);
-                    }
-
-                    backboneEvents.get().once("allDoneLoading:layers", e => {
-                        setTimeout(() => {
-                            _self.enableChemical(newState.selectedChemical);
-                            resolve();
-                        }, 1000);
-                    });
-                } else {
-                    $(`.js-clear-breadcrubms`).trigger(`click`);
-                    if (plotsWereProvided) {
-                        $(`[href="#watsonc-content"]`).trigger(`click`);
-                    }
-
-                    resolve();
-                }
-            };
-
-            if (plotsWereProvided) {
-                (function poll() {
-                    if (typeof dashboardComponentInstance === "object") {
-                        dashboardComponentInstance.hydratePlotsFromIds(newState.plots).then(continueWithInitialization).catch(error => {
-                            console.error(`Error occured while hydrating plots at state application`, error);
-                        });
-                    } else {
-                        setTimeout(() => {
-                            poll();
-                        }, 100)
-                    }
-                }());
-
-            } else {
-                continueWithInitialization();
+                return allPlots;
             }
 
-            if (profilesWereProvided) {
-                (function poll() {
-                    if (typeof dashboardComponentInstance === "object") {
-                        dashboardComponentInstance.setProjectProfiles(newState.profiles);
-                        if (window.menuProfilesComponentInstance) {
-                            window.menuProfilesComponentInstance.setProfiles(dashboardComponentInstance.getProfiles());
-                        }
-                    } else {
-                        setTimeout(() => {
-                            poll();
-                        }, 100)
-                    }
-                }());
-            }
-        });
+            loop().then((plots) => {
+                dashboardComponentInstance.setPlots(plots);
+            });
+        }, 2000);
     }
 };

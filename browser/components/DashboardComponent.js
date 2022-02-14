@@ -442,7 +442,6 @@ class DashboardComponent extends React.Component {
     }
 
     setPlots(plots) {
-        console.log("plots", plots)
         let dashboardItemsCopy = [];
         this.state.dashboardItems.map(item => {
             if (item.type !== DASHBOARD_ITEM_PLOT /* type 0 */ && item.type !== DASHBOARD_ITEM_PROJECT_PLOT /* type 3*/) {
@@ -463,7 +462,6 @@ class DashboardComponent extends React.Component {
     }
 
     setActivePlots(activePlots) {
-        console.log("activePlots", activePlots)
         this.setState({activePlots});
     }
 

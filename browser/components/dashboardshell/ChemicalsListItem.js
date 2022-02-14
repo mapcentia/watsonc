@@ -43,9 +43,9 @@ function ChemicalsListItem(props) {
                     <LabelRow>
                         <Title level={6} text={props.label} />
                     </LabelRow>
-                    <LabelRow>
-                        <Title level={7} text={descriptionText} color={DarkTheme.colors.gray[3]} />
-                    </LabelRow>
+                    {/*<LabelRow>*/}
+                    {/*    <Title level={7} text={descriptionText} color={DarkTheme.colors.gray[3]} />*/}
+                    {/*</LabelRow>*/}
                 </Grid>
             </Grid>
         </Root>
