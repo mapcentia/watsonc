@@ -1021,56 +1021,54 @@ module.exports = module.exports = {
                 reduxStore.dispatch(addBoreholeFeature(feature))
             });
 
-            //async function fetchData(loc_id) {
-            //    return await fetch(`/api/sql/jupiter?q=SELECT * FROM calypso_stationer.lake WHERE loc_id=${loc_id}&base64=false&lifetime=60&srs=4326`);
-            //}
+            async function fetchData(loc_id) {
+               return await fetch(`/api/sql/jupiter?q=SELECT * FROM calypso_stationer.lake WHERE loc_id=${loc_id}&base64=false&lifetime=60&srs=4326`);
+            }
 
-            function loop() {
+            async function loop() {
                 let allPlots = [];
                 for (let u = 0; u < newState.plots.length; u++) {
                     let plot = newState.plots[u];
                     let plotData = {
                         id: plot.id,
                         title: plot.title,
-                        measurements: plot.measurements,
-                        measurementsCachedData: plot.measurementsCachedData
-                        //measurementsCachedData: []
+                        measurements: [],
+                        measurementsCachedData: {}
                     }
-                    // for (let i = 0; i < plotData.measurements.length; i++) {
-                    //     let loc_id = plotData.measurements[i].split(':')[0];
-                    //     let index = plotData.measurements[i].split(':')[2];
-                    //     const res = await fetchData(loc_id);
-                    //     const json = await res.json();
-                    //     const props = json.features[0].properties;
-                    //     console.log("PROPS", props)
-                    //     plotData.measurementsCachedData[loc_id + ":_0:" + index] =
-                    //         {
-                    //             data: {
-                    //                 properties: {
-                    //                     _0: JSON.stringify({
-                    //                         unit: props.unit[i],
-                    //                         title: props.ts_name[i],
-                    //                         intakes: [1],
-                    //                         boreholeno: loc_id,
-                    //                         data: props.data,
-                    //                         trace: props.trace
-                    //                     }),
-                    //                     boreholeno: loc_id,
-                    //                     numofintakes: 1
-                    //                 }
-                    //             }
-                    //         };
-                    // }
+                    for (let i = 0; i < plot.measurements.length; i++) {
+                        let loc_id = plot.measurements[i].split(':')[0];
+                        let index = plot.measurements[i].split(':')[2];
+                        const res = await fetchData(loc_id);
+                        const json = await res.json();
+                        const props = json.features[0].properties;
+                        const measurement = loc_id + ":_0:" + index;
+                        plotData.measurements.push(measurement);
+                        plotData.measurementsCachedData[measurement] =
+                            {
+                                data: {
+                                    properties: {
+                                        _0: JSON.stringify({
+                                            unit: props.unit[index],
+                                            title: props.ts_name[index],
+                                            intakes: [1],
+                                            boreholeno: loc_id,
+                                            data: props.data,
+                                            trace: props.trace
+                                        }),
+                                        boreholeno: loc_id,
+                                        numofintakes: 1
+                                    }
+                                }
+                            };
+                    }
                     allPlots.push(plotData);
                 }
                 return allPlots;
             }
 
-            // loop().then((plots) => {
-            //     console.log("allPlots", plots)
-            //     dashboardComponentInstance.setPlots(plots);
-            // });
-            dashboardComponentInstance.setPlots(loop());
+            loop().then((plots) => {
+                dashboardComponentInstance.setPlots(plots);
+            });
         }, 2000);
     }
 };
