@@ -37,7 +37,6 @@ function DashboardContent(props) {
   const [groups, setGroups] = useState([]);
   const [myStations, setMyStations] = useState([]);
   const projectContext = useContext(ProjectContext);
-  const [orgId, setorgId] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredMystations, setFilteredMystations] = useState([]);
   const [filteredBorehole, setFilteredBorehole] = useState(
@@ -47,7 +46,6 @@ function DashboardContent(props) {
   );
 
   const deleteFromDashboard = (index) => {
-    console.log(index);
     const newBoreholes = props.boreholeFeatures;
     newBoreholes.splice(index, 1);
     reduxStore.dispatch(clearBoreholeFeatures());
@@ -57,18 +55,6 @@ function DashboardContent(props) {
   };
 
   const [open, setOpen] = useState({});
-
-  useEffect(() => {
-    $.ajax({
-      dataType: "json",
-      url: "/api/session/status",
-      type: "GET",
-      success: function (data) {
-        setorgId(data.status.properties.organisation.id);
-      },
-    });
-  }, []);
-
   const handleClick = (group) => {
     return () =>
       setOpen((prev_state) => {
@@ -186,17 +172,17 @@ function DashboardContent(props) {
   }, [props.activePlots]);
 
   useEffect(() => {
-    console.log(props);
     $.ajax({
-      url: `/api/sql/watsonc?q=SELECT * FROM calypso_stationer.calypso_my_stations WHERE user_id in (${orgId}, ${session.getUserName()}) &base64=false&lifetime=60&srs=4326`,
+      url: `/api/sql/watsonc?q=SELECT * FROM calypso_stationer.calypso_my_stations WHERE user_id in (${
+        session.getProperties().organisation.id
+      }, ${session.getUserName()}) &base64=false&lifetime=60&srs=4326`,
       method: "GET",
       dataType: "json",
     }).then((response) => {
-      console.log(response);
       var features = response.features;
       var relations = [];
       var loc_ids = [];
-      console.log(features);
+
       features.forEach((element) => {
         relations = relations.concat(element.properties.relation);
 
@@ -207,16 +193,12 @@ function DashboardContent(props) {
       loc_ids = [...new Set(loc_ids)];
       // var grp = [];
       // var mystat = [];
-      console.log(relations);
-      console.log(loc_ids);
       relations.forEach((element) => {
-        console.log(loc_ids);
         $.ajax({
           url: `/api/sql/jupiter?q=SELECT the_geom, gid, loc_id, locname, groupname, ts_name, ts_id, unit, parameter, trace FROM ${element} WHERE loc_id in (${loc_ids}) &base64=false&lifetime=60&srs=4326`,
           method: "GET",
           dataType: "json",
         }).then((response) => {
-          console.log(response);
           const grp = response.features.map(
             (item) => item.properties.groupname
           );
@@ -254,12 +236,8 @@ function DashboardContent(props) {
           );
         });
       });
-      // console.log(grp);
-      // console.log(mystat);
-      // setGroups([...new Set(grp)]);
-      // setMyStations(mystat);
     });
-  }, [orgId]);
+  }, []);
 
   useEffect(() => {
     setOpen(
@@ -267,7 +245,6 @@ function DashboardContent(props) {
         return { [elem]: false };
       })
     );
-    console.log(groups);
   }, [groups]);
 
   useEffect(() => {
@@ -299,7 +276,6 @@ function DashboardContent(props) {
       });
 
     setGroups([...new Set(grp)]);
-    console.log(props.boreholeFeatures);
     setFilteredBorehole(
       props.boreholeFeatures
         .map((item, index) => {
@@ -311,7 +287,7 @@ function DashboardContent(props) {
             .includes(searchTerm.toLowerCase())
         )
     );
-  }, [searchTerm, props.boreholeFeatures]);
+  }, [searchTerm, props.boreholeFeatures, myStations]);
 
   useEffect(() => {
     if (props.boreholeFeatures) {
