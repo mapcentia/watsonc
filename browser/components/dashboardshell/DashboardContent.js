@@ -91,7 +91,6 @@ function DashboardContent(props) {
     };
 
     const handleDrop = (id, item) => {
-        console.log(item);
         let plot = props.getAllPlots().filter((p) => {
             if (p.id === id) return true;
         })[0];
