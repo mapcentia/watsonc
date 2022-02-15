@@ -22,10 +22,13 @@ import Collapse from "@material-ui/core/Collapse";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import Title from "../shared/title/Title";
+import Searchbox from "../shared/inputs/Searchbox";
+import reduxStore from "../../redux/store";
+import { addBoreholeFeature } from "../../redux/actions";
 
 const DASHBOARD_ITEM_PLOT = 0;
 const DASHBOARD_ITEM_PROFILE = 1;
-// const session = require("./../../../../session/browser/index");
+const session = require("./../../../../session/browser/index");
 
 function DashboardContent(props) {
   const [selectedBoreholeIndex, setSelectedBoreholeIndex] = useState(0);
@@ -35,6 +38,23 @@ function DashboardContent(props) {
   const [myStations, setMyStations] = useState([]);
   const projectContext = useContext(ProjectContext);
   const [orgId, setorgId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredMystations, setFilteredMystations] = useState([]);
+  const [filteredBorehole, setFilteredBorehole] = useState(
+    props.boreholeFeatures.map((item, index) => {
+      return { ...item, index: index };
+    })
+  );
+
+  const deleteFromDashboard = (index) => {
+    console.log(index);
+    const newBoreholes = props.boreholeFeatures;
+    newBoreholes.splice(index, 1);
+    reduxStore.dispatch(clearBoreholeFeatures());
+    newBoreholes.forEach((feature) => {
+      reduxStore.dispatch(addBoreholeFeature(feature));
+    });
+  };
 
   const [open, setOpen] = useState({});
 
@@ -251,6 +271,49 @@ function DashboardContent(props) {
   }, [groups]);
 
   useEffect(() => {
+    const filt = myStations
+      .map((item, index) => {
+        return { ...item, index: index };
+      })
+      .filter((elem) =>
+        elem.properties.locname.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    setFilteredMystations(filt);
+    const grp = filt
+      .map((item) => item.properties.groupname)
+      .sort(function (a, b) {
+        // equal items sort equally
+        if (a === b) {
+          return 0;
+        }
+        // nulls sort after anything else
+        else if (a === null) {
+          return 1;
+        } else if (b === null) {
+          return -1;
+        }
+        // otherwise, if we're ascending, lowest sorts first
+        else {
+          return a < b ? -1 : 1;
+        }
+      });
+
+    setGroups([...new Set(grp)]);
+    console.log(props.boreholeFeatures);
+    setFilteredBorehole(
+      props.boreholeFeatures
+        .map((item, index) => {
+          return { ...item, index: index };
+        })
+        .filter((elem) =>
+          elem.properties.locname
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())
+        )
+    );
+  }, [searchTerm, props.boreholeFeatures]);
+
+  useEffect(() => {
     if (props.boreholeFeatures) {
       if (selectedBoreholeIndex >= props.boreholeFeatures.length) {
         setSelectedBorehole(
@@ -277,6 +340,12 @@ function DashboardContent(props) {
                   style={{ height: "100%", overflow: "auto" }}
                 >
                   <BoreholesList>
+                    <SearchboxContainer>
+                      <Searchbox
+                        placeholder={__("Søg efter datakilder")}
+                        onChange={(value) => setSearchTerm(value)}
+                      />
+                    </SearchboxContainer>
                     <DashboardListTitle key={"selected_data_sourced"}>
                       <Icon
                         name="pin-location-solid"
@@ -290,9 +359,10 @@ function DashboardContent(props) {
                         marginLeft={8}
                       />
                     </DashboardListTitle>
-                    {props.boreholeFeatures
-                      ? props.boreholeFeatures.map((item, index) => {
+                    {filteredBorehole
+                      ? filteredBorehole.map((item, index) => {
                           let name = item.properties.locname;
+                          index = item.index;
                           let id = item.properties.loc_id + "_" + index;
                           return (
                             <DashboardListItem
@@ -306,6 +376,15 @@ function DashboardContent(props) {
                                 strokeColor={DarkTheme.colors.headings}
                               />
                               <Title level={6} text={name} marginLeft={8} />
+                              <RemoveIconContainer
+                                onClick={() => deleteFromDashboard(index)}
+                              >
+                                <Icon
+                                  name="cross"
+                                  size={16}
+                                  strokeColor={DarkTheme.colors.headings}
+                                />
+                              </RemoveIconContainer>
                             </DashboardListItem>
                           );
                         })
@@ -341,8 +420,9 @@ function DashboardContent(props) {
                                 timeout="auto"
                                 unmountOnExit
                               >
-                                {myStations.map((item, index) => {
+                                {filteredMystations.map((item, index) => {
                                   let name = item.properties.locname;
+                                  index = item.index;
                                   return item.properties.groupname === group ? (
                                     <DashboardListItem
                                       onClick={() =>
@@ -374,8 +454,9 @@ function DashboardContent(props) {
                             </div>
                           ) : (
                             <div>
-                              {myStations.map((item, index) => {
+                              {filteredMystations.map((item, index) => {
                                 let name = item.properties.locname;
+                                index = item.index;
                                 return item.properties.groupname === group ? (
                                   <DashboardListItem
                                     onClick={() =>
@@ -497,6 +578,11 @@ const DashboardList = styled.div`
   // overflow-y: auto;
 `;
 
+const SearchboxContainer = styled.div`
+  width: 90%;
+  padding: ${(props) => props.theme.layout.gutter / 2}px 0px;
+`;
+
 const BoreholesList = styled.div`
   width: 100%;
   height: 100%;
@@ -507,6 +593,23 @@ const DashboardListTitle = styled.div`
   margin-top: ${(props) => props.theme.layout.gutter / 4}px;
   width: 100%;
   color: ${(props) => props.theme.colors.headings};
+`;
+
+const SelectedList = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
+
+const RemoveIconContainer = styled.div`
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+  margin-right: 5px;
+  border: 1px solid ${(props) => props.theme.colors.gray[2]};
+  border-radius: 50%;
+  display: none;
+  cursor: pointer;
+  float: right;
 `;
 
 const DashboardListItem = styled.div`
@@ -520,10 +623,14 @@ const DashboardListItem = styled.div`
   background-color: ${(props) =>
     props.active ? props.theme.colors.primary[2] : "transparent"};
   cursor: pointer;
+  display: inline-block;
 
   &:hover {
     background-color: ${(props) => props.theme.colors.primary[2]};
     color: ${(props) => props.theme.colors.headings};
+    ${RemoveIconContainer} {
+      display: block;
+    }
   }
 `;
 
