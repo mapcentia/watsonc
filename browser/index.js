@@ -101,6 +101,7 @@ module.exports = module.exports = {
     },
 
     init: function () {
+        console.log("Properties",session.getProperties())
         state.listenTo(MODULE_NAME, _self);
         state.listen(MODULE_NAME, `plotsUpdate`);
         state.listen(MODULE_NAME, `chemicalChange`);
