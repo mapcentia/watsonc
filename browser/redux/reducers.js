@@ -11,7 +11,7 @@ const initialState = {
     boreholeFeatures: [],
     boreholeChemicals: {},
     limits: {},
-    dashboardMode: 'half',
+    dashboardMode: 'minimized',
     dashboardContent: 'charts'
 };
 

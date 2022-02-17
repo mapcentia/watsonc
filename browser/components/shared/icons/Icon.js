@@ -11,6 +11,7 @@ Icon.propTypes = {
   onClick: PropTypes.func,
   strokeColor: PropTypes.string,
   fillColor: PropTypes.string,
+  align: PropTypes.string,
   marginRight: PropTypes.number,
   size: PropTypes.number,
 };
@@ -21,6 +22,7 @@ Icon.defaultProps = {
   size: 24,
   variant: "Primary",
   marginRight: 0,
+  align: "left",
 };
 
 function Icon(props) {
@@ -38,6 +40,7 @@ function Icon(props) {
       style={{ width: size, height: size }}
       marginRight={props.marginRight}
       paddingLeft={props.paddingLeft}
+      align={props.align}
     >
       <svg
         version="1.1"
@@ -72,6 +75,7 @@ const Root = styled.div`
   position: relative;
   margin-right: ${(props) => props.marginRight}px;
   padding-left: ${(props) => props.paddingLeft}px;
+  align: ${(props) => props.align};
   cursor: ${(props) => (props.onClick ? "pointer" : "inherit")};
   ${({ variant, theme }) => {
     const styles = {
