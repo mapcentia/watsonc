@@ -1019,9 +1019,11 @@ module.exports = module.exports = {
     applyState: (newState) => {
         setTimeout(() => {
             reduxStore.dispatch(clearBoreholeFeatures())
-            newState.sources.forEach((feature) => {
-                reduxStore.dispatch(addBoreholeFeature(feature))
-            });
+            if (newState?.sources) {
+                newState.sources.forEach((feature) => {
+                    reduxStore.dispatch(addBoreholeFeature(feature))
+                });
+            }
 
             async function fetchData(loc_id, relation) {
                return await fetch(`/api/sql/jupiter?q=SELECT * FROM ${relation} WHERE loc_id=${loc_id}&base64=false&lifetime=60&srs=4326`);

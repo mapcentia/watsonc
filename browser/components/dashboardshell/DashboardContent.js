@@ -174,7 +174,7 @@ function DashboardContent(props) {
   useEffect(() => {
     $.ajax({
       url: `/api/sql/watsonc?q=SELECT * FROM calypso_stationer.calypso_my_stations WHERE user_id in (${
-        session.getProperties().organisation.id
+        session.getProperties()?.organisation.id
       }, ${session.getUserName()}) &base64=false&lifetime=60&srs=4326`,
       method: "GET",
       dataType: "json",
