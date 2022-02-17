@@ -100,7 +100,7 @@ function DashboardContent(props) {
             dataType: "json",
         }).then(
             (response) => {
-                let measurementsData = {
+                const measurementsData = {
                     data: {
                         properties: {
                             _0: JSON.stringify({
@@ -122,7 +122,8 @@ function DashboardContent(props) {
                     item.gid,
                     item.itemKey,
                     item.intakeIndex,
-                    measurementsData
+                    measurementsData,
+                    item.feature.relation
                 );
             },
             (jqXHR) => {
@@ -165,17 +166,14 @@ function DashboardContent(props) {
     }, [props.activePlots]);
 
     useEffect(() => {
-        console.log(props);
         $.ajax({
             url: `/api/sql/watsonc?q=SELECT * FROM calypso_stationer.calypso_my_stations WHERE user_id in (${orgId}, ${session.getUserName()}) &base64=false&lifetime=60&srs=4326`,
             method: "GET",
             dataType: "json",
         }).then((response) => {
-            console.log(response);
-            var features = response.features;
-            var relations = [];
-            var loc_ids = [];
-            console.log(features);
+            let features = response.features;
+            let relations = [];
+            let loc_ids = [];
             features.forEach((element) => {
                 relations = relations.concat(element.properties.relation);
 
@@ -186,8 +184,6 @@ function DashboardContent(props) {
             loc_ids = [...new Set(loc_ids)];
             // var grp = [];
             // var mystat = [];
-            console.log(relations);
-            console.log(loc_ids);
             relations.forEach((element) => {
                 console.log(loc_ids);
                 $.ajax({
@@ -246,7 +242,6 @@ function DashboardContent(props) {
                 return {[elem]: false};
             })
         );
-        console.log(groups);
     }, [groups]);
 
     useEffect(() => {

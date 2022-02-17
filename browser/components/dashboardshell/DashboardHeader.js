@@ -37,6 +37,7 @@ function DashboardHeader(props) {
       title: `Graph ${newPlotId}`,
       measurements: [],
       measurementsCachedData: {},
+      relations: {}
     };
     activePlots.unshift(plotData);
     allPlots.unshift(plotData);

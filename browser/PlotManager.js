@@ -20,7 +20,8 @@ class PlotManager {
                     title,
                     userId: session.getUserName(),
                     measurements: [],
-                    measurementsCachedData: {}
+                    measurementsCachedData: {},
+                    relations: {}
                 };
 
                 $.ajax({

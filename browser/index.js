@@ -544,8 +544,8 @@ module.exports = module.exports = {
                         onDeleteMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex) => {
                             dashboardComponentInstance.deleteMeasurement(plotId, featureGid, featureKey, featureIntakeIndex);
                         }}
-                        onAddMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex, measurementsData) => {
-                            dashboardComponentInstance.addMeasurement(plotId, featureGid, featureKey, featureIntakeIndex, measurementsData);
+                        onAddMeasurement={(plotId, featureGid, featureKey, featureIntakeIndex, measurementsData, relation) => {
+                            dashboardComponentInstance.addMeasurement(plotId, featureGid, featureKey, featureIntakeIndex, measurementsData, relation);
                         }}
                         onPlotsChange={(plots = false, context) => {
                             backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
@@ -1005,7 +1005,7 @@ module.exports = module.exports = {
         const plotsClone = JSON.parse(JSON.stringify(dashboardComponentInstance.state.plots));
         return state = {
             plots: plotsClone.map((o) => {
-                //delete o.measurementsCachedData;
+                delete o.measurementsCachedData;
                 return o;
             }),
             sources: reduxStore.getState().global.boreholeFeatures,
@@ -1022,8 +1022,8 @@ module.exports = module.exports = {
                 reduxStore.dispatch(addBoreholeFeature(feature))
             });
 
-            async function fetchData(loc_id) {
-               return await fetch(`/api/sql/jupiter?q=SELECT * FROM calypso_stationer.lake WHERE loc_id=${loc_id}&base64=false&lifetime=60&srs=4326`);
+            async function fetchData(loc_id, relation) {
+               return await fetch(`/api/sql/jupiter?q=SELECT * FROM ${relation} WHERE loc_id=${loc_id}&base64=false&lifetime=60&srs=4326`);
             }
 
             async function loop() {
@@ -1034,16 +1034,19 @@ module.exports = module.exports = {
                         id: plot.id,
                         title: plot.title,
                         measurements: [],
-                        measurementsCachedData: {}
+                        measurementsCachedData: {},
+                        relations: {}
                     }
                     for (let i = 0; i < plot.measurements.length; i++) {
-                        let loc_id = plot.measurements[i].split(':')[0];
-                        let index = plot.measurements[i].split(':')[2];
-                        const res = await fetchData(loc_id);
+                        const loc_id = plot.measurements[i].split(':')[0];
+                        const index = plot.measurements[i].split(':')[2];
+                        const measurement = loc_id + ":_0:" + index;
+                        const relation = plot.relations[measurement];
+                        const res = await fetchData(loc_id, relation);
                         const json = await res.json();
                         const props = json.features[0].properties;
-                        const measurement = loc_id + ":_0:" + index;
                         plotData.measurements.push(measurement);
+                        plotData.relations[measurement] = relation;
                         plotData.measurementsCachedData[measurement] =
                             {
                                 data: {

@@ -24,6 +24,7 @@ function MapDecorator(props) {
             id: `plot_${getNewPlotId(allPlots)}`,
             title: props.data.properties.locname,
             measurements: [],
+            relations: {},
             measurementsCachedData: {}
         }
         allPlots.unshift(plotData);
@@ -34,8 +35,10 @@ function MapDecorator(props) {
         }).then(response => {
             let data = response.features[0].properties.data;
             for (let u = 0; u < data.length; u++) {
-                plotData.measurements.push(plot.loc_id + ":_0:" + u.toString());
-                plotData.measurementsCachedData[plot.loc_id + ":_0:" + u.toString()] =
+                const measurement = plot.loc_id + ":_0:" + u.toString();
+                plotData.relations[measurement] = props.relation;
+                plotData.measurements.push(measurement);
+                plotData.measurementsCachedData[measurement] =
                     {
                         data: {
                             properties: {
@@ -84,7 +87,7 @@ function MapDecorator(props) {
             </LabelsContainer> : <><RatingStarContainer>
                 <Icon name="rating-star-solid" strokeColor={DarkTheme.colors.headings} size={16}/>
             </RatingStarContainer>
-{/*
+                {/*
                 <Img
                     src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1VUaMszH67lgK2I_K2bh6TxDdM9sxHmj5eqlQRbtx6nMETiwKpdPC7QlqfVslDjCkAGued1jHt54&usqp=CAU"/>
 */}
@@ -101,7 +104,7 @@ function MapDecorator(props) {
                             onClick={() => plot()} disabled={false}/>
                     <Button text={__("Tilføj Dashboard")} variant={Variants.Primary} size={Size.Small}
                             onClick={() => addToDashboard()} disabled={false}/>
-{/*
+                    {/*
                     <Button text={__("Mere info")} variant={Variants.Transparent} size={Size.Small}
                             onClick={() => setShowMoreInfo(true)} disabled={false}/>
 */}
