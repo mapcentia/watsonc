@@ -5,7 +5,12 @@ import { Spacing } from "../constants/spacing";
 import useInterval from "../../shared/hooks/useInterval";
 
 function ImageCarousel(props) {
-  let length = props.images.length;
+  if (typeof props.images == "undefined") {
+    let length = 0;
+  } else {
+    let length = props.images.length;
+  }
+
   const [index, setIndex] = useState(0);
   const [lastindex, setlastindex] = useState(0);
 
@@ -21,7 +26,7 @@ function ImageCarousel(props) {
 
   return (
     <div>
-      <Img src={props.images[index]} />
+      {length && <Img src={props.images[index]} />}
       {/* <Img src={props.images[lastindex]} animate={true} /> */}
     </div>
   );

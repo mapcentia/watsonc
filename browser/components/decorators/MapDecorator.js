@@ -142,14 +142,20 @@ function MapDecorator(props) {
               text={__("Vis alle tidsserier")}
               variant={Variants.Primary}
               size={Size.Small}
-              onClick={() => plot()}
+              onClick={() => {
+                plot();
+                props.setDashboardMode("half");
+              }}
               disabled={false}
             />
             <Button
               text={__("Tilføj Dashboard")}
               variant={Variants.Primary}
               size={Size.Small}
-              onClick={() => addToDashboard()}
+              onClick={() => {
+                addToDashboard();
+                props.setDashboardMode("half");
+              }}
               disabled={false}
             />
             {/*

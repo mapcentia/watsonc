@@ -130,7 +130,7 @@ function DashboardContent(props) {
           item.intakeIndex,
           measurementsData,
           item.feature.relation
-      );
+        );
       },
       (jqXHR) => {
         console.error(`Error occured while getting data`);
@@ -151,6 +151,7 @@ function DashboardContent(props) {
               setPlots={props.setPlots}
               relation={popupType}
               onActivePlotsChange={props.onActivePlotsChange}
+              setDashboardMode={props.setDashboardMode}
             />
           </ThemeProvider>,
           document.getElementById(`pop_up_${id}`)
