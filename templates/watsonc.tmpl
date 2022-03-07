@@ -428,7 +428,7 @@
     }
 
     #module-container .list-group-item {
-        color: #000;
+        /*color: #000;*/
     }
 
     #module-container .tab-pane a {
@@ -441,8 +441,15 @@
     #main-tabs li a {
         text-decoration: none !important;
     }
-
-
+    .checkbox .checkbox-material .check, label.checkbox-inline .checkbox-material .check {
+        border: 1px solid white;
+    }
+    .checkbox input[type=checkbox]:checked + .checkbox-material .check, label.checkbox-inline input[type=checkbox]:checked + .checkbox-material .check {
+        border: 1px solid white;
+    }
+    .checkbox input[type=checkbox]:checked + .checkbox-material .check:before, label.checkbox-inline input[type=checkbox]:checked + .checkbox-material .check:before {
+        color: white;
+    }
 </style>
 <!-- map -->
 <style>
@@ -778,6 +785,10 @@
 
     .list-group .list-group-item {
         padding: 3px 16px;
+        background-color: #00786D !important;
+    }
+    select option {
+        color: black;
     }
 
     .modal-dialog br {
@@ -1093,7 +1104,7 @@
         padding: 8px 12px;
         font-size: 18px;
         line-height: 20px;
-        margin-top: 11px;
+        margin-top: 0;
     }
 
     #searchclear {
@@ -1112,6 +1123,10 @@
 
     #layer-panel-U2Vuc29y, #layer-panel-QWxs, #layer-panel-Q2hlbWljYWxz, #layer-panel-QW5hbHlzZXI {
         display: none;
+    }
+
+    .custom-popup .leaflet-popup-content {
+        margin: 0 !important;
     }
 
 </style>
@@ -1288,6 +1303,19 @@
                                 </a>
                             </li>
 
+                        </ul>
+                        <ul role="tablist">
+                            <hr>
+                            <li><a href="#" id="btn-reset"><i class="material-icons">replay</i>{{Reset}}</a></li>
+                            <li><a href="#" data-toggle="modal" data-target="#about-modal"><i class="material-icons">question_answer</i>{{About}}
+                            </a></li>
+                            <li>
+                                <a id="session" href="#" data-toggle="modal" data-target="#login-modal" style="display: none">
+                                    <i class="material-icons gc2-session-lock" aria-hidden="true" style="display: none">lock</i>
+                                    <i class="material-icons gc2-session-unlock" aria-hidden="true">lock_open</i>
+                                    <span class="module-title">Log in</span>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>

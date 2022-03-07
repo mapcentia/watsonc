@@ -21,7 +21,13 @@ function TopBar(props) {
                 </div>
             </Grid>
             <Grid item xs={6}>
-                <SearchBox placeholder="Søg på adresse, matrikel- eller DGU nummer" variant={Variants.Primary} inputId='custom-search' />
+                <div id="place-search">
+                    <div className="places">
+                        <input id="custom-search" className="custom-search typeahead" type="text"
+                               placeholder="Søg på adresse, matrikel- eller DGU nummer" />
+                            <span id="searchclear" className="glyphicon glyphicon-remove-circle"></span>
+                    </div>
+                </div>
             </Grid>
             <Grid container item xs={2} justify="flex-end">
                 <Button
