@@ -104,6 +104,12 @@ function PlotComponent(props) {
             text: yaxisTitles[num_types[0]],
           },
         };
+        plotData = plotData.map((elem) => {
+          return {
+            ...elem,
+            yaxis: "y1",
+          };
+        });
       } else if (num_types.length == 2) {
         plotData = plotData.map((elem) => {
           return {
