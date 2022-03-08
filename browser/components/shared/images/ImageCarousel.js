@@ -12,24 +12,19 @@ function ImageCarousel(props) {
   }
 
   const [index, setIndex] = useState(0);
-  const [lastindex, setlastindex] = useState(0);
+  // const [lastindex, setlastindex] = useState(0);
 
   useInterval(() => {
     if (index === length - 1) {
       setIndex(0);
-      setlastindex(length);
+      // setlastindex(length);
     } else {
-      setlastindex(index);
+      // setlastindex(index);
       setIndex((prev) => prev + 1);
     }
   }, 4000);
 
-  return (
-    <div>
-      {length && <Img src={props.images[index]} />}
-      {/* <Img src={props.images[lastindex]} animate={true} /> */}
-    </div>
-  );
+  return <div>{length && <Img src={props.images[index]} />}</div>;
 }
 
 // const Root = styled.div`

@@ -401,6 +401,7 @@
     .leaflet-popup-content {
         margin: 0;
         width: 362px !important;
+        overflow-x: hidden;
     }
 
     .leaflet-popup-content-wrapper {
@@ -410,6 +411,18 @@
 
     .leaflet-popup-close-button {
         display: none;
+    }
+
+    .custom-popup .leaflet-popup-content-wrapper {
+        background: transparent !important;
+    }
+
+    .custom-popup .leaflet-popup-content-wrapper a {
+        color: white !important;
+    }
+
+    .custom-popup .leaflet-popup-content {
+        overflow-x: hidden !important;
     }
 
     #upgrade-modal {

@@ -472,7 +472,11 @@ function DashboardContent(props) {
                   container
                   item
                   xs={7}
-                  style={{ height: "100%", overflow: "auto" }}
+                  style={{
+                    height: "100%",
+                    overflow: "auto",
+                    background: DarkTheme.colors.primary[2],
+                  }}
                 >
                   <ChemicalSelector
                     feature={selectedBorehole}

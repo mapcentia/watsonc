@@ -172,15 +172,22 @@ function PlotComponent(props) {
 
     if (plotData.length > 0) {
       let xmin = moment
-        .min(plotData.map((elem) => moment(elem.x[0])))
+        .min(
+          plotData
+            .filter((elem) => elem.xaxis != "x2")
+            .map((elem) => moment(elem.x[0]))
+        )
         .format("YYYY-MM-DD HH:mm:ss.SSS");
 
       let xmax = moment
-        .max(plotData.map((elem) => moment(elem.x.slice(-1)[0])))
+        .max(
+          plotData
+            .filter((elem) => elem.xaxis != "x2")
+            .map((elem) => moment(elem.x.slice(-1)[0]))
+        )
         .format("YYYY-MM-DD HH:mm:ss.SSS");
 
       setminmaxRange([xmin, xmax]);
-
       layout.xaxis = {
         ...layout.xaxis,
         range: [xmin, xmax],

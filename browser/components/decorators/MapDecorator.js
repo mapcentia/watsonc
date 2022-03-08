@@ -105,13 +105,13 @@ function MapDecorator(props) {
         </LabelsContainer>
       ) : (
         <>
-          <RatingStarContainer>
+          {/* <RatingStarContainer>
             <Icon
               name="rating-star-solid"
               strokeColor={DarkTheme.colors.headings}
               size={16}
             />
-          </RatingStarContainer>
+          </RatingStarContainer> */}
 
           <ImageCarousel images={props.data.properties.images} />
           {/* <Img src={props.data.properties.images[0]} /> */}
@@ -170,7 +170,7 @@ function MapDecorator(props) {
 }
 
 const Root = styled.div`
-  width: 340px;
+  width: 100%;
   // height: 600px;
   background-color: ${(props) => props.theme.colors.primary[2]};
   border-radius: ${(props) => props.theme.layout.borderRadius.medium}px;

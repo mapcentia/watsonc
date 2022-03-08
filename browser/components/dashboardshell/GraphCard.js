@@ -169,12 +169,12 @@ function GraphCard(props) {
         open={fullscreen}
         onClose={handleClose}
       >
-        <DashboardPlotCard {...{ ...props, plotHeight: 1000 }} />
         <DialogActions>
-          <Button onClick={handleClose}>
-            <Title marginLeft={8} level={6} text={__("Luk vindue")} />
+          <Button onClick={handleClose} style={{ border: "1px solid" }}>
+            <Icon name="cross" size={24} />
           </Button>
         </DialogActions>
+        <DashboardPlotCard {...{ ...props, plotHeight: 1000 }} />
       </Dialog>
     </li>
   );

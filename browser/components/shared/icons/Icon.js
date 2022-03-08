@@ -29,7 +29,7 @@ function Icon(props) {
   const icon = icons.find((i) => i.name === props.name);
   if (!icon) {
     // tslint:disable-next-line:no-console
-    console.warn(`Unable to find icon with name "${name}"`);
+    console.warn(`Unable to find icon with name "${props.name}"`);
     return null;
   }
   var size = props.size;
