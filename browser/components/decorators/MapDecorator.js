@@ -36,7 +36,17 @@ function MapDecorator(props) {
     }).then(
       (response) => {
         let data = response.features[0].properties.data;
-        for (let u = 0; u < data.length; u++) {
+        var indices = [];
+        if (typeof plot.compound_list != "undefined") {
+          let idx = plot.compound_list.indexOf(plot.compound);
+          while (idx != -1) {
+            indices.push(idx);
+            idx = plot.compound_list.indexOf(plot.compound, idx + 1);
+          }
+        } else {
+          indices = [...Array(data.length).keys()];
+        }
+        for (const u of indices) {
           const measurement = plot.loc_id + ":_0:" + u.toString();
           plotData.relations[measurement] = props.relation;
           plotData.measurements.push(measurement);
@@ -51,6 +61,7 @@ function MapDecorator(props) {
                   data: data,
                   trace: plot.trace,
                   relation: props.relation,
+                  parameter: plot.parameter[u],
                 }),
                 boreholeno: plot.loc_id,
                 numofintakes: 1,
@@ -58,6 +69,7 @@ function MapDecorator(props) {
             },
           };
         }
+
         let activePlots = allPlots.map((plot) => plot.id);
         props.setPlots(allPlots, activePlots);
         //props.onActivePlotsChange(activePlots, allPlots, projectContext);
@@ -72,27 +84,65 @@ function MapDecorator(props) {
   };
   let links = [];
   console.log(props.data.properties);
-  links.push(
-    props.data.properties.ts_name.map((v) => {
-      return (
-        <Grid container key={v}>
-          <Icon
-            name="analytics-board-graph-line"
-            strokeColor={DarkTheme.colors.headings}
-            size={16}
-          />
-          <Title
-            marginTop={0}
-            marginLeft={4}
-            level={5}
-            color={DarkTheme.colors.headings}
-            text={v}
-          />
-        </Grid>
-      );
-    })
-  );
 
+  if (typeof props.data.properties.compound_list != "undefined") {
+    const indices = [];
+    let idx = props.data.properties.compound_list.indexOf(
+      props.data.properties.compound
+    );
+    while (idx != -1) {
+      indices.push(idx);
+      idx = props.data.properties.compound_list.indexOf(
+        props.data.properties.compound,
+        idx + 1
+      );
+    }
+    links.push(
+      indices.map((elem, index) => {
+        return (
+          <Grid container key={index}>
+            <Icon
+              name="analytics-board-graph-line"
+              strokeColor={DarkTheme.colors.headings}
+              size={16}
+            />
+            <Title
+              marginTop={0}
+              marginLeft={4}
+              level={5}
+              color={DarkTheme.colors.headings}
+              text={
+                props.data.properties.ts_name[elem] +
+                ", " +
+                props.data.properties.parameter[elem]
+              }
+            />
+          </Grid>
+        );
+      })
+    );
+  } else {
+    links.push(
+      props.data.properties.ts_name.map((v, index) => {
+        return (
+          <Grid container key={v}>
+            <Icon
+              name="analytics-board-graph-line"
+              strokeColor={DarkTheme.colors.headings}
+              size={16}
+            />
+            <Title
+              marginTop={0}
+              marginLeft={4}
+              level={5}
+              color={DarkTheme.colors.headings}
+              text={v + ", " + props.data.properties.parameter[index]}
+            />
+          </Grid>
+        );
+      })
+    );
+  }
   return (
     <Root>
       {showMoreInfo ? (

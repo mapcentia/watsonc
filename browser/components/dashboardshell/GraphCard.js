@@ -112,10 +112,8 @@ function GraphCard(props) {
     setFullscreen(false);
   };
 
-  //TODO add full screen functionality
-
   return (
-    <li className="list-group-item">
+    <li>
       <Root>
         <DashboardPlotHeader>
           <Grid container>

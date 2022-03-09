@@ -236,7 +236,7 @@ const Root = styled.div`
 
 const SearchboxContainer = styled.div`
   width: 100%;
-  padding: ${(props) => props.theme.layout.gutter / 2}px 0px;
+  //   padding: ${(props) => props.theme.layout.gutter / 2}px 0px;
 `;
 
 const ChemicalsList = styled.div`

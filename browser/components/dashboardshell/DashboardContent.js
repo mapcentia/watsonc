@@ -117,6 +117,7 @@ function DashboardContent(props) {
                 data: response.features[0].properties.data,
                 trace: item.feature.trace,
                 relation: item.feature.relation,
+                parameter: item.feature.parameter[item.intakeIndex],
               }),
               boreholeno: item.feature.loc_id,
               numofintakes: 1,

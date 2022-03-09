@@ -1,7 +1,9 @@
 import Plot from "react-plotly.js";
 // import Plotly from "plotly.js";
 import { useState, useEffect } from "react";
+import { aggregate } from "../../helpers/aggregate.js";
 import moment from "moment";
+import _ from "lodash";
 // import { Colorscales } from "../shared/constants/colorscales";
 const config = require("../../../../../config/config.js");
 
@@ -36,6 +38,7 @@ function PlotComponent(props) {
   const [plotDataState, setPlotDataState] = useState(props.plotData);
   const [configState, setConfigState] = useState({});
   const [minmaxRange, setminmaxRange] = useState([0, 1]);
+  const [triggerAggregate, setTriggerAggregate] = useState(false);
   //   let layout =
 
   const changeLayout = (minmax) => {
@@ -217,12 +220,46 @@ function PlotComponent(props) {
         doubleClick: false,
       };
     }
+    console.log(props.aggregate);
+    for (const agg of props.aggregate) {
+      let ind = props.plotMeta.measurements.findIndex(
+        (elem) => elem === agg.idx
+      );
+      if (ind != -1) {
+        var grouped = aggregate(
+          plotData[ind].x,
+          plotData[ind].y,
+          agg.window,
+          agg.func
+        );
+        plotData[ind].x = grouped.x;
+        plotData[ind].y = grouped.y;
+        console.log(plotData);
+      }
+    }
 
     console.log(layout);
     setConfigState(conf);
     setLayoutState(layout);
     setPlotDataState(plotData);
-  }, [props.plotData, props.yAxis2LayoutSettings]);
+    // setTriggerAggregate((prev) => !prev);
+  }, [props.plotData, props.yAxis2LayoutSettings, props.aggregate]);
+
+  //   useEffect(() => {
+  //     let plotData = plotDataState;
+  //     for (const [key, value] of Object.entries(props.aggregate)) {
+  //       var grouped = aggregate(
+  //         props.plotData[key].x,
+  //         props.plotData[key].y,
+  //         value,
+  //         _.meanBy
+  //       );
+  //       plotData[key].x = grouped.x;
+  //       plotData[key].y = grouped.y;
+  //       console.log(plotData);
+  //     }
+  //     setPlotDataState([...plotData]);
+  //   }, [props.aggregate, triggerAggregate]);
 
   return (
     <div style={{ maxHeight: $(document).height() * 0.4 + 40 + "px" }}>

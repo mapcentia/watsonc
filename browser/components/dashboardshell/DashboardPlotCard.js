@@ -17,6 +17,7 @@ const utils = require("../../utils");
 function DashboardPlotCard(props) {
   const [plotData, setPlotData] = useState([]);
   const [yAxis2LayoutSettings, setYAxis2LayoutSettings] = useState(null);
+  const [aggregate, setAggregate] = useState([]);
   const [collectedProps, drop] = useDrop(() => ({
     accept: "MEASUREMENT",
     drop: props.onDrop,
@@ -25,6 +26,34 @@ function DashboardPlotCard(props) {
       canDrop: monitor.canDrop(),
     }),
   }));
+
+  const handleSetAggregate = (idx, window, func) => {
+    let ind = aggregate.findIndex((elem) => elem.idx === idx);
+    if (ind === -1) {
+      setAggregate((prev) => {
+        prev.push({ idx: idx, window: window, func: func });
+        return [...prev];
+      });
+    } else {
+      setAggregate((prev) => {
+        prev[ind] = { idx: idx, window: window, func: func };
+        return [...prev];
+      });
+    }
+  };
+
+  const handleDeleteAggregate = (idx) => {
+    let ind = aggregate.findIndex((elem) => elem.idx === idx);
+    if (ind === -1) {
+      return;
+    } else {
+      setAggregate((prev) => {
+        prev.splice(ind, 1);
+        return [...prev];
+      });
+    }
+  };
+
   useEffect(() => {
     let data = [];
     if (
@@ -75,6 +104,8 @@ function DashboardPlotCard(props) {
                   plot={props.plot}
                   onDeleteMeasurement={props.onDeleteMeasurement}
                   key={index}
+                  setAggregate={handleSetAggregate}
+                  deleteAggregate={handleDeleteAggregate}
                 />
               );
             })}
@@ -89,6 +120,7 @@ function DashboardPlotCard(props) {
               onDelete={() => console.log("Testing")}
               plotMeta={props.plot}
               plotData={plotData}
+              aggregate={aggregate}
               yAxis2LayoutSettings={yAxis2LayoutSettings}
             />
           </PlotContainer>
