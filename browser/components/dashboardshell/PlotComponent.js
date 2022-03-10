@@ -28,9 +28,6 @@ var autoscale = {
 };
 
 function PlotComponent(props) {
-  const [plot, setPlot] = useState(
-    <p className="text-muted">{__(`At least one y axis has to be provided`)}</p>
-  );
   const [layoutState, setLayoutState] = useState(
     JSON.parse(JSON.stringify(config?.extensionConfig?.watsonc?.plotLayout)) ||
       {}
@@ -38,7 +35,6 @@ function PlotComponent(props) {
   const [plotDataState, setPlotDataState] = useState(props.plotData);
   const [configState, setConfigState] = useState({});
   const [minmaxRange, setminmaxRange] = useState([0, 1]);
-  const [triggerAggregate, setTriggerAggregate] = useState(false);
   //   let layout =
 
   const changeLayout = (minmax) => {
@@ -231,8 +227,15 @@ function PlotComponent(props) {
           agg.window,
           agg.func
         );
-        plotData[ind].x = grouped.x;
-        plotData[ind].y = grouped.y;
+        plotData[ind] = {
+          ...plotData[ind],
+          ...grouped,
+        };
+        // plotData[ind].x = grouped.x;
+        // plotData[ind].y = grouped.y;
+        // if (agg.func === 'sum') {
+        //   plotData[ind].width = grouped.width;
+        // }
       }
     }
 
