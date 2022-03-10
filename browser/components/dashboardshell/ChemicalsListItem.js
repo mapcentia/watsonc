@@ -53,7 +53,7 @@ function ChemicalsListItem(props) {
           </LabelRow>
           <LabelRow>
             <Title
-              level={7}
+              level={6}
               text={props.description}
               color={DarkTheme.colors.gray[3]}
             />

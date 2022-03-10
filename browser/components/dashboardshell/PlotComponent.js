@@ -220,7 +220,6 @@ function PlotComponent(props) {
         doubleClick: false,
       };
     }
-    console.log(props.aggregate);
     for (const agg of props.aggregate) {
       let ind = props.plotMeta.measurements.findIndex(
         (elem) => elem === agg.idx
@@ -234,11 +233,9 @@ function PlotComponent(props) {
         );
         plotData[ind].x = grouped.x;
         plotData[ind].y = grouped.y;
-        console.log(plotData);
       }
     }
 
-    console.log(layout);
     setConfigState(conf);
     setLayoutState(layout);
     setPlotDataState(plotData);

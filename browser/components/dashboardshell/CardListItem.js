@@ -6,9 +6,20 @@ import Title from "../shared/title/Title";
 
 const utils = require("../../utils");
 
+const options = [
+  { index: 0, text: "Døgnmiddel", window: "day", func: "mean" },
+  { index: 1, text: "Ugemiddel", window: "week", func: "mean" },
+  { index: 2, text: "Månedmiddel", window: "month", func: "mean" },
+
+  { index: 3, text: "Døgnsum", window: "day", func: "sum" },
+  { index: 4, text: "Ugesum", window: "week", func: "sum" },
+  { index: 5, text: "Månedsum", window: "month", func: "sum" },
+];
+
 function CardListItem(props) {
   const [name, setName] = useState("");
   const [infoForDeletion, setInfoForDeletion] = useState({});
+  const [useSumInsteadOfMean, setUseSumInsteadOfMean] = useState(false);
   useEffect(() => {
     if (props.measurement) {
       let splitMeasurement = props.measurement.split(":");
@@ -31,7 +42,10 @@ function CardListItem(props) {
         feature = props.plot.measurementsCachedData[props.measurement].data;
         let measurementData = JSON.parse(feature.properties[key]);
         setName(`${measurementData.title}, ${measurementData.parameter}`);
-        console.log(measurementData);
+        console.log(measurementData.data[intakeIndex].tstype_id);
+        if (measurementData.data[intakeIndex].tstype_id === 4) {
+          setUseSumInsteadOfMean(true);
+        }
         // setName(`${measurementData.title} (${measurementData.unit})`);
       }
       setInfoForDeletion({
@@ -46,20 +60,46 @@ function CardListItem(props) {
   return (
     <Root>
       <Grid container>
-        <Grid container item xs={8}>
+        <Grid container item xs={6}>
           <CardListLabel>
             <Title level={6} text={name} marginLeft={8} />
           </CardListLabel>
         </Grid>
-        <Grid container item xs={3}>
-          <button
+        <Grid container item xs={5}>
+          <Select
+            onChange={(e) => {
+              if (e.target.value === "") {
+                props.deleteAggregate(props.measurement);
+              } else {
+                props.setAggregate(
+                  props.measurement,
+                  options[e.target.value].window,
+                  options[e.target.value].func
+                );
+              }
+            }}
+          >
+            <option value="" hidden></option>
+            {useSumInsteadOfMean
+              ? options
+                  .filter((elem) => elem.func === "sum")
+                  .map((elem) => {
+                    return <option value={elem.index}>{elem.text}</option>;
+                  })
+              : options
+                  .filter((elem) => elem.func === "mean")
+                  .map((elem) => {
+                    return <option value={elem.index}>{elem.text}</option>;
+                  })}
+          </Select>
+          {/* <button
             onClick={() => {
               console.log(props);
               props.setAggregate(props.measurement, "day", "mean");
             }}
           >
             Tryk
-          </button>
+          </button> */}
         </Grid>
         <Grid container item xs={1} justify="flex-end">
           <RemoveIconContainer
@@ -108,7 +148,29 @@ const Root = styled.div`
 const CardListLabel = styled.div`
   vertical-align: middle;
   display: inline-block;
-  margin-left: ${(props) => props.theme.layout.gutter / 4}px;
+  //   margin-left: ${(props) => props.theme.layout.gutter / 4}px;
+`;
+
+const Select = styled.select`
+  width: 100%;
+  height: ${(props) =>
+    props.theme.layout.gutter - props.theme.layout.gutter / 8}px;
+  //   height: 35px;
+  //   background: white;
+  color: ${(props) => props.color || props.theme.colors.gray[3]};
+  padding-left: 5px;
+  font: ${(props) => props.theme.fonts.label};
+  border: none;
+  margin-left: 10px;
+
+  option {
+    color: black;
+    background: white;
+    display: flex;
+    white-space: pre;
+    min-height: 20px;
+    padding: 0px 2px 1px;
+  }
 `;
 
 export default CardListItem;

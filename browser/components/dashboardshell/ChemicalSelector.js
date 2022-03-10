@@ -113,7 +113,8 @@ function ChemicalSelector(props) {
         plottedProperties = plottedProperties.filter((item, index) => {
           if (
             searchTerm.length &&
-            item.title.toLowerCase().indexOf(searchTermLower) === -1
+            item.title.toLowerCase().indexOf(searchTermLower) === -1 &&
+            item.parameter.toLowerCase().indexOf(searchTermLower) === -1
           )
             return false;
           if (measurementsThatBelongToCategory.indexOf(item.title) !== -1) {
