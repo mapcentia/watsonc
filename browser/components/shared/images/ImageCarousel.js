@@ -9,7 +9,7 @@ function ImageCarousel(props) {
   if (typeof props.images == "undefined") {
     length = 0;
   } else {
-    length = props.images.length;
+    length = props.images[0] === null ? 0 : props.images.length;
   }
 
   const [index, setIndex] = useState(0);
@@ -24,7 +24,6 @@ function ImageCarousel(props) {
       setIndex((prev) => prev + 1);
     }
   }, 4000);
-
   return <div>{length > 0 ? <Img src={props.images[index]} /> : null}</div>;
 }
 

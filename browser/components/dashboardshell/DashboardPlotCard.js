@@ -132,7 +132,7 @@ function DashboardPlotCard(props) {
 
 const DashboardPlotContent = styled.div`
   padding: ${(props) => props.theme.layout.gutter / 2}px;
-  height: 95vh;
+  height: 100%;
 `;
 
 const CardList = styled.div`
