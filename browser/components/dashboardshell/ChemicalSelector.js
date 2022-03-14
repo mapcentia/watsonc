@@ -121,7 +121,7 @@ function ChemicalSelector(props) {
             // Measurement is in current category
             let control = createMeasurementControl(
               item,
-              "_measurement_" + index
+            item.key + "_measurement_" + index
             );
             if (control) {
               measurementControls.push(control);
@@ -163,7 +163,7 @@ function ChemicalSelector(props) {
       plottedProperties.slice().map((item, index) => {
         let control = createMeasurementControl(
           item,
-          "_measurement_" + index
+          item.key + "_measurement_" + index
         );
         plottedProperties.splice(index, 1);
         if (control) {
