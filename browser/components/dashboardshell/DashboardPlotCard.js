@@ -103,7 +103,7 @@ function DashboardPlotCard(props) {
                   measurement={measurement}
                   plot={props.plot}
                   onDeleteMeasurement={props.onDeleteMeasurement}
-                  key={index}
+                  key={measurement}
                   setAggregate={handleSetAggregate}
                   deleteAggregate={handleDeleteAggregate}
                 />

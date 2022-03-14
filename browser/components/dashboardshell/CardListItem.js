@@ -84,12 +84,12 @@ function CardListItem(props) {
               ? options
                   .filter((elem) => elem.func === "sum")
                   .map((elem) => {
-                    return <option value={elem.index}>{elem.text}</option>;
+                    return <option value={elem.index} key={elem.index}>{elem.text}</option>;
                   })
               : options
                   .filter((elem) => elem.func === "mean")
                   .map((elem) => {
-                    return <option value={elem.index}>{elem.text}</option>;
+                    return <option value={elem.index} key={elem.index}>{elem.text}</option>;
                   })}
           </Select>
           {/* <button

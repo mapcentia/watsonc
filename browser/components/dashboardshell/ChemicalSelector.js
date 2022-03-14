@@ -121,7 +121,7 @@ function ChemicalSelector(props) {
             // Measurement is in current category
             let control = createMeasurementControl(
               item,
-              item.key + "_measurement_" + index
+              "_measurement_" + index
             );
             if (control) {
               measurementControls.push(control);
@@ -146,15 +146,14 @@ function ChemicalSelector(props) {
           let key = "show" + categoryName.trim() + "Measurements";
           // Category has at least one displayed measurement
           numberOfDisplayedCategories++;
-          console.log(openItems);
           propertiesControls.push(
-            <>
-              <ChemicalsListTitle onClick={() => toggleOpenItem(key)}>
-                <Icon name="plus-solid" size={16} />
-                <Title level={4} text={categoryName.trim()} marginLeft={8} />
-              </ChemicalsListTitle>
-              <Collapse in={!!openItems[key]}>{measurementControls}</Collapse>
-            </>
+            // <>
+            //   <ChemicalsListTitle onClick={() => toggleOpenItem(key)} key={key}>
+            //     <Icon name="plus-solid" size={16} />
+            //     <Title level={4} text={categoryName.trim()} marginLeft={8} />
+            //   </ChemicalsListTitle>
+            //   <Collapse in={!!openItems[key]}>{measurementControls}</Collapse>
+            // </>
           );
         }
       }
@@ -164,7 +163,7 @@ function ChemicalSelector(props) {
       plottedProperties.slice().map((item, index) => {
         let control = createMeasurementControl(
           item,
-          item.key + "_measurement_" + index
+          "_measurement_" + index
         );
         plottedProperties.splice(index, 1);
         if (control) {
@@ -186,14 +185,7 @@ function ChemicalSelector(props) {
         // Category has at least one displayed measurement
         numberOfDisplayedCategories++;
         propertiesControls.push(
-          <>
-            <ChemicalsListTitle onClick={() => toggleOpenItem("uncategorized")}>
-              {/*<Icon name="plus-solid" size={16} />*/}
-              {/*<Title level={4} text={__('Uncategorized')} marginLeft={8} />*/}
-            </ChemicalsListTitle>
-            {/*<Collapse in={openItems['uncategorized']}>{uncategorizedMeasurementControls}</Collapse>*/}
-            <Collapse in={true}>{uncategorizedMeasurementControls}</Collapse>
-          </>
+            <Collapse key={numberOfDisplayedCategories.toString()} in={true}>{uncategorizedMeasurementControls}</Collapse>
         );
       }
     } else {

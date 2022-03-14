@@ -126,12 +126,10 @@ function GraphCard(props) {
               </HeaderActionItem>
             </Grid>
             <Grid container item xs={2}>
-              <Button
-                variant={Variants.Primary}
-                onClick={() => {}}
-                size={Size.Small}
-                text={__("Gem")}
-              />
+              {/*<Button*/}
+              {/*  onClick={() => {}}*/}
+              {/*  text={__("Gem")}*/}
+              {/*/>*/}
             </Grid>
             <Grid container item xs={7} justify="flex-end">
               {props.cardType === "plot" ? (

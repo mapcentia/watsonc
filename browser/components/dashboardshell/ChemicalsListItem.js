@@ -44,9 +44,9 @@ function ChemicalsListItem(props) {
             <Icon name="drag-handle-solid" size={24} />
           </IconContainer>
         </Grid>
-        <Grid container item xs={1} justify="center">
-          <CircleImage src={props.icon} />
-        </Grid>
+        {/*<Grid container item xs={1} justify="center">*/}
+        {/*  <CircleImage src={props.icon} />*/}
+        {/*</Grid>*/}
         <Grid container item xs={9}>
           <LabelRow>
             <Title level={6} text={props.label} />
