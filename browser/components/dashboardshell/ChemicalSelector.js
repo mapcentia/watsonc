@@ -36,6 +36,7 @@ function ChemicalSelector(props) {
     const createMeasurementControl = (item, key) => {
       let display = true;
       const evaluateMeasurement = require("./../../evaluateMeasurement");
+      // const measurementIcon = require("./../../measurementIcon");
       /* if (this.state.measurementsSearchTerm.length > 0) {
                 if (item.title.toLowerCase().indexOf(this.state.measurementsSearchTerm.toLowerCase()) === -1) {
                     display = false;
@@ -146,7 +147,8 @@ function ChemicalSelector(props) {
           let key = "show" + categoryName.trim() + "Measurements";
           // Category has at least one displayed measurement
           numberOfDisplayedCategories++;
-          propertiesControls.push(
+          propertiesControls
+            .push
             // <>
             //   <ChemicalsListTitle onClick={() => toggleOpenItem(key)} key={key}>
             //     <Icon name="plus-solid" size={16} />
@@ -154,17 +156,14 @@ function ChemicalSelector(props) {
             //   </ChemicalsListTitle>
             //   <Collapse in={!!openItems[key]}>{measurementControls}</Collapse>
             // </>
-          );
+            ();
         }
       }
 
       // Placing uncategorized measurements in separate category
       let uncategorizedMeasurementControls = [];
       plottedProperties.slice().map((item, index) => {
-        let control = createMeasurementControl(
-          item,
-          "_measurement_" + index
-        );
+        let control = createMeasurementControl(item, "_measurement_" + index);
         plottedProperties.splice(index, 1);
         if (control) {
           uncategorizedMeasurementControls.push(control);
@@ -185,7 +184,9 @@ function ChemicalSelector(props) {
         // Category has at least one displayed measurement
         numberOfDisplayedCategories++;
         propertiesControls.push(
-            <Collapse key={numberOfDisplayedCategories.toString()} in={true}>{uncategorizedMeasurementControls}</Collapse>
+          <Collapse key={numberOfDisplayedCategories.toString()} in={true}>
+            {uncategorizedMeasurementControls}
+          </Collapse>
         );
       }
     } else {

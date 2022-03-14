@@ -60,12 +60,12 @@ function CardListItem(props) {
   return (
     <Root>
       <Grid container>
-        <Grid container item xs={6}>
+        {/* <Grid container item xs={6}>
           <CardListLabel>
             <Title level={6} text={name} marginLeft={8} />
           </CardListLabel>
-        </Grid>
-        <Grid container item xs={5}>
+        </Grid> */}
+        <Grid container item xs={11}>
           <Select
             onChange={(e) => {
               if (e.target.value === "") {
@@ -79,17 +79,27 @@ function CardListItem(props) {
               }
             }}
           >
-            <option value="" hidden></option>
+            <option value="" hidden>
+              {name}
+            </option>
             {useSumInsteadOfMean
               ? options
                   .filter((elem) => elem.func === "sum")
                   .map((elem) => {
-                    return <option value={elem.index} key={elem.index}>{elem.text}</option>;
+                    return (
+                      <option value={elem.index} key={elem.index}>
+                        {name + " - " + elem.text}
+                      </option>
+                    );
                   })
               : options
                   .filter((elem) => elem.func === "mean")
                   .map((elem) => {
-                    return <option value={elem.index} key={elem.index}>{elem.text}</option>;
+                    return (
+                      <option value={elem.index} key={elem.index}>
+                        {name + " - " + elem.text}
+                      </option>
+                    );
                   })}
           </Select>
           {/* <button
@@ -157,7 +167,7 @@ const Select = styled.select`
     props.theme.layout.gutter - props.theme.layout.gutter / 8}px;
   //   height: 35px;
   //   background: white;
-  color: ${(props) => props.color || props.theme.colors.gray[3]};
+  // color: ${(props) => props.color || props.theme.colors.gray[3]};
   padding-left: 5px;
   font: ${(props) => props.theme.fonts.label};
   border: none;
