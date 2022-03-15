@@ -7,11 +7,14 @@ import Title from "../shared/title/Title";
 import { Align } from "../shared/constants/align";
 import { Variant } from "../shared/constants/variants";
 import { Size } from "../shared/constants/size";
+import { showSubscription } from "./../../helpers/show_subscriptionDialogue";
 import Button from "../shared/button/Button";
 import ButtonGroup from "../shared/button/ButtonGroup";
 import { DarkTheme } from "../../themes/DarkTheme";
 import ProjectContext from "../../contexts/project/ProjectContext";
 import { getNewPlotId } from "../../helpers/common";
+
+const session = require("./../../../../session/browser/index");
 
 function DashboardHeader(props) {
   const [showSaveButtons, setShowSaveButtons] = useState(true);
@@ -29,15 +32,23 @@ function DashboardHeader(props) {
   }, [props.dashboardMode, props.dashboardContent]);
 
   const addNewPlot = () => {
+    const isFree = session.getProperties()["license"] === "free";
     let allPlots = props.getAllPlots();
+
+    if (isFree && allPlots.length > 0) {
+      console.log(allPlots);
+      showSubscription();
+      return;
+    }
+
     let activePlots = projectContext.activePlots;
     let newPlotId = getNewPlotId(allPlots);
     let plotData = {
       id: `plot_${newPlotId}`,
-      title: `Graph ${newPlotId}`,
+      title: `Graf ${newPlotId}`,
       measurements: [],
       measurementsCachedData: {},
-      relations: {}
+      relations: {},
     };
     activePlots.unshift(plotData);
     allPlots.unshift(plotData);
