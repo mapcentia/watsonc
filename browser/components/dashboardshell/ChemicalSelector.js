@@ -129,7 +129,6 @@ function ChemicalSelector(props) {
         propertiesControls.push(control);
       }
     });
-    console.log(props.categories);
     setChemicalsList(propertiesControls);
   }, [props.categories, props.feature, searchTerm, openItems]);
 

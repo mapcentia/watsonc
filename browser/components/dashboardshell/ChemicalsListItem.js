@@ -18,14 +18,6 @@ function ChemicalsListItem(props) {
     },
   }));
 
-  console.log({
-    gid: props.gid,
-    itemKey: props.itemKey,
-    intakeIndex: props.intakeIndex,
-    onAddMeasurement: props.onAddMeasurement,
-    feature: props.feature,
-  });
-
   const [descriptionText, setDescriptionText] = useState("");
 
   useEffect(() => {
