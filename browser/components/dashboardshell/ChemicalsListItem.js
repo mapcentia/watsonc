@@ -17,6 +17,15 @@ function ChemicalsListItem(props) {
       feature: props.feature,
     },
   }));
+
+  console.log({
+    gid: props.gid,
+    itemKey: props.itemKey,
+    intakeIndex: props.intakeIndex,
+    onAddMeasurement: props.onAddMeasurement,
+    feature: props.feature,
+  });
+
   const [descriptionText, setDescriptionText] = useState("");
 
   useEffect(() => {
@@ -34,8 +43,8 @@ function ChemicalsListItem(props) {
     <Root
       title={__(`Drag and drop measurement to add it to time series`)}
       ref={drag}
-      data-gid="{props.boreholeno}"
-      data-key="{props.itemKey}"
+      data-gid="{props.gid}"
+      data-key="{props.key}"
       data-intake-index="{props.intakeIndex}"
     >
       <Grid container>

@@ -25,6 +25,8 @@ import Title from "../shared/title/Title";
 import Searchbox from "../shared/inputs/Searchbox";
 import reduxStore from "../../redux/store";
 import { addBoreholeFeature } from "../../redux/actions";
+import Backdrop from "@material-ui/core/Backdrop";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const DASHBOARD_ITEM_PLOT = 0;
 const DASHBOARD_ITEM_PROFILE = 1;
@@ -38,6 +40,7 @@ function DashboardContent(props) {
   const [myStations, setMyStations] = useState([]);
   const projectContext = useContext(ProjectContext);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loadingData, setLoadingData] = useState(false);
   const [filteredMystations, setFilteredMystations] = useState([]);
   const [filteredBorehole, setFilteredBorehole] = useState(
     props.boreholeFeatures.map((item, index) => {
@@ -97,6 +100,8 @@ function DashboardContent(props) {
   };
 
   const handleDrop = (id, item) => {
+    console.log(item);
+    setLoadingData(true);
     let plot = props.getAllPlots().filter((p) => {
       if (p.id === id) return true;
     })[0];
@@ -106,32 +111,42 @@ function DashboardContent(props) {
       dataType: "json",
     }).then(
       (response) => {
-        let measurementsData = {
-          data: {
-            properties: {
-              _0: JSON.stringify({
-                unit: item.feature.unit[item.intakeIndex],
-                title: item.feature.ts_name[item.intakeIndex],
-                intakes: [1],
+        let intakes = [];
+        if (!Array.isArray(item.intakeIndex)) {
+          intakes.push(item.intakeIndex);
+        } else {
+          intakes = item.intakeIndex;
+        }
+        for (const itidx of intakes) {
+          let measurementsData = {
+            data: {
+              properties: {
+                _0: JSON.stringify({
+                  unit: item.feature.unit[itidx],
+                  title: item.feature.ts_name[itidx],
+                  intakes: [1],
+                  boreholeno: item.feature.loc_id,
+                  data: response.features[0].properties.data,
+                  trace: item.feature.trace,
+                  relation: item.feature.relation,
+                  parameter: item.feature.parameter[itidx],
+                }),
                 boreholeno: item.feature.loc_id,
-                data: response.features[0].properties.data,
-                trace: item.feature.trace,
-                relation: item.feature.relation,
-                parameter: item.feature.parameter[item.intakeIndex],
-              }),
-              boreholeno: item.feature.loc_id,
-              numofintakes: 1,
+                numofintakes: 1,
+              },
             },
-          },
-        };
-        item.onAddMeasurement(
-          plot.id,
-          item.gid,
-          item.itemKey,
-          item.intakeIndex,
-          measurementsData,
-          item.feature.relation
-        );
+          };
+          // console.log(measurementsData);
+          item.onAddMeasurement(
+            plot.id,
+            item.gid,
+            item.itemKey[itidx],
+            itidx,
+            measurementsData,
+            item.feature.relation
+          );
+        }
+        setLoadingData(false);
       },
       (jqXHR) => {
         console.error(`Error occured while getting data`);
@@ -153,6 +168,7 @@ function DashboardContent(props) {
               relation={popupType}
               onActivePlotsChange={props.onActivePlotsChange}
               setDashboardMode={props.setDashboardMode}
+              setLoadingData={setLoadingData}
             />
           </ThemeProvider>,
           document.getElementById(`pop_up_${id}`)
@@ -303,6 +319,19 @@ function DashboardContent(props) {
     }
     props.onPlotsChange();
   }, [props.boreholeFeatures, selectedBoreholeIndex]);
+
+  const handleTitleChange = (index) => {
+    return (title) => {
+      var allPlots = props.getAllPlots();
+      allPlots[index] = {
+        ...allPlots[index],
+        title: title,
+      };
+      console.log(allPlots);
+      let activePlots = allPlots.map((plot) => plot.id);
+      props.setPlots(allPlots, activePlots);
+    };
+  };
 
   return (
     <Root>
@@ -496,6 +525,22 @@ function DashboardContent(props) {
             style={{ height: "100%", overflow: "auto" }}
           >
             <ChartsContainer>
+              {loadingData && (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    left: "50%",
+                    top: "50%",
+                    position: "absolute",
+                    zIndex: 9000,
+                  }}
+                >
+                  <CircularProgress
+                    style={{ color: DarkTheme.colors.interaction[4] }}
+                  />
+                </div>
+              )}
               <SortableList axis="xy" onSortEnd={handlePlotSort} useDragHandle>
                 {dashboardItems.map((dashboardItem, index) => {
                   let id = dashboardItem.item.id;
@@ -510,6 +555,7 @@ function DashboardContent(props) {
                         cardType="plot"
                         onRemove={() => handleRemovePlot(id)}
                         onDrop={(item) => handleDrop(id, item)}
+                        onChange={handleTitleChange(index)}
                       />
                     );
                   } else if (dashboardItem.type === DASHBOARD_ITEM_PROFILE) {
@@ -522,6 +568,7 @@ function DashboardContent(props) {
                         onRemove={() =>
                           handleRemoveProfile(dashboardItem.item.key)
                         }
+                        onChange={handleTitleChange(index)}
                       />
                     );
                   }
@@ -633,6 +680,7 @@ const ChartsContainer = styled.ul`
   padding-left: ${(props) => props.theme.layout.gutter / 4}px;
   padding-right: ${(props) => props.theme.layout.gutter / 4}px;
   height: 100%;
+  position: relative;
 `;
 
 const ProjectsContainer = styled.div`

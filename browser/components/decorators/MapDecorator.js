@@ -22,6 +22,7 @@ function MapDecorator(props) {
   const [showMoreInfo, setShowMoreInfo] = useState(false);
   const projectContext = useContext(ProjectContext);
   const plot = () => {
+    props.setLoadingData(true);
     let plot = props.data.properties;
     let allPlots = props.getAllPlots();
     let plotData = {
@@ -75,6 +76,7 @@ function MapDecorator(props) {
 
         let activePlots = allPlots.map((plot) => plot.id);
         props.setPlots(allPlots, activePlots);
+        props.setLoadingData(false);
         //props.onActivePlotsChange(activePlots, allPlots, projectContext);
       },
       (jqXHR) => {

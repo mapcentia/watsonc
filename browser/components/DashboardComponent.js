@@ -536,6 +536,7 @@ class DashboardComponent extends React.Component {
 
         if (correspondingPlot === false) throw new Error(`Plot with id ${plotId} does not exist`);
         let measurementIndex = gid + ':_0:' + measurementIntakeIndex;
+        // console.log(measurementIndex);
         if (action === `add`) {
             if (correspondingPlot.measurements.indexOf(measurementIndex) === -1) {
                 let measurementData = this.getFeatureByGidFromDataSource(gid);
@@ -576,14 +577,15 @@ class DashboardComponent extends React.Component {
                 }
             }
         });
-        //console.log("dashboardItemsCopy", dashboardItemsCopy)
+        // console.log("dashboardItemsCopy", dashboardItemsCopy)
         //console.log("plots", plots)
+        this.setState({
+            plots,
+            projectPlots: plots,
+            dashboardItems: dashboardItemsCopy
+        });
         this.plotManager.update(correspondingPlot).then(() => {
-            this.setState({
-                plots,
-                projectPlots: plots,
-                dashboardItems: dashboardItemsCopy
-            });
+
             this.props.onPlotsChange(this.getPlots(), this.context);
         }).catch(error => {
             console.error(`Error occured while updating plot (${error})`)

@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import Collapse from "@material-ui/core/Collapse";
 import styled from "styled-components";
 import Searchbox from "../shared/inputs/Searchbox";
+import ChemicalsListItem from "./ChemicalsListItem";
 
 function ChemicalSelector(props) {
   const [chemicalsList, setChemicalsList] = useState([]);
@@ -35,28 +36,10 @@ function ChemicalSelector(props) {
 
     const createMeasurementControl = (item, key) => {
       let display = true;
-      const evaluateMeasurement = require("./../../evaluateMeasurement");
-      // const measurementIcon = require("./../../measurementIcon");
-      /* if (this.state.measurementsSearchTerm.length > 0) {
-                if (item.title.toLowerCase().indexOf(this.state.measurementsSearchTerm.toLowerCase()) === -1) {
-                    display = false;
-                }
-            } */
 
       let control = false;
       if (display) {
         let json = item;
-        // Checking if the item is the custom one
-        /* if (item.key.indexOf(':') > -1) {
-                    json = item;
-                } else {
-                    try {
-                        json = JSON.parse(props.feature.properties[item.key]);
-                    } catch (e) {
-                        console.error(item);
-                        throw new Error(`Unable to parse measurements data`);
-                    }
-                } */
 
         let intakeName = `#` + (parseInt(item.intakeIndex) + 1);
         if (
@@ -103,106 +86,50 @@ function ChemicalSelector(props) {
     };
 
     let propertiesControls = [];
-    if (Object.keys(categories).length > 0) {
-      let numberOfDisplayedCategories = 0;
-      for (let categoryName in categories) {
-        let measurementsThatBelongToCategory = Object.keys(
-          categories[categoryName]
-        ).map((e) => categories[categoryName][e]);
-        let measurementControls = [];
-        let searchTermLower = searchTerm.toLowerCase();
-        plottedProperties = plottedProperties.filter((item, index) => {
-          if (
-            searchTerm.length &&
-            item.title.toLowerCase().indexOf(searchTermLower) === -1 &&
-            item.parameter.toLowerCase().indexOf(searchTermLower) === -1
-          )
-            return false;
-          if (measurementsThatBelongToCategory.indexOf(item.title) !== -1) {
-            // Measurement is in current category
-            let control = createMeasurementControl(
-              item,
-            item.key + "_measurement_" + index
-            );
-            if (control) {
-              measurementControls.push(control);
-            }
+    let searchTermLower = searchTerm.toLowerCase();
 
-            return false;
-          } else {
-            return true;
-          }
-        });
-        if (measurementControls.length > 0) {
-          measurementControls.sort(function (a, b) {
-            return (
-              (b.props.detectionLimitReachedForLatest
-                ? 0
-                : b.props.latestMeasurementRelative) -
-              (a.props.detectionLimitReachedForLatest
-                ? 0
-                : a.props.latestMeasurementRelative)
-            );
-          });
-          let key = "show" + categoryName.trim() + "Measurements";
-          // Category has at least one displayed measurement
-          numberOfDisplayedCategories++;
-          propertiesControls
-            .push
-            // <>
-            //   <ChemicalsListTitle onClick={() => toggleOpenItem(key)} key={key}>
-            //     <Icon name="plus-solid" size={16} />
-            //     <Title level={4} text={categoryName.trim()} marginLeft={8} />
-            //   </ChemicalsListTitle>
-            //   <Collapse in={!!openItems[key]}>{measurementControls}</Collapse>
-            // </>
-            ();
-        }
+    let allChems = (
+      <ChemicalsListItem
+        label={"Alle parametre"}
+        circleColor={DarkTheme.colors.denotive.warning}
+        key={"allParameters" + "_" + props.feature.properties.loc_id}
+        onAddMeasurement={props.onAddMeasurement}
+        // maxMeasurement={measurementData === null ? null : Math.round((measurementData.maxMeasurement) * 100) / 100}
+        // latestMeasurement={measurementData === null ? null : Math.round((measurementData.latestMeasurement) * 100) / 100}
+        // latestMeasurementRelative={measurementData === null ? null : Math.round((measurementData.latestMeasurement / measurementData.chemicalLimits[1]) * 100) / 100}
+        // detectionLimitReachedForMax={measurementData === null ? null : measurementData.detectionLimitReachedForMax}
+        // detectionLimitReachedForLatest={measurementData === null ? null : measurementData.detectionLimitReachedForLatest}
+        description={""}
+        gid={props.feature.properties.loc_id}
+        itemKey={plottedProperties.map((elem) => elem.key)}
+        intakeIndex={plottedProperties.map((elem) => elem.intakeIndex)}
+        feature={props.feature.properties}
+      />
+    );
+
+    plottedProperties = plottedProperties.filter((item, index) => {
+      if (
+        searchTerm.length &&
+        item.title.toLowerCase().indexOf(searchTermLower) === -1 &&
+        item.parameter.toLowerCase().indexOf(searchTermLower) === -1
+      ) {
+        return false;
+      } else {
+        return true;
       }
+    });
 
-      // Placing uncategorized measurements in separate category
-      let uncategorizedMeasurementControls = [];
-      plottedProperties.slice().map((item, index) => {
-        let control = createMeasurementControl(
-          item,
-          item.key + "_measurement_" + index
-        );
-        plottedProperties.splice(index, 1);
-        if (control) {
-          uncategorizedMeasurementControls.push(control);
-        }
-      });
-
-      if (uncategorizedMeasurementControls.length > 0) {
-        uncategorizedMeasurementControls.sort(function (a, b) {
-          return (
-            (b.props.detectionLimitReachedForLatest
-              ? 0
-              : b.props.latestMeasurementRelative) -
-            (a.props.detectionLimitReachedForLatest
-              ? 0
-              : a.props.latestMeasurementRelative)
-          );
-        });
-        // Category has at least one displayed measurement
-        numberOfDisplayedCategories++;
-        propertiesControls.push(
-          <Collapse key={numberOfDisplayedCategories.toString()} in={true}>
-            {uncategorizedMeasurementControls}
-          </Collapse>
-        );
+    propertiesControls.push(allChems);
+    plottedProperties.map((item, index) => {
+      let control = createMeasurementControl(
+        item,
+        item.key + "_measurement_" + index
+      );
+      if (control) {
+        propertiesControls.push(control);
       }
-    } else {
-      plottedProperties.map((item, index) => {
-        let control = createMeasurementControl(
-          item,
-          item.key + "_measurement_" + index
-        );
-        if (control) {
-          propertiesControls.push(control);
-        }
-      });
-    }
+    });
+    console.log(props.categories);
     setChemicalsList(propertiesControls);
   }, [props.categories, props.feature, searchTerm, openItems]);
 

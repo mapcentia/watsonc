@@ -90,12 +90,34 @@ function SubscriptionDialogue(props) {
                     color={DarkTheme.colors.gray[3]}
                   />
                 </PlanItem>
-                {/* <PlanItem>
-                            <LabelContainer>
-                                <Title level={5} text={__('Boring- og kildeplads overvågning')} color={DarkTheme.colors.headings} />
-                            </LabelContainer>
-                                <Title level={7} text={__('Udvælg og hold automatisk øje med dine boringer og kildepladser')} color={DarkTheme.colors.gray[3]} />
-                        </PlanItem> */}
+                <PlanItem>
+                  <LabelContainer>
+                    <Title
+                      level={5}
+                      text={__("Gem dashboards")}
+                      color={DarkTheme.colors.headings}
+                    />
+                  </LabelContainer>
+                  <Title
+                    level={7}
+                    text={__("Gem dashboards med valgte datakilder og grafer")}
+                    color={DarkTheme.colors.gray[3]}
+                  />
+                </PlanItem>
+                <PlanItem>
+                  <LabelContainer>
+                    <Title
+                      level={5}
+                      text={__("Brugerdefinerede lag")}
+                      color={DarkTheme.colors.headings}
+                    />
+                  </LabelContainer>
+                  <Title
+                    level={7}
+                    text={__("Mulighed for at få egne data ind i private lag")}
+                    color={DarkTheme.colors.gray[3]}
+                  />
+                </PlanItem>
               </Grid>
               <Grid container item xs={2}>
                 <Plan className="short-title">
@@ -132,7 +154,7 @@ function SubscriptionDialogue(props) {
                     <PlanFeature>
                       <Title
                         level={6}
-                        text={__("1 gemt graf")}
+                        text={__("1 graf")}
                         color={DarkTheme.colors.gray[3]}
                       />
                     </PlanFeature>
@@ -141,15 +163,17 @@ function SubscriptionDialogue(props) {
                     <PlanFeature>
                       <Title
                         level={6}
-                        text={__("1 gemt profil")}
+                        text={__("1 profil")}
                         color={DarkTheme.colors.gray[3]}
                       />
                     </PlanFeature>
                   </PlanItem>
-                  {/* <PlanItem>
-                                <PlanFeature>
-                                </PlanFeature>
-                            </PlanItem> */}
+                  <PlanItem>
+                    <PlanFeature></PlanFeature>
+                  </PlanItem>
+                  <PlanItem>
+                    <PlanFeature></PlanFeature>
+                  </PlanItem>
                 </Plan>
               </Grid>
               <Grid container item xs={2}>
@@ -199,11 +223,14 @@ function SubscriptionDialogue(props) {
                       />
                     </PlanFeature>
                   </PlanItem>
-                  {/* <PlanItem>
-                                <PlanFeature>
-                                    <Title level={6} text={__('5 boringer')} color={DarkTheme.colors.gray[3]} />
-                                </PlanFeature>
-                            </PlanItem> */}
+                  <PlanItem>
+                    <IconContainer>
+                      <Icon name="check-mark-solid" size={12} />
+                    </IconContainer>
+                  </PlanItem>
+                  <PlanItem>
+                    <PlanFeature></PlanFeature>
+                  </PlanItem>
                 </Plan>
               </Grid>
               <Grid container item xs={2}>
@@ -258,11 +285,16 @@ function SubscriptionDialogue(props) {
                       />
                     </PlanFeature>
                   </PlanItem>
-                  {/* <PlanItem>
-                                <PlanFeature>
-                                    <Title level={6} text={__('Ubegrænset')} color={DarkTheme.colors.gray[3]} />
-                                </PlanFeature>
-                            </PlanItem> */}
+                  <PlanItem>
+                    <IconContainer>
+                      <Icon name="check-mark-solid" size={12} />
+                    </IconContainer>
+                  </PlanItem>
+                  <PlanItem>
+                    <IconContainer>
+                      <Icon name="check-mark-solid" size={12} />
+                    </IconContainer>
+                  </PlanItem>
                 </Plan>
               </Grid>
             </Grid>
