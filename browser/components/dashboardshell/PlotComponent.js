@@ -70,13 +70,11 @@ function PlotComponent(props) {
     {};
 
   useEffect(() => {
-    console.log(props.plotMeta);
     let layout = JSON.parse(
       JSON.stringify(config?.extensionConfig?.watsonc?.plotLayout)
     );
 
     let num_types = [...new Set(props.plotData.map((elem) => elem.tstype_id))];
-    console.log(num_types);
 
     const give_color = next_color();
     let plotData = props.plotData.map((elem) => {

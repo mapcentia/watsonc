@@ -42,7 +42,6 @@ function CardListItem(props) {
         feature = props.plot.measurementsCachedData[props.measurement].data;
         let measurementData = JSON.parse(feature.properties[key]);
         setName(`${measurementData.title}, ${measurementData.parameter}`);
-        console.log(measurementData.data[intakeIndex].tstype_id);
         if (measurementData.data[intakeIndex].tstype_id === 4) {
           setUseSumInsteadOfMean(true);
         }

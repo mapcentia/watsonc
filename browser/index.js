@@ -1269,6 +1269,7 @@ module.exports = module.exports = {
    * Applies externally provided state
    */
   applyState: (newState) => {
+    console.log("newState", newState)
     setTimeout(() => {
       reduxStore.dispatch(clearBoreholeFeatures());
       if (newState?.sources) {
@@ -1308,13 +1309,13 @@ module.exports = module.exports = {
               data: {
                 properties: {
                   _0: JSON.stringify({
-                    unit: props.unit[index],
-                    title: props.ts_name[index],
+                    unit: props.unit[i],
+                    title: props.ts_name[i],
                     intakes: [1],
                     boreholeno: loc_id,
                     data: props.data,
                     trace: props.trace,
-                    parameter: props.parameter[index],
+                    parameter: props.parameter[i],
                   }),
                   boreholeno: loc_id,
                   numofintakes: 1,
