@@ -40,9 +40,9 @@ function DataSelectorDialogue(props) {
 
   useEffect(() => {
     const waterLevelParameter = {
-      label: __("Water Level"),
+      label: __("Vandstand"),
       value: WATER_LEVEL_KEY,
-      group: __("Water Level"),
+      group: __("Vandstand"),
     };
     let chemicals = [waterLevelParameter];
     for (let key in props.categories[LAYER_NAMES[0]]) {
@@ -142,6 +142,7 @@ function DataSelectorDialogue(props) {
                   ) > -1 ? (
                     <Card>
                       <Searchbox
+                        value={parameterSearchTerm}
                         placeholder={__("Søg efter måleparameter")}
                         onChange={(value) => setParameterSearchTerm(value)}
                       />
@@ -160,7 +161,7 @@ function DataSelectorDialogue(props) {
         {showProjectsList ? (
           <ButtonGroup align={Align.Center}>
             <Button
-              text={__("Choose datasource and layers")}
+              text={__("Vælg datakilder og lag")}
               variant={Variants.None}
               onClick={() => setShowProjectsList(false)}
               size={Size.Large}

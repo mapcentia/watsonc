@@ -11,9 +11,11 @@ import { useState } from "react";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
+import moment from "moment";
 
 function GraphCard(props) {
   const [fullscreen, setFullscreen] = useState(false);
+  const [graphName, setGraphName] = useState(props.plot.title);
 
   const download = () => {
     if (!props.plot) {
@@ -33,42 +35,17 @@ function GraphCard(props) {
           let feature =
             props.plot.measurementsCachedData[measurementLocationRaw].data;
           let measurementData = JSON.parse(feature.properties[key]);
-          if (Array.isArray(measurementData.measurements) === false) {
-            measurementData.measurements = JSON.parse(
-              measurementData.measurements
-            );
-          }
-          let formatedDates = measurementData.timeOfMeasurement[
-            intakeIndex
-          ].map((x) => x.replace("T", " "));
+          console.log(measurementData);
+          let formatedDates = measurementData.data[intakeIndex].x.map((elem) =>
+            moment(elem).format("YYYY-MM-DD HH:mm:ss")
+          );
           data.push({
             name: `${feature.properties.boreholeno} - ${measurementData.title} (${measurementData.unit})`,
             x: formatedDates,
-            y: measurementData.measurements[intakeIndex],
+            y: measurementData.data[intakeIndex].y.map((elem) =>
+              elem.toString().replace(".", ",")
+            ),
           });
-        } else if (measurementLocation.length === 4) {
-          let key = measurementLocation[1];
-          let customSpecificator = measurementLocation[2];
-
-          if (
-            [`daily`, `weekly`, `monthly`].indexOf(customSpecificator) === -1
-          ) {
-            throw new Error(
-              `The custom specificator (${customSpecificator}) is invalid`
-            );
-          }
-
-          let feature =
-            props.plot.measurementsCachedData[measurementLocationRaw].data;
-          let measurementData = JSON.parse(feature.properties[key]);
-          let measurementDataCopy = JSON.parse(
-            JSON.stringify(measurementData.data)
-          );
-          data.push(measurementDataCopy[customSpecificator].data[0]);
-        } else {
-          throw new Error(
-            `Invalid key and intake notation: ${measurementLocationRaw}`
-          );
         }
       } else {
         console.error(
@@ -122,7 +99,17 @@ function GraphCard(props) {
                 <HeaderSvg>
                   <Icon name="analytics-board-graph-line" size={16} />
                 </HeaderSvg>
-                <Title level={5} text={props.plot.title} marginLeft={4} />
+                {/* <Title level={5} text={props.plot.title} marginLeft={4} /> */}
+                <Input
+                  value={graphName}
+                  onChange={(e) => setGraphName(e.target.value)}
+                  onBlur={(e) => props.onChange(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.target.blur();
+                    }
+                  }}
+                />
               </HeaderActionItem>
             </Grid>
             <Grid container item xs={2}>
@@ -222,6 +209,19 @@ const CloseButton = styled.div`
   border: 1px solid ${(props) => props.theme.colors.gray[4]};
   height: ${(props) => (props.theme.layout.gutter * 3) / 4}px;
   cursor: pointer;
+`;
+
+const Input = styled.input`
+  display: inline-block;
+  font-weight: normal;
+  margin: 0;
+  line-height: 1.3;
+  box-shadow: none;
+  border: 0;
+  text-align: ${(props) => props.align};
+  margin-left: ${(props) => props.marginLeft || 0}px;
+  margin-top: ${(props) => props.theme.layout.gutter / 2}px;
+  font: ${(props) => props.theme.fonts.subbody};
 `;
 
 export default sortableElement(GraphCard);

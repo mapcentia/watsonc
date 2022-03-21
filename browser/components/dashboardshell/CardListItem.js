@@ -167,6 +167,7 @@ const Select = styled.select`
   //   height: 35px;
   //   background: white;
   // color: ${(props) => props.color || props.theme.colors.gray[3]};
+  background: transparent;
   padding-left: 5px;
   font: ${(props) => props.theme.fonts.label};
   border: none;
@@ -174,7 +175,7 @@ const Select = styled.select`
 
   option {
     color: black;
-    background: white;
+    background: transparent;
     display: flex;
     white-space: pre;
     min-height: 20px;

@@ -10,6 +10,7 @@ import ThemeProvider from "./themes/ThemeProvider";
 import DataSelectorDialogue from "./components/dataselector/DataSelectorDialogue";
 import DashboardWrapper from "./components/DashboardWrapper";
 import TopBar from "./components/TopBar";
+import { showSubscription } from "./helpers/show_subscriptionDialogue";
 
 import reduxStore from "./redux/store";
 import {
@@ -206,6 +207,17 @@ module.exports = module.exports = {
     $(`#search-border`).trigger(`click`);
 
     $(`#js-open-state-snapshots-panel`).click(() => {
+      console.log("what");
+      //$(`[href="#state-snapshots-content"]`).trigger(`click`);
+    });
+
+    $(`#state-snapshots-content`).click((e) => {
+      if (session.getProperties()["license"] === "free") {
+        var elem = document.getElementById("state-snapshots");
+        elem.style.pointerEvents = "none";
+        showSubscription();
+      }
+
       //$(`[href="#state-snapshots-content"]`).trigger(`click`);
     });
 
