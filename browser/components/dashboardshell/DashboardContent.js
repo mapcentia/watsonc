@@ -106,7 +106,7 @@ function DashboardContent(props) {
       if (p.id === id) return true;
     })[0];
     $.ajax({
-      url: `/api/sql/jupiter?q=SELECT * FROM ${item.feature.relation} WHERE loc_id=${item.feature.loc_id}&base64=false&lifetime=60&srs=4326`,
+      url: `/api/sql/jupiter?q=SELECT * FROM ${item.feature.relation} WHERE loc_id='${item.feature.loc_id}'&base64=false&lifetime=60&srs=4326`,
       method: "GET",
       dataType: "json",
     }).then(

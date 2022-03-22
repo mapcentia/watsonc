@@ -60,7 +60,11 @@ function ChemicalSelector(props) {
 
         control = (
           <ChemicalsListItem
-            label={item.title}
+            label={
+              item.title
+                ? item.title + " " + item.parameter + ", (" + item.unit + ")"
+                : item.parameter + ", (" + item.unit + ")"
+            }
             circleColor={DarkTheme.colors.denotive.warning}
             key={key}
             onAddMeasurement={props.onAddMeasurement}

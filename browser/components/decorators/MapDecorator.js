@@ -34,7 +34,7 @@ function MapDecorator(props) {
     };
     allPlots.unshift(plotData);
     $.ajax({
-      url: `/api/sql/jupiter?q=SELECT * FROM ${props.relation} WHERE loc_id=${props.data.properties.loc_id}&base64=false&lifetime=60&srs=4326`,
+      url: `/api/sql/jupiter?q=SELECT * FROM ${props.relation} WHERE loc_id='${props.data.properties.loc_id}'&base64=false&lifetime=60&srs=4326`,
       method: "GET",
       dataType: "json",
     }).then(
@@ -117,9 +117,11 @@ function MapDecorator(props) {
               level={5}
               color={DarkTheme.colors.headings}
               text={
-                props.data.properties.ts_name[elem] +
-                ", " +
-                props.data.properties.parameter[elem]
+                props.data.properties.ts_name[elem]
+                  ? props.data.properties.ts_name[elem] +
+                    ", " +
+                    props.data.properties.parameter[elem]
+                  : props.data.properties.parameter[elem]
               }
             />
           </Grid>
@@ -130,7 +132,7 @@ function MapDecorator(props) {
     links.push(
       props.data.properties.ts_name.map((v, index) => {
         return (
-          <Grid container key={v}>
+          <Grid container key={index}>
             <Icon
               name="analytics-board-graph-line"
               strokeColor={DarkTheme.colors.headings}
@@ -141,7 +143,11 @@ function MapDecorator(props) {
               marginLeft={4}
               level={5}
               color={DarkTheme.colors.headings}
-              text={v + ", " + props.data.properties.parameter[index]}
+              text={
+                v
+                  ? v + ", " + props.data.properties.parameter[index]
+                  : props.data.properties.parameter[index]
+              }
             />
           </Grid>
         );
