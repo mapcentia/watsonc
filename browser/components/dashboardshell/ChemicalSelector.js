@@ -92,24 +92,27 @@ function ChemicalSelector(props) {
     let propertiesControls = [];
     let searchTermLower = searchTerm.toLowerCase();
 
-    let allChems = (
-      <ChemicalsListItem
-        label={"Alle parametre"}
-        circleColor={DarkTheme.colors.denotive.warning}
-        key={"allParameters" + "_" + props.feature.properties.loc_id}
-        onAddMeasurement={props.onAddMeasurement}
-        // maxMeasurement={measurementData === null ? null : Math.round((measurementData.maxMeasurement) * 100) / 100}
-        // latestMeasurement={measurementData === null ? null : Math.round((measurementData.latestMeasurement) * 100) / 100}
-        // latestMeasurementRelative={measurementData === null ? null : Math.round((measurementData.latestMeasurement / measurementData.chemicalLimits[1]) * 100) / 100}
-        // detectionLimitReachedForMax={measurementData === null ? null : measurementData.detectionLimitReachedForMax}
-        // detectionLimitReachedForLatest={measurementData === null ? null : measurementData.detectionLimitReachedForLatest}
-        description={""}
-        gid={props.feature.properties.loc_id}
-        itemKey={plottedProperties.map((elem) => elem.key)}
-        intakeIndex={plottedProperties.map((elem) => elem.intakeIndex)}
-        feature={props.feature.properties}
-      />
-    );
+    if (plottedProperties.length < 10) {
+      let allChems = (
+        <ChemicalsListItem
+          label={"Alle parametre"}
+          circleColor={DarkTheme.colors.denotive.warning}
+          key={"allParameters" + "_" + props.feature.properties.loc_id}
+          onAddMeasurement={props.onAddMeasurement}
+          // maxMeasurement={measurementData === null ? null : Math.round((measurementData.maxMeasurement) * 100) / 100}
+          // latestMeasurement={measurementData === null ? null : Math.round((measurementData.latestMeasurement) * 100) / 100}
+          // latestMeasurementRelative={measurementData === null ? null : Math.round((measurementData.latestMeasurement / measurementData.chemicalLimits[1]) * 100) / 100}
+          // detectionLimitReachedForMax={measurementData === null ? null : measurementData.detectionLimitReachedForMax}
+          // detectionLimitReachedForLatest={measurementData === null ? null : measurementData.detectionLimitReachedForLatest}
+          description={""}
+          gid={props.feature.properties.loc_id}
+          itemKey={plottedProperties.map((elem) => elem.key)}
+          intakeIndex={plottedProperties.map((elem) => elem.intakeIndex)}
+          feature={props.feature.properties}
+        />
+      );
+      propertiesControls.push(allChems);
+    }
 
     plottedProperties = plottedProperties.filter((item, index) => {
       if (
@@ -123,7 +126,6 @@ function ChemicalSelector(props) {
       }
     });
 
-    propertiesControls.push(allChems);
     plottedProperties.map((item, index) => {
       let control = createMeasurementControl(
         item,

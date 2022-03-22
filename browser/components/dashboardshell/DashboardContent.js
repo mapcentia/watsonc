@@ -130,6 +130,7 @@ function DashboardContent(props) {
                   trace: item.feature.trace,
                   relation: item.feature.relation,
                   parameter: item.feature.parameter[itidx],
+                  locname: item.feature.locname,
                 }),
                 boreholeno: item.feature.loc_id,
                 numofintakes: 1,

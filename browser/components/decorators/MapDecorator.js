@@ -66,6 +66,7 @@ function MapDecorator(props) {
                   trace: plot.trace,
                   relation: props.relation,
                   parameter: plot.parameter[u],
+                  locname: response.features[0].properties.locname,
                 }),
                 boreholeno: plot.loc_id,
                 numofintakes: 1,
