@@ -100,7 +100,6 @@ function DashboardContent(props) {
   };
 
   const handleDrop = (id, item) => {
-    console.log(item);
     setLoadingData(true);
     let plot = props.getAllPlots().filter((p) => {
       if (p.id === id) return true;

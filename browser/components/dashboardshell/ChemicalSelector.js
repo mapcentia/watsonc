@@ -1,152 +1,160 @@
-import { useState, useEffect } from "react";
-import { connect } from "react-redux";
+import {useState, useEffect} from "react";
+import {connect} from "react-redux";
 import Collapse from "@material-ui/core/Collapse";
 import styled from "styled-components";
 import Searchbox from "../shared/inputs/Searchbox";
 import ChemicalsListItem from "./ChemicalsListItem";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import {DarkTheme} from "../../themes/DarkTheme";
 
 function ChemicalSelector(props) {
-  const [chemicalsList, setChemicalsList] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [openItems, setOpenItems] = useState({});
+    const [chemicalsList, setChemicalsList] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [openItems, setOpenItems] = useState({});
+    const [loadingData, setLoadingData] = useState(false);
 
-  const toggleOpenItem = (key) => {
-    setOpenItems({ ...openItems, [key]: !!!openItems[key] });
-  };
-
-  useEffect(() => {
-    if (!props.feature || !props.feature.properties) {
-      return;
-    }
-    let plottedProperties = [];
-    let categories = JSON.parse(JSON.stringify(props.categories));
-    var parameters = props.feature.properties.parameter;
-    for (let i = 0; i < parameters.length; i++) {
-      plottedProperties.push({
-        key: props.feature.properties.ts_name[i] + "_" + i,
-        intakeIndex: i,
-        boreholeno: props.feature.properties.loc_id,
-        title: props.feature.properties.ts_name[i],
-        unit: props.feature.properties.unit[i],
-        parameter: props.feature.properties.parameter[i],
-        measurements: [],
-        timeOfMeasurement: [],
-      });
-    }
-
-    const createMeasurementControl = (item, key) => {
-      let display = true;
-
-      let control = false;
-      if (display) {
-        let json = item;
-
-        let intakeName = `#` + (parseInt(item.intakeIndex) + 1);
-        if (
-          `intakes` in json &&
-          Array.isArray(json.intakes) &&
-          json.intakes[item.intakeIndex] !== null
-        ) {
-          intakeName = json.intakes[item.intakeIndex] + "";
-        }
-
-        let icon = false;
-        let measurementData = null;
-        if (!item.custom) {
-          // measurementData = evaluateMeasurement(json, props.limits, item.key, item.intakeIndex);
-          // icon = measurementIcon.generate(measurementData.maxColor, measurementData.latestColor);
-          //icon = measurementIcon.generate(/)
-        }
-
-        control = (
-          <ChemicalsListItem
-            label={item.title}
-            circleColor={DarkTheme.colors.denotive.warning}
-            key={key}
-            onAddMeasurement={props.onAddMeasurement}
-            // maxMeasurement={measurementData === null ? null : Math.round((measurementData.maxMeasurement) * 100) / 100}
-            // latestMeasurement={measurementData === null ? null : Math.round((measurementData.latestMeasurement) * 100) / 100}
-            // latestMeasurementRelative={measurementData === null ? null : Math.round((measurementData.latestMeasurement / measurementData.chemicalLimits[1]) * 100) / 100}
-            // detectionLimitReachedForMax={measurementData === null ? null : measurementData.detectionLimitReachedForMax}
-            // detectionLimitReachedForLatest={measurementData === null ? null : measurementData.detectionLimitReachedForLatest}
-            description={item.parameter + ", (" + item.unit + ")"}
-            icon={icon}
-            gid={props.feature.properties.loc_id}
-            itemKey={item.key}
-            intakeIndex={item.intakeIndex}
-            intakeName={intakeName}
-            unit={item.unit}
-            title={item.title}
-            feature={props.feature.properties}
-          />
-        );
-      }
-
-      return control;
+    const toggleOpenItem = (key) => {
+        setOpenItems({...openItems, [key]: !!!openItems[key]});
     };
 
-    let propertiesControls = [];
-    let searchTermLower = searchTerm.toLowerCase();
+    useEffect(() => {
+        setLoadingData(true);
+        if (!props.feature || !props.feature.properties) {
+            return;
+        }
+        // let plottedProperties = [];
+        console.log("PROPS", props.feature)
+        let parameters = props.feature.properties.parameter;
+        // for (let i = 0; i < parameters.length; i++) {
+        //     plottedProperties.push({
+        //         key: props.feature.properties.loc_id + "_" + i,
+        //         intakeIndex: i,
+        //         boreholeno: props.feature.properties.loc_id,
+        //         measurements: [],
+        //         timeOfMeasurement: [],
+        //     });
+        // }
 
-    let allChems = (
-      <ChemicalsListItem
-        label={"Alle parametre"}
-        circleColor={DarkTheme.colors.denotive.warning}
-        key={"allParameters" + "_" + props.feature.properties.loc_id}
-        onAddMeasurement={props.onAddMeasurement}
-        // maxMeasurement={measurementData === null ? null : Math.round((measurementData.maxMeasurement) * 100) / 100}
-        // latestMeasurement={measurementData === null ? null : Math.round((measurementData.latestMeasurement) * 100) / 100}
-        // latestMeasurementRelative={measurementData === null ? null : Math.round((measurementData.latestMeasurement / measurementData.chemicalLimits[1]) * 100) / 100}
-        // detectionLimitReachedForMax={measurementData === null ? null : measurementData.detectionLimitReachedForMax}
-        // detectionLimitReachedForLatest={measurementData === null ? null : measurementData.detectionLimitReachedForLatest}
-        description={""}
-        gid={props.feature.properties.loc_id}
-        itemKey={plottedProperties.map((elem) => elem.key)}
-        intakeIndex={plottedProperties.map((elem) => elem.intakeIndex)}
-        feature={props.feature.properties}
-      />
+        const createMeasurementControl = (item, key) => {
+            console.log('ITEM', item)
+            return new Promise(function (resolve, reject) {
+                const relation = item.feature.properties.relation;
+                const loc_id = item.feature.properties.loc_id;
+                fetch(
+                    `/api/sql/jupiter?q=SELECT gid,active_locations,count,enddate,startdate,trace,ts_id,images,locname,loc_id,ts_name,parameter,unit FROM ${relation} WHERE loc_id=${loc_id}&base64=false&lifetime=60&srs=4326`
+                ).then(res => {
+                    res.json().then(json => {
+                        if (!res.ok) {
+                            reject(json);
+                        }
+                        let properties = json.features[0].properties;
+                        let controls = [];
+                        properties.ts_name.forEach((prop, index) => {
+                            properties.relation = relation;
+                            let intakeName = `#` + (parseInt(index) + 1);
+                            let icon = false;
+                            controls.push(
+                                <ChemicalsListItem
+                                    label={properties.ts_name[index]}
+                                    circleColor={DarkTheme.colors.denotive.warning}
+                                    key={properties.loc_id + '_' + index}
+                                    onAddMeasurement={props.onAddMeasurement}
+                                    description={properties.parameter[index] + ", (" + properties.unit[index] + ")"}
+                                    icon={icon}
+                                    gid={loc_id}
+                                    itemKey={properties.locname + '_' + index}
+                                    intakeIndex={index}
+                                    intakeName={intakeName}
+                                    unit={properties.unit[index]}
+                                    title={properties.ts_name[index]}
+                                    feature={properties}
+                                />
+                            );
+                        });
+
+                        // let allChems = (
+                        //     <ChemicalsListItem
+                        //         label={"Alle parametre"}
+                        //         circleColor={DarkTheme.colors.denotive.warning}
+                        //         key={"allParameters" + "_" + properties.loc_id}
+                        //         onAddMeasurement={props.onAddMeasurement}
+                        //         description={""}
+                        //         gid={properties.loc_id}
+                        //         itemKey={plottedProperties.map((elem) => elem.key)}
+                        //         intakeIndex={plottedProperties.map((elem) => elem.intakeIndex)}
+                        //         feature={props.feature.properties}
+                        //     />
+                        // );
+
+
+                        resolve(controls)
+                    })
+                }, err => {
+                    alert(err.message)
+                })
+            });
+        };
+
+        let searchTermLower = searchTerm.toLowerCase();
+
+        // plottedProperties = plottedProperties.filter((item, index) => {
+        //     if (
+        //         searchTerm.length &&
+        //         item.title.toLowerCase().indexOf(searchTermLower) === -1 &&
+        //         item.parameter.toLowerCase().indexOf(searchTermLower) === -1
+        //     ) {
+        //         return false;
+        //     } else {
+        //         return true;
+        //     }
+        // });
+
+
+        // let promises = [];
+        // plottedProperties.map((item, index) => {
+        //     promises.push(createMeasurementControl(item, item.key + "_measurement_" + index, index));
+        // });
+        createMeasurementControl(props).then((controls) => {
+            setLoadingData(false);
+            // controls.unshift(allChems)
+            setChemicalsList(controls);
+        }).catch(json => {
+            alert(json.message);
+            setLoadingData(false);
+        });
+
+    }, [props.categories, props.feature, searchTerm, openItems]);
+
+    return (
+        <Root>
+            {/*<ButtonGroup align={Align.Right} spacing={2} marginTop={1}>*/}
+            {/*    <Button text={__("Jupiter")} variant={Variants.Secondary} onClick={() => console.log("Clicked")} size={Size.Small} />*/}
+            {/*    <Button text={__("Borpro")} variant={Variants.Secondary} onClick={() => console.log("Clicked")} size={Size.Small} />*/}
+            {/*</ButtonGroup>*/}
+            <SearchboxContainer>
+                {loadingData && (
+                    <div
+                        style={{
+                            justifyContent: "center",
+                            left: "50%",
+                            top: "50%",
+                            position: "absolute",
+                            zIndex: 9000,
+                        }}
+                    >
+                        <CircularProgress
+                            style={{color: DarkTheme.colors.interaction[4]}}
+                        />
+                    </div>
+                )}
+                <Searchbox
+                    placeholder={__("Søg efter dataparameter")}
+                    onChange={(value) => setSearchTerm(value)}
+                />
+            </SearchboxContainer>
+            <ChemicalsList>{chemicalsList}</ChemicalsList>
+        </Root>
     );
-
-    plottedProperties = plottedProperties.filter((item, index) => {
-      if (
-        searchTerm.length &&
-        item.title.toLowerCase().indexOf(searchTermLower) === -1 &&
-        item.parameter.toLowerCase().indexOf(searchTermLower) === -1
-      ) {
-        return false;
-      } else {
-        return true;
-      }
-    });
-
-    propertiesControls.push(allChems);
-    plottedProperties.map((item, index) => {
-      let control = createMeasurementControl(
-        item,
-        item.key + "_measurement_" + index
-      );
-      if (control) {
-        propertiesControls.push(control);
-      }
-    });
-    setChemicalsList(propertiesControls);
-  }, [props.categories, props.feature, searchTerm, openItems]);
-
-  return (
-    <Root>
-      {/*<ButtonGroup align={Align.Right} spacing={2} marginTop={1}>*/}
-      {/*    <Button text={__("Jupiter")} variant={Variants.Secondary} onClick={() => console.log("Clicked")} size={Size.Small} />*/}
-      {/*    <Button text={__("Borpro")} variant={Variants.Secondary} onClick={() => console.log("Clicked")} size={Size.Small} />*/}
-      {/*</ButtonGroup>*/}
-      <SearchboxContainer>
-        <Searchbox
-          placeholder={__("Søg efter dataparameter")}
-          onChange={(value) => setSearchTerm(value)}
-        />
-      </SearchboxContainer>
-      <ChemicalsList>{chemicalsList}</ChemicalsList>
-    </Root>
-  );
 }
 
 const Root = styled.div`
@@ -158,8 +166,9 @@ const Root = styled.div`
 `;
 
 const SearchboxContainer = styled.div`
+  position: relative;
   width: 100%;
-  //   padding: ${(props) => props.theme.layout.gutter / 2}px 0px;
+    //   padding: ${(props) => props.theme.layout.gutter / 2}px 0px;
 `;
 
 const ChemicalsList = styled.div`
@@ -174,8 +183,8 @@ const ChemicalsListTitle = styled.div`
 `;
 
 const mapStateToProps = (state) => ({
-  categories: state.global.categories,
-  limits: state.global.limits,
+    categories: state.global.categories,
+    limits: state.global.limits,
 });
 
 const mapDispatchToProps = (dispatch) => ({});

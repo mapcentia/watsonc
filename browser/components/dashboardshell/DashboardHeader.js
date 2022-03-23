@@ -32,7 +32,7 @@ function DashboardHeader(props) {
   }, [props.dashboardMode, props.dashboardContent]);
 
   const addNewPlot = () => {
-    const isFree = session.getProperties()["license"] === "free";
+    const isFree = session.getProperties()?.["license"] === "free";
     let allPlots = props.getAllPlots();
 
     if (isFree && allPlots.length > 0) {
