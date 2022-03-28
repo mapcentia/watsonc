@@ -72,8 +72,8 @@ function DashboardPlotCard(props) {
           let feature =
             props.plot.measurementsCachedData[measurementLocationRaw].data;
           let key = measurementLocation[1];
-          let intakeIndex = measurementLocation[2];
           let measurementData = JSON.parse(feature.properties[key]);
+          let intakeIndex = measurementData.ts_id.indexOf(parseInt(measurementLocation[2]));
           // Merge trace and data
           const plotInfoMergedWithTrace = {
             ...measurementData.data[intakeIndex],

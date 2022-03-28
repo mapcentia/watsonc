@@ -51,19 +51,19 @@ function ChemicalSelector(props) {
                         let controls = [];
                         properties.ts_name.forEach((prop, index) => {
                             properties.relation = relation;
-                            let intakeName = `#` + (parseInt(index) + 1);
+                            let intakeName = `#` + properties.ts_id[index];
                             let icon = false;
                             controls.push(
                                 <ChemicalsListItem
                                     label={properties.ts_name[index]}
                                     circleColor={DarkTheme.colors.denotive.warning}
-                                    key={properties.loc_id + '_' + index}
+                                    key={properties.loc_id + '_' + properties.ts_id[index]}
                                     onAddMeasurement={props.onAddMeasurement}
                                     description={properties.parameter[index] + ", (" + properties.unit[index] + ")"}
                                     icon={icon}
                                     gid={loc_id}
-                                    itemKey={properties.locname + '_' + index}
-                                    intakeIndex={index}
+                                    itemKey={properties.locname + '_' + properties.ts_id[index]}
+                                    intakeIndex={properties.ts_id[index]}
                                     intakeName={intakeName}
                                     unit={properties.unit[index]}
                                     title={properties.ts_name[index]}

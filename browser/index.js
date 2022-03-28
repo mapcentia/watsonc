@@ -1343,6 +1343,7 @@ module.exports = module.exports = {
                                         data: props.data,
                                         trace: props.trace,
                                         parameter: props.parameter[i],
+                                        ts_id: props.ts_id
                                     }),
                                     boreholeno: loc_id,
                                     numofintakes: 1,
