@@ -1338,6 +1338,7 @@ module.exports = module.exports = {
                                     _0: JSON.stringify({
                                         unit: props.unit[i],
                                         title: props.ts_name[i],
+                                        locname: props.locname,
                                         intakes: [1],
                                         boreholeno: loc_id,
                                         data: props.data,
@@ -1345,7 +1346,6 @@ module.exports = module.exports = {
                                         parameter: props.parameter[i],
                                         ts_id: props.ts_id,
                                         ts_name: props.ts_name,
-                                        ts_unit: props.ts_unit,
                                     }),
                                     boreholeno: loc_id,
                                     numofintakes: 1,

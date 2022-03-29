@@ -113,9 +113,10 @@ function DashboardContent(props) {
             (response) => {
                 let intakes = [];
                 if (!Array.isArray(item.intakeIndex)) {
-                    intakes.push(item.intakeIndex);
+                    intakes.push(item.feature.ts_id.indexOf(item.intakeIndex));
                 } else {
                     intakes = item.intakeIndex;
+                    debugger
                 }
                 for (const itidx of intakes) {
                     let measurementsData = {
@@ -124,6 +125,7 @@ function DashboardContent(props) {
                                 _0: JSON.stringify({
                                     unit: item.feature.unit[itidx],
                                     title: item.feature.ts_name[itidx],
+                                    locname: item.feature.locname,
                                     intakes: [1],
                                     boreholeno: item.feature.loc_id,
                                     data: response.features[0].properties.data,
@@ -132,7 +134,6 @@ function DashboardContent(props) {
                                     parameter: item.feature.parameter[itidx],
                                     ts_id: item.feature.ts_id,
                                     ts_name: item.feature.ts_name,
-                                    ts_unit: item.feature.ts_unit,
                                 }),
                                 boreholeno: item.feature.loc_id,
                                 numofintakes: 1,

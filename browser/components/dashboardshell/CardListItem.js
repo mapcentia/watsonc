@@ -44,7 +44,6 @@ function CardListItem(props) {
         const NAME = measurementData.title
           ? `${measurementData.locname} ${measurementData.title}, ${measurementData.parameter}`
           : `${measurementData.locname}, ${measurementData.parameter}`;
-        debugger
         setName(NAME);
         // if (measurementData.data[intakeIndex].tstype_id === 4) {
         //   setUseSumInsteadOfMean(true);

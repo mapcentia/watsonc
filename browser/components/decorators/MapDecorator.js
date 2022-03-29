@@ -60,6 +60,7 @@ function MapDecorator(props) {
                                 _0: JSON.stringify({
                                     unit: plot.unit[u],
                                     title: plot.ts_name[u],
+                                    locname: plot.locname,
                                     intakes: [1],
                                     boreholeno: plot.loc_id,
                                     data: data,
@@ -68,7 +69,6 @@ function MapDecorator(props) {
                                     parameter: plot.parameter[u],
                                     ts_id: plot.ts_id,
                                     ts_name: plot.ts_name,
-                                    ts_unit: plot.ts_unit,
                                 }),
                                 boreholeno: plot.loc_id,
                                 numofintakes: 1,

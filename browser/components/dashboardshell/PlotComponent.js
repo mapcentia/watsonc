@@ -215,7 +215,6 @@ function PlotComponent(props) {
       };
     }
     for (const agg of props.aggregate) {
-      debugger
       let ind = props.plotMeta.measurements.findIndex(
         (elem) => elem === agg.idx
       );
