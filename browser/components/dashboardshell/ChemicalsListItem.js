@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useDrag } from "react-dnd";
 import styled from "styled-components";
 import Grid from "@material-ui/core/Grid";
+import {DarkTheme} from "../../themes/DarkTheme";
 
 function ChemicalsListItem(props) {
   const [{ isDragging }, drag] = useDrag(() => ({
@@ -50,15 +51,15 @@ function ChemicalsListItem(props) {
         {/*</Grid>*/}
         <Grid container item xs={9}>
           <LabelRow>
-            <Title level={6} text={props.label} />
+            <Title level={6} text={props.label} color={DarkTheme.colors.gray[3]} />
           </LabelRow>
-          <LabelRow>
+          {/* <LabelRow>
             <Title
               level={6}
               text={props.description}
               color={DarkTheme.colors.gray[3]}
             />
-          </LabelRow>
+          </LabelRow> */}
         </Grid>
       </Grid>
     </Root>

@@ -35,18 +35,21 @@ function CardListItem(props) {
         key = splitMeasurement[1] + ":" + splitMeasurement[2];
         intakeIndex = splitMeasurement[3];
       }
-      debugger
       if (
         props.plot.measurementsCachedData &&
         props.plot.measurementsCachedData[props.measurement]
       ) {
         feature = props.plot.measurementsCachedData[props.measurement].data;
         let measurementData = JSON.parse(feature.properties[key]);
-        // setName(`${measurementData.title}, ${measurementData.parameter}`);
+        const NAME = measurementData.title
+          ? `${measurementData.locname} ${measurementData.title}, ${measurementData.parameter}`
+          : `${measurementData.locname}, ${measurementData.parameter}`;
+        debugger
+        setName(NAME);
         // if (measurementData.data[intakeIndex].tstype_id === 4) {
         //   setUseSumInsteadOfMean(true);
         // }
-        setName(`${measurementData.title} (${measurementData.unit})`);
+        // setName(`${measurementData.title} (${measurementData.unit})`);
       }
       setInfoForDeletion({
         plotId: props.plot.id,

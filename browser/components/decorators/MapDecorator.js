@@ -34,7 +34,7 @@ function MapDecorator(props) {
         };
         allPlots.unshift(plotData);
         $.ajax({
-            url: `/api/sql/jupiter?q=SELECT * FROM ${props.relation} WHERE loc_id=${props.data.properties.loc_id}&base64=false&lifetime=60&srs=4326`,
+            url: `/api/sql/jupiter?q=SELECT * FROM ${props.relation} WHERE loc_id='${props.data.properties.loc_id}'&base64=false&lifetime=60&srs=4326`,
             method: "GET",
             dataType: "json",
         }).then(
@@ -66,7 +66,9 @@ function MapDecorator(props) {
                                     trace: plot.trace,
                                     relation: props.relation,
                                     parameter: plot.parameter[u],
-                                    ts_id: plot.ts_id
+                                    ts_id: plot.ts_id,
+                                    ts_name: plot.ts_name,
+                                    ts_unit: plot.ts_unit,
                                 }),
                                 boreholeno: plot.loc_id,
                                 numofintakes: 1,
@@ -118,9 +120,11 @@ function MapDecorator(props) {
                             level={5}
                             color={DarkTheme.colors.headings}
                             text={
-                                props.data.properties.ts_name[elem] +
-                                ", " +
-                                props.data.properties.parameter[elem]
+                                props.data.properties.ts_name[elem]
+                                    ? props.data.properties.ts_name[elem] +
+                                    ", " +
+                                    props.data.properties.parameter[elem]
+                                    : props.data.properties.parameter[elem]
                             }
                         />
                     </Grid>
@@ -142,7 +146,11 @@ function MapDecorator(props) {
                             marginLeft={4}
                             level={5}
                             color={DarkTheme.colors.headings}
-                            text={v + ", " + props.data.properties.parameter[index]}
+                            text={
+                                v
+                                    ? v + ", " + props.data.properties.parameter[index]
+                                    : props.data.properties.parameter[index]
+                            }
                         />
                     </Grid>
                 );

@@ -1307,7 +1307,7 @@ module.exports = module.exports = {
 
             async function fetchData(loc_id, relation) {
                 return await fetch(
-                    `/api/sql/jupiter?q=SELECT * FROM ${relation} WHERE loc_id=${loc_id}&base64=false&lifetime=60&srs=4326`
+                    `/api/sql/jupiter?q=SELECT * FROM ${relation} WHERE loc_id='${loc_id}'&base64=false&lifetime=60&srs=4326`
                 );
             }
 
@@ -1343,7 +1343,9 @@ module.exports = module.exports = {
                                         data: props.data,
                                         trace: props.trace,
                                         parameter: props.parameter[i],
-                                        ts_id: props.ts_id
+                                        ts_id: props.ts_id,
+                                        ts_name: props.ts_name,
+                                        ts_unit: props.ts_unit,
                                     }),
                                     boreholeno: loc_id,
                                     numofintakes: 1,

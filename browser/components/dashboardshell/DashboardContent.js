@@ -106,7 +106,7 @@ function DashboardContent(props) {
             if (p.id === id) return true;
         })[0];
         $.ajax({
-            url: `/api/sql/jupiter?q=SELECT * FROM ${item.feature.relation} WHERE loc_id=${item.feature.loc_id}&base64=false&lifetime=60&srs=4326`,
+            url: `/api/sql/jupiter?q=SELECT * FROM ${item.feature.relation} WHERE loc_id='${item.feature.loc_id}'&base64=false&lifetime=60&srs=4326`,
             method: "GET",
             dataType: "json",
         }).then(
@@ -130,7 +130,9 @@ function DashboardContent(props) {
                                     trace: item.feature.trace,
                                     relation: item.feature.relation,
                                     parameter: item.feature.parameter[itidx],
-                                    ts_id: item.feature.ts_id
+                                    ts_id: item.feature.ts_id,
+                                    ts_name: item.feature.ts_name,
+                                    ts_unit: item.feature.ts_unit,
                                 }),
                                 boreholeno: item.feature.loc_id,
                                 numofintakes: 1,

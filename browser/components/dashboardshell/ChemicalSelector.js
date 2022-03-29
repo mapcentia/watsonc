@@ -36,7 +36,6 @@ function ChemicalSelector(props) {
         // }
 
         const createMeasurementControl = (item, key) => {
-            console.log('ITEM', item)
             return new Promise(function (resolve, reject) {
                 const relation = item.feature.properties.relation;
                 const loc_id = item.feature.properties.loc_id;
@@ -55,7 +54,11 @@ function ChemicalSelector(props) {
                             let icon = false;
                             controls.push(
                                 <ChemicalsListItem
-                                    label={properties.ts_name[index]}
+                                    label={
+                                        properties.ts_name[index]
+                                            ? properties.ts_name[index] + " " + properties.parameter[index] + ", (" + properties.unit[index] + ")"
+                                            : properties.parameter[index] + ", (" + properties.unit[index] + ")"
+                                    }
                                     circleColor={DarkTheme.colors.denotive.warning}
                                     key={properties.loc_id + '_' + properties.ts_id[index]}
                                     onAddMeasurement={props.onAddMeasurement}
@@ -71,7 +74,6 @@ function ChemicalSelector(props) {
                                 />
                             );
                         });
-
                         // let allChems = (
                         //     <ChemicalsListItem
                         //         label={"Alle parametre"}
@@ -85,8 +87,6 @@ function ChemicalSelector(props) {
                         //         feature={props.feature.properties}
                         //     />
                         // );
-
-
                         resolve(controls)
                     })
                 }, err => {
@@ -114,7 +114,7 @@ function ChemicalSelector(props) {
         // plottedProperties.map((item, index) => {
         //     promises.push(createMeasurementControl(item, item.key + "_measurement_" + index, index));
         // });
-        createMeasurementControl(props).then((controls) => {
+        createMeasurementControl(props).then(controls => {
             setLoadingData(false);
             // controls.unshift(allChems)
             setChemicalsList(controls);
@@ -122,7 +122,6 @@ function ChemicalSelector(props) {
             alert(json.message);
             setLoadingData(false);
         });
-
     }, [props.categories, props.feature, searchTerm, openItems]);
 
     return (
