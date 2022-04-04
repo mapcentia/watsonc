@@ -4,6 +4,7 @@ import {Provider} from "react-redux";
 import "regenerator-runtime/runtime";
 
 import AnalyticsComponent from "./components/AnalyticsComponent";
+import MenuProfilesComponent from "./components/MenuProfilesComponent";
 import {KOMMUNER, LAYER_NAMES, WATER_LEVEL_KEY} from "./constants";
 import trustedIpAddresses from "./trustedIpAddresses";
 import ThemeProvider from "./themes/ThemeProvider";
@@ -629,6 +630,30 @@ module.exports = module.exports = {
                     throw new Error(`Unable to get the profile drawing tab`);
 
                 // Initializing TimeSeries management component
+                $(`[data-module-id="profile-drawing"]`).click(() => {
+                    try {
+                        ReactDOM.render(<Provider store={reduxStore}>
+                            <MenuProfilesComponent
+                                cloud={cloud}
+                                backboneEvents={backboneEvents}
+                                license={dashboardComponentInstance.getLicense()}
+                                categories={categoriesOverall ? categoriesOverall : []}
+                                initialProfiles={dashboardComponentInstance.getProfiles()}
+                                initialActiveProfiles={dashboardComponentInstance.getActiveProfiles()}
+                                onProfileCreate={dashboardComponentInstance.handleCreateProfile}
+                                onProfileDelete={dashboardComponentInstance.handleDeleteProfile}
+                                onProfileHighlight={dashboardComponentInstance.handleHighlightProfile}
+                                onProfileShow={dashboardComponentInstance.handleShowProfile}
+                                onProfileHide={dashboardComponentInstance.handleHideProfile}/>
+                        </Provider>, document.getElementById(`profile-drawing-content`));
+
+                        backboneEvents.get().on(`reset:all reset:profile-drawing off:all`, () => {
+                            window.menuProfilesComponentInstance.stopDrawing();
+                        });
+                    } catch (e) {
+                        console.error(e);
+                    }
+                });
 
                 // if (dashboardComponentInstance) dashboardComponentInstance.onSetMin();
             };

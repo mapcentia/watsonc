@@ -162,6 +162,9 @@ class DashboardComponent extends React.Component {
         return allProfiles;
     }
 
+    getActiveProfiles() {
+        return JSON.parse(JSON.stringify(this.state.activeProfiles));
+    }
 
     getActiveProfileObjects() {
         let activeProfiles = this.getProfiles().filter((item) => {
@@ -173,15 +176,15 @@ class DashboardComponent extends React.Component {
     }
 
     handleCreateProfile(data, activateOnCreate = true, callback = false) {
-        this.profileManager.create(data).then(newProfile => {
-            let profilesCopy = JSON.parse(JSON.stringify(this.state.profiles));
+        _self.profileManager.create(data).then(newProfile => {
+            let profilesCopy = JSON.parse(JSON.stringify(_self.state.profiles));
             profilesCopy.unshift(newProfile);
 
             if (activateOnCreate) {
-                let activeProfilesCopy = JSON.parse(JSON.stringify(this.state.activeProfiles));
+                let activeProfilesCopy = JSON.parse(JSON.stringify(_self.state.activeProfiles));
                 if (activeProfilesCopy.indexOf(newProfile.key) === -1) activeProfilesCopy.push(newProfile.key);
 
-                let dashboardItemsCopy = JSON.parse(JSON.stringify(this.state.dashboardItems));
+                let dashboardItemsCopy = JSON.parse(JSON.stringify(_self.state.dashboardItems));
                 dashboardItemsCopy.push({
                     type: DASHBOARD_ITEM_PROFILE,
                     item: newProfile
@@ -193,9 +196,9 @@ class DashboardComponent extends React.Component {
                     activeProfiles: activeProfilesCopy
                 });
 
-                this.props.onActiveProfilesChange(activeProfilesCopy, profilesCopy, this.context);
+                _self.props.onActiveProfilesChange(activeProfilesCopy, profilesCopy, _self.context);
             } else {
-                this.setState({profiles: profilesCopy});
+                _self.setState({profiles: profilesCopy});
             }
 
             if (callback) callback();
