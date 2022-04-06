@@ -682,6 +682,7 @@ module.exports = module.exports = {
                 try {
                     ReactDOM.render(
                         <DashboardWrapper
+                            state={state}
                             ref={reactRef}
                             session={session}
                             backboneEvents={backboneEvents}
