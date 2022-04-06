@@ -73,7 +73,9 @@ function DashboardPlotCard(props) {
             props.plot.measurementsCachedData[measurementLocationRaw].data;
           let key = measurementLocation[1];
           let measurementData = JSON.parse(feature.properties[key]);
-          let intakeIndex = measurementData.ts_id.indexOf(parseInt(measurementLocation[2]));
+          let intakeIndex = measurementData.ts_id.indexOf(
+            parseInt(measurementLocation[2])
+          );
           // Merge trace and data
           const plotInfoMergedWithTrace = {
             ...measurementData.data[intakeIndex],
@@ -92,7 +94,10 @@ function DashboardPlotCard(props) {
   }, [props.plot]);
 
   return (
-    <DashboardPlotContent ref={drop}>
+    <DashboardPlotContent
+      height={props.fullscreen ? "80vh" : "100%"}
+      ref={drop}
+    >
       <Grid container>
         <Grid container item xs={2}>
           <CardList>
@@ -114,7 +119,7 @@ function DashboardPlotCard(props) {
           <PlotContainer>
             <PlotComponent
               viewMode={0}
-              height={props.plotHeight ? props.plotHeight : 370}
+              height={props.fullscreen ? 1000 : 370}
               index={props.index}
               onDelete={() => console.log("Testing")}
               plotMeta={props.plot}
@@ -131,7 +136,7 @@ function DashboardPlotCard(props) {
 
 const DashboardPlotContent = styled.div`
   padding: ${(props) => props.theme.layout.gutter / 2}px;
-  height: 100%;
+  height: ${(props) => props.height};
 `;
 
 const CardList = styled.div`

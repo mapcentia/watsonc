@@ -59,8 +59,6 @@ function PlotComponent(props) {
           ...prev.yaxis3,
           autorange: true,
         };
-        console.log(minmax);
-        console.log(prev);
         return { ...prev };
       });
   };
@@ -177,7 +175,9 @@ function PlotComponent(props) {
       let xmin = moment
         .min(
           plotData
-            .filter((elem) => elem.xaxis != "x2")
+            .filter(
+              (elem) => elem.xaxis != "x2" && typeof elem.x != "undefined"
+            )
             .map((elem) => moment(elem.x[0]))
         )
         .format("YYYY-MM-DD HH:mm:ss.SSS");
@@ -185,7 +185,9 @@ function PlotComponent(props) {
       let xmax = moment
         .max(
           plotData
-            .filter((elem) => elem.xaxis != "x2")
+            .filter(
+              (elem) => elem.xaxis != "x2" && typeof elem.x != "undefined"
+            )
             .map((elem) => moment(elem.x.slice(-1)[0]))
         )
         .format("YYYY-MM-DD HH:mm:ss.SSS");
