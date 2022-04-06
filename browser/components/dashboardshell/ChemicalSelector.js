@@ -39,7 +39,7 @@ function ChemicalSelector(props) {
                 const relation = item.feature.properties.relation;
                 const loc_id = item.feature.properties.loc_id;
                 fetch(
-                    `/api/sql/jupiter?q=SELECT gid,active_locations,count,enddate,startdate,trace,ts_id,images,locname,loc_id,ts_name,parameter,unit FROM ${relation} WHERE loc_id=${loc_id}&base64=false&lifetime=60&srs=4326`
+                        `/api/sql/jupiter?q=SELECT gid,trace,ts_id,locname,loc_id,ts_name,parameter,unit FROM ${relation} WHERE loc_id='${loc_id}'&base64=false&lifetime=60&srs=4326`
                 ).then(res => {
                     res.json().then(json => {
                         if (!res.ok) {
