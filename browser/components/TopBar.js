@@ -22,7 +22,6 @@ function TopBar(props) {
         setFree(session.getProperties()["license"] === "free");
         setStopPoll(true);
       }
-      console.log("hej");
     },
     stopPoll ? null : 1000
   );

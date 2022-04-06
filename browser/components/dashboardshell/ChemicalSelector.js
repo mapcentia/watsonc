@@ -23,7 +23,6 @@ function ChemicalSelector(props) {
             return;
         }
         // let plottedProperties = [];
-        console.log("PROPS", props.feature)
         let parameters = props.feature.properties.parameter;
         // for (let i = 0; i < parameters.length; i++) {
         //     plottedProperties.push({

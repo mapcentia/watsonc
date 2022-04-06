@@ -5,7 +5,7 @@ import Grid from "@material-ui/core/Grid";
 import Icon from "../shared/icons/Icon";
 import Title from "../shared/title/Title";
 import {Align} from "../shared/constants/align";
-import {Variant} from "../shared/constants/variants";
+import {Variants} from "../shared/constants/variants";
 import {Size} from "../shared/constants/size";
 import {showSubscription} from "./../../helpers/show_subscriptionDialogue";
 import Button from "../shared/button/Button";
@@ -19,7 +19,11 @@ const session = require("./../../../../session/browser/index");
 
 function DashboardHeader(props) {
     const [showSaveButtons, setShowSaveButtons] = useState(true);
+    const [dashboardTitle, setDashboardTitle] = useState(null);
+    const [dashboardId, setDashboardId] = useState(null);
+    const [saving, setSaving] = useState(false);
     const projectContext = useContext(ProjectContext);
+
 
     useEffect(() => {
         let canShowSaveButtons = true;
@@ -32,14 +36,18 @@ function DashboardHeader(props) {
         setShowSaveButtons(canShowSaveButtons);
     }, [props.dashboardMode, props.dashboardContent]);
 
+    useEffect(() => {
+        props.backboneEvents.get().on('statesnapshot:apply', snapshot => {
+            setDashboardTitle(snapshot.title);
+            setDashboardId(snapshot.id);
+        });
+    }, [])
+
     const addNewPlot = () => {
         const isFree = typeof session.getProperties()?.["license"] === "undefined" || session.getProperties()?.["license"] === "free";
-        console.log(session.getProperties())
-debugger
         let allPlots = props.getAllPlots();
 
         if ((typeof isFree === "undefined" || isFree) && allPlots.length > 0) {
-            console.log(allPlots);
             showSubscription();
             return;
         }
@@ -60,19 +68,38 @@ debugger
         props.onActivePlotsChange(activePlots, allPlots, projectContext);
     };
 
-    const createSnapShot = () => {
+    const save = () => {
+        let title;
+        if (!dashboardTitle) {
+            title = prompt("Navn på dashboard");
+            if (title) {
+                createSnapshot(title);
+            }
+        } else {
+            updateSnapShot();
+        }
+
+    }
+    const saveAs = () => {
+        let title = prompt("Navn på dashboard");
+        if (title) {
+            createSnapshot(title);
+        }
+    }
+
+    const createSnapshot = (title) => {
+        setSaving(true);
         props.state.getState().then(state => {
             state.map = props.anchor.getCurrentMapParameters();
             state.meta = getSnapshotMeta();
             let data = {
-                title: "test",
+                title: title,
                 anonymous: false,
                 snapshot: state,
                 database: vidiConfig.appDatabase,
                 schema: vidiConfig.appSchema,
                 host: props.urlparser.hostname
             };
-
             $.ajax({
                 url: `/api/state-snapshots` + '/' + vidiConfig.appDatabase,
                 method: 'POST',
@@ -80,15 +107,43 @@ debugger
                 dataType: 'text',
                 data: base64url(JSON.stringify(data))
             }).then((response) => {
-                // _self.setState({loading: false});
-                // _self.refreshSnapshotsList();
                 props.backboneEvents.get().trigger('statesnapshot:refresh');
-                let obj = {"stateId": response.id, "data": data};
-                window.parent.postMessage(obj, '*');
+                try {
+                    const id = JSON.parse(response).id;
+                    setDashboardId(id);
+                    setDashboardTitle(title)
+                } catch (e) {
+                    console.error(e.message);
+                }
+                setSaving(false)
             }).catch(error => {
                 console.error(error);
-                // _self.setState({loading: false});
-                // _self.refreshSnapshotsList();
+                setSaving(false)
+            });
+        });
+    }
+
+    const updateSnapShot = () => {
+        setSaving(true)
+        props.state.getState().then(state => {
+            state.map = props.anchor.getCurrentMapParameters();
+            state.meta = getSnapshotMeta();
+            let data = {
+                title: dashboardTitle,
+                snapshot: state,
+            };
+            $.ajax({
+                url: `/api/state-snapshots` + '/' + vidiConfig.appDatabase + '/' + dashboardId,
+                method: 'PUT',
+                contentType: 'text/plain; charset=utf-8',
+                dataType: 'text',
+                data: base64url(JSON.stringify(data))
+            }).then((response) => {
+                props.backboneEvents.get().trigger('statesnapshot:refresh');
+                setSaving(false)
+            }).catch(error => {
+                console.error(error);
+                setSaving(false)
             });
         });
     }
@@ -120,13 +175,13 @@ debugger
                         </Grid>
                         <Grid container item xs={4}>
                             <Title
-                                text={__("Dashboard")}
+                                text={__("Dashboard\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0")}
                                 level={4}
                                 color={DarkTheme.colors.headings}
                                 marginLeft={8}
-                            />
+                            /><br/>
                             <Title
-                                text={__("Ikke gemt")}
+                                text={dashboardTitle || __("Ikke gemt")}
                                 level={5}
                                 color={DarkTheme.colors.primary[5]}
                                 marginLeft={8}
@@ -138,11 +193,19 @@ debugger
                                 spacing={2}
                                 marginTop={1}
                                 marginRight={8}
+                                variant={"contained"}
                             >
                                 <Button
                                     text={"Gem"}
-                                    onClick={() => createSnapShot()}
-                                    variant={Variants.Primary}
+                                    onClick={() => save()}
+                                    variant={saving || !dashboardId ? Variants.PrimaryDisabled : Variants.Primary}
+                                    disabled={saving || !dashboardId}
+                                />
+                                <Button
+                                    text={"Gem\u00A0som"}
+                                    onClick={() => saveAs()}
+                                    variant={saving ? Variants.PrimaryDisabled : Variants.Primary}
+                                    disabled={saving}
                                 />
                             </ButtonGroup>
                         </Grid>

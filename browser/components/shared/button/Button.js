@@ -44,6 +44,13 @@ const Root = styled.button`
           background-color: ${(props) => props.theme.colors.interaction[5]};
         }
       `,
+      [Variants.PrimaryDisabled]: css`
+        background-color: ${theme.colors.interaction[4]};
+        opacity: 0.5;
+        &:hover {
+          background-color: ${(props) => props.theme.colors.interaction[5]};
+        }
+      `,
       [Variants.Secondary]: css`
         background-color: ${theme.colors.primary[3]};
         color: ${theme.colors.headings};
