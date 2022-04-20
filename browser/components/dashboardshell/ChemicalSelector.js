@@ -10,12 +10,7 @@ import { DarkTheme } from "../../themes/DarkTheme";
 function ChemicalSelector(props) {
   const [chemicalsList, setChemicalsList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [openItems, setOpenItems] = useState({});
   const [loadingData, setLoadingData] = useState(false);
-
-  const toggleOpenItem = (key) => {
-    setOpenItems({ ...openItems, [key]: !!!openItems[key] });
-  };
 
   useEffect(() => {
     setLoadingData(true);
@@ -70,18 +65,18 @@ function ChemicalSelector(props) {
                 properties.relation = relation;
                 let intakeName = `#` + properties.ts_id[index];
                 let icon = false;
+                console.log(intakeName);
                 controls.push(
                   <ChemicalsListItem
                     label={
                       properties.ts_name[index]
-                        ? properties.ts_name[index] +
-                          " " +
-                          properties.parameter[index] +
-                          ", (" +
+                        ? properties.parameter[index] +
+                          " (" +
                           properties.unit[index] +
-                          ")"
+                          ") - " +
+                          properties.ts_name[index]
                         : properties.parameter[index] +
-                          ", (" +
+                          " (" +
                           properties.unit[index] +
                           ")"
                     }
@@ -143,7 +138,7 @@ function ChemicalSelector(props) {
         alert(json.message);
         setLoadingData(false);
       });
-  }, [props.categories, props.feature, searchTerm, openItems]);
+  }, [props.categories, props.feature]);
 
   return (
     <Root>
@@ -172,7 +167,19 @@ function ChemicalSelector(props) {
           onChange={(value) => setSearchTerm(value)}
         />
       </SearchboxContainer>
-      <ChemicalsList>{chemicalsList}</ChemicalsList>
+      <ChemicalsList>
+        {chemicalsList.filter((item, index) => {
+          let searchTermLower = searchTerm.toLowerCase();
+          if (
+            searchTerm.length &&
+            item.props.label.toLowerCase().indexOf(searchTermLower) === -1
+          ) {
+            return false;
+          } else {
+            return true;
+          }
+        })}
+      </ChemicalsList>
     </Root>
   );
 }

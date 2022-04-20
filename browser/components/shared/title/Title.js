@@ -9,6 +9,7 @@ function Title(props) {
       align={props.align}
       marginTop={props.marginTop}
       marginLeft={props.marginLeft}
+      width={props.width}
     >
       {props.text}
     </Root>
@@ -22,6 +23,7 @@ Title.propTypes = {
   color: PropTypes.string,
   marginTop: PropTypes.number,
   marginLeft: PropTypes.number,
+  width: PropTypes.string,
 };
 
 Title.defaultProps = {
@@ -30,6 +32,7 @@ Title.defaultProps = {
   marginLeft: 0,
   marginTop: 0,
   color: "currentColor",
+  width: null,
 };
 
 const Root = styled.div`
@@ -37,6 +40,7 @@ const Root = styled.div`
   font-weight: normal;
   margin: 0;
   line-height: 1.3;
+  width: ${(props) => props.width};
   text-align: ${(props) => props.align};
   margin-left: ${(props) => props.marginLeft || 0}px;
   ${({ level, theme }) => {

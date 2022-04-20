@@ -387,7 +387,12 @@ function DashboardContent(props) {
                                 size={16}
                                 strokeColor={DarkTheme.colors.headings}
                               />
-                              <Title level={6} text={name} marginLeft={8} />
+                              <Title
+                                level={6}
+                                text={name}
+                                marginLeft={8}
+                                width="70%"
+                              />
                               <RemoveIconContainer
                                 onClick={() => deleteFromDashboard(index)}
                               >
