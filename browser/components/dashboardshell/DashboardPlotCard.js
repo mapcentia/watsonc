@@ -119,7 +119,7 @@ function DashboardPlotCard(props) {
           <PlotContainer>
             <PlotComponent
               viewMode={0}
-              height={props.fullscreen ? "100%" : 370}
+              height={props.fullscreen ? 1000 : 370}
               index={props.index}
               onDelete={() => console.log("Testing")}
               plotMeta={props.plot}
