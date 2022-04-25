@@ -206,6 +206,7 @@ function PlotComponent(props) {
       };
 
       var conf = {
+        responsive: true,
         modeBarButtons: [
           ["toImage", "zoom2d", "pan2d", "zoomIn2d", "zoomOut2d"],
           [resetAxes],
@@ -276,6 +277,7 @@ function PlotComponent(props) {
           onLegendDoubleClick={(param) =>
             console.log("Legend double clicked", param)
           }
+          useResizeHandler={true}
           onDoubleClick={changeLayout(minmaxRange)}
           onLegendClick={(param) => console.log("Legend clicked", param)}
           style={{ width: "100%", height: `100%` }}

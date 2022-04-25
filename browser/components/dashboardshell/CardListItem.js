@@ -166,15 +166,15 @@ const CardListLabel = styled.div`
 const Select = styled.select`
   width: 100%;
   height: ${(props) =>
-    props.theme.layout.gutter - props.theme.layout.gutter / 8}px;
-  //   height: 35px;
-  //   background: white;
-  // color: ${(props) => props.color || props.theme.colors.gray[3]};
+    props.theme.layout.gutter - props.theme.layout.gutter / 8 + 2}px;
   background: transparent;
   padding-left: 5px;
   font: ${(props) => props.theme.fonts.label};
   border: none;
   margin-left: 10px;
+  word-wrap: break-word;
+  text-overflow: inherit;
+  white-space: normal;
 
   option {
     color: black;
@@ -184,6 +184,8 @@ const Select = styled.select`
     min-height: 20px;
     padding: 0px 2px 1px;
   }
+
+  s
 `;
 
 export default CardListItem;
