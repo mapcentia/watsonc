@@ -14,6 +14,7 @@ import { DarkTheme } from "../../themes/DarkTheme";
 import ProjectContext from "../../contexts/project/ProjectContext";
 import { getNewPlotId } from "../../helpers/common";
 import base64url from "base64url";
+import reduxStore from "../../redux/store";
 
 const session = require("./../../../../session/browser/index");
 
@@ -84,6 +85,12 @@ function DashboardHeader(props) {
       createSnapshot(title);
     }
   };
+
+  const clearDashboard = () => {
+      reduxStore.dispatch(clearBoreholeFeatures());
+      props.setActivePlots([]);
+      props.setPlots([])
+  }
 
   const createSnapshot = (title) => {
     setSaving(true);
@@ -221,6 +228,11 @@ function DashboardHeader(props) {
                   variant={saving ? Variants.PrimaryDisabled : Variants.Primary}
                   disabled={saving}
                 />
+                  <Button
+                      text={"Ryd\u00A0dashboard"}
+                      onClick={() => clearDashboard()}
+                      variant={saving ? Variants.PrimaryDisabled : Variants.Primary}
+                  />
               </ButtonGroup>
             </Grid>
           </Grid>

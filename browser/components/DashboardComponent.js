@@ -382,14 +382,14 @@ class DashboardComponent extends React.Component {
     getActivePlots() {
         let addedPlots = [];
         let activePlots = this.state.plots.filter((item) => {
-            if (this.state.activePlots.indexOf(item.id) !== -1 && addedPlots.indexOf(item.id) === -1) {
+            if ((this.state?.activePlots && addedPlots) && this.state.activePlots.indexOf(item.id) !== -1 && addedPlots.indexOf(item.id) === -1) {
                 addedPlots.push(item.id);
                 return item.id;
 
             }
         });
         this.state.projectPlots.map((item) => {
-            if (this.state.activePlots.indexOf(item.id) !== -1 && addedPlots.indexOf(item.id) === -1) {
+            if ((this.state?.activePlots && addedPlots) && this.state.activePlots.indexOf(item.id) !== -1 && addedPlots.indexOf(item.id) === -1) {
                 addedPlots.push(item.id);
                 activePlots.push(item);
             }

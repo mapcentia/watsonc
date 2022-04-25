@@ -1332,7 +1332,6 @@ module.exports = module.exports = {
    * Applies externally provided state
    */
   applyState: (newState) => {
-    console.log("newState", newState);
     setTimeout(() => {
       reduxStore.dispatch(clearBoreholeFeatures());
       if (newState?.sources) {
