@@ -90,6 +90,7 @@ function DashboardHeader(props) {
       reduxStore.dispatch(clearBoreholeFeatures());
       props.setActivePlots([]);
       props.setPlots([])
+      props.backboneEvents.get().trigger('watsonc:clearChemicalList');
   }
 
   const createSnapshot = (title) => {

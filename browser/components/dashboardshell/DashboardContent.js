@@ -523,6 +523,7 @@ function DashboardContent(props) {
                     limits={limits}
                     categories={props.categories}
                     onAddMeasurement={props.onAddMeasurement}
+                    backboneEvents={props.backboneEvents}
                   />
                 </Grid>
               </Grid>
