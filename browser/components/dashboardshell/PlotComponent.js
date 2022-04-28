@@ -263,27 +263,30 @@ function PlotComponent(props) {
   //   }, [props.aggregate, triggerAggregate]);
 
   return (
-    <div style={{ maxHeight: $(document).height() * 0.4 + 40 + "px" }}>
-      <div
-        style={{
-          height: `${props.height - 50}px`,
-          border: `1px solid lightgray`,
-        }}
-      >
-        <Plot
-          data={plotDataState}
-          layout={layoutState}
-          config={configState}
-          onLegendDoubleClick={(param) =>
-            console.log("Legend double clicked", param)
-          }
-          useResizeHandler={true}
-          onDoubleClick={changeLayout(minmaxRange)}
-          onLegendClick={(param) => console.log("Legend clicked", param)}
-          style={{ width: "100%", height: `100%` }}
-        />
-      </div>
+    //<div style={{ maxHeight: $(document).height() * 0.4 + 40 + "px" }}>
+    <div
+      style={{
+        height:
+          typeof props.height == "string"
+            ? props.height
+            : `${props.height - 50}px`,
+        border: `1px solid lightgray`,
+      }}
+    >
+      <Plot
+        data={plotDataState}
+        layout={layoutState}
+        config={configState}
+        onLegendDoubleClick={(param) =>
+          console.log("Legend double clicked", param)
+        }
+        useResizeHandler={true}
+        onDoubleClick={changeLayout(minmaxRange)}
+        onLegendClick={(param) => console.log("Legend clicked", param)}
+        style={{ width: "100%", height: `100%` }}
+      />
     </div>
+    //</div>
   );
 }
 

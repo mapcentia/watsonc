@@ -95,10 +95,10 @@ function DashboardPlotCard(props) {
 
   return (
     <DashboardPlotContent
-      height={props.fullscreen ? "80vh" : "100%"}
+      height={props.fullscreen ? "90vh" : "100%"}
       ref={drop}
     >
-      <Grid container>
+      <Grid container style={{ height: "100%" }}>
         <Grid container item xs={2}>
           <CardList>
             {props.plot?.measurements?.map((measurement, index) => {
@@ -119,7 +119,7 @@ function DashboardPlotCard(props) {
           <PlotContainer>
             <PlotComponent
               viewMode={0}
-              height={props.fullscreen ? 1000 : 370}
+              height={props.fullscreen ? "100%" : 370}
               index={props.index}
               onDelete={() => console.log("Testing")}
               plotMeta={props.plot}

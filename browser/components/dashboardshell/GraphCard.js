@@ -149,6 +149,7 @@ function GraphCard(props) {
         )}
       </Root>
       <Dialog
+        PaperProps={{ sx: { maxHeight: "90vh" } }}
         fullWidth={true}
         maxWidth={false}
         open={fullscreen}
