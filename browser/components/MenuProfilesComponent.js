@@ -13,6 +13,8 @@ import SearchFieldComponent from './../../../../browser/modules/shared/SearchFie
 import reduxStore from './../redux/store';
 
 import {selectChemical} from './../redux/actions';
+import ChemicalSelectorModal from './dataselector/ChemicalSelectorModal';
+import ThemeProvider from '../themes/ThemeProvider';
 
 const utils = require('./../utils');
 
@@ -213,7 +215,7 @@ class MenuProfilesComponent extends React.Component {
         }, () => {
             this.stopDrawing();
             this.setState({loading: true});
-            axios.post(`/api/extension/watsonc/intersection`, {
+            axios.post(`https://map.calypso.watsonc.dk/api/extension/watsonc/intersection`, {
                 data: wkt.convert(this.state.bufferedProfile),
                 bufferRadius: this.state.buffer,
                 profileDepth: this.state.profileBottom,
@@ -534,14 +536,17 @@ class MenuProfilesComponent extends React.Component {
                                                 try {
                                                     ReactDOM.render(<div>
                                                         <Provider store={reduxStore}>
-                                                            <ChemicalSelectorModal
-                                                                emptyOptionTitle={__(`Show without data type`)}
-                                                                useLocalSelectedChemical={true}
-                                                                localSelectedChemical={this.state.selectedChemical}
-                                                                onClickControl={(selectorValue) => {
-                                                                    this.setState({localSelectedChemical: selectorValue})
-                                                                    $('#' + SELECT_CHEMICAL_DIALOG_PREFIX).modal('hide');
-                                                                }}/>
+                                                            <ThemeProvider>
+                                                                <ChemicalSelectorModal
+                                                                    emptyOptionTitle={__(`Show without data type`)}
+                                                                    categories={this.props.categories}
+                                                                    useLocalSelectedChemical={true}
+                                                                    localSelectedChemical={this.state.selectedChemical}
+                                                                    onClickControl={(selectorValue) => {
+                                                                        this.setState({localSelectedChemical: selectorValue})
+                                                                        $('#' + SELECT_CHEMICAL_DIALOG_PREFIX).modal('hide');
+                                                                    }}/>
+                                                            </ThemeProvider>
                                                         </Provider>
                                                     </div>, document.getElementById(selectChemicalModalPlaceholderId));
                                                 } catch (e) {

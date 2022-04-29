@@ -77,7 +77,6 @@ function MapDecorator(props) {
             },
           };
         }
-        console.log(plotData.measurementsCachedData);
         let activePlots = allPlots.map((plot) => plot.id);
         props.setPlots(allPlots, activePlots);
         props.setLoadingData(false);

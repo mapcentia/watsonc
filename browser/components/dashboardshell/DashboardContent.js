@@ -27,6 +27,7 @@ import reduxStore from "../../redux/store";
 import { addBoreholeFeature } from "../../redux/actions";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import _ from "lodash";
 
 const DASHBOARD_ITEM_PLOT = 0;
 const DASHBOARD_ITEM_PROFILE = 1;
@@ -74,7 +75,7 @@ function DashboardContent(props) {
       newIndex
     );
     props.setPlots(allPlots, activePlots);
-    props.onActivePlotsChange(activePlots, allPlots, projectContext);
+    // props.onActivePlotsChange(activePlots, allPlots, projectContext);
     setDashboardItems(arrayMove(dashboardItems, oldIndex, newIndex));
   };
 
@@ -87,6 +88,7 @@ function DashboardContent(props) {
       props.getAllProfiles(),
       projectContext
     );
+    props.setProfiles(profiles, activeProfiles);
   };
 
   const handleRemovePlot = (id) => {
@@ -95,7 +97,7 @@ function DashboardContent(props) {
     activePlots = activePlots.filter((plot) => plot.id !== id);
     allPlots = allPlots.filter((plot) => plot.id !== id);
     activePlots = activePlots.map((plot) => plot.id);
-    props.onActivePlotsChange(activePlots, allPlots, projectContext);
+    // props.onActivePlotsChange(activePlots, allPlots, projectContext);
     props.setPlots(allPlots, activePlots);
   };
 
@@ -185,6 +187,8 @@ function DashboardContent(props) {
 
   useEffect(() => {
     const dashboardItemsCopy = [];
+
+    const length = props.getAllPlots().length;
     props.getAllPlots().map((item, index) => {
       dashboardItemsCopy.push({
         type: DASHBOARD_ITEM_PLOT,
@@ -192,74 +196,77 @@ function DashboardContent(props) {
         plotsIndex: index,
       });
     });
+    props.getAllProfiles().map((item, index) => {
+      dashboardItemsCopy.push({
+        type: DASHBOARD_ITEM_PROFILE,
+        item: { ...item, title: item.profile.title },
+        plotsIndex: index + length,
+      });
+    });
     setDashboardItems(dashboardItemsCopy);
-  }, [props.activePlots]);
+    console.log(dashboardItemsCopy);
+  }, [props.activePlots, props.activeProfiles]);
+
+  // useEffect(() => {
+  //   console.log(props.getAllProfiles());
+  // }, [props.activeProfiles]);
 
   useEffect(() => {
     $.ajax({
-      url: `/api/sql/watsonc?q=SELECT * FROM calypso_stationer.calypso_my_stations WHERE user_id in (${
+      url: `/api/sql/watsonc?q=SELECT loc_id, locname, groupname, relation FROM calypso_stationer.calypso_my_stations_v2 WHERE user_id in (${
         session.getProperties()?.organisation.id
       }, ${session.getUserName()}) &base64=false&lifetime=60&srs=4326`,
       method: "GET",
       dataType: "json",
     }).then((response) => {
+      function getArray(object) {
+        return Object.keys(object).reduce(function (r, k) {
+          object[k].forEach(function (a, i) {
+            r[i] = r[i] || {};
+            r[i][k] = a;
+          });
+          return r;
+        }, []);
+      }
       var features = response.features;
-      var relations = [];
-      var loc_ids = [];
+      var myStations = [];
+      var groups = [];
 
       features.forEach((element) => {
-        relations = relations.concat(element.properties.relation);
-
-        loc_ids = loc_ids.concat(element.properties.loc_id);
+        myStations = myStations.concat(getArray(element.properties));
+        groups = groups.concat(element.groupname);
       });
 
-      relations = [...new Set(relations)];
-      loc_ids = [...new Set(loc_ids)];
-      // var grp = [];
-      // var mystat = [];
-      relations.forEach((element) => {
-        $.ajax({
-          url: `/api/sql/jupiter?q=SELECT the_geom, gid, loc_id, locname, groupname, ts_name, ts_id, unit, parameter, trace FROM ${element} WHERE loc_id in (${loc_ids}) &base64=false&lifetime=60&srs=4326`,
-          method: "GET",
-          dataType: "json",
-        }).then((response) => {
-          const grp = response.features.map(
-            (item) => item.properties.groupname
-          );
-          setGroups((prev_state) =>
-            [...new Set([...grp, ...prev_state])].sort(function (a, b) {
-              // equal items sort equally
-              if (a === b) {
-                return 0;
-              }
-              // nulls sort after anything else
-              else if (a === null) {
-                return 1;
-              } else if (b === null) {
-                return -1;
-              }
-              // otherwise, if we're ascending, lowest sorts first
-              else {
-                return a < b ? -1 : 1;
-              }
-            })
-          );
+      myStations = _.uniqWith(myStations, _.isEqual);
 
-          const mystat = response.features.map((elem) => {
-            var x = {
-              ...elem.properties,
-              relation: element,
-            };
-            return { ...elem, properties: x };
-          });
+      myStations = myStations.sort((a, b) =>
+        a.locname.localeCompare(b.locname)
+      );
 
-          setMyStations((prev_state) =>
-            [...prev_state, ...mystat].sort((a, b) =>
-              a.properties.locname.localeCompare(b.properties.locname)
-            )
-          );
-        });
-      });
+      setGroups(
+        groups.sort(function (a, b) {
+          // equal items sort equally
+          if (a === b) {
+            return 0;
+          }
+          // nulls sort after anything else
+          else if (a === null) {
+            return 1;
+          } else if (b === null) {
+            return -1;
+          }
+          // otherwise, if we're ascending, lowest sorts first
+          else {
+            return a < b ? -1 : 1;
+          }
+        })
+      );
+
+      setMyStations(
+        myStations.map((elem) => {
+          return { properties: elem };
+        })
+      );
     });
   }, []);
 

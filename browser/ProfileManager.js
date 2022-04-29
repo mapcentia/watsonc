@@ -8,6 +8,7 @@ class ProfileManager {
     constructor() {
         let hostname = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
         //this.apiUrl = hostname + `/api/key-value/` + window.vidiConfig.appDatabase;
+        // let hostname = 'https://map.calypso.watsonc.dk'
         this.apiUrl = hostname + `/api/extension/watsonc/${window.vidiConfig.appDatabase}/profiles`;
     }
 
@@ -33,7 +34,7 @@ class ProfileManager {
 
     create(savedProfile) {
         return new Promise((resolve, reject) => {
-            axios.post(`/api/extension/watsonc/profile`, savedProfile).then(response => {
+            axios.post(`https://map.calypso.watsonc.dk/api/extension/watsonc/profile`, savedProfile).then(response => {
                 if (response.data) {
                     savedProfile.data = response.data;
                     axios.post(`${this.apiUrl}`, savedProfile).then(response => {

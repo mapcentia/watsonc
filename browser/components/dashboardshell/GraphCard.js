@@ -35,7 +35,6 @@ function GraphCard(props) {
           let feature =
             props.plot.measurementsCachedData[measurementLocationRaw].data;
           let measurementData = JSON.parse(feature.properties[key]);
-          console.log(measurementData);
           let formatedDates = measurementData.data[intakeIndex].x.map((elem) =>
             moment(elem).format("YYYY-MM-DD HH:mm:ss")
           );
@@ -111,6 +110,7 @@ function GraphCard(props) {
                       e.target.blur();
                     }
                   }}
+                  disabled={props.cardType === "plot" ? false : true}
                 />
               </HeaderActionItem>
             </Grid>
@@ -160,7 +160,11 @@ function GraphCard(props) {
             <Icon name="cross" size={24} />
           </Button>
         </DialogActions>
-        <DashboardPlotCard {...{ ...props, fullscreen: true }} />
+        {props.cardType === "plot" ? (
+          <DashboardPlotCard {...{ ...props, fullscreen: true }} />
+        ) : (
+          <DashboardProfileCard {...{ ...props, fullscreen: true }} />
+        )}
       </Dialog>
     </li>
   );
