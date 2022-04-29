@@ -215,7 +215,7 @@ class MenuProfilesComponent extends React.Component {
         }, () => {
             this.stopDrawing();
             this.setState({loading: true});
-            axios.post(`https://map.calypso.watsonc.dk/api/extension/watsonc/intersection`, {
+            axios.post(`/api/extension/watsonc/intersection`, {
                 data: wkt.convert(this.state.bufferedProfile),
                 bufferRadius: this.state.buffer,
                 profileDepth: this.state.profileBottom,

@@ -34,7 +34,7 @@ class ProfileManager {
 
     create(savedProfile) {
         return new Promise((resolve, reject) => {
-            axios.post(`https://map.calypso.watsonc.dk/api/extension/watsonc/profile`, savedProfile).then(response => {
+            axios.post(`/api/extension/watsonc/profile`, savedProfile).then(response => {
                 if (response.data) {
                     savedProfile.data = response.data;
                     axios.post(`${this.apiUrl}`, savedProfile).then(response => {
