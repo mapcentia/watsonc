@@ -77,7 +77,6 @@ function MapDecorator(props) {
             },
           };
         }
-        console.log(plotData.measurementsCachedData);
         let activePlots = allPlots.map((plot) => plot.id);
         props.setPlots(allPlots, activePlots);
         props.setLoadingData(false);
@@ -92,7 +91,6 @@ function MapDecorator(props) {
     reduxStore.dispatch(addBoreholeFeature(props.data));
   };
   let links = [];
-  console.log(props.data.properties);
 
   if (typeof props.data.properties.compound_list != "undefined") {
     const indices = [];

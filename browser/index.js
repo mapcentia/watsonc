@@ -108,7 +108,6 @@ module.exports = module.exports = {
   },
 
   init: function () {
-    console.log("Properties", session.getProperties());
     state.listenTo(MODULE_NAME, _self);
     state.listen(MODULE_NAME, `plotsUpdate`);
     state.listen(MODULE_NAME, `chemicalChange`);
@@ -748,8 +747,6 @@ module.exports = module.exports = {
                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
                 if (profiles && window.menuProfilesComponentInstance)
                   window.menuProfilesComponentInstance.setProfiles(profiles);
-                console.log("Profiles changes");
-                console.log(profiles);
               }}
               onActivePlotsChange={(activePlots, plots, context) => {
                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
@@ -939,7 +936,6 @@ module.exports = module.exports = {
   },
 
   onApplyLayersAndChemical: (parameters) => {
-    console.log("parameters", parameters);
     // Disabling all layers
     layerTree.getActiveLayers().map((layerNameToEnable) => {
       if (
