@@ -700,6 +700,17 @@
         padding: 9px 3px;
 
         border: none;
+        background-color: #00786D !important;
+    }
+    .radio input[type=radio]:checked ~ .check, label.radio-inline input[type=radio]:checked ~ .check {
+        background-color: white;
+    }
+
+    .radio input[type=radio]:checked ~ .circle, label.radio-inline input[type=radio]:checked ~ .circle {
+        border-color: white;
+    }
+    .radio .circle, label.radio-inline .circle {
+        border-color: white;
     }
 
     .inherit-size {
