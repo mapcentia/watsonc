@@ -8,6 +8,7 @@ class ProfileManager {
     constructor() {
         let hostname = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
         //this.apiUrl = hostname + `/api/key-value/` + window.vidiConfig.appDatabase;
+        // let hostname = 'https://map.calypso.watsonc.dk'
         this.apiUrl = hostname + `/api/extension/watsonc/${window.vidiConfig.appDatabase}/profiles`;
     }
 

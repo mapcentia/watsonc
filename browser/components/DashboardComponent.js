@@ -83,15 +83,15 @@ class DashboardComponent extends React.Component {
 
         // this.handleHighlightPlot = this.handleHighlightPlot.bind(this);
 
-        // this.handleShowProfile = this.handleShowProfile.bind(this);
-        // this.handleHideProfile = this.handleHideProfile.bind(this);
-        // this.handleCreateProfile = this.handleCreateProfile.bind(this);
-        // this.handleDeleteProfile = this.handleDeleteProfile.bind(this);
-        // this.handleProfileClick = this.handleProfileClick.bind(this);
-        // this.handleChangeDatatypeProfile = this.handleChangeDatatypeProfile.bind(this);
-        // this.setProjectProfiles = this.setProjectProfiles.bind(this);
-        // this.getProfilesLength = this.getProfilesLength.bind(this);
-        // this.getPlotsLength = this.getPlotsLength.bind(this);
+        this.handleShowProfile = this.handleShowProfile.bind(this);
+        this.handleHideProfile = this.handleHideProfile.bind(this);
+        this.handleCreateProfile = this.handleCreateProfile.bind(this);
+        this.handleDeleteProfile = this.handleDeleteProfile.bind(this);
+        this.handleProfileClick = this.handleProfileClick.bind(this);
+        this.handleChangeDatatypeProfile = this.handleChangeDatatypeProfile.bind(this);
+        this.setProjectProfiles = this.setProjectProfiles.bind(this);
+        this.getProfilesLength = this.getProfilesLength.bind(this);
+        this.getPlotsLength = this.getPlotsLength.bind(this);
 
         // this.getFeatureByGidFromDataSource = this.getFeatureByGidFromDataSource.bind(this);
         // this.handleNewPlotNameChange = this.handleNewPlotNameChange.bind(this);
@@ -190,7 +190,9 @@ class DashboardComponent extends React.Component {
                     item: newProfile
                 });
 
-                this.setState({
+
+
+                _self.setState({
                     profiles: profilesCopy,
                     dashboardItems: dashboardItemsCopy,
                     activeProfiles: activeProfilesCopy
@@ -203,7 +205,7 @@ class DashboardComponent extends React.Component {
 
             if (callback) callback();
 
-            this.props.onProfilesChange(this.getProfiles());
+            _self.props.onProfilesChange(_self.getProfiles());
         }).catch(error => {
             console.error(`Error occured while creating profile (${error})`);
             alert(`Error occured while creating profile (${error})`);
@@ -308,37 +310,36 @@ class DashboardComponent extends React.Component {
 
     handleDeleteProfile(profileKey, callback = false) {
         this.profileManager.delete(profileKey).then(() => {
-            let profilesCopy = JSON.parse(JSON.stringify(this.state.profiles));
-
+            var profilesCopy = JSON.parse(JSON.stringify(this.state.profiles));
             let profileWasDeleted = false;
-            profilesCopy.map((profile, index) => {
+            profilesCopy = profilesCopy.filter((profile) => {
                 if (profile.key === profileKey) {
-                    profilesCopy.splice(index, 1);
-                    profileWasDeleted = true;
                     return false;
                 }
+                return true;
             });
 
             if (profileWasDeleted === false) {
                 console.warn(`Profile ${profileKey} was deleted only from backend storage`);
             }
 
-            let dashboardItemsCopy = JSON.parse(JSON.stringify(this.state.dashboardItems));
-            dashboardItemsCopy.map((item, index) => {
+            var dashboardItemsCopy = JSON.parse(JSON.stringify(this.state.dashboardItems));
+            dashboardItemsCopy = dashboardItemsCopy.filter((item) => {
                 if (item.type === DASHBOARD_ITEM_PROFILE) {
                     if (item.key === profileKey) {
-                        dashboardItemsCopy.splice(index, 1);
                         return false;
                     }
                 }
+                return true;
             });
 
-            let activeProfilesCopy = JSON.parse(JSON.stringify(this.state.activeProfiles));
-            activeProfilesCopy.map((profile, index) => {
+
+            var activeProfilesCopy = JSON.parse(JSON.stringify(this.state.activeProfiles));
+            activeProfilesCopy = activeProfilesCopy.filter((profile) => {
                 if (profile === profileKey) {
-                    activeProfilesCopy.splice(index, 1);
                     return false;
                 }
+                return true;
             });
 
             if (callback) callback();
@@ -349,6 +350,7 @@ class DashboardComponent extends React.Component {
                 dashboardItems: dashboardItemsCopy
             });
             this.props.onProfilesChange(this.getProfiles());
+            this.props.onActiveProfilesChange(activeProfilesCopy, profilesCopy, this.context);
 
         }).catch(error => {
             console.error(`Error occured while deleting profile (${error})`)
@@ -360,6 +362,7 @@ class DashboardComponent extends React.Component {
 
         let activeProfiles = JSON.parse(JSON.stringify(this.state.activeProfiles));
         if (activeProfiles.indexOf(profileId) === -1) activeProfiles.push(profileId);
+        console.log(activeProfiles);
         this.setState({activeProfiles}, () => {
             this.props.onActiveProfilesChange(this.state.activeProfiles, this.state.profiles, this.context);
         });
@@ -370,6 +373,7 @@ class DashboardComponent extends React.Component {
 
         let activeProfiles = JSON.parse(JSON.stringify(this.state.activeProfiles));
         if (activeProfiles.indexOf(profileId) > -1) activeProfiles.splice(activeProfiles.indexOf(profileId), 1);
+        console.log(activeProfiles);
         this.setState({activeProfiles}, () => {
             this.props.onActiveProfilesChange(this.state.activeProfiles, this.state.profiles, this.context);
         });
@@ -444,6 +448,30 @@ class DashboardComponent extends React.Component {
         });
     }
 
+    setProfiles(profiles) {
+        let dashboardItemsCopy = [];
+        this.state.dashboardItems.map(item => {
+            if (item.type !== DASHBOARD_ITEM_PROFILE /* type 0 */ && item.type !== DASHBOARD_ITEM_PROJECT_PLOT /* type 3*/) {
+                dashboardItemsCopy.push(item);
+            }
+        });
+
+        profiles.map(item => {
+            dashboardItemsCopy.push({
+                type: DASHBOARD_ITEM_PROFILE,
+                item
+            });
+        });
+
+        this.setState({profiles, dashboardItems: dashboardItemsCopy}, () => {
+            this.props.onProfilesChange(this.getProfiles());
+        });
+    }
+
+    setActiveProfiles(activeProfiles) {
+        this.setState({activeProfiles});
+    }
+
     setPlots(plots) {
         let dashboardItemsCopy = [];
         this.state.dashboardItems.map(item => {
@@ -463,6 +491,8 @@ class DashboardComponent extends React.Component {
             this.props.onPlotsChange(this.getPlots(), this.context);
         });
     }
+
+
 
     setActivePlots(activePlots) {
         this.setState({activePlots});

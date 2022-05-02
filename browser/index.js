@@ -770,6 +770,10 @@ module.exports = module.exports = {
                 dashboardComponentInstance.setPlots(plots);
                 dashboardComponentInstance.setActivePlots(activePlots);
               }}
+              setProfiles={(profiles, activeProfiles) => {
+                dashboardComponentInstance.setProfiles(profiles);
+                dashboardComponentInstance.setActiveProfiles(activeProfiles);
+              }}
               onActiveProfilesChange={(activeProfiles, profiles, context) => {
                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
                 if (window.menuProfilesComponentInstance)
