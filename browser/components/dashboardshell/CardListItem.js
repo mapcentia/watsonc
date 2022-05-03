@@ -45,9 +45,9 @@ function CardListItem(props) {
           ? `${measurementData.locname} ${measurementData.title}, ${measurementData.parameter}`
           : `${measurementData.locname}, ${measurementData.parameter}`;
         setName(NAME);
-        if (measurementData.data[intakeIndex].tstype_id === 4) {
-          setUseSumInsteadOfMean(true);
-        }
+        // if (measurementData.data[intakeIndex].tstype_id === 4) {
+        //   setUseSumInsteadOfMean(true);
+        // }
         // setName(`${measurementData.title} (${measurementData.unit})`);
       }
       setInfoForDeletion({
