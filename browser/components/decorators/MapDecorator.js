@@ -210,6 +210,7 @@ function MapDecorator(props) {
                   showSubscription();
                   return;
                 }
+                addToDashboard();
                 plot();
                 props.setDashboardMode("half");
               }}
