@@ -239,7 +239,6 @@ function PlotComponent(props) {
         // }
       }
     }
-
     setConfigState(conf);
     setLayoutState(layout);
     setPlotDataState(plotData);

@@ -204,7 +204,6 @@ function DashboardContent(props) {
       });
     });
     setDashboardItems(dashboardItemsCopy);
-    console.log(dashboardItemsCopy);
   }, [props.activePlots, props.activeProfiles]);
 
   // useEffect(() => {
