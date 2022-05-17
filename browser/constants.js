@@ -420,14 +420,6 @@ const KOMMUNER =[
 ]
 
 
-const Variants = {
-    None: 'None',
-    Primary: 'Primary',
-    Secondary: 'Secondary',
-    Tertiary: 'Tertiary',
-};
-
-
 export {
     LAYER_NAMES,
     WATER_LEVEL_KEY,
@@ -439,5 +431,4 @@ export {
     FREE_PLAN_MAX_TIME_SERIES_COUNT,
     FREE_PLAN_MAX_PROFILES_COUNT,
     KOMMUNER,
-    Variants
 };

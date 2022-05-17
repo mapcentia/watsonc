@@ -11,6 +11,7 @@ const createProfile = (req, res) => {
     if (`profile` in req.body && `title` in req.body && `buffer` in req.body && `data` in req.body) {
         let { userId } = shared.getCurrentUserIdentifiers(req);
         if (userId) {
+            // TODO flyt til klient før python script og send med
             const key = `watsonc_profile_` + uuid();
             let currentDate = new Date();
 

@@ -7,7 +7,12 @@ const initialState = {
     selectedChemical: "99999",
     selectedStartDate: "",
     selectedEndDate: "",
-    selectedMeasurementCount: 0
+    selectedMeasurementCount: 0,
+    boreholeFeatures: [],
+    boreholeChemicals: {},
+    limits: {},
+    dashboardMode: 'minimized',
+    dashboardContent: 'charts'
 };
 
 const reducer = (state = initialState, action) => {
@@ -17,6 +22,22 @@ const reducer = (state = initialState, action) => {
             return Object.assign({}, state, {authenticated: action.payload});
         case 'SET_CATEGORIES':
             return Object.assign({}, state, {categories: action.payload});
+        case 'SET_BOREHOLE_FEATURES':
+            return Object.assign({}, state, {boreholeFeatures: action.payload});
+        case 'ADD_BOREHOLE_FEATURE':
+            let features = state.boreholeFeatures.slice(0);
+             features.push(action.payload);
+            return Object.assign({}, state, {boreholeFeatures: features});
+        case 'CLEAR_BOREHOLE_FEATURES':
+            return Object.assign({}, state, {boreholeFeatures: []});
+        case 'SET_LIMITS':
+            return Object.assign({}, state, {limits: action.payload});
+        case 'SET_DASHBOARD_MODE':
+            return Object.assign({}, state, {dashboardMode: action.payload});
+        case 'SET_DASHBOARD_CONTENT':
+            return Object.assign({}, state, {dashboardContent: action.payload});
+        case 'SET_BOREHOLE_CHEMICALS':
+            return Object.assign({}, state, {boreholeChemicals: action.payload});
         case 'SELECT_CHEMICAL':
             return Object.assign({}, state, {selectedChemical: action.payload});
         case 'SELECT_START_DATE':
