@@ -191,7 +191,6 @@ class DashboardComponent extends React.Component {
                 });
 
 
-
                 _self.setState({
                     profiles: profilesCopy,
                     dashboardItems: dashboardItemsCopy,
@@ -448,6 +447,10 @@ class DashboardComponent extends React.Component {
         });
     }
 
+    setActiveProfiles(activeProfiles) {
+        this.setState({activeProfiles});
+    }
+
     setProfiles(profiles) {
         let dashboardItemsCopy = [];
         this.state.dashboardItems.map(item => {
@@ -466,10 +469,6 @@ class DashboardComponent extends React.Component {
         this.setState({profiles, dashboardItems: dashboardItemsCopy}, () => {
             this.props.onProfilesChange(this.getProfiles());
         });
-    }
-
-    setActiveProfiles(activeProfiles) {
-        this.setState({activeProfiles});
     }
 
     setPlots(plots) {
@@ -492,7 +491,25 @@ class DashboardComponent extends React.Component {
         });
     }
 
+    setItems(items) {
+        let dashboardItemsCopy = [];
 
+        items.map(item => {
+            dashboardItemsCopy.push({
+                type: item?.key ? DASHBOARD_ITEM_PROFILE : DASHBOARD_ITEM_PLOT,
+                item
+            });
+        });
+
+        this.setState({
+            profiles: items.filter(e => !!e?.key),
+            plots: items.filter(e => !!e?.id),
+            dashboardItems: dashboardItemsCopy
+        }, () => {
+            this.props.onProfilesChange(this.getProfiles());
+            this.props.onPlotsChange(this.getPlots(), this.context);
+        });
+    }
 
     setActivePlots(activePlots) {
         this.setState({activePlots});
