@@ -1,7 +1,7 @@
 import Plot from "react-plotly.js";
 import { useState, useEffect } from "react";
 
-function PlotComponent(props) {
+function ProfileComponent(props) {
   const [data, setData] = useState(props.plotMeta.profile.data.data);
   const [layout, setLayout] = useState(props.plotMeta.profile.data.layout);
 
@@ -30,37 +30,36 @@ function PlotComponent(props) {
         pad: 1,
       };
       layoutCopy.autosize = true;
+      console.log(layoutCopy);
       setData(dataCopy);
       setLayout(layoutCopy);
     }
   }, [props.plotMeta]);
 
   return (
-    <div>
-      <div
-        style={{
-          height:
-            typeof props.height == "string"
-              ? props.height
-              : `${props.height - 50}px`,
-          border: `1px solid lightgray`,
+    <div
+      style={{
+        height:
+          typeof props.height == "string"
+            ? props.height
+            : `${props.height - 50}px`,
+        border: `1px solid lightgray`,
+      }}
+    >
+      <Plot
+        data={data}
+        useResizeHandler={true}
+        onClick={props.onClick}
+        config={{
+          modeBarButtonsToRemove: ["autoScale2d"],
+          responsive: true,
+          doubleClick: false,
         }}
-      >
-        <Plot
-          data={data}
-          useResizeHandler={true}
-          onClick={props.onClick}
-          config={{
-            modeBarButtonsToRemove: ["autoScale2d"],
-            responsive: true,
-            doubleClick: false,
-          }}
-          layout={layout}
-          style={{ width: "100%", height: `100%` }}
-        />
-      </div>
+        layout={layout}
+        style={{ width: "100%", height: "100%" }}
+      />
     </div>
   );
 }
 
-export default PlotComponent;
+export default ProfileComponent;

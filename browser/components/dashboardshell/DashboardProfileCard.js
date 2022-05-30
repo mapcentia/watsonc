@@ -4,8 +4,8 @@ import ProfileComponent from "./ProfileComponent";
 
 function DashboardProfileCard(props) {
   return (
-    <DashboardPlotContent>
-      <Grid container>
+    <DashboardPlotContent height={props.fullscreen ? "90vh" : "100%"}>
+      <Grid container style={{ height: "100%" }}>
         <Grid container item xs={12}>
           <PlotContainer>
             <ProfileComponent
@@ -26,6 +26,7 @@ function DashboardProfileCard(props) {
 
 const DashboardPlotContent = styled.div`
   padding: ${(props) => props.theme.layout.gutter / 2}px;
+  height: ${(props) => props.height};
 `;
 
 const CardList = styled.div`
@@ -35,8 +36,8 @@ const CardList = styled.div`
 `;
 
 const PlotContainer = styled.div`
-  width: 95%;
-  margin-left: 2.5%;
+  width: 100%;
+  margin-left: 10px;
 `;
 
 export default DashboardProfileCard;
