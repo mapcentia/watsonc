@@ -6,10 +6,10 @@ import useInterval from "../../shared/hooks/useInterval";
 
 function ImageCarousel(props) {
   var length;
-  if (typeof props.images == "undefined") {
+  if (typeof props.images === "undefined") {
     length = 0;
   } else {
-    length = props.images[0] === null ? 0 : props.images.length;
+    length = !props.images?.[0] ? 0 : props.images.length;
   }
 
   const [index, setIndex] = useState(0);
