@@ -1332,8 +1332,6 @@ module.exports = module.exports = {
       let dashboardItemsClone = JSON.parse(
           JSON.stringify(dashboardComponentInstance.state.dashboardItems)
       );
-      console.log("dashboarditems", dashboardComponentInstance.state.dashboardItems)
-      // debugger
     return (state = {
       dashboardItems: dashboardItemsClone.map(e=> e.item).map(o => {
 

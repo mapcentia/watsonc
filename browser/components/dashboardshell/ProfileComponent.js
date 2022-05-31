@@ -30,7 +30,6 @@ function ProfileComponent(props) {
         pad: 1,
       };
       layoutCopy.autosize = true;
-      console.log(layoutCopy);
       setData(dataCopy);
       setLayout(layoutCopy);
     }
