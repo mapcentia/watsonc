@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Provider } from "react-redux";
 import reduxStore from "./../redux/store";
-
+import { setDashboardMode } from "./../redux/actions";
 import {
   SELECT_CHEMICAL_DIALOG_PREFIX,
   TEXT_FIELD_DIALOG_PREFIX,
@@ -465,6 +465,12 @@ class DashboardComponent extends React.Component {
     });
 
     activeProfiles.push(profile.key);
+
+    if (reduxStore.getState().global.dashboardMode === "minimized") {
+      reduxStore.dispatch(setDashboardMode("half"));
+    }
+
+    document.getElementById("chartsContainer").scrollTop = 0;
 
     this.setState(
       {

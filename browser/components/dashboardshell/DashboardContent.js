@@ -204,6 +204,7 @@ function DashboardContent(props) {
     });
 
     setDashboardItems(dashboardItemsCopy);
+
     console.log(props);
   }, [props.activePlots, props.activeProfiles]);
 
@@ -541,6 +542,7 @@ function DashboardContent(props) {
             item
             xs={8}
             style={{ height: "100%", overflow: "auto" }}
+            id="chartsContainer"
           >
             <ChartsContainer>
               {loadingData && (

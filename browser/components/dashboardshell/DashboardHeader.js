@@ -52,6 +52,12 @@ function DashboardHeader(props) {
       return;
     }
 
+    if (props.dashboardMode === "minimized") {
+      props.setDashboardMode("half");
+    }
+
+    document.getElementById("chartsContainer").scrollTop = 0;
+
     let activePlots = projectContext.activePlots;
     let newPlotId = getNewPlotId(allPlots);
     let plotData = {
