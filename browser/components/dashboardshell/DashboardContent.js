@@ -80,15 +80,14 @@ function DashboardContent(props) {
   };
 
   const handleRemoveProfile = (key) => {
-    let profiles = props.activeProfiles;
-    profiles = profiles.filter((profile) => profile.key !== key);
-    const activeProfiles = profiles.map((profile) => profile.key);
-    props.onActiveProfilesChange(
-      activeProfiles,
+    let activeProfiles = props.activeProfiles;
+    let filtered = activeProfiles.filter((profile) => profile.key !== key);
+    console.log("filtered", filtered);
+
+    props.setProfiles(
       props.getAllProfiles(),
-      projectContext
+      filtered.map((elem) => elem.key)
     );
-    props.setProfiles(profiles, activeProfiles);
   };
 
   const handleRemovePlot = (id) => {
@@ -188,22 +187,24 @@ function DashboardContent(props) {
   useEffect(() => {
     const dashboardItemsCopy = [];
 
-    const length = props.getAllPlots().length;
-    props.getAllPlots().map((item, index) => {
-      dashboardItemsCopy.push({
-        type: DASHBOARD_ITEM_PLOT,
-        item,
-        plotsIndex: index,
-      });
+    props.getDashboardItems().map((item, index) => {
+      if (item.type === DASHBOARD_ITEM_PROFILE) {
+        dashboardItemsCopy.push({
+          type: DASHBOARD_ITEM_PROFILE,
+          item: { ...item.item, title: item.item.profile.title },
+          plotsIndex: index,
+        });
+      } else {
+        dashboardItemsCopy.push({
+          type: DASHBOARD_ITEM_PLOT,
+          item: item.item,
+          plotsIndex: index,
+        });
+      }
     });
-    props.getAllProfiles().map((item, index) => {
-      dashboardItemsCopy.push({
-        type: DASHBOARD_ITEM_PROFILE,
-        item: { ...item, title: item.profile.title },
-        plotsIndex: index + length,
-      });
-    });
+
     setDashboardItems(dashboardItemsCopy);
+    console.log(props);
   }, [props.activePlots, props.activeProfiles]);
 
   // useEffect(() => {
@@ -576,9 +577,11 @@ function DashboardContent(props) {
                       />
                     );
                   } else if (dashboardItem.type === DASHBOARD_ITEM_PROFILE) {
+                    console.log(dashboardItem.item);
                     return (
                       <GraphCard
                         plot={dashboardItem.item}
+                        cloud={props.cloud}
                         index={index}
                         key={index}
                         cardType="profile"

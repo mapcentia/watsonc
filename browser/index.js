@@ -647,6 +647,7 @@ module.exports = module.exports = {
                   onProfileHighlight={
                     dashboardComponentInstance.handleHighlightProfile
                   }
+                  onProfileAdd={dashboardComponentInstance.handleAddProfile}
                   onProfileShow={dashboardComponentInstance.handleShowProfile}
                   onProfileHide={dashboardComponentInstance.handleHideProfile}
                 />
@@ -691,6 +692,7 @@ module.exports = module.exports = {
         try {
           ReactDOM.render(
             <DashboardWrapper
+              cloud={cloud}
               state={state}
               ref={reactRef}
               session={session}
@@ -765,6 +767,12 @@ module.exports = module.exports = {
               }}
               getAllProfiles={() => {
                 return dashboardComponentInstance.getProfiles();
+              }}
+              getDashboardItems={() => {
+                return dashboardComponentInstance.getDashboardItems();
+              }}
+              getActiveProfiles={() => {
+                return dashboardComponentInstance.getActiveProfileObjects();
               }}
               setPlots={(plots, activePlots) => {
                 dashboardComponentInstance.setPlots(plots);
@@ -1319,35 +1327,41 @@ module.exports = module.exports = {
     });
     const plotsClone = JSON.parse(
       JSON.stringify(dashboardComponentInstance.state.plots)
-    ).map(o => {
-        delete o.measurementsCachedData;
-        return o;
+    ).map((o) => {
+      delete o.measurementsCachedData;
+      return o;
     });
     const profilesClone = JSON.parse(
       JSON.stringify(dashboardComponentInstance.state.profiles)
-    ).map(o => {
-        delete o.data;
-        return o;
+    ).map((o) => {
+      delete o.data;
+      return o;
     });
-      let dashboardItemsClone = JSON.parse(
-          JSON.stringify(dashboardComponentInstance.state.dashboardItems)
-      );
+    let dashboardItemsClone = JSON.parse(
+      JSON.stringify(dashboardComponentInstance.state.dashboardItems)
+    );
+    console.log(
+      "dashboarditems",
+      dashboardComponentInstance.state.dashboardItems
+    );
+    // debugger
     return (state = {
-      dashboardItems: dashboardItemsClone.map(e=> e.item).map(o => {
-
+      dashboardItems: dashboardItemsClone
+        .map((e) => e.item)
+        .map((o) => {
           if (o?.profile?.data?.data) delete o.profile.data.data;
-          if (o?.measurementsCachedData)  delete o.measurementsCachedData;
+          if (o?.measurementsCachedData) delete o.measurementsCachedData;
           return o;
-      }),
+        }),
       sources: sources,
-    })
+    });
   },
 
   /**
    * Applies externally provided state
    */
   applyState: (newState) => {
-      console.log("newState", newState)
+    console.log("newState", newState);
     setTimeout(() => {
       reduxStore.dispatch(clearBoreholeFeatures());
       if (newState?.sources) {
@@ -1362,63 +1376,61 @@ module.exports = module.exports = {
         );
       }
       async function fetchProfile(key) {
-            return await fetch(
-                `/api/key-value/jupiter/${key}`
-            );
+        return await fetch(`/api/key-value/jupiter/${key}`);
       }
 
       async function loop() {
         let allPlots = [];
         for (let u = 0; u < newState.dashboardItems.length; u++) {
-            let plot = newState.dashboardItems[u];
-            if (!!plot?.id) {
-                let plotData = {
-                    id: plot.id,
-                    title: plot.title,
-                    measurements: [],
-                    measurementsCachedData: {},
-                    relations: {},
-                };
-                for (let i = 0; i < plot.measurements.length; i++) {
-                    const loc_id = plot.measurements[i].split(":")[0];
-                    const index = plot.measurements[i].split(":")[2];
-                    const measurement = loc_id + ":_0:" + index;
-                    const relation = plot.relations[measurement];
-                    const res = await fetchTimeSeries(loc_id, relation);
-                    const json = await res.json();
-                    const props = json.features[0].properties;
-                    plotData.measurements.push(measurement);
-                    plotData.relations[measurement] = relation;
-                    plotData.measurementsCachedData[measurement] = {
-                        data: {
-                            properties: {
-                                _0: JSON.stringify({
-                                    unit: props.unit[i],
-                                    title: props.ts_name[i],
-                                    locname: props.locname,
-                                    intakes: [1],
-                                    boreholeno: loc_id,
-                                    data: props.data,
-                                    trace: props.trace,
-                                    parameter: props.parameter[i],
-                                    ts_id: props.ts_id,
-                                    ts_name: props.ts_name,
-                                }),
-                                boreholeno: loc_id,
-                                numofintakes: 1,
-                            },
-                        },
-                    };
-                }
-                allPlots.push(plotData);
-            } else {
-                const res = await fetchProfile(plot.key);
-                const json = await res.json();
-                console.log("PLOT", plot)
-                console.log("PROFILE", json)
-                plot.profile.data = JSON.parse(json.data.value).profile.data;
-                allPlots.push(plot);
+          let plot = newState.dashboardItems[u];
+          if (!!plot?.id) {
+            let plotData = {
+              id: plot.id,
+              title: plot.title,
+              measurements: [],
+              measurementsCachedData: {},
+              relations: {},
+            };
+            for (let i = 0; i < plot.measurements.length; i++) {
+              const loc_id = plot.measurements[i].split(":")[0];
+              const index = plot.measurements[i].split(":")[2];
+              const measurement = loc_id + ":_0:" + index;
+              const relation = plot.relations[measurement];
+              const res = await fetchTimeSeries(loc_id, relation);
+              const json = await res.json();
+              const props = json.features[0].properties;
+              plotData.measurements.push(measurement);
+              plotData.relations[measurement] = relation;
+              plotData.measurementsCachedData[measurement] = {
+                data: {
+                  properties: {
+                    _0: JSON.stringify({
+                      unit: props.unit[i],
+                      title: props.ts_name[i],
+                      locname: props.locname,
+                      intakes: [1],
+                      boreholeno: loc_id,
+                      data: props.data,
+                      trace: props.trace,
+                      parameter: props.parameter[i],
+                      ts_id: props.ts_id,
+                      ts_name: props.ts_name,
+                    }),
+                    boreholeno: loc_id,
+                    numofintakes: 1,
+                  },
+                },
+              };
             }
+            allPlots.push(plotData);
+          } else {
+            const res = await fetchProfile(plot.key);
+            const json = await res.json();
+            console.log("PLOT", plot);
+            console.log("PROFILE", json);
+            plot.profile.data = JSON.parse(json.data.value).profile.data;
+            allPlots.push(plot);
+          }
         }
         return allPlots;
       }
@@ -1428,5 +1440,5 @@ module.exports = module.exports = {
       });
       // dashboardComponentInstance.setItems(newState.profiles)
     }, 2000);
-  }
+  },
 };

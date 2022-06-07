@@ -7,15 +7,33 @@ import DashboardProfileCard from "./DashboardProfileCard";
 import { sortableElement } from "react-sortable-hoc";
 import SortHandleComponent from "./SortHandleComponent";
 import PlotApi from "../../api/plots/PlotApi";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import Button from "@material-ui/core/Button";
 import moment from "moment";
 
+const utmZone = require("./../../../../../browser/modules/utmZone");
+let displayedItems = new L.FeatureGroup();
+
 function GraphCard(props) {
   const [fullscreen, setFullscreen] = useState(false);
-  const [graphName, setGraphName] = useState(props.plot.title);
+  const [graphName, setGraphName] = useState(
+    props.cardType === "profile" ? props.plot.profile.title : props.plot.title
+  );
+  const [profileShown, setProfileShown] = useState(false);
+
+  useEffect(() => {
+    if (props.cardType === "profile") {
+      props.cloud.get().map.addLayer(displayedItems);
+    }
+
+    return () => {
+      displayedItems.eachLayer((layer) => {
+        displayedItems.removeLayer(layer);
+      });
+    };
+  }, []);
 
   const download = () => {
     if (!props.plot) {
@@ -82,6 +100,62 @@ function GraphCard(props) {
       });
   };
 
+  const toggle_profile = () => {
+    if (!profileShown) {
+      let data = props.plot;
+      let profile = data.profile.profile;
+
+      // Get utm zone
+      var zone = utmZone.getZone(
+        profile.geometry.coordinates[0][1],
+        profile.geometry.coordinates[0][0]
+      );
+      var crss = {
+        proj:
+          "+proj=utm +zone=" +
+          zone +
+          " +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+        unproj: "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs",
+      };
+
+      let reader = new jsts.io.GeoJSONReader();
+      let writer = new jsts.io.GeoJSONWriter();
+      let geom = reader.read(
+        reproject.reproject(profile, "unproj", "proj", crss)
+      );
+      let buffer4326 = reproject.reproject(
+        writer.write(geom.geometry.buffer(data.profile.buffer)),
+        "proj",
+        "unproj",
+        crss
+      );
+
+      L.geoJson(buffer4326, {
+        color: "#ff7800",
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.1,
+        dashArray: "5,3",
+      }).addTo(displayedItems);
+
+      var profileLayer = new L.geoJSON(profile);
+
+      profileLayer.bindTooltip(data.profile.title, {
+        className: "watsonc-profile-tooltip",
+        permanent: true,
+        offset: [0, 0],
+      });
+
+      profileLayer.addTo(displayedItems);
+      setProfileShown(true);
+    } else {
+      displayedItems.eachLayer((layer) => {
+        displayedItems.removeLayer(layer);
+      });
+      setProfileShown(false);
+    }
+  };
+
   const handleFullScreen = () => {
     setFullscreen(true);
   };
@@ -128,7 +202,14 @@ function GraphCard(props) {
                   </IconContainer>
                   <Title marginLeft={8} level={6} text={__("Download")} />
                 </HeaderActionItem>
-              ) : null}
+              ) : (
+                <HeaderActionItem onClick={toggle_profile}>
+                  <IconContainer>
+                    <Icon name="earth-layers" size={16} />
+                  </IconContainer>
+                  <Title marginLeft={8} level={6} text={__("Vis profil")} />
+                </HeaderActionItem>
+              )}
               <SortHandleComponent />
               <HeaderActionItem onClick={handleFullScreen}>
                 <IconContainer>

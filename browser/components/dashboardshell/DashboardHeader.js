@@ -91,6 +91,8 @@ function DashboardHeader(props) {
       reduxStore.dispatch(clearBoreholeFeatures());
       props.setActivePlots([]);
       props.setPlots([]);
+      props.setActiveProfiles([]);
+      props.setProfiles(props.getAllProfiles(), []);
       props.backboneEvents.get().trigger("watsonc:clearChemicalList");
     }
   };
