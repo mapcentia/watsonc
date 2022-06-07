@@ -11,6 +11,7 @@ import {Size} from '../shared/constants/size';
 import Button from '../shared/button/Button';
 import ProjectListItem from './ProjectListItem';
 import Searchbox from '../shared/inputs/Searchbox';
+import base64url from "base64url";
 
 
 function ProjectList(props) {
@@ -60,12 +61,12 @@ function ProjectList(props) {
         setIsLoading(true);
         const projectsApi = new ProjectsApi();
         projectsApi.getProjects().then((response) => {
-            response.json().then((results) => {
-                console.log(results);
-                results.map((project) => {
+            response.text().then((text) => {
+                const json =JSON.parse(base64url.decode(text));
+                json.map((project) => {
                     project.permalink = getPermalinkForProject(project);
                 });
-                setAllProjects(results);
+                setAllProjects(json);
                 setIsLoading(false);
             });
         })
