@@ -175,6 +175,7 @@ const Select = styled.select`
   word-wrap: break-word;
   text-overflow: inherit;
   white-space: normal;
+  color: black;
 
   option {
     color: black;
