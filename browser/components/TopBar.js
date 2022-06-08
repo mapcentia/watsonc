@@ -45,7 +45,7 @@ function TopBar(props) {
               id="custom-search"
               className="custom-search typeahead"
               type="text"
-              placeholder="Søg på adresse, matrikel- eller DGU nummer"
+              placeholder="Søg på IoT-stationer, adresse, matrikel- eller DGU nummer"
             />
             <span
               id="searchclear"
