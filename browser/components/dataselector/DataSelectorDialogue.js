@@ -103,6 +103,9 @@ function DataSelectorDialogue(props) {
     });
     props.onCloseButtonClick ? props.onCloseButtonClick() : null;
   };
+
+  console.log(selectedDataSources);
+  console.log(dataSources);
   return (
     <Root>
       <ModalHeader>
@@ -123,7 +126,14 @@ function DataSelectorDialogue(props) {
           />
         ) : (
           <div>
-            <PredefinedDatasourceViews applyLayer={applyLayer} />
+            <div>
+              <Title text={__("Quick Access")} level={3} />
+              <PredefinedDatasourceViews
+                applyLayer={applyLayer}
+                setSelectedDataSources={setSelectedDataSources}
+                setSelectedParameter={setSelectedParameter}
+              />
+            </div>
             <GridContainer>
               <Grid container spacing={32}>
                 <Grid container item md={6}>
@@ -205,7 +215,7 @@ const ModalBody = styled.div`
 `;
 
 const GridContainer = styled.div`
-  padding-top: ${(props) => props.theme.layout.gutter / 2}px;
+  padding-top: ${(props) => props.theme.layout.gutter / 4}px;
 `;
 
 const mapStateToProps = (state) => ({});
