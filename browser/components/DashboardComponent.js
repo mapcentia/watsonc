@@ -18,6 +18,7 @@ import { getPlotData } from "../services/plot";
 import ProjectContext from "../contexts/project/ProjectContext";
 
 const uuidv1 = require("uuid/v1");
+const session = require("./../../../session/browser/index");
 
 const DASHBOARD_ITEM_PLOT = 0;
 const DASHBOARD_ITEM_PROJECT_PLOT = 3;
@@ -43,18 +44,7 @@ class DashboardComponent extends React.Component {
 
   constructor(props) {
     super(props);
-    let queryParams = new URLSearchParams(window.location.search);
-    let licenseToken = queryParams.get("license");
-    let license = null;
-    if (licenseToken) {
-      license = JSON.parse(base64.decode(licenseToken.split(".")[1]));
-      if (typeof license === "object") {
-        license = license.license;
-      }
-    }
-    if (trustedIpAddresses.includes(window._vidiIp)) {
-      license = "premium";
-    }
+    let license = session.getProperties()?.["license"];
 
     let dashboardItems = [];
     if (this.props.initialPlots) {
@@ -155,7 +145,7 @@ class DashboardComponent extends React.Component {
   }
 
   getLicense() {
-    return this.state.license;
+    return session.getProperties()?.["license"];
   }
 
   getModalScroll() {

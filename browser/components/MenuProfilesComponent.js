@@ -18,11 +18,13 @@ import reduxStore from "./../redux/store";
 import { selectChemical } from "./../redux/actions";
 import ChemicalSelectorModal from "./dataselector/ChemicalSelectorModal";
 import ThemeProvider from "../themes/ThemeProvider";
+import { showSubscription } from "../helpers/show_subscriptionDialogue";
 
 const utils = require("./../utils");
 
 const wkt = require("terraformer-wkt-parser");
 const utmZone = require("./../../../../browser/modules/utmZone");
+const session = require("./../../../session/browser/index");
 
 const STEP_ENTER_NAME = -1;
 const STEP_NOT_READY = 0;
@@ -98,7 +100,7 @@ class MenuProfilesComponent extends React.Component {
   }
 
   canCreateProfile() {
-    if (this.props.license === "premium") {
+    if (session.getProperties()?.["license"] === "premium") {
       return true;
     } else {
       return this.getProfilesLength() < FREE_PLAN_MAX_PROFILES_COUNT;
@@ -131,8 +133,7 @@ class MenuProfilesComponent extends React.Component {
 
   onNewProfileAdd(newTitle) {
     if (!this.canCreateProfile()) {
-      $("#watsonc-limits-reached-text").show();
-      $("#upgrade-modal").modal("show");
+      showSubscription();
       return;
     }
     this.setState({ newTitle, step: STEP_NOT_READY });
@@ -659,6 +660,7 @@ class MenuProfilesComponent extends React.Component {
                             disabled={this.state.step !== STEP_NOT_READY}
                             className="btn btn-primary btn-sm"
                             onClick={() => {
+                              console.log("I get run");
                               const selectChemicalModalPlaceholderId = `${SELECT_CHEMICAL_DIALOG_PREFIX}-placeholder`;
 
                               if (
