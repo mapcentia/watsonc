@@ -444,14 +444,15 @@ class DashboardComponent extends React.Component {
   handleAddProfile(profile) {
     let dashboardItemsCopy = [];
     let activeProfiles = [];
-    this.state.dashboardItems.map((item) => {
-      dashboardItemsCopy.push(item);
-      activeProfiles.push(item.key);
-    });
 
     dashboardItemsCopy.push({
       type: DASHBOARD_ITEM_PROFILE,
       item: profile,
+    });
+
+    this.state.dashboardItems.map((item) => {
+      dashboardItemsCopy.push(item);
+      activeProfiles.push(item.key);
     });
 
     activeProfiles.push(profile.key);
