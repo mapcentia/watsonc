@@ -46,7 +46,6 @@ function DashboardHeader(props) {
   const addNewPlot = () => {
     const isFree = session.getProperties()?.["license"] === "free";
     let allPlots = props.getAllPlots();
-    console.log(isFree);
     if (isFree && allPlots.length > 0) {
       showSubscription();
       return;

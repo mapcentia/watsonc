@@ -207,7 +207,6 @@ module.exports = module.exports = {
     $(`#search-border`).trigger(`click`);
 
     $(`#js-open-state-snapshots-panel`).click(() => {
-      console.log("what");
       //$(`[href="#state-snapshots-content"]`).trigger(`click`);
     });
 
@@ -250,7 +249,7 @@ module.exports = module.exports = {
     $(".panel-title a").trigger("click");
 
     // Turn on raster layer with all boreholes.
-    switchLayer.init(LAYER_NAMES[2], true, true, false);
+    // switchLayer.init(LAYER_NAMES[2], true, true, false);
     ReactDOM.render(
       <ThemeProvider>
         <Provider store={reduxStore}>
@@ -1344,10 +1343,6 @@ module.exports = module.exports = {
     });
     let dashboardItemsClone = JSON.parse(
       JSON.stringify(dashboardComponentInstance.state.dashboardItems)
-    );
-    console.log(
-      "dashboarditems",
-      dashboardComponentInstance.state.dashboardItems
     );
     // debugger
     return (state = {

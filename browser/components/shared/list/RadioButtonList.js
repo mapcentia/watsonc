@@ -13,7 +13,6 @@ function RadioButtonList(props) {
   var currentGroup = null;
   function onChangeRadioButton(value) {
     let selectedObject = props.listItems.find((item) => item.value == value);
-    console.log(selectedObject);
     setSelectedItem(selectedObject);
   }
 

@@ -82,7 +82,6 @@ function DashboardContent(props) {
   const handleRemoveProfile = (key) => {
     let activeProfiles = props.activeProfiles;
     let filtered = activeProfiles.filter((profile) => profile.key !== key);
-    console.log("filtered", filtered);
 
     props.setProfiles(
       props.getAllProfiles(),
@@ -204,8 +203,6 @@ function DashboardContent(props) {
     });
 
     setDashboardItems(dashboardItemsCopy);
-
-    console.log(props);
   }, [props.activePlots, props.activeProfiles]);
 
   // useEffect(() => {

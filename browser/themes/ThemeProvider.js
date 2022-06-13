@@ -1,17 +1,16 @@
-import React from 'react';
+import React from "react";
 import { ThemeProvider as StyledThemeProvider } from "styled-components";
-import { ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 import { DarkTheme } from "./DarkTheme";
 
 class ThemeProvider extends React.Component {
-    render() {
-        return (
-            <StyledThemeProvider theme={DarkTheme}>
-                <ToastContainer />
-                {this.props.children}
-            </StyledThemeProvider>
-        )
-    }
+  render() {
+    return (
+      <StyledThemeProvider theme={DarkTheme}>
+        {this.props.children}
+      </StyledThemeProvider>
+    );
+  }
 }
 
-export default ThemeProvider
+export default ThemeProvider;

@@ -21,6 +21,7 @@ import { WATER_LEVEL_KEY } from "../../constants";
 import { DarkTheme } from "../../themes/DarkTheme";
 import MetaApi from "../../api/meta/MetaApi";
 import Searchbox from "../shared/inputs/Searchbox";
+import { showSubscription } from "../../helpers/show_subscriptionDialogue";
 
 DataSelectorDialogue.propTypes = {
   text: PropTypes.string,
@@ -100,11 +101,6 @@ function DataSelectorDialogue(props) {
         myStations = myStations.concat(element.properties.loc_id);
       });
 
-      // myStations = _.uniqWith(myStations, _.isEqual);
-
-      console.log("features", features);
-      console.log("myStations", myStations);
-
       let filter = {
         match: "any",
         columns: [
@@ -147,8 +143,6 @@ function DataSelectorDialogue(props) {
     props.onCloseButtonClick ? props.onCloseButtonClick() : null;
   };
 
-  console.log(selectedDataSources);
-  console.log(dataSources);
   return (
     <Root>
       <ModalHeader>
@@ -223,9 +217,15 @@ function DataSelectorDialogue(props) {
         ) : (
           <ButtonGroup align={Align.Center} spacing={2}>
             <Button
-              text={__("Abn eksisterende")}
+              text={__("Abn eksisterende dashboard")}
               variant={Variants.None}
-              onClick={() => setShowProjectsList(!showProjectsList)}
+              onClick={() => {
+                if (session.getProperties()["license"] === "free") {
+                  showSubscription();
+                  return;
+                }
+                setShowProjectsList(!showProjectsList);
+              }}
               size={Size.Large}
             />
             <Button

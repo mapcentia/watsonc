@@ -660,7 +660,6 @@ class MenuProfilesComponent extends React.Component {
                             disabled={this.state.step !== STEP_NOT_READY}
                             className="btn btn-primary btn-sm"
                             onClick={() => {
-                              console.log("I get run");
                               const selectChemicalModalPlaceholderId = `${SELECT_CHEMICAL_DIALOG_PREFIX}-placeholder`;
 
                               if (

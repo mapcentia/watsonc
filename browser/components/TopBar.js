@@ -12,7 +12,6 @@ import useInterval from "./shared/hooks/useInterval";
 const session = require("./../../../session/browser/index");
 
 function TopBar(props) {
-  console.log(session.getProperties());
   const [free, setFree] = useState(true);
   const [stopPoll, setStopPoll] = useState(false);
 

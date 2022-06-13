@@ -81,9 +81,6 @@ function CheckBoxList(props) {
     }
   }, [selectedItems]);
 
-  console.log("propsse", props.selectedItems);
-  console.log("selected", selectedItems);
-
   return (
     <Root>
       {listItems.map((item, index) => {
