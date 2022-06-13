@@ -948,7 +948,6 @@ module.exports = module.exports = {
   },
 
   onApplyLayersAndChemical: (parameters) => {
-    console.log("parameters", parameters);
     // Disabling all layers
     layerTree.getActiveLayers().map((layerNameToEnable) => {
       if (
@@ -989,7 +988,6 @@ module.exports = module.exports = {
         let rasterToEnable = `systemx._${parameters.chemical}`;
         currentRasterLayer = rasterToEnable;
         filters[rasterToEnable] = filter;
-
         layerTree.applyFilters(filters);
         switchLayer.init(rasterToEnable, true);
       } else {

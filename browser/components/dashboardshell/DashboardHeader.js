@@ -75,6 +75,11 @@ function DashboardHeader(props) {
   };
 
   const save = () => {
+    const isFree = session.getProperties()?.["license"] === "free";
+    if (isFree) {
+      showSubscription();
+      return;
+    }
     let title;
     if (!dashboardTitle) {
       title = prompt("Navn på dashboard");
@@ -85,7 +90,13 @@ function DashboardHeader(props) {
       updateSnapShot();
     }
   };
+
   const saveAs = () => {
+    const isFree = session.getProperties()?.["license"] === "free";
+    if (isFree) {
+      showSubscription();
+      return;
+    }
     let title = prompt("Navn på dashboard");
     if (title) {
       createSnapshot(title);
