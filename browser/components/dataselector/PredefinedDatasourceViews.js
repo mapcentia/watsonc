@@ -37,7 +37,20 @@ function PredefinedDatasourceViews(props) {
           });
         }}
       />
-      {/*<IconButton icon="water-wifi-solid" label={__('Mine stationer')}/>*/}
+      <IconButton
+        icon="water-wifi-solid"
+        label={__("Mine stationer")}
+        onClick={() => {
+          props.applyLayer("calypso_stationer.all_stations");
+          props.setSelectedDataSources([
+            {
+              label: "Mine stationer",
+              group: "Brugerspecifikke lag",
+              value: "calypso_stationer.all_stations",
+            },
+          ]);
+        }}
+      />
       {/*<IconButton icon="lab-flask-experiment" label={__('Mine favoritter')}/>*/}
     </div>
   );

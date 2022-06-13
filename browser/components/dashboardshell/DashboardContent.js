@@ -231,36 +231,15 @@ function DashboardContent(props) {
       }
       var features = response.features;
       var myStations = [];
-      var groups = [];
 
       features.forEach((element) => {
         myStations = myStations.concat(getArray(element.properties));
-        groups = groups.concat(element.groupname);
       });
 
       myStations = _.uniqWith(myStations, _.isEqual);
 
       myStations = myStations.sort((a, b) =>
         a.locname.localeCompare(b.locname)
-      );
-
-      setGroups(
-        groups.sort(function (a, b) {
-          // equal items sort equally
-          if (a === b) {
-            return 0;
-          }
-          // nulls sort after anything else
-          else if (a === null) {
-            return 1;
-          } else if (b === null) {
-            return -1;
-          }
-          // otherwise, if we're ascending, lowest sorts first
-          else {
-            return a < b ? -1 : 1;
-          }
-        })
       );
 
       setMyStations(

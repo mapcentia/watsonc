@@ -29,6 +29,8 @@ DataSelectorDialogue.propTypes = {
   onApply: PropTypes.func,
 };
 
+const session = require("./../../../../session/browser/index");
+
 function DataSelectorDialogue(props) {
   const [allParameters, setAllParameters] = useState([]);
   const [showProjectsList, setShowProjectsList] = useState(false);
@@ -37,6 +39,7 @@ function DataSelectorDialogue(props) {
   const [selectedParameter, setSelectedParameter] = useState();
   const [dataSources, setDataSources] = useState([]);
   const [parameterSearchTerm, setParameterSearchTerm] = useState("");
+  const [filter, setFilter] = useState({});
 
   useEffect(() => {
     const waterLevelParameter = {
@@ -73,12 +76,50 @@ function DataSelectorDialogue(props) {
     props.onApply({
       layers: [layer],
       chemical: chem,
+      filters: filter,
     });
     props.onCloseButtonClick();
   };
 
   useEffect(() => {
     loadDataSources();
+  }, []);
+
+  useEffect(() => {
+    $.ajax({
+      url: `/api/sql/watsonc?q=SELECT loc_id, locname, groupname, relation FROM calypso_stationer.calypso_my_stations_v2 WHERE user_id in (${
+        session.getProperties()?.organisation.id
+      }, ${session.getUserName()}) &base64=false&lifetime=60&srs=4326`,
+      method: "GET",
+      dataType: "json",
+    }).then((response) => {
+      var features = response.features;
+      var myStations = [];
+
+      features.forEach((element) => {
+        myStations = myStations.concat(element.properties.loc_id);
+      });
+
+      // myStations = _.uniqWith(myStations, _.isEqual);
+
+      console.log("features", features);
+      console.log("myStations", myStations);
+
+      let filter = {
+        match: "any",
+        columns: [
+          {
+            fieldname: "loc_id",
+            expression: "=",
+            value: "ANY( ARRAY[" + myStations.join(", ") + "])",
+            restriction: false,
+          },
+        ],
+      };
+
+      let filters = { "calypso_stationer.all_stations": filter };
+      setFilter(filters);
+    });
   }, []);
 
   useEffect(() => {
@@ -97,9 +138,11 @@ function DataSelectorDialogue(props) {
     const layers = selectedDataSources.map((source) => {
       return source.value;
     });
+
     props.onApply({
       layers: layers,
       chemical: selectedParameter ? selectedParameter.value : false,
+      filters: filter,
     });
     props.onCloseButtonClick ? props.onCloseButtonClick() : null;
   };

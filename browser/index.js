@@ -948,6 +948,7 @@ module.exports = module.exports = {
   },
 
   onApplyLayersAndChemical: (parameters) => {
+    console.log("parameters", parameters);
     // Disabling all layers
     layerTree.getActiveLayers().map((layerNameToEnable) => {
       if (
@@ -956,6 +957,7 @@ module.exports = module.exports = {
       )
         switchLayer.init(layerNameToEnable, false);
     });
+
     let filter = {
       match: "all",
       columns: [
@@ -979,6 +981,7 @@ module.exports = module.exports = {
         },
       ],
     };
+
     let filters = {};
     for (let i = 0; i < parameters.layers.length; i++) {
       if (parameters.layers[i] === LAYER_NAMES[0]) {
@@ -986,9 +989,13 @@ module.exports = module.exports = {
         let rasterToEnable = `systemx._${parameters.chemical}`;
         currentRasterLayer = rasterToEnable;
         filters[rasterToEnable] = filter;
+
         layerTree.applyFilters(filters);
         switchLayer.init(rasterToEnable, true);
       } else {
+        if (parameters.filters) {
+          layerTree.applyFilters(parameters.filters);
+        }
         switchLayer.init(parameters.layers[i], true);
       }
     }
