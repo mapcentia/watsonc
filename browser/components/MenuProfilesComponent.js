@@ -498,20 +498,20 @@ class MenuProfilesComponent extends React.Component {
           <td>
             <div>
               <div style={{ float: `left` }}>
-                <div className="checkbox">
-                  <label>
-                    <input
-                      type="button"
-                      name="enabled_profile"
-                      title="Tilføj"
-                      // checked={this.state.activeProfiles.indexOf(item.key) > -1}
-                      onClick={() => this.addToDashboard(item)}
-                      // onChange={(event) => {
-                      //     this.handleProfileToggle(event.target.checked, item.key);
-                      // }}
-                    />
-                  </label>
-                </div>
+                <button
+                  type="button"
+                  name="enabled_profile"
+                  className="btn btn-xs btn-primary"
+                  title="Tilføj profil"
+                  // checked={this.state.activeProfiles.indexOf(item.key) > -1}
+                  onClick={() => this.addToDashboard(item)}
+                  // onChange={(event) => {
+                  //     this.handleProfileToggle(event.target.checked, item.key);
+                  // }}
+                  style={{ padding: `0px`, margin: `0px` }}
+                >
+                  <i className="material-icons">add</i>
+                </button>
               </div>
               <div
                 style={{ float: `left`, paddingLeft: `8px`, paddingTop: `2px` }}
@@ -526,7 +526,7 @@ class MenuProfilesComponent extends React.Component {
                   item.profile.compound,
                   this.props.categories
                 )
-              : __(`Not selected`)}
+              : "Ikke valgt"}
           </td>
           {deleteButton}
         </tr>
@@ -601,7 +601,7 @@ class MenuProfilesComponent extends React.Component {
       );
     }
 
-    let chemicalName = __(`Not selected`);
+    let chemicalName = "Ikke valgt";
     if (this.state.localSelectedChemical) {
       chemicalName = utils.getChemicalName(
         this.state.localSelectedChemical,

@@ -997,6 +997,19 @@
         background-color: #EEEEEE;
     }
 
+    .btn:not(.btn-raised).btn-primary, .input-group-btn .btn:not(.btn-raised).btn-primary {
+        color: #EEEEEE;
+    }
+
+    .table-striped > tbody > tr:nth-of-type(odd) {
+        background-color: #00786d47;
+    }
+
+    fieldset[disabled][disabled] .btn, fieldset[disabled][disabled] .input-group-btn .btn, fieldset[disabled][disabled] .btn-group, fieldset[disabled][disabled] .btn-group-vertical, .btn.disabled, .input-group-btn .btn.disabled, .btn-group.disabled, .btn-group-vertical.disabled, .btn:disabled, .input-group-btn .btn:disabled, .btn-group:disabled, .btn-group-vertical:disabled, .btn[disabled][disabled], .input-group-btn .btn[disabled][disabled], .btn-group[disabled][disabled], .btn-group-vertical[disabled][disabled] {
+        color: rgb(255 252 252 / 26%);
+        background: transparent;
+    }
+
     .container {
         width: 100%;
         margin: 0;
@@ -1014,6 +1027,10 @@
     }
 
     .form-group.is-focused .checkbox label, .form-group.is-focused label.checkbox-inline {
+        color: #bdbdbd !important;
+    }
+    
+    .form-group.is-focused label, .form-group.is-focused label.control-label {
         color: #bdbdbd !important;
     }
 
