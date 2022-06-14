@@ -269,7 +269,7 @@ module.exports = module.exports = {
 
           response.features.map(function (v) {
             categories[v.properties.kategori.trim()] = {};
-            names[v.properties.compundno] = v.properties.navn;
+            names[v.properties.compundno] = v.properties.our_name;
           });
 
           names[WATER_LEVEL_KEY] = "Vandstand";
@@ -277,7 +277,7 @@ module.exports = module.exports = {
           for (var key in categories) {
             response.features.map(function (v) {
               if (key === v.properties.kategori) {
-                categories[key][v.properties.compundno] = v.properties.navn;
+                categories[key][v.properties.compundno] = v.properties.our_name;
                 limits["_" + v.properties.compundno] = [
                   v.properties.attention || 0,
                   v.properties.limit || 0,

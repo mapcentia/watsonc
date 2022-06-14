@@ -5,6 +5,7 @@ import styled from "styled-components";
 import Searchbox from "../shared/inputs/Searchbox";
 import ChemicalsListItem from "./ChemicalsListItem";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Grid from "@material-ui/core/Grid";
 import { DarkTheme } from "../../themes/DarkTheme";
 
 function ChemicalSelector(props) {
@@ -21,6 +22,17 @@ function ChemicalSelector(props) {
     if (!props.feature || !props.feature.properties) {
       return;
     }
+    let currentgroup = null;
+
+    let param2group = {};
+    let tmp = Object.entries(props.categories).map((elem) => {
+      return { parameter: Object.values(elem[1]), group: elem[0] };
+    });
+    tmp.forEach((prop) => {
+      prop.parameter.forEach((param) => {
+        param2group[param] = prop.group;
+      });
+    });
 
     const createMeasurementControl = (item, key) => {
       return new Promise(function (resolve, reject) {
@@ -53,10 +65,29 @@ function ChemicalSelector(props) {
                   />
                 );
               }
+              // console.log(properties);
+
               properties.ts_name.forEach((prop, index) => {
                 properties.relation = relation;
                 let intakeName = `#` + properties.ts_id[index];
                 let icon = false;
+                let group = param2group[properties.parameter[index]];
+                if (group != currentgroup) {
+                  controls.push(
+                    <Grid container key={`${index}-title`}>
+                      <Grid container item xs={10}>
+                        <Title
+                          text={param2group[properties.parameter[index]]}
+                          level={4}
+                          marginTop={16}
+                          color="#FFFFFF"
+                        />
+                      </Grid>
+                    </Grid>
+                  );
+                  currentgroup = group;
+                }
+
                 controls.push(
                   <ChemicalsListItem
                     label={
@@ -143,6 +174,7 @@ function ChemicalSelector(props) {
           let searchTermLower = searchTerm.toLowerCase();
           if (
             searchTerm.length &&
+            item.props?.label &&
             item.props.label.toLowerCase().indexOf(searchTermLower) === -1
           ) {
             return false;
