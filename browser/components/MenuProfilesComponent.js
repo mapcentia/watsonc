@@ -917,7 +917,7 @@ class MenuProfilesComponent extends React.Component {
       renderText = (
         <div id="profile-drawing-buffer" style={{ position: `relative` }}>
           <div style={{ textAlign: `center` }}>
-            <p>{__(`Please sign in to create / edit Profiles`)}</p>
+            <p>{__(`Log ind for at se og rette i profiler`)}</p>
           </div>
         </div>
       );
