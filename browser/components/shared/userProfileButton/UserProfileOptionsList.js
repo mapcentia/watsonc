@@ -13,7 +13,7 @@ function UserProfileOptionsList(props) {
         Min profil
       </li>
       <li onClick={showSubscription}>Abonnement</li>
-      <li id="btn-reset">Nulstil</li>
+      {/* <li id="btn-reset">Nulstil</li> */}
       <li
         onClick={() => {
           window.open("http://watsonc.dk", "_blank");
@@ -21,11 +21,11 @@ function UserProfileOptionsList(props) {
       >
         Watsonc.dk
       </li>
-      <li>
+      {/* <li>
         <a id="session" href="#" data-toggle="modal" data-target="#login-modal">
           Log ud
         </a>
-      </li>
+      </li> */}
     </Root>
   );
 }

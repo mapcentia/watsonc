@@ -1036,7 +1036,7 @@ module.exports = module.exports = {
           <Provider store={reduxStore}>
             <ThemeProvider>
               <DataSelectorDialogue
-                titleText={__("Welcome to Calypso")}
+                titleText={__("Velkommen til Calypso")}
                 urlparser={urlparser}
                 anchor={anchor}
                 categories={categoriesOverall ? categoriesOverall : []}
