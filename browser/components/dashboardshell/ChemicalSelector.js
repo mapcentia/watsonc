@@ -38,6 +38,7 @@ function ChemicalSelector(props) {
       return new Promise(function (resolve, reject) {
         const relation = item.feature.properties.relation;
         const loc_id = item.feature.properties.loc_id;
+        const isJupiter = relation.includes("._");
         fetch(
           `/api/sql/jupiter?q=SELECT gid,trace,ts_id,locname,loc_id,ts_name,parameter,unit FROM ${relation} WHERE loc_id='${loc_id}'&base64=false&lifetime=60&srs=4326`
         ).then(
@@ -71,21 +72,23 @@ function ChemicalSelector(props) {
                 properties.relation = relation;
                 let intakeName = `#` + properties.ts_id[index];
                 let icon = false;
-                let group = param2group[properties.parameter[index]];
-                if (group != currentgroup) {
-                  controls.push(
-                    <Grid container key={`${index}-title`}>
-                      <Grid container item xs={10}>
-                        <Title
-                          text={param2group[properties.parameter[index]]}
-                          level={4}
-                          marginTop={16}
-                          color="#FFFFFF"
-                        />
+                if (isJupiter) {
+                  let group = param2group[properties.parameter[index]];
+                  if (group != currentgroup) {
+                    controls.push(
+                      <Grid container key={`${index}-title`}>
+                        <Grid container item xs={10}>
+                          <Title
+                            text={param2group[properties.parameter[index]]}
+                            level={4}
+                            marginTop={16}
+                            color="#FFFFFF"
+                          />
+                        </Grid>
                       </Grid>
-                    </Grid>
-                  );
-                  currentgroup = group;
+                    );
+                    currentgroup = group;
+                  }
                 }
 
                 controls.push(
