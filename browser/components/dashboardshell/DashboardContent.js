@@ -28,6 +28,7 @@ import { addBoreholeFeature } from "../../redux/actions";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import _ from "lodash";
+import usePrevious from "../shared/hooks/usePrevious";
 
 const DASHBOARD_ITEM_PLOT = 0;
 const DASHBOARD_ITEM_PROFILE = 1;
@@ -48,6 +49,8 @@ function DashboardContent(props) {
       return { ...item, index: index };
     })
   );
+
+  const prevCount = usePrevious(props.boreholeFeatures.length);
 
   const deleteFromDashboard = (index) => {
     const newBoreholes = props.boreholeFeatures;
@@ -309,6 +312,12 @@ function DashboardContent(props) {
     }
     props.onPlotsChange();
   }, [props.boreholeFeatures, selectedBoreholeIndex]);
+
+  useEffect(() => {
+    if (props.boreholeFeatures.length > prevCount) {
+      setSelectedBoreholeIndex(props.boreholeFeatures.length - 1);
+    }
+  }, [props.boreholeFeatures]);
 
   const handleTitleChange = (index) => {
     return (title) => {
