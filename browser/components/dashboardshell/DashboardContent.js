@@ -301,22 +301,21 @@ function DashboardContent(props) {
   }, [searchTerm, props.boreholeFeatures, myStations]);
 
   useEffect(() => {
-    if (props.boreholeFeatures) {
-      if (selectedBoreholeIndex >= props.boreholeFeatures.length) {
-        setSelectedBorehole(
-          myStations[selectedBoreholeIndex - props.boreholeFeatures.length]
-        );
-      } else {
-        setSelectedBorehole(props.boreholeFeatures[selectedBoreholeIndex]);
-      }
+    if (selectedBoreholeIndex >= props.boreholeFeatures.length) {
+      setSelectedBorehole(
+        myStations[selectedBoreholeIndex - props.boreholeFeatures.length]
+      );
+    } else {
+      setSelectedBorehole(props.boreholeFeatures[selectedBoreholeIndex]);
     }
     props.onPlotsChange();
-  }, [props.boreholeFeatures, selectedBoreholeIndex]);
+  }, [selectedBoreholeIndex]);
 
   useEffect(() => {
     if (props.boreholeFeatures.length > prevCount) {
       setSelectedBoreholeIndex(props.boreholeFeatures.length - 1);
     }
+    props.onPlotsChange();
   }, [props.boreholeFeatures]);
 
   const handleTitleChange = (index) => {
