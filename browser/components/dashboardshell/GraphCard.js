@@ -36,6 +36,7 @@ function GraphCard(props) {
   }, []);
 
   const download = () => {
+    console.log(props.plot);
     if (!props.plot) {
       return;
     }
@@ -48,20 +49,21 @@ function GraphCard(props) {
         let measurementLocation = measurementLocationRaw.split(":");
         if (measurementLocation.length === 3) {
           let key = measurementLocation[1];
-          let intakeIndex = parseInt(measurementLocation[2]);
+          let ts_id = parseInt(measurementLocation[2]);
 
           let feature =
             props.plot.measurementsCachedData[measurementLocationRaw].data;
           let measurementData = JSON.parse(feature.properties[key]);
-          let formatedDates = measurementData.data[intakeIndex].x.map((elem) =>
+          let index = measurementData.ts_id.indexOf(ts_id);
+          let formatedDates = measurementData.data[index].x.map((elem) =>
             moment(elem).format("YYYY-MM-DD HH:mm:ss")
           );
           data.push({
             title: measurementData.title,
             unit: measurementData.unit,
-            name: `${feature.properties.boreholeno} - ${measurementData.title} (${measurementData.unit})`,
+            name: measurementData.data[index].name,
             x: formatedDates,
-            y: measurementData.data[intakeIndex].y.map((elem) =>
+            y: measurementData.data[index].y.map((elem) =>
               elem.toString().replace(".", ",")
             ),
           });
