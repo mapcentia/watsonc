@@ -1013,6 +1013,34 @@
         background: transparent;
     }
 
+    .btn:not(.btn-raised), .btn:not(.btn-raised).btn-default, .input-group-btn .btn:not(.btn-raised), .input-group-btn .btn:not(.btn-raised).btn-default {
+        color: rgb(255 255 255);
+    }
+    
+
+    ::placeholder  {
+        color: #999
+    }
+
+    .fa-check-circle {
+        color: #10ae8c
+    }
+    
+    .fa-ban {
+        color: #a94442
+    }
+
+    .js-arbitrary-filters  .menu {
+        color: black
+        
+    }
+    
+    @media screen and (-webkit-min-device-pixel-ratio:0) {
+        input[type='range'] {
+          accent-color: #10ae8c;
+        }
+    }
+
     .container {
         width: 100%;
         margin: 0;
@@ -1035,6 +1063,10 @@
 
     .form-group.is-focused .checkbox label, .form-group.is-focused label.checkbox-inline {
         color: #bdbdbd !important;
+    }
+
+    #layers_list .layer-item.list-group-item .active {
+        background-color: #009688;
     }
     
 
