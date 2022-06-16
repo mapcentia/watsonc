@@ -49,6 +49,9 @@ function TopBar(props) {
             <span
               id="searchclear"
               className="glyphicon glyphicon-remove-circle"
+              onClick={() =>
+                (document.getElementById("custom-search").value = "")
+              }
             ></span>
           </div>
         </div>
