@@ -51,6 +51,7 @@ const Root = styled.div`
       `,
       2: css`
         font: ${(props) => props.theme.fonts.subtitle};
+        color: ${(props) => props.color || props.theme.colors.headings};
       `,
       3: css`
         font: ${(props) => props.theme.fonts.heading};

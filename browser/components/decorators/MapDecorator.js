@@ -15,6 +15,7 @@ import { addBoreholeFeature } from "../../redux/actions";
 import { getNewPlotId } from "../../helpers/common";
 import ImageCarousel from "../shared/images/ImageCarousel";
 import { showSubscription } from "../../helpers/show_subscriptionDialogue";
+import InfoComponent from "./InfoComponent";
 
 const session = require("./../../../../session/browser/index");
 
@@ -159,13 +160,39 @@ function MapDecorator(props) {
   return (
     <Root>
       {showMoreInfo ? (
-        <LabelsContainer>
-          <Title
-            level={4}
-            text={props.data.properties.locname}
-            color={DarkTheme.colors.headings}
-          />
-        </LabelsContainer>
+        <>
+          {/* <LabelsContainer>
+            <Title
+              level={4}
+              text={props.data.properties.locname}
+              color={DarkTheme.colors.headings}
+            />
+          </LabelsContainer> */}
+          <LabelsContainer>
+            <InfoComponent
+              info={
+                props.data.properties.location_info
+                  ? props.data.properties.location_info
+                  : []
+              }
+            />
+          </LabelsContainer>
+          <ButtonGroup
+            align={Align.Right}
+            marginTop={16}
+            marginRight={16}
+            marginLeft={16}
+            spacing={2}
+          >
+            <Button
+              text={__("Tidsserier")}
+              variant={Variants.Transparent}
+              size={Size.Small}
+              onClick={() => setShowMoreInfo(false)}
+              disabled={false}
+            />
+          </ButtonGroup>
+        </>
       ) : (
         <>
           {/* <RatingStarContainer>
@@ -199,7 +226,7 @@ function MapDecorator(props) {
             marginTop={16}
             marginRight={16}
             marginLeft={16}
-            spacing={4}
+            spacing={2}
           >
             <Button
               text={__("Vis alle tidsserier")}
@@ -217,7 +244,7 @@ function MapDecorator(props) {
               disabled={false}
             />
             <Button
-              text={__("Tilføj Dashboard")}
+              text={__("Tilføj til Dashboard")}
               variant={Variants.Primary}
               size={Size.Small}
               onClick={() => {
@@ -226,14 +253,13 @@ function MapDecorator(props) {
               }}
               disabled={false}
             />
-
-            {/* <Button
+            <Button
               text={__("Mere info")}
               variant={Variants.Transparent}
               size={Size.Small}
               onClick={() => setShowMoreInfo(true)}
               disabled={false}
-            /> */}
+            />
           </ButtonGroup>
         </>
       )}
