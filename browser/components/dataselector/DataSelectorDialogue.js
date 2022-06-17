@@ -140,7 +140,7 @@ function DataSelectorDialogue(props) {
       chemical: selectedParameter ? selectedParameter.value : false,
       filters: filter,
     });
-    props.onCloseButtonClick ? props.onCloseButtonClick() : null;
+    props.onCloseButtonClick();
   };
 
   return (
@@ -230,7 +230,11 @@ function DataSelectorDialogue(props) {
             />
             <Button
               text={__("Start")}
-              variant={Variants.Primary}
+              variant={
+                selectedDataSources.length === 0
+                  ? Variants.PrimaryDisabled
+                  : Variants.Primary
+              }
               onClick={() => applyParameter()}
               size={Size.Large}
               disabled={selectedDataSources.length === 0}
