@@ -368,6 +368,9 @@ function DashboardContent(props) {
                           let name = item.properties.locname;
                           index = item.index;
                           let id = item.properties.loc_id + "_" + index;
+                          const isJupiter =
+                            item.properties.relation.includes("._");
+                          console.log(item);
                           return (
                             <DashboardListItem
                               onClick={() => setSelectedBoreholeIndex(index)}
@@ -375,9 +378,25 @@ function DashboardContent(props) {
                               key={id}
                             >
                               <Icon
-                                name="drill"
+                                name={isJupiter ? "drill" : "water-wifi-solid"}
                                 size={16}
-                                strokeColor={DarkTheme.colors.headings}
+                                strokeColor={
+                                  isJupiter
+                                    ? DarkTheme.colors.interaction[4]
+                                    : DarkTheme.colors.headings
+                                }
+                                onClick={() =>
+                                  isJupiter
+                                    ? window.open(
+                                        `https://data.geus.dk/JupiterWWW/borerapport.jsp?dgunr=${name.replace(
+                                          /\s+/g,
+                                          ""
+                                        )}`,
+                                        "_blank",
+                                        "noopener,noreferrer"
+                                      )
+                                    : null
+                                }
                               />
                               <Title
                                 level={6}
@@ -446,7 +465,7 @@ function DashboardContent(props) {
                                       key={item.properties.loc_id}
                                     >
                                       <Icon
-                                        name="drill"
+                                        name="water-wifi-solid"
                                         size={16}
                                         strokeColor={DarkTheme.colors.headings}
                                         paddingLeft={16}
@@ -480,7 +499,7 @@ function DashboardContent(props) {
                                     key={item.properties.loc_id}
                                   >
                                     <Icon
-                                      name="drill"
+                                      name="water-wifi-solid"
                                       size={16}
                                       strokeColor={DarkTheme.colors.headings}
                                       // paddingLeft={16}
