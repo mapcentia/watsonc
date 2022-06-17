@@ -370,7 +370,6 @@ function DashboardContent(props) {
                           let id = item.properties.loc_id + "_" + index;
                           const isJupiter =
                             item.properties.relation.includes("._");
-                          console.log(item);
                           return (
                             <DashboardListItem
                               onClick={() => setSelectedBoreholeIndex(index)}

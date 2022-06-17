@@ -135,8 +135,6 @@ function ChemicalSelector(props) {
       });
     };
 
-    console.log(props.categories);
-
     createMeasurementControl(props)
       .then((controls) => {
         setLoadingData(false);
