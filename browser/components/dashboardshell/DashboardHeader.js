@@ -15,6 +15,9 @@ import ProjectContext from "../../contexts/project/ProjectContext";
 import { getNewPlotId } from "../../helpers/common";
 import base64url from "base64url";
 import reduxStore from "../../redux/store";
+import {
+    clearBoreholeFeatures,
+} from "../../redux/actions";
 
 const session = require("./../../../../session/browser/index");
 
@@ -105,10 +108,7 @@ function DashboardHeader(props) {
   const clearDashboard = () => {
     if (confirm("Er du på, at du vil fjerne alt fra Dashboard?")) {
       reduxStore.dispatch(clearBoreholeFeatures());
-      props.setActivePlots([]);
-      props.setPlots([]);
-      props.setActiveProfiles([]);
-      props.setProfiles(props.getAllProfiles(), []);
+      props.setItems([]);
       props.backboneEvents.get().trigger("watsonc:clearChemicalList");
     }
   };

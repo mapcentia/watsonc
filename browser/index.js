@@ -777,6 +777,9 @@ module.exports = module.exports = {
                 dashboardComponentInstance.setPlots(plots);
                 dashboardComponentInstance.setActivePlots(activePlots);
               }}
+              setItems={(plots) => {
+                  dashboardComponentInstance.setItems(plots);
+              }}
               setProfiles={(profiles, activeProfiles) => {
                 dashboardComponentInstance.setProfiles(profiles);
                 dashboardComponentInstance.setActiveProfiles(activeProfiles);
@@ -1361,7 +1364,6 @@ module.exports = module.exports = {
    * Applies externally provided state
    */
   applyState: (newState) => {
-    console.log("newState", newState);
     setTimeout(() => {
       reduxStore.dispatch(clearBoreholeFeatures());
       if (newState?.sources) {
@@ -1426,8 +1428,6 @@ module.exports = module.exports = {
           } else {
             const res = await fetchProfile(plot.key);
             const json = await res.json();
-            console.log("PLOT", plot);
-            console.log("PROFILE", json);
             plot.profile.data = JSON.parse(json.data.value).profile.data;
             allPlots.push(plot);
           }
