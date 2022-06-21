@@ -253,13 +253,15 @@ function MapDecorator(props) {
               }}
               disabled={false}
             />
-            <Button
-              text={__("Mere info")}
-              variant={Variants.Transparent}
-              size={Size.Small}
-              onClick={() => setShowMoreInfo(true)}
-              disabled={false}
-            />
+            {props.data.properties.location_info && (
+              <Button
+                text={__("Mere info")}
+                variant={Variants.Transparent}
+                size={Size.Small}
+                onClick={() => setShowMoreInfo(true)}
+                disabled={false}
+              />
+            )}
           </ButtonGroup>
         </>
       )}
