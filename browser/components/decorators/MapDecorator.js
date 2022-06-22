@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { DarkTheme } from "../../themes/DarkTheme";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import Title from "../shared/title/Title";
 import Button from "../shared/button/Button";
 import ButtonGroup from "../shared/button/ButtonGroup";
@@ -21,7 +21,34 @@ const session = require("./../../../../session/browser/index");
 
 function MapDecorator(props) {
   const [showMoreInfo, setShowMoreInfo] = useState(false);
-  const projectContext = useContext(ProjectContext);
+  const [moreInfo, setMoreInfo] = useState(
+    props.data.properties.location_info
+      ? props.data.properties.location_info
+      : []
+  );
+
+  useEffect(() => {
+    $.ajax({
+      url: `/api/sql/watsonc?q=SELECT ts_info FROM calypso_stationer.location_info_timeseries WHERE loc_id='${props.data.properties.loc_id}'&base64=false&lifetime=60&srs=4326`,
+      method: "GET",
+      dataType: "json",
+    }).then(
+      (response) => {
+        let data = response.features[0].properties;
+        console.log(JSON.parse(data.ts_info));
+
+        setMoreInfo((prev) => [
+          ...prev,
+          { type: "header", value: "Tidsserie info" },
+          ...JSON.parse(data.ts_info),
+        ]);
+      },
+      (jqXHR) => {
+        console.error(`Error occured while getting data`);
+      }
+    );
+  }, []);
+
   const plot = () => {
     props.setLoadingData(true);
     let plot = props.data.properties;
@@ -135,7 +162,7 @@ function MapDecorator(props) {
     links.push(
       props.data.properties.ts_name.map((v, index) => {
         return (
-          <Grid container key={v}>
+          <Grid container key={index}>
             <Icon
               name="analytics-board-graph-line"
               strokeColor={DarkTheme.colors.headings}
@@ -169,13 +196,7 @@ function MapDecorator(props) {
             />
           </LabelsContainer> */}
           <LabelsContainer>
-            <InfoComponent
-              info={
-                props.data.properties.location_info
-                  ? props.data.properties.location_info
-                  : []
-              }
-            />
+            <InfoComponent info={moreInfo} />
           </LabelsContainer>
           <ButtonGroup
             align={Align.Right}
@@ -253,7 +274,7 @@ function MapDecorator(props) {
               }}
               disabled={false}
             />
-            {props.data.properties.location_info && (
+            {moreInfo.length > 0 && (
               <Button
                 text={__("Mere info")}
                 variant={Variants.Transparent}

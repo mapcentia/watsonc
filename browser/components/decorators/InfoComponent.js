@@ -5,11 +5,11 @@ import { Grid } from "@material-ui/core";
 
 const InfoComponent = (props) => {
   return (
-    <Grid container spacing={8}>
-      {props.info.map((elem) => {
+    <Grid container spacing={8} style={{ whiteSpace: "pre-line" }}>
+      {props.info.map((elem, index) => {
         if (elem.type == "header") {
           return (
-            <Grid item xs={12}>
+            <Grid item xs={12} key={index}>
               <Title
                 level={2}
                 text={elem.value}
@@ -21,7 +21,7 @@ const InfoComponent = (props) => {
 
         if (elem.type == "label") {
           return (
-            <>
+            <React.Fragment key={index}>
               <Grid item xs={4}>
                 <Title
                   level={4}
@@ -36,12 +36,12 @@ const InfoComponent = (props) => {
                   color={DarkTheme.colors.gray[5]}
                 />
               </Grid>
-            </>
+            </React.Fragment>
           );
         }
         if (elem.type == "text") {
           return (
-            <Grid item xs={12}>
+            <Grid item xs={12} key={index}>
               <Title
                 level={4}
                 text={elem.value}
