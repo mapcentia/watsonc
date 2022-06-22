@@ -37,6 +37,8 @@ function GraphCard(props) {
 
   const download = () => {
     console.log(props.plot);
+    const regexExp =
+      /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i;
     if (!props.plot) {
       return;
     }
@@ -49,23 +51,36 @@ function GraphCard(props) {
         let measurementLocation = measurementLocationRaw.split(":");
         if (measurementLocation.length === 3) {
           let key = measurementLocation[1];
-          let ts_id = parseInt(measurementLocation[2]);
-
+          let ts_id = regexExp.test(measurementLocation[2])
+            ? measurementLocation[2]
+            : parseInt(measurementLocation[2]);
           let feature =
             props.plot.measurementsCachedData[measurementLocationRaw].data;
           let measurementData = JSON.parse(feature.properties[key]);
           let index = measurementData.ts_id.indexOf(ts_id);
-          let formatedDates = measurementData.data[index].x.map((elem) =>
-            moment(elem).format("YYYY-MM-DD HH:mm:ss")
-          );
+
+          var x = [];
+          var y = [];
+          measurementData.data[index].y.map((elem, idx) => {
+            if (elem != null) {
+              x.push(
+                moment(measurementData.data[index].x[idx]).format(
+                  "YYYY-MM-DD HH:mm:ss"
+                )
+              );
+              y.push(elem.toString().replace(".", ","));
+            }
+          });
+
+          // let formatedDates = measurementData.data[index].x.map((elem) =>
+          //   moment(elem).format("YYYY-MM-DD HH:mm:ss")
+          // );
           data.push({
             title: measurementData.title,
             unit: measurementData.unit,
             name: measurementData.data[index].name,
-            x: formatedDates,
-            y: measurementData.data[index].y.map((elem) =>
-              elem.toString().replace(".", ",")
-            ),
+            x: x,
+            y: y,
           });
         }
       } else {
@@ -75,6 +90,7 @@ function GraphCard(props) {
       }
     });
     const plotApi = new PlotApi();
+    console.log(data);
     plotApi
       .downloadPlot({
         title: props.plot.title,
