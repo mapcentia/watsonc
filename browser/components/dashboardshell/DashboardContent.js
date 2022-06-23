@@ -212,42 +212,51 @@ function DashboardContent(props) {
   //   console.log(props.getAllProfiles());
   // }, [props.activeProfiles]);
 
-  useEffect(() => {
-    $.ajax({
-      url: `/api/sql/watsonc?q=SELECT loc_id, locname, groupname, relation FROM calypso_stationer.calypso_my_stations_v2 WHERE user_id in (${
-        session.getProperties()?.organisation.id
-      }, ${session.getUserName()}) &base64=false&lifetime=60&srs=4326`,
-      method: "GET",
-      dataType: "json",
-    }).then((response) => {
-      function getArray(object) {
-        return Object.keys(object).reduce(function (r, k) {
-          object[k].forEach(function (a, i) {
-            r[i] = r[i] || {};
-            r[i][k] = a;
-          });
-          return r;
-        }, []);
-      }
-      var features = response.features;
-      var myStations = [];
+  const get_my_stations = () => {
+    if (session.getProperties()?.organisation.id && session.getUserName()) {
+      $.ajax({
+        url: `/api/sql/watsonc?q=SELECT loc_id, locname, groupname, relation FROM calypso_stationer.calypso_my_stations_v2 WHERE user_id in (${
+          session.getProperties()?.organisation.id
+        }, ${session.getUserName()}) &base64=false&lifetime=60&srs=4326`,
+        method: "GET",
+        dataType: "json",
+      }).then((response) => {
+        function getArray(object) {
+          return Object.keys(object).reduce(function (r, k) {
+            object[k].forEach(function (a, i) {
+              r[i] = r[i] || {};
+              r[i][k] = a;
+            });
+            return r;
+          }, []);
+        }
+        var features = response.features;
+        var myStations = [];
 
-      features.forEach((element) => {
-        myStations = myStations.concat(getArray(element.properties));
+        features.forEach((element) => {
+          myStations = myStations.concat(getArray(element.properties));
+        });
+
+        myStations = _.uniqWith(myStations, _.isEqual);
+
+        myStations = myStations.sort((a, b) =>
+          a.locname.localeCompare(b.locname)
+        );
+
+        setMyStations(
+          myStations.map((elem) => {
+            return { properties: elem };
+          })
+        );
       });
+    } else {
+      setMyStations([]);
+    }
+  };
 
-      myStations = _.uniqWith(myStations, _.isEqual);
-
-      myStations = myStations.sort((a, b) =>
-        a.locname.localeCompare(b.locname)
-      );
-
-      setMyStations(
-        myStations.map((elem) => {
-          return { properties: elem };
-        })
-      );
-    });
+  useEffect(() => {
+    get_my_stations();
+    props.backboneEvents.get().on("refresh:meta", () => get_my_stations());
   }, []);
 
   useEffect(() => {

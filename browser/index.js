@@ -1041,6 +1041,7 @@ module.exports = module.exports = {
                 titleText={__("Velkommen til Calypso")}
                 urlparser={urlparser}
                 anchor={anchor}
+                backboneEvents={backboneEvents}
                 categories={categoriesOverall ? categoriesOverall : []}
                 onApply={_self.onApplyLayersAndChemical}
                 onCloseButtonClick={onCloseHandler}

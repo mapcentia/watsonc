@@ -142,6 +142,12 @@ class DashboardComponent extends React.Component {
       this.setState({ profiles: response });
       this.props.setProfiles({ profiles: response });
     });
+    this.props.backboneEvents.get().on("refresh:meta", () => {
+      this.profileManager.getAll().then((response) => {
+        this.setState({ profiles: response });
+        this.props.setProfiles({ profiles: response });
+      });
+    });
   }
 
   getLicense() {

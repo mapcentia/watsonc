@@ -84,6 +84,7 @@ function DataSelectorDialogue(props) {
 
   useEffect(() => {
     loadDataSources();
+    props.backboneEvents.get().on("refresh:meta", () => loadDataSources());
   }, []);
 
   useEffect(() => {

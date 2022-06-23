@@ -6,24 +6,22 @@ import { Variants } from "./shared/constants/variants";
 import SearchBox from "./shared/inputs/Searchbox";
 import UserProfileButton from "./shared/userProfileButton/UserProfileButton";
 import { showSubscription } from "../helpers/show_subscriptionDialogue";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useInterval from "./shared/hooks/useInterval";
-
-const session = require("./../../../session/browser/index");
 
 function TopBar(props) {
   const [free, setFree] = useState(true);
   const [stopPoll, setStopPoll] = useState(false);
 
-  useInterval(
-    () => {
-      if (session.getProperties() !== null) {
-        setFree(session.getProperties()["license"] === "free");
-        setStopPoll(true);
+  useEffect(() => {
+    props.backboneEvents.get().on("refresh:meta", () => {
+      if (props.session.getProperties() !== null) {
+        setFree(props.session.getProperties()["license"] === "free");
+      } else {
+        setFree(true);
       }
-    },
-    stopPoll ? null : 1000
-  );
+    });
+  }, []);
 
   return (
     <Row container justify="center" alignItems="center">
