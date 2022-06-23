@@ -97,7 +97,7 @@ function DashboardHeader(props) {
   };
 
   const clearDashboard = () => {
-    if (confirm("Er du på, at du vil fjerne alt fra Dashboard?")) {
+    if (confirm("Er du sikker på, at du vil fjerne alt fra Dashboard?")) {
       reduxStore.dispatch(clearBoreholeFeatures());
       props.setItems([]);
       props.backboneEvents.get().trigger("watsonc:clearChemicalList");

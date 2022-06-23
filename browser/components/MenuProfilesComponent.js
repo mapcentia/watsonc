@@ -454,12 +454,12 @@ class MenuProfilesComponent extends React.Component {
 
     let existingProfilesControls = (
       <div style={{ textAlign: `center` }}>
-        <p>{__(`No profiles found`)}</p>
+        <p>{__(`Ingen profiler fundet`)}</p>
       </div>
     );
     let projectProfilesControls = (
       <div style={{ textAlign: `center` }}>
-        <p>{__(`No profiles found`)}</p>
+        <p>{__(`Ingen profiler fundet`)}</p>
       </div>
     );
 
