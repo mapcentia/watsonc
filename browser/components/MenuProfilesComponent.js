@@ -18,7 +18,7 @@ import reduxStore from "./../redux/store";
 import { selectChemical } from "./../redux/actions";
 import ChemicalSelectorModal from "./dataselector/ChemicalSelectorModal";
 import ThemeProvider from "../themes/ThemeProvider";
-import { showSubscription } from "../helpers/show_subscriptionDialogue";
+import { showSubscriptionIfFree } from "../helpers/show_subscriptionDialogue";
 
 const utils = require("./../utils");
 

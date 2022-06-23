@@ -14,7 +14,7 @@ import reduxStore from "../../redux/store";
 import { addBoreholeFeature } from "../../redux/actions";
 import { getNewPlotId } from "../../helpers/common";
 import ImageCarousel from "../shared/images/ImageCarousel";
-import { showSubscription } from "../../helpers/show_subscriptionDialogue";
+import { showSubscriptionIfFree } from "../../helpers/show_subscriptionDialogue";
 import InfoComponent from "./InfoComponent";
 
 const session = require("./../../../../session/browser/index");
@@ -254,10 +254,7 @@ function MapDecorator(props) {
               variant={Variants.Primary}
               size={Size.Small}
               onClick={() => {
-                if (session.getProperties()?.["license"] === "free") {
-                  showSubscription();
-                  return;
-                }
+                if (showSubscriptionIfFree()) return;
                 addToDashboard();
                 plot();
                 props.setDashboardMode("half");

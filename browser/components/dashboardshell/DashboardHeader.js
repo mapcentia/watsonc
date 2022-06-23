@@ -7,7 +7,10 @@ import Title from "../shared/title/Title";
 import { Align } from "../shared/constants/align";
 import { Variants } from "../shared/constants/variants";
 import { Size } from "../shared/constants/size";
-import { showSubscription } from "./../../helpers/show_subscriptionDialogue";
+import {
+  showSubscription,
+  showSubscriptionIfFree,
+} from "./../../helpers/show_subscriptionDialogue";
 import Button from "../shared/button/Button";
 import ButtonGroup from "../shared/button/ButtonGroup";
 import { DarkTheme } from "../../themes/DarkTheme";
@@ -15,9 +18,7 @@ import ProjectContext from "../../contexts/project/ProjectContext";
 import { getNewPlotId } from "../../helpers/common";
 import base64url from "base64url";
 import reduxStore from "../../redux/store";
-import {
-    clearBoreholeFeatures,
-} from "../../redux/actions";
+import { clearBoreholeFeatures } from "../../redux/actions";
 
 const session = require("./../../../../session/browser/index");
 
@@ -47,12 +48,9 @@ function DashboardHeader(props) {
   }, []);
 
   const addNewPlot = () => {
-    const isFree = session.getProperties()?.["license"] === "free";
     let allPlots = props.getAllPlots();
-    if (isFree && allPlots.length > 0) {
-      showSubscription();
-      return;
-    }
+
+    if (showSubscriptionIfFree(allPlots.length > 0)) return;
 
     if (props.dashboardMode === "minimized") {
       props.setDashboardMode("half");
@@ -77,11 +75,8 @@ function DashboardHeader(props) {
   };
 
   const save = () => {
-    const isFree = session.getProperties()?.["license"] === "free";
-    if (isFree) {
-      showSubscription();
-      return;
-    }
+    if (showSubscriptionIfFree()) return;
+
     let title;
     if (!dashboardTitle) {
       title = prompt("Navn på dashboard");
@@ -94,11 +89,7 @@ function DashboardHeader(props) {
   };
 
   const saveAs = () => {
-    const isFree = session.getProperties()?.["license"] === "free";
-    if (isFree) {
-      showSubscription();
-      return;
-    }
+    if (showSubscriptionIfFree()) return;
     let title = prompt("Navn på dashboard");
     if (title) {
       createSnapshot(title);

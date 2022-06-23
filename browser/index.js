@@ -11,7 +11,7 @@ import ThemeProvider from "./themes/ThemeProvider";
 import DataSelectorDialogue from "./components/dataselector/DataSelectorDialogue";
 import DashboardWrapper from "./components/DashboardWrapper";
 import TopBar from "./components/TopBar";
-import { showSubscription } from "./helpers/show_subscriptionDialogue";
+import { showSubscriptionIfFree } from "./helpers/show_subscriptionDialogue";
 
 import reduxStore from "./redux/store";
 import {
@@ -211,10 +211,9 @@ module.exports = module.exports = {
     });
 
     $(`#state-snapshots-content`).click((e) => {
-      if (session.getProperties()["license"] === "free") {
+      if (showSubscriptionIfFree()) {
         var elem = document.getElementById("state-snapshots");
         elem.style.pointerEvents = "none";
-        showSubscription();
       }
 
       //$(`[href="#state-snapshots-content"]`).trigger(`click`);
@@ -778,7 +777,7 @@ module.exports = module.exports = {
                 dashboardComponentInstance.setActivePlots(activePlots);
               }}
               setItems={(plots) => {
-                  dashboardComponentInstance.setItems(plots);
+                dashboardComponentInstance.setItems(plots);
               }}
               setProfiles={(profiles, activeProfiles) => {
                 dashboardComponentInstance.setProfiles(profiles);

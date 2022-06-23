@@ -21,7 +21,7 @@ import { WATER_LEVEL_KEY } from "../../constants";
 import { DarkTheme } from "../../themes/DarkTheme";
 import MetaApi from "../../api/meta/MetaApi";
 import Searchbox from "../shared/inputs/Searchbox";
-import { showSubscription } from "../../helpers/show_subscriptionDialogue";
+import { showSubscriptionIfFree } from "../../helpers/show_subscriptionDialogue";
 
 DataSelectorDialogue.propTypes = {
   text: PropTypes.string,
@@ -220,10 +220,7 @@ function DataSelectorDialogue(props) {
               text={__("Abn eksisterende dashboard")}
               variant={Variants.None}
               onClick={() => {
-                if (session.getProperties()["license"] === "free") {
-                  showSubscription();
-                  return;
-                }
+                if (showSubscriptionIfFree()) return;
                 setShowProjectsList(!showProjectsList);
               }}
               size={Size.Large}
