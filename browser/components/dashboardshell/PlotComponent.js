@@ -172,26 +172,32 @@ function PlotComponent(props) {
     }
 
     if (plotData.length > 0) {
-      let xmin = moment
-        .min(
-          plotData
-            .filter(
-              (elem) => elem.xaxis != "x2" && typeof elem.x != "undefined"
-            )
-            .map((elem) => moment(elem.x[0]))
-        )
-        .format("YYYY-MM-DD HH:mm:ss.SSS");
+      let xmin = moment.min(
+        plotData
+          .filter(
+            (elem) =>
+              elem.xaxis != "x2" &&
+              typeof elem.x != "undefined" &&
+              (elem.tstype_id != 4 || plotData.length == 1)
+          )
+          .map((elem) => moment(elem.x[0]))
+      );
 
-      let xmax = moment
-        .max(
-          plotData
-            .filter(
-              (elem) => elem.xaxis != "x2" && typeof elem.x != "undefined"
-            )
-            .map((elem) => moment(elem.x.slice(-1)[0]))
-        )
-        .format("YYYY-MM-DD HH:mm:ss.SSS");
+      let xmax = moment.max(
+        plotData
+          .filter(
+            (elem) =>
+              elem.xaxis != "x2" &&
+              typeof elem.x != "undefined" &&
+              (elem.tstype_id != 4 || plotData.length == 1)
+          )
+          .map((elem) => moment(elem.x.slice(-1)[0]))
+      );
+      var diff = xmax.diff(xmin);
+      xmin = xmin.subtract(diff * 0.02);
 
+      xmin = xmin.format("YYYY-MM-DD HH:mm:ss.SSS");
+      xmax = xmax.format("YYYY-MM-DD HH:mm:ss.SSS");
       setminmaxRange([xmin, xmax]);
       layout.xaxis = {
         ...layout.xaxis,
