@@ -17,7 +17,11 @@ import { Variants } from "../shared/constants/variants";
 import { Size } from "../shared/constants/size";
 import { Align } from "../shared/constants/align";
 import { hexToRgbA } from "../../helpers/colors";
-import { WATER_LEVEL_KEY } from "../../constants";
+import {
+  CUSTOM_LAYER_NAME,
+  USER_LAYER_NAME,
+  WATER_LEVEL_KEY,
+} from "../../constants";
 import { DarkTheme } from "../../themes/DarkTheme";
 import MetaApi from "../../api/meta/MetaApi";
 import Searchbox from "../shared/inputs/Searchbox";
@@ -70,7 +74,22 @@ function DataSelectorDialogue(props) {
   const loadDataSources = () => {
     const api = new MetaApi();
     api.getMetaData("calypso_stationer").then((response) => {
-      setDataSources(response);
+      let datasources = [];
+      response.map((elem) => {
+        if (elem.group == CUSTOM_LAYER_NAME) {
+          if (
+            elem.privileges.hasOwnProperty(
+              session.getProperties()?.organisation.id
+            )
+          ) {
+            datasources.push({ ...elem, group: USER_LAYER_NAME });
+          }
+        } else {
+          datasources.push(elem);
+        }
+      });
+      console.log(datasources);
+      setDataSources(datasources);
     });
   };
   const applyLayer = (layer, chem = false) => {
