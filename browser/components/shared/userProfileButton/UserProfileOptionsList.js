@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import { connect } from "react-redux";
 import { showSubscription } from "../../../helpers/show_subscriptionDialogue";
+import { showLoginModal } from "../../../helpers/show_loginmodal";
+import { LOGIN_MODAL_DIALOG_PREFIX } from "../../../constants";
 
 function UserProfileOptionsList(props) {
   return (
@@ -21,11 +23,12 @@ function UserProfileOptionsList(props) {
       >
         Watsonc.dk
       </li>
-      {/* <li>
-        <a id="session" href="#" data-toggle="modal" data-target="#login-modal">
+      <li onClick={() => $("#" + LOGIN_MODAL_DIALOG_PREFIX).modal("show")}>
+        Log ud
+        {/* <a id="session" href="#" data-toggle="modal" data-target="#login-modal" onClick={() => {}}>
           Log ud
-        </a>
-      </li> */}
+        </a> */}
+      </li>
     </Root>
   );
 }

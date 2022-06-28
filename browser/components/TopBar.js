@@ -8,17 +8,46 @@ import UserProfileButton from "./shared/userProfileButton/UserProfileButton";
 import { showSubscription } from "../helpers/show_subscriptionDialogue";
 import { useState, useEffect } from "react";
 import useInterval from "./shared/hooks/useInterval";
+import { LOGIN_MODAL_DIALOG_PREFIX } from "../constants";
+
+const FREE = "FREE";
+const NOTLOGGEDIN = "NOTLOGGEDIN";
+const PREMIUM = "PREMIUM";
 
 function TopBar(props) {
-  const [free, setFree] = useState(true);
+  const [status, setStatus] = useState(NOTLOGGEDIN);
   const [stopPoll, setStopPoll] = useState(false);
+
+  useInterval(
+    () => {
+      if (props.session.isStatusChecked()) {
+        setStopPoll(true);
+        if (props.session.getProperties() !== null) {
+          setStatus(
+            props.session.getProperties()["license"] === "premium"
+              ? PREMIUM
+              : FREE
+          );
+        } else {
+          setStatus(NOTLOGGEDIN);
+        }
+      }
+    },
+    stopPoll ? null : 1000
+  );
 
   useEffect(() => {
     props.backboneEvents.get().on("refresh:meta", () => {
+      console.log("whaat");
+      console.log(props.session.getProperties());
       if (props.session.getProperties() !== null) {
-        setFree(props.session.getProperties()["license"] === "free");
+        setStatus(
+          props.session.getProperties()["license"] === "premium"
+            ? PREMIUM
+            : FREE
+        );
       } else {
-        setFree(true);
+        setStatus(NOTLOGGEDIN);
       }
     });
   }, []);
@@ -55,11 +84,18 @@ function TopBar(props) {
         </div>
       </Grid>
       <Grid container item xs={2} justify="flex-end">
-        {free && (
+        {status === FREE && (
           <Button
             text="Opgrader Calypso"
             variant={Variants.Primary}
             onClick={showSubscription}
+          />
+        )}
+        {status === NOTLOGGEDIN && (
+          <Button
+            text="Log ind"
+            variant={Variants.Primary}
+            onClick={() => $("#" + LOGIN_MODAL_DIALOG_PREFIX).modal("show")}
           />
         )}
       </Grid>

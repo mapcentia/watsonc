@@ -14,7 +14,10 @@ function showSubscription() {
     setDashboardMode("minimized");
     $("#watsonc-limits-reached-text").hide();
     ReactDOM.render(
-      <SubscriptionDialogue onCloseButtonClick={onCloseButtonClick} />,
+      <SubscriptionDialogue
+        onCloseButtonClick={onCloseButtonClick}
+        session={session}
+      />,
       document.getElementById(subscriptionDialoguePlaceholderId)
     );
     $("#" + subscriptionDialoguePlaceholderId).modal("show");

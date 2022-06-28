@@ -5,12 +5,18 @@ import "regenerator-runtime/runtime";
 
 import AnalyticsComponent from "./components/AnalyticsComponent";
 import MenuProfilesComponent from "./components/MenuProfilesComponent";
-import { KOMMUNER, LAYER_NAMES, WATER_LEVEL_KEY } from "./constants";
+import {
+  KOMMUNER,
+  LAYER_NAMES,
+  WATER_LEVEL_KEY,
+  LOGIN_MODAL_DIALOG_PREFIX,
+} from "./constants";
 import trustedIpAddresses from "./trustedIpAddresses";
 import ThemeProvider from "./themes/ThemeProvider";
 import DataSelectorDialogue from "./components/dataselector/DataSelectorDialogue";
 import DashboardWrapper from "./components/DashboardWrapper";
 import TopBar from "./components/TopBar";
+import LoginModal from "./components/LoginModal";
 import { showSubscriptionIfFree } from "./helpers/show_subscriptionDialogue";
 
 import reduxStore from "./redux/store";
@@ -257,6 +263,20 @@ module.exports = module.exports = {
       </ThemeProvider>,
       document.getElementById("top-bar")
     );
+
+    ReactDOM.render(
+      <Provider store={reduxStore}>
+        <ThemeProvider>
+          <LoginModal
+            session={session}
+            backboneEvents={backboneEvents}
+            urlparser={urlparser}
+          />
+        </ThemeProvider>
+      </Provider>,
+      document.getElementById(LOGIN_MODAL_DIALOG_PREFIX)
+    );
+    $("#" + LOGIN_MODAL_DIALOG_PREFIX).modal("hide");
 
     $.ajax({
       url: "/api/sql/jupiter?q=SELECT * FROM codes.compunds_view&base64=false&lifetime=10800",

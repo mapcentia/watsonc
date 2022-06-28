@@ -12,6 +12,7 @@ import ThemeProvider from "../themes/ThemeProvider";
 import reduxStore from "../redux/store";
 import { Provider } from "react-redux";
 import { setDashboardMode } from "../redux/actions";
+import { LOGIN_MODAL_DIALOG_PREFIX } from "../constants";
 const session = require("./../../../session/browser/index");
 
 function SubscriptionDialogue(props) {
@@ -300,18 +301,31 @@ function SubscriptionDialogue(props) {
             </Grid>
             <Grid container>
               <Grid container item xs={6}></Grid>
-              <Grid container item xs={2}></Grid>
               <Grid container item xs={2}>
-                <SelectPlanButton
-                  onClick={() =>
-                    window.open(
-                      "https://admin.calypso.watsonc.dk/login?new=1",
-                      "_blank"
-                    )
-                  }
-                >
-                  {__("Vælg premium")}{" "}
-                </SelectPlanButton>
+                {!props.session.isAuthenticated() && (
+                  <SelectPlanButton
+                    onClick={() => {
+                      $("#" + LOGIN_MODAL_DIALOG_PREFIX).modal("show");
+                      $("#upgrade-modal").modal("hide");
+                    }}
+                  >
+                    {__("Log ind")}{" "}
+                  </SelectPlanButton>
+                )}
+              </Grid>
+              <Grid container item xs={2}>
+                {props.session?.getProperties()?.license !== "premium" && (
+                  <SelectPlanButton
+                    onClick={() =>
+                      window.open(
+                        "https://admin.calypso.watsonc.dk/login?new=1",
+                        "_blank"
+                      )
+                    }
+                  >
+                    {__("Vælg premium")}{" "}
+                  </SelectPlanButton>
+                )}
               </Grid>
               <Grid container item xs={2}>
                 <SelectPlanButton
