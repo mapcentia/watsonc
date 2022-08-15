@@ -19,3 +19,4 @@ WatsonC Vidi extension
 
 The `FOHM_layers_v2.npy` was not added to repo, please download it from https://s3-eu-west-1.amazonaws.com/mapcentia-tmp/ProfileTool.zip and put in `/extensions/watsonc/scripts` folder.
 
+test
