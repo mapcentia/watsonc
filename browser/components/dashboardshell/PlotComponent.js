@@ -99,17 +99,18 @@ function PlotComponent(props) {
             text: yaxisTitles[num_types[0]],
           },
         };
+
         plotData = plotData.map((elem) => {
           return {
-            ...elem,
             yaxis: "y1",
+            ...elem,
           };
         });
       } else if (num_types.length == 2) {
         plotData = plotData.map((elem) => {
           return {
-            ...elem,
             yaxis: elem.tstype_id === num_types[0] ? "y1" : "y3",
+            ...elem,
           };
         });
 
@@ -130,13 +131,13 @@ function PlotComponent(props) {
       } else if (num_types.length > 2) {
         plotData = plotData.map((elem) => {
           return {
-            ...elem,
             yaxis:
               elem.tstype_id === num_types[0]
                 ? "y1"
                 : elem.tstype_id === num_types[1]
                 ? "y2"
                 : "y3",
+            ...elem,
           };
         });
         layout.xaxis = {

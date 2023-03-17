@@ -28,6 +28,7 @@ function CardListItem(props) {
       let feature = null;
       let intakeIndex = null;
       let boreholeno = splitMeasurement[0];
+      let idx = null;
       if (measurementLength === 3) {
         key = splitMeasurement[1];
         intakeIndex = splitMeasurement[2];
@@ -45,9 +46,12 @@ function CardListItem(props) {
           ? `${measurementData.locname} ${measurementData.title}, ${measurementData.parameter}`
           : `${measurementData.locname}, ${measurementData.parameter}`;
         setName(NAME);
-        // if (measurementData.data[intakeIndex].tstype_id === 4) {
-        //   setUseSumInsteadOfMean(true);
-        // }
+        idx = measurementData?.ts_id.findIndex(
+          (elem) => elem.toString() == intakeIndex
+        );
+        if (measurementData.data[idx]?.tstype_id === 4) {
+          setUseSumInsteadOfMean(true);
+        }
         // setName(`${measurementData.title} (${measurementData.unit})`);
       }
       setInfoForDeletion({
