@@ -72,7 +72,25 @@ function PlotComponent(props) {
       JSON.stringify(config?.extensionConfig?.watsonc?.plotLayout)
     );
 
-    let num_types = [...new Set(props.plotData.map((elem) => elem.tstype_id))];
+    let num_types = [
+      ...new Set(
+        props.plotData
+          .sort((a, b) => {
+            if (Object.hasOwn(a, "yaxis") && Object.hasOwn(b, "yaxis")) {
+              return 0;
+            }
+            if (Object.hasOwn(a, "yaxis")) {
+              return 1;
+            }
+            if (Object.hasOwn(b, "yaxis")) {
+              return -1;
+            }
+            // a must be equal to b
+            return 0;
+          })
+          .map((elem) => elem.tstype_id)
+      ),
+    ];
 
     const give_color = next_color();
     let plotData = props.plotData.map((elem) => {
