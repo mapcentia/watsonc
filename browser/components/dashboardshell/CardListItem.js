@@ -42,14 +42,16 @@ function CardListItem(props) {
       ) {
         feature = props.plot.measurementsCachedData[props.measurement].data;
         let measurementData = JSON.parse(feature.properties[key]);
-        const NAME = measurementData.title
-          ? `${measurementData.locname} ${measurementData.title}, ${measurementData.parameter}`
-          : `${measurementData.locname}, ${measurementData.parameter}`;
-        setName(NAME);
+        
         idx = measurementData?.ts_id.findIndex(
           (elem) => elem.toString() == intakeIndex
         );
-        if (measurementData.data[idx]?.tstype_id === 4) {
+        // const NAME = measurementData.title
+        //   ? `${measurementData.locname} ${measurementData.title}, ${measurementData.parameter}`
+        //   : `${measurementData.locname}, ${measurementData.parameter}`;
+        setName(measurementData?.data[idx]?.name);
+
+        if (measurementData?.data[idx]?.tstype_id === 4) {
           setUseSumInsteadOfMean(true);
         }
         // setName(`${measurementData.title} (${measurementData.unit})`);
