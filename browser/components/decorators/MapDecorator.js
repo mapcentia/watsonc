@@ -254,7 +254,8 @@ function MapDecorator(props) {
               variant={Variants.Primary}
               size={Size.Small}
               onClick={() => {
-                if (showSubscriptionIfFree()) return;
+                if (showSubscriptionIfFree(props.getAllPlots().length > 0))
+                  return;
                 addToDashboard();
                 plot();
                 props.setDashboardMode("half");
