@@ -20,6 +20,18 @@ function CardListItem(props) {
   const [name, setName] = useState("");
   const [infoForDeletion, setInfoForDeletion] = useState({});
   const [useSumInsteadOfMean, setUseSumInsteadOfMean] = useState(false);
+
+  console.log("props.aggregate", props.aggregate);
+  const aggregateValue = options.find((elem) => {
+    return (
+      elem.window === props.aggregate?.window &&
+      elem.func === props.aggregate?.func
+    );
+  });
+
+  console.log("aggregateValue", aggregateValue);
+  const selectValue = aggregateValue ? aggregateValue.index : "";
+  console.log("selectValue", selectValue);
   useEffect(() => {
     if (props.measurement) {
       let splitMeasurement = props.measurement.split(":");
@@ -42,7 +54,7 @@ function CardListItem(props) {
       ) {
         feature = props.plot.measurementsCachedData[props.measurement].data;
         let measurementData = JSON.parse(feature.properties[key]);
-        
+
         idx = measurementData?.ts_id.findIndex(
           (elem) => elem.toString() == intakeIndex
         );
@@ -62,6 +74,7 @@ function CardListItem(props) {
         key,
         intakeIndex,
       });
+      console.log("dashboardItems", props.getDashboardItems());
     }
   }, [props.measurement, props.plot]);
 
@@ -75,6 +88,7 @@ function CardListItem(props) {
         </Grid> */}
         <Grid container item xs={11}>
           <Select
+            value={selectValue}
             onChange={(e) => {
               if (e.target.value === "") {
                 props.deleteAggregate(props.measurement);

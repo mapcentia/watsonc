@@ -1367,7 +1367,8 @@ module.exports = module.exports = {
     let dashboardItemsClone = JSON.parse(
       JSON.stringify(dashboardComponentInstance.state.dashboardItems)
     );
-    // debugger
+    console.log("getState items", dashboardItemsClone);
+    //debugger
     return (state = {
       dashboardItems: dashboardItemsClone
         .map((e) => e.item)
@@ -1409,6 +1410,7 @@ module.exports = module.exports = {
             let plotData = {
               id: plot.id,
               title: plot.title,
+              aggregate: plot.aggregate,
               measurements: [],
               measurementsCachedData: {},
               relations: {},

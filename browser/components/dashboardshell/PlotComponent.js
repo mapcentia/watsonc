@@ -246,7 +246,7 @@ function PlotComponent(props) {
       let ind = props.plotMeta.measurements.findIndex(
         (elem) => elem === agg.idx
       );
-      if (ind != -1) {
+      if (ind != -1 && plotData[ind]) {
         var grouped = aggregate(
           plotData[ind].x,
           plotData[ind].y,

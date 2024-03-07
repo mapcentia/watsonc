@@ -661,6 +661,7 @@ class DashboardComponent extends React.Component {
       });
     });
 
+    console.log("items", items);
     this.setState(
       {
         // profiles: items.filter((e) => !!e?.key),
