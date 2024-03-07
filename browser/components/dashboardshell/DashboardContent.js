@@ -83,13 +83,11 @@ function DashboardContent(props) {
   };
 
   const handleRemoveProfile = (key) => {
-    let activeProfiles = props.activeProfiles;
-    let filtered = activeProfiles.filter((profile) => profile.key !== key);
+    let activeProfiles = projectContext.activeProfiles;
+    activeProfiles = activeProfiles.filter((profile) => profile.key !== key);
+    activeProfiles = activeProfiles.map((profile) => profile.key);
 
-    props.setProfiles(
-      props.getAllProfiles(),
-      filtered.map((elem) => elem.key)
-    );
+    props.setProfiles(props.getAllProfiles(), activeProfiles);
   };
 
   const handleRemovePlot = (id) => {
@@ -204,13 +202,8 @@ function DashboardContent(props) {
         });
       }
     });
-
     setDashboardItems(dashboardItemsCopy);
   }, [props.activePlots, props.activeProfiles]);
-
-  // useEffect(() => {
-  //   console.log(props.getAllProfiles());
-  // }, [props.activeProfiles]);
 
   const get_my_stations = () => {
     if (session.getProperties()?.organisation.id && session.getUserName()) {
@@ -580,6 +573,7 @@ function DashboardContent(props) {
                       <GraphCard
                         plot={dashboardItem.item}
                         index={index}
+                        order={index}
                         key={id}
                         id={id}
                         onDeleteMeasurement={props.onDeleteMeasurement}
@@ -590,13 +584,13 @@ function DashboardContent(props) {
                       />
                     );
                   } else if (dashboardItem.type === DASHBOARD_ITEM_PROFILE) {
-                    console.log(dashboardItem.item);
                     return (
                       <GraphCard
                         plot={dashboardItem.item}
                         cloud={props.cloud}
                         index={index}
-                        key={index}
+                        order={index}
+                        key={dashboardItem.item.key}
                         cardType="profile"
                         onRemove={() =>
                           handleRemoveProfile(dashboardItem.item.key)

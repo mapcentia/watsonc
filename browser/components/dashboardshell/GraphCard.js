@@ -36,7 +36,6 @@ function GraphCard(props) {
   }, []);
 
   const download = () => {
-    console.log(props.plot);
     const regexExp =
       /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i;
     if (!props.plot) {
@@ -90,7 +89,7 @@ function GraphCard(props) {
       }
     });
     const plotApi = new PlotApi();
-    console.log(data);
+
     plotApi
       .downloadPlot({
         title: props.plot.title,

@@ -456,9 +456,11 @@ class DashboardComponent extends React.Component {
       item: profile,
     });
 
-    this.state.dashboardItems.map((item) => {
+    this.state.dashboardItems.forEach((item) => {
       dashboardItemsCopy.push(item);
-      activeProfiles.push(item.key);
+      if (item.type === DASHBOARD_ITEM_PROFILE) {
+        activeProfiles.push(item.item.key);
+      }
     });
 
     activeProfiles.push(profile.key);
