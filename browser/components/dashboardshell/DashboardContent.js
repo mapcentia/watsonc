@@ -36,7 +36,7 @@ const session = require("./../../../../session/browser/index");
 
 function DashboardContent(props) {
   const [selectedBoreholeIndex, setSelectedBoreholeIndex] = useState(0);
-  const [selectedBorehole, setSelectedBorehole] = useState();
+  const [selectedBorehole, setSelectedBorehole] = useState(null);
   const [dashboardItems, setDashboardItems] = useState([]);
   const [groups, setGroups] = useState([]);
   const [myStations, setMyStations] = useState([]);
@@ -303,6 +303,9 @@ function DashboardContent(props) {
   }, [searchTerm, props.boreholeFeatures, myStations]);
 
   useEffect(() => {
+    if (selectedBoreholeIndex === null) {
+      setSelectedBorehole(null);
+    }
     if (selectedBoreholeIndex >= props.boreholeFeatures.length) {
       setSelectedBorehole(
         myStations[selectedBoreholeIndex - props.boreholeFeatures.length]
@@ -316,6 +319,12 @@ function DashboardContent(props) {
   useEffect(() => {
     if (props.boreholeFeatures.length > prevCount) {
       setSelectedBoreholeIndex(props.boreholeFeatures.length - 1);
+    }
+    if (props.boreholeFeatures.length === 1) {
+      setSelectedBoreholeIndex(0);
+    }
+    if (props.boreholeFeatures.length === 0) {
+      setSelectedBoreholeIndex(null);
     }
     props.onPlotsChange();
   }, [props.boreholeFeatures]);

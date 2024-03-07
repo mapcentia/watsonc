@@ -20,6 +20,7 @@ function ChemicalSelector(props) {
   useEffect(() => {
     // setLoadingData(true);
     if (!props.feature || !props.feature.properties) {
+      setChemicalsList([]);
       return;
     }
     let currentgroup = null;

@@ -21,7 +21,6 @@ function CardListItem(props) {
   const [infoForDeletion, setInfoForDeletion] = useState({});
   const [useSumInsteadOfMean, setUseSumInsteadOfMean] = useState(false);
 
-  console.log("props.aggregate", props.aggregate);
   const aggregateValue = options.find((elem) => {
     return (
       elem.window === props.aggregate?.window &&
@@ -29,9 +28,8 @@ function CardListItem(props) {
     );
   });
 
-  console.log("aggregateValue", aggregateValue);
   const selectValue = aggregateValue ? aggregateValue.index : "";
-  console.log("selectValue", selectValue);
+
   useEffect(() => {
     if (props.measurement) {
       let splitMeasurement = props.measurement.split(":");
@@ -74,7 +72,6 @@ function CardListItem(props) {
         key,
         intakeIndex,
       });
-      console.log("dashboardItems", props.getDashboardItems());
     }
   }, [props.measurement, props.plot]);
 
