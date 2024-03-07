@@ -330,7 +330,7 @@ function SubscriptionDialogue(props) {
               <Grid container item xs={2}>
                 <SelectPlanButton
                   onClick={() =>
-                    window.open("https://watsonc.dk/kontakt-os/", "_blank")
+                    window.open("https://calypso.watsonc.dk/kontakt/", "_blank")
                   }
                 >
                   {__("Kontakt")}{" "}
