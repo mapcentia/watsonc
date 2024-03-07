@@ -194,6 +194,11 @@ const LoginModal = (props) => {
                   onChange={setPassword}
                   placeholder={"Password"}
                   password
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      log_in();
+                    }
+                  }}
                 />
               </Grid>
             </Grid>

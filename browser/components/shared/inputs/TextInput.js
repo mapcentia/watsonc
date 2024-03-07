@@ -26,6 +26,7 @@ function TextInput(props) {
         id={props.inputId}
         value={props.value}
         type={props.password ? "password" : "text"}
+        onKeyDown={props.onKeyDown}
       ></Input>
     </Container>
   );
