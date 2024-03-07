@@ -44,8 +44,7 @@ function ProjectList(props) {
     }
 
     if (config) {
-      configParameter = `config=${highPriorityConfigString}`;
-      parameters.push(configParameter);
+      parameters.push(`config=${config}`);
     }
     return parameters;
   };
