@@ -329,9 +329,12 @@ function DashboardContent(props) {
     props.onPlotsChange();
   }, [props.boreholeFeatures]);
 
-  const handleTitleChange = (index) => {
+  const handleTitleChange = (id) => {
     return (title) => {
       var allPlots = props.getAllPlots();
+
+      const index = allPlots.findIndex((plot) => plot.id === id);
+
       allPlots[index] = {
         ...allPlots[index],
         title: title,
@@ -576,6 +579,8 @@ function DashboardContent(props) {
               )}
               <SortableList axis="xy" onSortEnd={handlePlotSort} useDragHandle>
                 {dashboardItems.map((dashboardItem, index) => {
+                  console.log("dashboardItem", dashboardItem);
+                  console.log("index", index);
                   let id = dashboardItem.item.id;
                   if (dashboardItem.type === DASHBOARD_ITEM_PLOT) {
                     return (
@@ -591,7 +596,7 @@ function DashboardContent(props) {
                         cardType="plot"
                         onRemove={() => handleRemovePlot(id)}
                         onDrop={(item) => handleDrop(id, item)}
-                        onChange={handleTitleChange(index)}
+                        onChange={handleTitleChange(dashboardItem.item.id)}
                       />
                     );
                   } else if (dashboardItem.type === DASHBOARD_ITEM_PROFILE) {
