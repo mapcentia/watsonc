@@ -332,8 +332,11 @@ function DashboardContent(props) {
   const handleTitleChange = (id) => {
     return (title) => {
       var allPlots = props.getAllPlots();
-
       const index = allPlots.findIndex((plot) => plot.id === id);
+
+      if (index < 0) {
+        return;
+      }
 
       allPlots[index] = {
         ...allPlots[index],
@@ -579,8 +582,6 @@ function DashboardContent(props) {
               )}
               <SortableList axis="xy" onSortEnd={handlePlotSort} useDragHandle>
                 {dashboardItems.map((dashboardItem, index) => {
-                  console.log("dashboardItem", dashboardItem);
-                  console.log("index", index);
                   let id = dashboardItem.item.id;
                   if (dashboardItem.type === DASHBOARD_ITEM_PLOT) {
                     return (
