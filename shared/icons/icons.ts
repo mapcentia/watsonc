@@ -1,0 +1,32 @@
+export const IconName = {
+  ANALYTICS_BOARD_GRAPH_LINE:
+    "analytics-board-graph-line" as "analytics-board-graph-line",
+  ARROW_DOWN: "arrow-down" as "arrow-down",
+  AVATAR: "avatar" as "avatar",
+  CHECK_MARK_SOLID: "check-mark-solid" as "check-mark-solid",
+  CLEANING_SPRAY: "cleaning-spray" as "cleaning-spray",
+  CROSS: "cross" as "cross",
+  DASHBOARD_FULL_SOLID: "dashboard-full-solid" as "dashboard-full-solid",
+  DASHBOARD_HALF_SOLID: "dashboard-half-solid" as "dashboard-half-solid",
+  DASHBOARD_MINIMIZED_SOLID:
+    "dashboard-minimized-solid" as "dashboard-minimized-solid",
+  DASHBOARD: "dashboard" as "dashboard",
+  DRAG_HANDLE_SOLID: "drag-handle-solid" as "drag-handle-solid",
+  DRAG_HANDLE: "drag-handle" as "drag-handle",
+  DRILL_SPACE_SOLID: "drill-space-solid" as "drill-space-solid",
+  DRILL: "drill" as "drill",
+  EARTH_LAYERS: "earth-layers" as "earth-layers",
+  FOLDER_SOLID: "folder-solid" as "folder-solid",
+  HYPERLINK: "hyperlink" as "hyperlink",
+  LAB_FLASK_EXPERIMENT: "lab-flask-experiment" as "lab-flask-experiment",
+  LOGO: "logo" as "logo",
+  MINUS: "minus" as "minus",
+  NO3_SOLID: "no3-solid" as "no3-solid",
+  PIN_LOCATION_SOLID: "pin-location-solid" as "pin-location-solid",
+  PLUS_SOLID: "plus-solid" as "plus-solid",
+  RATING_STAR_SOLID: "rating-star-solid" as "rating-star-solid",
+  SEARCH: "search" as "search",
+  STAR_SOLID: "star-solid" as "star-solid",
+  WATER_WIFI_SOLID: "water-wifi-solid" as "water-wifi-solid",
+};
+export type IconName = typeof IconName[keyof typeof IconName];
