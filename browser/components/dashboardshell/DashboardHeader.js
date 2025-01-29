@@ -56,7 +56,8 @@ function DashboardHeader(props) {
       props.setDashboardMode("half");
     }
 
-    document.getElementById("chartsContainer").scrollTop = 0;
+    document.getElementById("chartsContainer").scrollTop =
+      props.activeProfiles.length * 400;
 
     let activePlots = projectContext.activePlots;
     let newPlotId = getNewPlotId(allPlots);

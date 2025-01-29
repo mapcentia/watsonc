@@ -18,6 +18,7 @@ let displayedItems = new L.FeatureGroup();
 
 function GraphCard(props) {
   const [fullscreen, setFullscreen] = useState(false);
+  console.log(props);
   const [graphName, setGraphName] = useState(
     props.cardType === "profile" ? props.plot.profile.title : props.plot.title
   );
@@ -224,7 +225,11 @@ function GraphCard(props) {
                   <IconContainer>
                     <Icon name="earth-layers" size={16} />
                   </IconContainer>
-                  <Title marginLeft={8} level={6} text={__("Vis profil")} />
+                  <Title
+                    marginLeft={8}
+                    level={6}
+                    text={__(profileShown ? "Skjul profil" : "Vis profil")}
+                  />
                 </HeaderActionItem>
               )}
               <SortHandleComponent />

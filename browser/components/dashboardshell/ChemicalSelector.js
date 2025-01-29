@@ -67,15 +67,17 @@ function ChemicalSelector(props) {
                   />
                 );
               }
-              // console.log(properties);
 
+              const groups = [];
               properties.ts_name.forEach((prop, index) => {
                 properties.relation = relation;
                 let intakeName = `#` + properties.ts_id[index];
                 let icon = false;
                 if (isJupiter) {
                   let group = param2group[properties.parameter[index]];
-                  if (group != currentgroup) {
+
+                  if (groups.includes(group) === false) {
+                    groups.push(group);
                     controls.push(
                       <Grid container key={`${index}-title`}>
                         <Grid container item xs={10}>
@@ -88,7 +90,6 @@ function ChemicalSelector(props) {
                         </Grid>
                       </Grid>
                     );
-                    currentgroup = group;
                   }
                 }
 
@@ -177,10 +178,11 @@ function ChemicalSelector(props) {
           if (
             searchTerm.length &&
             item.props?.label &&
-            item.props.label.toLowerCase().indexOf(searchTermLower) === -1
+            item.props.label.toLowerCase().includes(searchTermLower) === false
           ) {
             return false;
           } else {
+            console.log(item);
             return true;
           }
         })}

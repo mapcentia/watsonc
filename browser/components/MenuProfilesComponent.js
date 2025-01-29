@@ -19,6 +19,8 @@ import { selectChemical } from "./../redux/actions";
 import ChemicalSelectorModal from "./dataselector/ChemicalSelectorModal";
 import ThemeProvider from "../themes/ThemeProvider";
 import { showSubscriptionIfFree } from "../helpers/show_subscriptionDialogue";
+import { text } from "body-parser";
+import color from "@material-ui/core/colors/amber";
 
 const utils = require("./../utils");
 
@@ -500,12 +502,16 @@ class MenuProfilesComponent extends React.Component {
                   name="enabled_profile"
                   className="btn btn-xs btn-primary"
                   title="Tilføj profil"
+                  disabled={this.state.activeProfiles.includes(item.key)}
                   // checked={this.state.activeProfiles.indexOf(item.key) > -1}
                   onClick={() => this.addToDashboard(item)}
                   // onChange={(event) => {
                   //     this.handleProfileToggle(event.target.checked, item.key);
                   // }}
-                  style={{ padding: `0px`, margin: `0px` }}
+                  style={{
+                    padding: `0px`,
+                    margin: `0px`,
+                  }}
                 >
                   <i className="material-icons">add</i>
                 </button>
