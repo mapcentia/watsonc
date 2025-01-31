@@ -18,7 +18,6 @@ let displayedItems = new L.FeatureGroup();
 
 function GraphCard(props) {
   const [fullscreen, setFullscreen] = useState(false);
-  console.log(props);
   const [graphName, setGraphName] = useState(
     props.cardType === "profile" ? props.plot.profile.title : props.plot.title
   );

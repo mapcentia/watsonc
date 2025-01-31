@@ -29,6 +29,7 @@ import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import _ from "lodash";
 import usePrevious from "../shared/hooks/usePrevious";
+import { useDashboardStore } from "../../zustand/store";
 
 const DASHBOARD_ITEM_PLOT = 0;
 const DASHBOARD_ITEM_PROFILE = 1;
@@ -37,7 +38,11 @@ const session = require("./../../../../session/browser/index");
 function DashboardContent(props) {
   const [selectedBoreholeIndex, setSelectedBoreholeIndex] = useState(0);
   const [selectedBorehole, setSelectedBorehole] = useState(null);
-  const [dashboardItems, setDashboardItems] = useState([]);
+  const [dashboardItems, setDashboardItems] = useDashboardStore((state) => [
+    state.dashboardItems,
+    state.setDashboardItems,
+  ]);
+
   const [groups, setGroups] = useState([]);
   const [myStations, setMyStations] = useState([]);
   const projectContext = useContext(ProjectContext);
@@ -70,41 +75,34 @@ function DashboardContent(props) {
   };
 
   const handlePlotSort = ({ oldIndex, newIndex }) => {
-    let allPlots = arrayMove(props.getAllPlots(), oldIndex, newIndex);
-    let activePlots = projectContext.activePlots;
-    activePlots = arrayMove(
-      activePlots.map((plot) => plot.id),
-      oldIndex,
-      newIndex
-    );
-    props.setPlots(allPlots, activePlots);
-    // props.onActivePlotsChange(activePlots, allPlots, projectContext);
     setDashboardItems(arrayMove(dashboardItems, oldIndex, newIndex));
   };
 
   const handleRemoveProfile = (key) => {
-    let activeProfiles = projectContext.activeProfiles;
-    activeProfiles = activeProfiles.filter((profile) => profile.key !== key);
-    activeProfiles = activeProfiles.map((profile) => profile.key);
-
-    props.setProfiles(props.getAllProfiles(), activeProfiles);
+    setDashboardItems(
+      dashboardItems.filter(
+        (dashboardItem) =>
+          dashboardItem.item.key !== key || dashboardItem.item.key === undefined
+      )
+    );
   };
 
   const handleRemovePlot = (id) => {
-    let activePlots = props.activePlots;
-    let allPlots = props.getAllPlots();
-    activePlots = activePlots.filter((plot) => plot.id !== id);
-    allPlots = allPlots.filter((plot) => plot.id !== id);
-    activePlots = activePlots.map((plot) => plot.id);
-    // props.onActivePlotsChange(activePlots, allPlots, projectContext);
-    props.setPlots(allPlots, activePlots);
+    setDashboardItems(
+      dashboardItems.filter(
+        (dashboardItem) =>
+          dashboardItem.item.id !== id || dashboardItem.item.id === undefined
+      )
+    );
   };
 
   const handleDrop = (id, item) => {
     setLoadingData(true);
-    let plot = props.getAllPlots().filter((p) => {
-      if (p.id === id) return true;
-    })[0];
+    let plot = dashboardItems
+      .map((dashboardItems) => dashboardItems.item)
+      .filter((p) => {
+        if (p.id === id) return true;
+      })[0];
     $.ajax({
       url: `/api/sql/jupiter?q=SELECT * FROM ${item.feature.relation} WHERE loc_id='${item.feature.loc_id}'&base64=false&lifetime=60&srs=4326`,
       method: "GET",
@@ -183,27 +181,6 @@ function DashboardContent(props) {
       },
     };
   });
-
-  useEffect(() => {
-    const dashboardItemsCopy = [];
-
-    props.getDashboardItems().map((item, index) => {
-      if (item.type === DASHBOARD_ITEM_PROFILE) {
-        dashboardItemsCopy.push({
-          type: DASHBOARD_ITEM_PROFILE,
-          item: { ...item.item, title: item.item.profile.title },
-          plotsIndex: index,
-        });
-      } else {
-        dashboardItemsCopy.push({
-          type: DASHBOARD_ITEM_PLOT,
-          item: item.item,
-          plotsIndex: index,
-        });
-      }
-    });
-    setDashboardItems(dashboardItemsCopy);
-  }, [props.activePlots, props.activeProfiles]);
 
   const get_my_stations = () => {
     if (session.getProperties()?.organisation.id && session.getUserName()) {
@@ -331,19 +308,12 @@ function DashboardContent(props) {
 
   const handleTitleChange = (id) => {
     return (title) => {
-      var allPlots = props.getAllPlots();
-      const index = allPlots.findIndex((plot) => plot.id === id);
+      const index = dashboardItems.findIndex((plot) => plot.id === id);
+      if (index < 0) return;
 
-      if (index < 0) {
-        return;
-      }
-
-      allPlots[index] = {
-        ...allPlots[index],
-        title: title,
-      };
-      let activePlots = allPlots.map((plot) => plot.id);
-      props.setPlots(allPlots, activePlots);
+      dashboardItems.find(
+        (dashboardItem) => dashboardItem.item.id === id
+      ).title = title;
     };
   };
 
@@ -582,14 +552,14 @@ function DashboardContent(props) {
               )}
               <SortableList axis="xy" onSortEnd={handlePlotSort} useDragHandle>
                 {dashboardItems.map((dashboardItem, index) => {
-                  let id = dashboardItem.item.id;
                   if (dashboardItem.type === DASHBOARD_ITEM_PLOT) {
+                    let id = dashboardItem.item.id;
                     return (
                       <GraphCard
                         plot={dashboardItem.item}
                         index={index}
                         order={index}
-                        getDashboardItems={props.getDashboardItems}
+                        getDashboardItems={dashboardItems}
                         setItems={props.setItems}
                         key={id}
                         id={id}
@@ -612,7 +582,7 @@ function DashboardContent(props) {
                         onRemove={() =>
                           handleRemoveProfile(dashboardItem.item.key)
                         }
-                        onChange={handleTitleChange(index)}
+                        onChange={handleTitleChange(-1)}
                       />
                     );
                   }

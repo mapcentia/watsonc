@@ -11,12 +11,17 @@ import { Size } from "../shared/constants/size";
 import CheckBox from "../shared/inputs/CheckBox";
 import PlotComponent from "./PlotComponent";
 import CardListItem from "./CardListItem";
+import { useDashboardStore } from "../../zustand/store";
 
 const utils = require("../../utils");
 
 function DashboardPlotCard(props) {
   const [plotData, setPlotData] = useState([]);
   const [yAxis2LayoutSettings, setYAxis2LayoutSettings] = useState(null);
+  const [dashboardItems, setDashboardItems] = useDashboardStore((state) => [
+    state.dashboardItems,
+    state.setDashboardItems,
+  ]);
   const [aggregate, setAggregate] = useState(props.plot.aggregate || []);
   const [collectedProps, drop] = useDrop(() => ({
     accept: "MEASUREMENT",
@@ -40,7 +45,7 @@ function DashboardPlotCard(props) {
       });
     }
 
-    const newDashboardItems = props.getDashboardItems().map((elem) => {
+    const newDashboardItems = dashboardItems.map((elem) => {
       if (elem.item.id === props.plot.id) {
         elem.item.aggregate = aggregate;
       }
@@ -48,6 +53,7 @@ function DashboardPlotCard(props) {
     });
 
     props.setItems(newDashboardItems.map((elem) => elem.item));
+    // setDashboardItems(newDashboardItems.map((elem) => elem.item));
   };
 
   const handleDeleteAggregate = (idx) => {
@@ -99,7 +105,7 @@ function DashboardPlotCard(props) {
     }
     setPlotData(data);
     setYAxis2LayoutSettings(yAxis2LayoutSettings);
-  }, [props.plot]);
+  }, [dashboardItems]);
 
   return (
     <DashboardPlotContent
@@ -115,7 +121,7 @@ function DashboardPlotCard(props) {
                   measurement={measurement}
                   plot={props.plot}
                   onDeleteMeasurement={props.onDeleteMeasurement}
-                  getDashboardItems={props.getDashboardItems}
+                  getDashboardItems={dashboardItems}
                   setItems={props.setItems}
                   key={measurement}
                   aggregate={aggregate.find((elem) => elem.idx === measurement)}

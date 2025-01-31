@@ -16,11 +16,16 @@ import { getNewPlotId } from "../../helpers/common";
 import ImageCarousel from "../shared/images/ImageCarousel";
 import { showSubscriptionIfFree } from "../../helpers/show_subscriptionDialogue";
 import InfoComponent from "./InfoComponent";
+import { useDashboardStore } from "../../zustand/store";
 
 const session = require("./../../../../session/browser/index");
 
 function MapDecorator(props) {
   const [showMoreInfo, setShowMoreInfo] = useState(false);
+  const [dashboardItems, setDashboardItems] = useDashboardStore((state) => [
+    state.dashboardItems,
+    state.setDashboardItems,
+  ]);
   const [moreInfo, setMoreInfo] = useState(
     props.data.properties.location_info
       ? props.data.properties.location_info
@@ -35,7 +40,6 @@ function MapDecorator(props) {
     }).then(
       (response) => {
         let data = response.features[0].properties;
-        console.log(JSON.parse(data.ts_info));
 
         setMoreInfo((prev) => [
           ...prev,
@@ -52,7 +56,7 @@ function MapDecorator(props) {
   const plot = () => {
     props.setLoadingData(true);
     let plot = props.data.properties;
-    let allPlots = props.getAllPlots();
+    const allPlots = dashboardItems.map((dashboardItem) => dashboardItem.item);
     let plotData = {
       id: `plot_${getNewPlotId(allPlots)}`,
       title: props.data.properties.locname,
@@ -60,7 +64,9 @@ function MapDecorator(props) {
       relations: {},
       measurementsCachedData: {},
     };
+
     allPlots.unshift(plotData);
+
     $.ajax({
       url: `/api/sql/jupiter?q=SELECT * FROM ${props.relation} WHERE loc_id='${props.data.properties.loc_id}'&base64=false&lifetime=60&srs=4326`,
       method: "GET",
@@ -105,10 +111,16 @@ function MapDecorator(props) {
             },
           };
         }
-        let activePlots = allPlots.map((plot) => plot.id);
-        props.setPlots(allPlots, activePlots);
+        setDashboardItems(
+          allPlots.map((plot, index) => {
+            return {
+              type: plot.id ? 0 : 1,
+              item: plot,
+              plotsIndex: index,
+            };
+          })
+        );
         props.setLoadingData(false);
-        //props.onActivePlotsChange(activePlots, allPlots, projectContext);
       },
       (jqXHR) => {
         console.error(`Error occured while getting data`);

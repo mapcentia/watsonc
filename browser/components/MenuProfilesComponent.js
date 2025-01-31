@@ -21,6 +21,7 @@ import ThemeProvider from "../themes/ThemeProvider";
 import { showSubscriptionIfFree } from "../helpers/show_subscriptionDialogue";
 import { text } from "body-parser";
 import color from "@material-ui/core/colors/amber";
+import { useDashboardStore } from "../zustand/store";
 
 const utils = require("./../utils");
 
@@ -69,6 +70,7 @@ class MenuProfilesComponent extends React.Component {
       buffer: 100,
       newTitle: "",
       profilesSearchTerm: "",
+      dashboardItems: useDashboardStore.getState().dashboardItems,
     };
 
     this.search = this.search.bind(this);
@@ -99,6 +101,13 @@ class MenuProfilesComponent extends React.Component {
       });
 
     this.displayActiveProfiles();
+    this.unsub = useDashboardStore.subscribe((state) => {
+      this.setState({ dashboardItems: state.dashboardItems });
+    });
+  }
+
+  componentWillUnmount() {
+    this.unsub();
   }
 
   canCreateProfile() {
@@ -385,7 +394,18 @@ class MenuProfilesComponent extends React.Component {
   }
 
   addToDashboard(item) {
-    this.props.onProfileAdd(item);
+    useDashboardStore.getState().setDashboardItems([
+      ...this.state.dashboardItems,
+      {
+        type: DASHBOARD_ITEM_PROFILE,
+        item: item,
+        plotsIndex:
+          this.state.dashboardItems.length > 0
+            ? this.state.dashboardItems.length - 1
+            : 0,
+      },
+    ]);
+    // this.props.onProfileAdd(item);
   }
 
   render() {
@@ -502,7 +522,9 @@ class MenuProfilesComponent extends React.Component {
                   name="enabled_profile"
                   className="btn btn-xs btn-primary"
                   title="Tilføj profil"
-                  disabled={this.state.activeProfiles.includes(item.key)}
+                  disabled={this.state.dashboardItems
+                    .map((dashboardItem) => dashboardItem.item.key)
+                    .includes(item.key)}
                   // checked={this.state.activeProfiles.indexOf(item.key) > -1}
                   onClick={() => this.addToDashboard(item)}
                   // onChange={(event) => {

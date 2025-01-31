@@ -19,6 +19,7 @@ import { getNewPlotId } from "../../helpers/common";
 import base64url from "base64url";
 import reduxStore from "../../redux/store";
 import { clearBoreholeFeatures } from "../../redux/actions";
+import { useDashboardStore } from "../../zustand/store";
 
 const session = require("./../../../../session/browser/index");
 
@@ -26,6 +27,10 @@ function DashboardHeader(props) {
   const [showSaveButtons, setShowSaveButtons] = useState(true);
   const [dashboardTitle, setDashboardTitle] = useState(null);
   const [dashboardId, setDashboardId] = useState(null);
+  const [dashboardItems, setDashboardItems] = useDashboardStore((store) => [
+    store.dashboardItems,
+    store.setDashboardItems,
+  ]);
   const [saving, setSaving] = useState(false);
   const projectContext = useContext(ProjectContext);
 
@@ -44,23 +49,41 @@ function DashboardHeader(props) {
     props.backboneEvents.get().on("statesnapshot:apply", (snapshot) => {
       setDashboardTitle(snapshot.title);
       setDashboardId(snapshot.id);
+      setDashboardItems(
+        snapshot.snapshot.modules.watsonc.dashboardItems.map(
+          (dashboardItem, index) => {
+            return {
+              type: dashboardItem.id ? 0 : 1,
+              item: dashboardItem,
+              plotsIndex: index,
+            };
+          }
+        )
+      );
     });
   }, []);
 
   const addNewPlot = () => {
-    let allPlots = props.getAllPlots();
-
-    if (showSubscriptionIfFree(allPlots.length > 0)) return;
+    if (
+      showSubscriptionIfFree(
+        dashboardItems.filter((item) => item.type === DASHBOARD_ITEM_PLOT)
+          .length > 0
+      )
+    )
+      return;
 
     if (props.dashboardMode === "minimized") {
       props.setDashboardMode("half");
     }
 
     document.getElementById("chartsContainer").scrollTop =
-      props.activeProfiles.length * 400;
+      dashboardItems.length * 400;
 
-    let activePlots = projectContext.activePlots;
-    let newPlotId = getNewPlotId(allPlots);
+    let newPlotId = getNewPlotId(
+      dashboardItems
+        .filter((item) => item.type === DASHBOARD_ITEM_PLOT)
+        .map((item) => item.item)
+    );
     let plotData = {
       id: `plot_${newPlotId}`,
       title: `Graf ${newPlotId}`,
@@ -68,11 +91,14 @@ function DashboardHeader(props) {
       measurementsCachedData: {},
       relations: {},
     };
-    activePlots.unshift(plotData);
-    allPlots.unshift(plotData);
-    activePlots = activePlots.map((plot) => plot.id);
-    props.setPlots(allPlots, activePlots);
-    // props.onActivePlotsChange(activePlots, allPlots, projectContext);
+    setDashboardItems([
+      ...dashboardItems,
+      {
+        type: DASHBOARD_ITEM_PLOT,
+        item: plotData,
+        plotsIndex: dashboardItems.length - 1,
+      },
+    ]);
   };
 
   const save = () => {
@@ -100,7 +126,8 @@ function DashboardHeader(props) {
   const clearDashboard = () => {
     if (confirm("Er du sikker på, at du vil fjerne alt fra Dashboard?")) {
       reduxStore.dispatch(clearBoreholeFeatures());
-      props.setItems([]);
+      setDashboardItems([]);
+      updateSnapShot([]);
       props.backboneEvents.get().trigger("watsonc:clearChemicalList");
     }
   };
@@ -110,6 +137,9 @@ function DashboardHeader(props) {
     props.state.getState().then((state) => {
       state.map = props.anchor.getCurrentMapParameters();
       state.meta = getSnapshotMeta();
+      state.modules.watsonc.dashboardItems = dashboardItems.map(
+        (dashboardItem) => dashboardItem.item
+      );
       let data = {
         title: title,
         anonymous: false,
@@ -143,11 +173,14 @@ function DashboardHeader(props) {
     });
   };
 
-  const updateSnapShot = () => {
+  const updateSnapShot = (clearItems) => {
     setSaving(true);
     props.state.getState().then((state) => {
       state.map = props.anchor.getCurrentMapParameters();
       state.meta = getSnapshotMeta();
+      state.modules.watsonc.dashboardItems = clearItems
+        ? clearItems
+        : dashboardItems.map((dashboardItem) => dashboardItem.item);
       let data = {
         title: dashboardTitle,
         snapshot: state,

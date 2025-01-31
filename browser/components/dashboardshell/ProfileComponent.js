@@ -10,7 +10,7 @@ function ProfileComponent(props) {
   );
 
   useEffect(() => {
-    if (props.plotMeta) {
+    if (props.plotMeta && props.plotMeta.profile.data.data) {
       let dataCopy = JSON.parse(
         JSON.stringify(props.plotMeta.profile.data.data)
           .replace(/%28/g, "(")
