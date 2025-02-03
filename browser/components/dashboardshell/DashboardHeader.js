@@ -31,6 +31,7 @@ function DashboardHeader(props) {
     store.dashboardItems,
     store.setDashboardItems,
   ]);
+  const [addingNew, setAddingNew] = useState(false);
   const [saving, setSaving] = useState(false);
   const projectContext = useContext(ProjectContext);
 
@@ -63,6 +64,14 @@ function DashboardHeader(props) {
     });
   }, []);
 
+  useEffect(() => {
+    if (addingNew) {
+      document.getElementById("chartsContainer").scrollTop =
+        dashboardItems.length * 400;
+      setAddingNew(false);
+    }
+  }, [dashboardItems]);
+
   const addNewPlot = () => {
     if (
       showSubscriptionIfFree(
@@ -75,9 +84,6 @@ function DashboardHeader(props) {
     if (props.dashboardMode === "minimized") {
       props.setDashboardMode("half");
     }
-
-    document.getElementById("chartsContainer").scrollTop =
-      dashboardItems.length * 400;
 
     let newPlotId = getNewPlotId(
       dashboardItems
@@ -99,6 +105,7 @@ function DashboardHeader(props) {
         plotsIndex: dashboardItems.length - 1,
       },
     ]);
+    setAddingNew(true);
   };
 
   const save = () => {
@@ -127,7 +134,7 @@ function DashboardHeader(props) {
     if (confirm("Er du sikker på, at du vil fjerne alt fra Dashboard?")) {
       reduxStore.dispatch(clearBoreholeFeatures());
       setDashboardItems([]);
-      updateSnapShot([]);
+      updateSnapShot();
       props.backboneEvents.get().trigger("watsonc:clearChemicalList");
     }
   };
@@ -198,6 +205,8 @@ function DashboardHeader(props) {
         data: base64url(JSON.stringify(data)),
       })
         .then((response) => {
+          setDashboardId();
+          setDashboardTitle();
           props.backboneEvents.get().trigger("statesnapshot:refresh");
           setSaving(false);
         })

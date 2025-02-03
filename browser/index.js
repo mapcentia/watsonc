@@ -752,34 +752,36 @@ module.exports = module.exports = {
                   relation
                 );
               }}
+              /**TODO: Deprecated */
               onPlotsChange={(plots = false, context) => {
                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
-                if (plots) {
-                  _self.setStyleForPlots(plots);
-
-                  if (window.menuTimeSeriesComponentInstance)
-                    window.menuTimeSeriesComponentInstance.setPlots(plots);
-                  // Plots were updated from the DashboardComponent component
-                  if (modalComponentInstance) _self.createModal(false, plots);
-                  context.setActivePlots(_self.getExistingActivePlots());
-                }
+                // if (plots) {
+                //   _self.setStyleForPlots(plots);
+                //   console.log("onplotschange", plots);
+                //   if (window.menuTimeSeriesComponentInstance)
+                //     window.menuTimeSeriesComponentInstance.setPlots(plots);
+                //   // Plots were updated from the DashboardComponent component
+                //   if (modalComponentInstance) _self.createModal(false, plots);
+                //   context.setActivePlots(_self.getExistingActivePlots());
+                // }
               }}
+              /**TODO: Deprecated */
               onProfilesChange={(profiles = false) => {
                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
-                if (profiles && window.menuProfilesComponentInstance)
-                  window.menuProfilesComponentInstance.setProfiles(profiles);
-              }}
-              onActivePlotsChange={(activePlots, plots, context) => {
-                backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
-                if (window.menuTimeSeriesComponentInstance)
-                  window.menuTimeSeriesComponentInstance.setActivePlots(
-                    activePlots
-                  );
-                if (modalComponentInstance) _self.createModal(false, plots);
+                //   if (profiles && window.menuProfilesComponentInstance)
+                //     window.menuProfilesComponentInstance.setProfiles(profiles);
+                // }}
+                // onActivePlotsChange={(activePlots, plots, context) => {
+                //   backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
+                //   if (window.menuTimeSeriesComponentInstance)
+                //     window.menuTimeSeriesComponentInstance.setActivePlots(
+                //       activePlots
+                //     );
+                //   if (modalComponentInstance) _self.createModal(false, plots);
 
-                context.setActivePlots(
-                  plots.filter((plot) => activePlots.indexOf(plot.id) > -1)
-                );
+                //   context.setActivePlots(
+                //     plots.filter((plot) => activePlots.indexOf(plot.id) > -1)
+                //   );
               }}
               getAllPlots={() => {
                 return dashboardComponentInstance.getPlots();
@@ -797,13 +799,15 @@ module.exports = module.exports = {
               getActiveProfiles={() => {
                 return dashboardComponentInstance.getActiveProfileObjects();
               }}
+              /**TODO: Deprecated */
               setPlots={(plots, activePlots) => {
-                dashboardComponentInstance.setPlots(plots);
-                dashboardComponentInstance.setActivePlots(activePlots);
+                // dashboardComponentInstance.setPlots(plots);
+                // dashboardComponentInstance.setActivePlots(activePlots);
               }}
+              /**TODO: Deprecated */
               setProfiles={(profiles, activeProfiles) => {
-                dashboardComponentInstance.setProfiles(profiles);
-                dashboardComponentInstance.setActiveProfiles(activeProfiles);
+                // dashboardComponentInstance.setProfiles(profiles);
+                // dashboardComponentInstance.setActiveProfiles(activeProfiles);
               }}
               onActiveProfilesChange={(activeProfiles, profiles, context) => {
                 backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import ProjectContext from "./ProjectContext";
 
 function ProjectProvider(props) {
+  /**TODO: Deprecated */
   const [activePlots, setActivePlots] = useState([]);
   const [activeProfiles, setActiveProfiles] = useState([]);
 

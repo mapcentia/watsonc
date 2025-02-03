@@ -399,13 +399,9 @@ class MenuProfilesComponent extends React.Component {
       {
         type: DASHBOARD_ITEM_PROFILE,
         item: item,
-        plotsIndex:
-          this.state.dashboardItems.length > 0
-            ? this.state.dashboardItems.length - 1
-            : 0,
+        plotsIndex: this.state.dashboardItems.length,
       },
     ]);
-    // this.props.onProfileAdd(item);
   }
 
   render() {

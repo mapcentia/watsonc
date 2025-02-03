@@ -169,6 +169,7 @@ function DashboardContent(props) {
               trace={trace}
               data={data}
               getAllPlots={props.getAllPlots}
+              /**TODO: Deprecated */
               setPlots={props.setPlots}
               relation={popupType}
               onActivePlotsChange={props.onActivePlotsChange}

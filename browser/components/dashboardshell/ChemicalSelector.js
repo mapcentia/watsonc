@@ -182,7 +182,6 @@ function ChemicalSelector(props) {
           ) {
             return false;
           } else {
-            console.log(item);
             return true;
           }
         })}

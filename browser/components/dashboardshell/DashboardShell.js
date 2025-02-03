@@ -17,7 +17,8 @@ function DashboardShell(props) {
               <DashboardHeader
                 {...props}
                 {...context}
-                setActivePlots={context.setActivePlots}
+                /**TODO: Deprecated */
+                // setActivePlots={context.setActivePlots}
               />
               <DashboardContent {...props} {...context} />
             </Root>

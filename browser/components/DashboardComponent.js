@@ -137,12 +137,14 @@ class DashboardComponent extends React.Component {
     // this.nextDisplayType();
     this.profileManager.getAll().then((response) => {
       this.setState({ profiles: response });
-      this.props.setProfiles({ profiles: response });
+      /**TODO: Deprecated */
+      // this.props.setProfiles({ profiles: response });
     });
     this.props.backboneEvents.get().on("refresh:meta", () => {
       this.profileManager.getAll().then((response) => {
         this.setState({ profiles: response });
-        this.props.setProfiles({ profiles: response });
+        /**TODO: Deprecated */
+        // this.props.setProfiles({ profiles: response });
       });
     });
 
@@ -180,10 +182,12 @@ class DashboardComponent extends React.Component {
     return allProfiles;
   }
 
+  /* TODO: deprecate */
   getActiveProfiles() {
     return JSON.parse(JSON.stringify(this.state.activeProfiles));
   }
 
+  /* TODO: deprecate */
   getActiveProfileObjects() {
     let activeProfiles = this.getProfiles().filter((item) => {
       if (this.state.activeProfiles.indexOf(item.key) !== -1) {
@@ -506,14 +510,16 @@ class DashboardComponent extends React.Component {
     });
   }
 
+  /* From store */
   getDashboardItems() {
     return this.state.dashboardItems;
   }
-
+  /* From store */
   setDashboardItems(dashboardItems) {
     this.setState({ dashboardItems });
   }
 
+  /* from store */
   getPlots() {
     return this.state.dashboardItems
       .filter((dashboardItem) => dashboardItem.type === DASHBOARD_ITEM_PLOT)
@@ -530,98 +536,13 @@ class DashboardComponent extends React.Component {
     );
   }
 
-  setProjectPlots(projectPlots) {
-    let dashboardItemsCopy = [];
-    let plotsNotOnDashboard = [];
-    let profilesNotOnDashboard = [];
-    const unique = (data, key) => {
-      return [...new Map(data.map((item) => [key(item), item])).values()];
-    };
-
-    this.state.dashboardItems.map((item) => {
-      if (item.type !== DASHBOARD_ITEM_PROJECT_PLOT) {
-        dashboardItemsCopy.push(item);
-      }
-    });
-
-    projectPlots.map((item) => {
-      dashboardItemsCopy.push({
-        type: DASHBOARD_ITEM_PROJECT_PLOT,
-        item,
-      });
-    });
-
-    dashboardItemsCopy.map((item) => {
-      if (typeof item.type !== "undefined" && item.type === 0) {
-        plotsNotOnDashboard.push(item.item.id);
-      } else if (typeof item.type !== "undefined" && item.type === 3) {
-        // Remove an id again if it appears more than once in this.state.dashboardItems
-        plotsNotOnDashboard = plotsNotOnDashboard.filter(
-          (e) => e !== item.item.id
-        );
-      }
-      if (typeof item.type !== "undefined" && item.type === 1) {
-        profilesNotOnDashboard.push(item.item.key);
-      } else if (typeof item.type !== "undefined" && item.type === 2) {
-        // Remove a key again if it appears more than once in this.state.dashboardItems
-        profilesNotOnDashboard = profilesNotOnDashboard.filter(
-          (e) => e !== item.item.key
-        );
-      }
-    });
-
-    // Remove duplets
-    dashboardItemsCopy = unique(dashboardItemsCopy, (item) => item.item.id);
-    this.setState({ projectPlots, dashboardItems: dashboardItemsCopy }, () => {
-      setTimeout(() => {
-        plotsNotOnDashboard.forEach((id) => this.handleHidePlot(id));
-        profilesNotOnDashboard.forEach((id) => this.handleHideProfile(id));
-      }, 1000);
-    });
-  }
-
-  // setActiveProfiles(activeProfiles) {
-  //   if (typeof activeProfiles !== "undefined") {
-  //     let dashboardItemsCopy = [];
-  //     this.state.dashboardItems.map((item) => {
-  //       if (
-  //         item.type !== DASHBOARD_ITEM_PROFILE /* type 0 */ &&
-  //         item.type !== DASHBOARD_ITEM_PROJECT_PLOT /* type 3*/
-  //       ) {
-  //         dashboardItemsCopy.push(item);
-  //       }
-  //     });
-
-  //     let profiles = this.getProfiles().filter((elem) =>
-  //       activeProfiles.includes(elem.key)
-  //     );
-
-  //     profiles.map((item) => {
-  //       dashboardItemsCopy.push({
-  //         type: DASHBOARD_ITEM_PROFILE,
-  //         item,
-  //       });
-  //     });
-
-  //     this.setState(
-  //       { activeProfiles, dashboardItems: dashboardItemsCopy },
-  //       () => {
-  //         this.props.onActiveProfilesChange(
-  //           this.state.activeProfiles,
-  //           this.state.profiles,
-  //           this.context
-  //         );
-  //       }
-  //     );
-  //   }
-  // }
-
   setProfiles(profiles) {
     this.setState(profiles, () => {
       this.props.onProfilesChange(this.getProfiles());
     });
   }
 
+  /**TODO: Deprecated */
   setPlots(plots) {
     let dashboardItemsCopy = [];
     this.state.dashboardItems.map((item, index) => {
@@ -635,10 +556,12 @@ class DashboardComponent extends React.Component {
     useDashboardStore.getState().setDashboardItems(dashboardItemsCopy);
   }
 
+  /**TODO: Deprecated */
   setActivePlots(activePlots) {
     this.setState({ activePlots });
   }
 
+  /** TODO: deprecated */
   setProjectProfiles(projectProfiles) {
     const unique = (myArr) => {
       return myArr.filter((obj, pos, arr) => {
@@ -662,45 +585,6 @@ class DashboardComponent extends React.Component {
     });
     this.setState({ projectProfiles, dashboardItems: dashboardItemsCopy });
   }
-
-  // getProfilesLength() {
-  //   let activeProfiles = [];
-  //   this.state.profiles.map((item) => {
-  //     if (activeProfiles.indexOf(item.key) === -1) {
-  //       activeProfiles.push(item.key);
-  //     }
-  //   });
-  //   this.state.activeProfiles.map((item) => {
-  //     if (activeProfiles.indexOf(item.key) === -1) {
-  //       activeProfiles.push(item.key);
-  //     }
-  //   });
-  //   return activeProfiles.length;
-  // }
-
-  // getPlotsLength() {
-  //   return this.state.plots.length + this.state.projectPlots.length;
-  // }
-
-  // handleHighlightPlot(plotId) {
-  //   if (!plotId) throw new Error(`Empty plot identifier`);
-
-  //   this.setState(
-  //     {
-  //       highlightedPlot: plotId === this.state.highlightedPlot ? false : plotId,
-  //     },
-  //     () => {
-  //       this.props.onHighlightedPlotChange(
-  //         this.state.highlightedPlot,
-  //         this.state.plots
-  //       );
-  //     }
-  //   );
-  // }
-
-  // handleNewPlotNameChange(event) {
-  //   this.setState({ newPlotName: event.target.value });
-  // }
 
   _modifyAxes(
     plotId,

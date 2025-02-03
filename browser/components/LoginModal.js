@@ -26,7 +26,6 @@ const LoginModal = (props) => {
         setStopPoll(true);
         setLoggedIn(props.session.isAuthenticated());
         if (!props.session.isAuthenticated()) {
-          console.log(props.urlparser);
           if (!props.urlparser.urlVars || !props.urlparser.urlVars.state) {
             $("#" + LOGIN_MODAL_DIALOG_PREFIX).modal("show");
             $("#watsonc-menu-dialog").modal("hide");
@@ -170,7 +169,6 @@ const LoginModal = (props) => {
                 }
                 color={DarkTheme.colors.interaction[4]}
                 level={4}
-                onClick={() => console.log("hej")}
               />
             </Grid>
 

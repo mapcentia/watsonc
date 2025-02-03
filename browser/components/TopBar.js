@@ -38,8 +38,6 @@ function TopBar(props) {
 
   useEffect(() => {
     props.backboneEvents.get().on("refresh:meta", () => {
-      console.log("whaat");
-      console.log(props.session.getProperties());
       if (props.session.getProperties() !== null) {
         setStatus(
           props.session.getProperties()["license"] === "premium"
