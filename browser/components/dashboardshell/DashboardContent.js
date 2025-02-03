@@ -559,8 +559,6 @@ function DashboardContent(props) {
                         plot={dashboardItem.item}
                         index={index}
                         order={index}
-                        getDashboardItems={dashboardItems}
-                        setItems={props.setItems}
                         key={id}
                         id={id}
                         onDeleteMeasurement={props.onDeleteMeasurement}

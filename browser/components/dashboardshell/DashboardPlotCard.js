@@ -52,8 +52,7 @@ function DashboardPlotCard(props) {
       return elem;
     });
 
-    props.setItems(newDashboardItems.map((elem) => elem.item));
-    // setDashboardItems(newDashboardItems.map((elem) => elem.item));
+    setDashboardItems(newDashboardItems.map((elem) => elem.item));
   };
 
   const handleDeleteAggregate = (idx) => {
@@ -121,8 +120,6 @@ function DashboardPlotCard(props) {
                   measurement={measurement}
                   plot={props.plot}
                   onDeleteMeasurement={props.onDeleteMeasurement}
-                  getDashboardItems={dashboardItems}
-                  setItems={props.setItems}
                   key={measurement}
                   aggregate={aggregate.find((elem) => elem.idx === measurement)}
                   setAggregate={handleSetAggregate}

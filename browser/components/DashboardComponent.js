@@ -90,14 +90,8 @@ class DashboardComponent extends React.Component {
     this.handleProfileClick = this.handleProfileClick.bind(this);
     this.handleChangeDatatypeProfile =
       this.handleChangeDatatypeProfile.bind(this);
-    // this.setProjectProfiles = this.setProjectProfiles.bind(this);
-    // this.getProfilesLength = this.getProfilesLength.bind(this);
-    // this.getPlotsLength = this.getPlotsLength.bind(this);
     this.getDashboardItems = this.getDashboardItems.bind(this);
     this.setdashboardItems = this.setDashboardItems.bind(this);
-
-    // this.getFeatureByGidFromDataSource = this.getFeatureByGidFromDataSource.bind(this);
-    // this.handleNewPlotNameChange = this.handleNewPlotNameChange.bind(this);
     this.handlePlotSort = this.handlePlotSort.bind(this);
     this.getLicense = this.getLicense.bind(this);
 
@@ -635,20 +629,6 @@ class DashboardComponent extends React.Component {
         type: item.type,
         item: item,
         plotsIndex: item.plotsIndex ? item.plotsIndex : index,
-      });
-    });
-
-    useDashboardStore.getState().setDashboardItems(dashboardItemsCopy);
-  }
-
-  setItems(items) {
-    let dashboardItemsCopy = [];
-
-    items.map((item, index) => {
-      dashboardItemsCopy.push({
-        type: item?.key ? DASHBOARD_ITEM_PROFILE : DASHBOARD_ITEM_PLOT,
-        item: item,
-        plotsIndex: index,
       });
     });
 

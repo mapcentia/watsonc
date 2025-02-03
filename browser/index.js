@@ -27,6 +27,7 @@ import {
   setBoreholeFeatures,
   setCategories,
 } from "./redux/actions";
+import { useDashboardStore } from "./zustand/store";
 
 const symbolizer = require("./symbolizer");
 
@@ -789,15 +790,16 @@ module.exports = module.exports = {
               getDashboardItems={() => {
                 return dashboardComponentInstance.getDashboardItems();
               }}
+              setDashboardItems={(items) => {
+                dashboardComponentInstance.setDashboardItems(items);
+                backboneEvents.get().trigger(`${MODULE_NAME}:plotsUpdate`);
+              }}
               getActiveProfiles={() => {
                 return dashboardComponentInstance.getActiveProfileObjects();
               }}
               setPlots={(plots, activePlots) => {
                 dashboardComponentInstance.setPlots(plots);
                 dashboardComponentInstance.setActivePlots(activePlots);
-              }}
-              setItems={(plots) => {
-                dashboardComponentInstance.setItems(plots);
               }}
               setProfiles={(profiles, activeProfiles) => {
                 dashboardComponentInstance.setProfiles(profiles);
@@ -1457,9 +1459,16 @@ module.exports = module.exports = {
       }
 
       loop().then((plots) => {
-        dashboardComponentInstance.setItems(plots);
+        useDashboardStore.getState().setDashboardItems(
+          plots.map((plot, index) => {
+            return {
+              type: plot.id ? 0 : 1,
+              item: plot,
+              plotsIndex: index,
+            };
+          })
+        );
       });
-      // dashboardComponentInstance.setItems(newState.profiles)
     }, 2000);
   },
 };
