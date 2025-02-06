@@ -3,4 +3,5 @@ config/config.js
 
 # Scripts data folder and .npy data set
 scripts/profil
+scripts/pesticidAAK
 .DS_Store

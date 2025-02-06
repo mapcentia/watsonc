@@ -11,6 +11,8 @@ const USER_LAYER_NAME = "Brugerspecifikke lag";
 
 const WATER_LEVEL_KEY = `99999`;
 
+const GEOLOGICAL_LAYER_NAME = "calypso_layers";
+
 const SELECT_CHEMICAL_DIALOG_PREFIX = `watsonc-select-chemical-dialog`;
 
 const LOGIN_MODAL_DIALOG_PREFIX = `watsonc-login-modal`;
@@ -427,6 +429,7 @@ const KOMMUNER = [
 export {
   LAYER_NAMES,
   WATER_LEVEL_KEY,
+  GEOLOGICAL_LAYER_NAME,
   SELECT_CHEMICAL_DIALOG_PREFIX,
   CUSTOM_LAYER_NAME,
   USER_LAYER_NAME,

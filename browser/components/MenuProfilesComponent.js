@@ -99,7 +99,6 @@ class MenuProfilesComponent extends React.Component {
           _self.setState({ authenticated });
         }
       });
-
     this.displayActiveProfiles();
     this.unsub = useDashboardStore.subscribe((state) => {
       this.setState({ dashboardItems: state.dashboardItems });
@@ -173,11 +172,11 @@ class MenuProfilesComponent extends React.Component {
   saveProfile() {
     let layers = [];
     this.state.layers.map((item) => {
-      if (this.state.selectedLayers.indexOf(item.id) > -1) {
+      if (this.state.selectedLayers.indexOf(item.gid) > -1) {
         layers.push(item);
       }
     });
-
+    console.log(layers);
     this.setState({ loading: true });
     this.props.onProfileCreate(
       {
@@ -186,11 +185,13 @@ class MenuProfilesComponent extends React.Component {
         buffer: this.state.buffer,
         depth: this.state.profileBottom,
         compound: this.state.localSelectedChemical,
-        boreholeNames: this.state.boreholeNames,
+        DGU_nr: this.state.boreholeNames,
+        model_data: this.state.model_data,
         layers,
       },
       true,
       () => {
+        this.stopDrawing();
         this.setState({
           step: STEP_ENTER_NAME,
           bufferedProfile: false,
@@ -215,15 +216,16 @@ class MenuProfilesComponent extends React.Component {
   handleLayerSelect(checked, layer) {
     let layesrCopy = JSON.parse(JSON.stringify(this.state.selectedLayers));
     if (checked) {
-      if (layesrCopy.indexOf(layer.id) === -1) {
-        layesrCopy.push(layer.id);
+      if (layesrCopy.indexOf(layer.gid) === -1) {
+        layesrCopy.push(layer.gid);
       }
     } else {
-      if (layesrCopy.indexOf(layer.id) > -1) {
-        layesrCopy.splice(layesrCopy.indexOf(layer.id), 1);
+      if (layesrCopy.indexOf(layer.gid) > -1) {
+        layesrCopy.splice(layesrCopy.indexOf(layer.gid), 1);
       }
     }
 
+    console.log("layers", layesrCopy);
     this.setState({ selectedLayers: layesrCopy });
   }
 
@@ -235,26 +237,23 @@ class MenuProfilesComponent extends React.Component {
         selectedLayers: [],
       },
       () => {
-        this.stopDrawing();
         this.setState({ loading: true });
         axios
           .post(`/api/extension/watsonc/intersection`, {
-            data: wkt.convert(this.state.bufferedProfile),
+            // data: wkt.convert(this.state.bufferedProfile),
             bufferRadius: this.state.buffer,
-            profileDepth: this.state.profileBottom,
+            // profileDepth: this.state.profileBottom,
             profile: this.state.profile,
           })
           .then((response) => {
-            let responseCopy = JSON.parse(JSON.stringify(response.data.result));
-            response.data.result.map((item, index) => {
-              responseCopy[index].id = btoa(item.title);
-            });
+            let result = response.data.result;
 
             this.setState({
               step: STEP_CHOOSE_LAYERS,
               loading: false,
-              layers: responseCopy,
-              boreholeNames: response.data.boreholeNames,
+              layers: result.intersecting_models,
+              boreholeNames: result.boreholeNames,
+              model_data: result.model_data,
             });
           })
           .catch((error) => {
@@ -433,7 +432,7 @@ class MenuProfilesComponent extends React.Component {
               <label>
                 <input
                   type="checkbox"
-                  checked={this.state.selectedLayers.indexOf(item.id) > -1}
+                  checked={this.state.selectedLayers.indexOf(item.gid) > -1}
                   onChange={(event) => {
                     this.handleLayerSelect(event.target.checked, item);
                   }}

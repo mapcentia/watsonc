@@ -300,8 +300,7 @@ class DashboardComponent extends React.Component {
                                     buffer: selectedProfile.value.buffer,
                                     depth: selectedProfile.value.depth,
                                     compound: this.state.createdProfileChemical,
-                                    boreholeNames:
-                                      selectedProfile.value.boreholeNames,
+                                    DGU_nr: selectedProfile.value.boreholeNames,
                                     layers: selectedProfile.value.layers,
                                   },
                                   true,

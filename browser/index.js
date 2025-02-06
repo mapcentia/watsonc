@@ -8,6 +8,7 @@ import MenuProfilesComponent from "./components/MenuProfilesComponent";
 import {
   KOMMUNER,
   LAYER_NAMES,
+  GEOLOGICAL_LAYER_NAME,
   WATER_LEVEL_KEY,
   LOGIN_MODAL_DIALOG_PREFIX,
 } from "./constants";
@@ -91,6 +92,8 @@ let limits = {};
 let names = {};
 
 let currentRasterLayer = null;
+
+let profileMenu = false;
 
 /**
  *
@@ -239,6 +242,10 @@ module.exports = module.exports = {
       "click",
       "#module-container .modal-header button",
       function (e) {
+        if (profileMenu) {
+          _self.disableActiveGeologicalLayer(GEOLOGICAL_LAYER_NAME);
+        }
+
         e.preventDefault();
         $("#module-container.slide-right").css("right", "-" + 466 + "px");
         $("#side-panel ul li").removeClass("active");
@@ -361,6 +368,8 @@ module.exports = module.exports = {
         layerTree.setOnEachFeature(
           layerName,
           (clickedFeature, layer) => {
+            console.log("clickedFeature", clickedFeature);
+            console.log("layer", layer);
             layer.on("click", (e) => {
               $("#" + FEATURE_CONTAINER_ID).animate(
                 {
@@ -642,8 +651,9 @@ module.exports = module.exports = {
         // Initializing TimeSeries management component
 
         // Initializing profiles tab
-        if ($(`#profile-drawing-content`).length === 0)
+        if ($(`#profile-drawing-content`).length === 0) {
           throw new Error(`Unable to get the profile drawing tab`);
+        }
 
         // Initializing TimeSeries management component
         $(`[data-module-id="profile-drawing"]`).click(() => {
@@ -674,6 +684,14 @@ module.exports = module.exports = {
               document.getElementById(`profile-drawing-content`)
             );
 
+            profileMenu = true;
+            if (
+              !layerTree
+                .getActiveLayers()
+                .includes("calypso_layers.profile_models")
+            ) {
+              _self.applyGeologicalLayer("calypso_layers.profile_models");
+            }
             backboneEvents
               .get()
               .on(`reset:all reset:profile-drawing off:all`, () => {
@@ -972,6 +990,17 @@ module.exports = module.exports = {
                 </li>
             </ol>`);
     }
+  },
+
+  disableActiveGeologicalLayer: (layersToDisable) => {
+    layerTree.getActiveLayers().map((layer) => {
+      if (layer.startsWith(layersToDisable)) switchLayer.init(layer, false);
+    });
+    profileMenu = false;
+  },
+
+  applyGeologicalLayer: (layerToActivate) => {
+    switchLayer.init(layerToActivate, true);
   },
 
   onApplyLayersAndChemical: (parameters) => {
