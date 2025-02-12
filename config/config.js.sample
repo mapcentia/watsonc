@@ -1,7 +1,12 @@
 module.exports = {
-    // Python 3 command
-    pythonCommand: 'python3',
-    // Location of the Python scripts
-    intersectionsScriptPath: '/root/vidi/ProfileTool/intersectiontool.py',
-    profileScriptPath: '/root/vidi/ProfileTool/profiletool.py',
+  pythonCommand: "uv run",
+  profileProjectPath:
+    "C:/Users/ElyasBahodi/Documents/GitHub/vidi/extensions/watsonc/scripts/profil",
+  intersectionsScriptPath: "extensions/watsonc/scripts/profil/intersection.py",
+  profileScriptPath: "profiletool_kemi_v5.py",
+
+  pesticidProjectPath:
+    "C:/Users/ElyasBahodi/Documents/GitHub/vidi/extensions/watsonc/scripts/pesticidAAK",
+  reportScriptPath: "Jupiter_PesticidRapport.py",
+  reportSavePath: "C:/Users/ElyasBahodi/Documents/GitHub/vidi/public/tmp/",
 };
