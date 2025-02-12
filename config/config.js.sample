@@ -1,12 +1,12 @@
 module.exports = {
   pythonCommand: "uv run",
   profileProjectPath:
-    "C:/Users/ElyasBahodi/Documents/GitHub/vidi/extensions/watsonc/scripts/profil",
-  intersectionsScriptPath: "extensions/watsonc/scripts/profil/intersection.py",
+    "/root/vidi/extensions/watsonc/scripts/profil",
+  intersectionsScriptPath: "/root/vidi/extensions/watsonc/scripts/profil/intersection.py",
   profileScriptPath: "profiletool_kemi_v5.py",
 
   pesticidProjectPath:
-    "C:/Users/ElyasBahodi/Documents/GitHub/vidi/extensions/watsonc/scripts/pesticidAAK",
+    "/root/vidi/extensions/watsonc/scripts/pesticidAAK",
   reportScriptPath: "Jupiter_PesticidRapport.py",
-  reportSavePath: "C:/Users/ElyasBahodi/Documents/GitHub/vidi/public/tmp/",
+  reportSavePath: "/root/vidi/public/tmp/",
 };
