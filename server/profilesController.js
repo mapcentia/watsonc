@@ -2,7 +2,7 @@
 var request = require('request');
 const shared = require('./../../../controllers/gc2/shared');
 var config = require('./../../../config/config');
-const uuid = require('uuid/v1');
+const uuid = require('uuid');
 
 if (!config.gc2.host) throw new Error(`Unable to get the GC2 host from config`);
 const API_LOCATION = config.gc2.host + `/api/v2/keyvalue`;
@@ -21,7 +21,7 @@ const createProfile = (req, res) => {
                 created_at: currentDate.toISOString(),
                 profile: JSON.parse(JSON.stringify(req.body))
             };
-        
+
             request({
                 method: 'POST',
                 encoding: 'utf8',
@@ -42,7 +42,7 @@ const createProfile = (req, res) => {
                     }
                 } else {
                     shared.throwError(res, 'INVALID_OR_EMPTY_EXTERNAL_API_REPLY', { body: response.body });
-                } 
+                }
             });
         } else {
             shared.throwError(res, 'UNAUTHORIZED');
