@@ -26,10 +26,54 @@ function calculateWeightedAverage(items) {
 }
 
 function aggregate(x, y, window, func) {
+  // Make an interpolated point for each start of the window
+  if (func === "mean") {
+    const start = moment(x[0]).startOf(window);
+    const end = moment(x[x.length - 1]).startOf(window);
+    const current = moment(start);
+    const interpolatedX = [];
+    const interpolatedY = [];
+    while (current.isBefore(end)) {
+      interpolatedX.push(current.format());
+      interpolatedY.push(null);
+      current.add(1, window);
+    }
+    x = [...x, ...interpolatedX];
+    y = [...y, ...interpolatedY];
+
+    // Sort the arrays
+    const sorted = x
+      .map((value, index) => {
+        return { x: value, y: y[index] };
+      })
+      .sort((a, b) => {
+        return moment(a.x).diff(moment(b.x));
+      });
+
+    // Replace null values with the mean of the two adjacent values accounting for the x distance
+    for (let i = 1; i < sorted.length - 1; i++) {
+      if (sorted[i].y === null) {
+        // Make linear interpolation
+        const prev = sorted[i - 1];
+        const next = sorted[i + 1];
+        const slope =
+          (next.y - prev.y) / moment(next.x).diff(moment(prev.x), "seconds");
+        const distance = moment(sorted[i].x).diff(moment(prev.x), "seconds");
+        sorted[i].y = prev.y + slope * distance;
+      }
+    }
+
+    x = sorted.map((value) => value.x);
+    y = sorted.map((value) => value.y);
+  }
+
+  console.log("x", x);
+  console.log("y", y);
+
   const grouped = _(
     x.map((elem, index) => {
       return {
-        x: moment(elem).startOf(window).format("YYYY-MM-DD HH:mm:ss.SSS"),
+        x: moment(elem).startOf(window).format("YYYY-MM-DD HH:mm:ss"),
         x_raw: elem,
         y: y[index],
       };
@@ -59,7 +103,7 @@ function aggregate(x, y, window, func) {
       x: entries.map((elem) =>
         moment(elem[0])
           .add(width / 2, "ms")
-          .format("YYYY-MM-DD HH:mm:ss.SSS")
+          .format("YYYY-MM-DD HH:mm:ss")
       ),
       y: entries.map((elem) => elem[1]),
       width: new Array(entries.length).fill(width),
