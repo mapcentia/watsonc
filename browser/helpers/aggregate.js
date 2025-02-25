@@ -67,9 +67,6 @@ function aggregate(x, y, window, func) {
     y = sorted.map((value) => value.y);
   }
 
-  console.log("x", x);
-  console.log("y", y);
-
   const grouped = _(
     x.map((elem, index) => {
       return {
