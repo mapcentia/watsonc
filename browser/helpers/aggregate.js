@@ -10,10 +10,14 @@ function calculateWeightedAverage(items) {
   let totalWeight = 0;
   let weightedSum = 0;
 
+  if (items.length == 1) {
+    return items[0].y;
+  }
+
   for (let j = 1; j < items.length; j++) {
     const prev = items[j - 1];
     const curr = items[j];
-    const weight = moment(curr.x).diff(moment(prev.x), "seconds");
+    const weight = moment(curr.x_raw).diff(moment(prev.x_raw), "seconds");
     totalWeight += weight;
     weightedSum += ((prev.y + curr.y) * weight) / 2;
   }
@@ -26,6 +30,7 @@ function aggregate(x, y, window, func) {
     x.map((elem, index) => {
       return {
         x: moment(elem).startOf(window).format("YYYY-MM-DD HH:mm:ss.SSS"),
+        x_raw: elem,
         y: y[index],
       };
     })
@@ -40,7 +45,6 @@ function aggregate(x, y, window, func) {
       }
     })
     .value();
-
   const entries = Object.entries(grouped);
   if (func === "mean") {
     return {

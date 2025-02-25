@@ -1400,7 +1400,7 @@ module.exports = module.exports = {
       return o;
     });
     let dashboardItemsClone = JSON.parse(
-      JSON.stringify(dashboardComponentInstance.state.dashboardItems)
+      JSON.stringify(dashboardComponentInstance.getDashboardItems())
     );
     //debugger
     return (state = {
