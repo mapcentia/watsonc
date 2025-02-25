@@ -32,8 +32,6 @@ function DashboardPlotCard(props) {
     }),
   }));
 
-  console.log("props.plot", props.plot);
-
   const handleSetAggregate = (idx, window, func) => {
     let ind = aggregate.findIndex((elem) => elem.idx === idx);
     if (ind === -1) {
