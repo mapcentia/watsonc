@@ -176,7 +176,7 @@ class MenuProfilesComponent extends React.Component {
         layers.push(item);
       }
     });
-    console.log(layers);
+
     this.setState({ loading: true });
     this.props.onProfileCreate(
       {
