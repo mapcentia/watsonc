@@ -400,7 +400,7 @@ class DashboardComponent extends React.Component {
         }
 
         var dashboardItemsCopy = JSON.parse(
-          JSON.stringify(this.state.dashboardItems)
+          JSON.stringify(useDashboardStore.getState().dashboardItems)
         );
         dashboardItemsCopy = dashboardItemsCopy.filter((item) => {
           if (item.type === DASHBOARD_ITEM_PROFILE) {
@@ -464,7 +464,7 @@ class DashboardComponent extends React.Component {
       item: profile,
     });
 
-    this.state.dashboardItems.forEach((item) => {
+    useDashboardStore.getState().dashboardItems.forEach((item) => {
       dashboardItemsCopy.push(item);
       if (item.type === DASHBOARD_ITEM_PROFILE) {
         activeProfiles.push(item.item.key);
@@ -511,7 +511,7 @@ class DashboardComponent extends React.Component {
 
   /* From store */
   getDashboardItems() {
-    return this.state.dashboardItems;
+    return useDashboardStore.getState().dashboardItems;
   }
   /* From store */
   setDashboardItems(dashboardItems) {
@@ -520,16 +520,22 @@ class DashboardComponent extends React.Component {
 
   /* from store */
   getPlots() {
-    return this.state.dashboardItems
-      .filter((dashboardItem) => dashboardItem.type === DASHBOARD_ITEM_PLOT)
+    return useDashboardStore
+      .getState()
+      .dashboardItems.filter(
+        (dashboardItem) => dashboardItem.type === DASHBOARD_ITEM_PLOT
+      )
       .map((dashboardItem) => dashboardItem.item);
   }
 
   getActivePlots() {
     return JSON.parse(
       JSON.stringify(
-        this.state.dashboardItems
-          .filter((dashboardItem) => dashboardItem.type === DASHBOARD_ITEM_PLOT)
+        useDashboardStore
+          .getState()
+          .dashboardItems.filter(
+            (dashboardItem) => dashboardItem.type === DASHBOARD_ITEM_PLOT
+          )
           .map((dashboardItem) => dashboardItem.item)
       )
     );
@@ -544,7 +550,7 @@ class DashboardComponent extends React.Component {
   /**TODO: Deprecated */
   setPlots(plots) {
     let dashboardItemsCopy = [];
-    this.state.dashboardItems.map((item, index) => {
+    useDashboardStore.getState().dashboardItems.map((item, index) => {
       dashboardItemsCopy.push({
         type: item.type,
         item: item,
@@ -570,7 +576,7 @@ class DashboardComponent extends React.Component {
     // Remove duplets
     projectProfiles = unique(projectProfiles);
     let dashboardItemsCopy = [];
-    this.state.dashboardItems.map((item) => {
+    useDashboardStore.getState().dashboardItems.map((item) => {
       if (item.type !== DASHBOARD_ITEM_PROJECT_PROFILE) {
         dashboardItemsCopy.push(item);
       }
@@ -654,16 +660,18 @@ class DashboardComponent extends React.Component {
     } else {
       throw new Error(`Unrecognized action ${action}`);
     }
-    plots[correspondingPlotIndex] = correspondingPlot;
+    plots[correspondingPlotIndex] = { ...correspondingPlot };
 
-    const updated = this.state.dashboardItems.map((dashboardItem) => {
+    const { dashboardItems, setDashboardItems } = useDashboardStore.getState();
+
+    const updated = dashboardItems.map((dashboardItem) => {
       if (dashboardItem.item.id === correspondingPlot.id) {
-        dashboardItem.item = correspondingPlot;
+        dashboardItem.item = { ...correspondingPlot };
       }
       return dashboardItem;
     });
 
-    useDashboardStore.getState().setDashboardItems(updated);
+    setDashboardItems(updated);
 
     this.setState({
       plots,
@@ -725,7 +733,7 @@ class DashboardComponent extends React.Component {
     Promise.all(updatePlotsPromises)
       .then(() => {
         let dashboardItemsCopy = JSON.parse(
-          JSON.stringify(this.state.dashboardItems)
+          JSON.stringify(useDashboardStore.getState().dashboardItems)
         );
         dashboardItemsCopy.map((item, index) => {
           if (

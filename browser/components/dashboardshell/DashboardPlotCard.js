@@ -31,6 +31,7 @@ function DashboardPlotCard(props) {
       canDrop: monitor.canDrop(),
     }),
   }));
+
   const handleSetAggregate = (idx, window, func) => {
     let ind = aggregate.findIndex((elem) => elem.idx === idx);
     if (ind === -1) {
@@ -52,7 +53,7 @@ function DashboardPlotCard(props) {
       return elem;
     });
 
-    setDashboardItems(newDashboardItems.map((elem) => elem.item));
+    setDashboardItems(newDashboardItems);
   };
 
   const handleDeleteAggregate = (idx) => {
@@ -104,7 +105,7 @@ function DashboardPlotCard(props) {
     }
     setPlotData(data);
     setYAxis2LayoutSettings(yAxis2LayoutSettings);
-  }, [dashboardItems]);
+  }, [props.plot]);
 
   return (
     <DashboardPlotContent
