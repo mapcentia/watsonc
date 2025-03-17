@@ -2,7 +2,7 @@
 var request = require('request');
 const shared = require('./../../../controllers/gc2/shared');
 var config = require('./../../../config/config');
-const uuid = require('uuid');
+const uuid = require('uuid/v4');
 
 if (!config.gc2.host) throw new Error(`Unable to get the GC2 host from config`);
 const API_LOCATION = config.gc2.host + `/api/v2/keyvalue`;
