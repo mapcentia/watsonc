@@ -1,15 +1,14 @@
-
 var request = require('request');
 const shared = require('./../../../controllers/gc2/shared');
 var config = require('./../../../config/config');
-const uuid = require('uuid/v4');
+const {v1: uuid} = require('uuid');
 
 if (!config.gc2.host) throw new Error(`Unable to get the GC2 host from config`);
 const API_LOCATION = config.gc2.host + `/api/v2/keyvalue`;
 
 const createProfile = (req, res) => {
     if (`profile` in req.body && `title` in req.body && `buffer` in req.body && `data` in req.body) {
-        let { userId } = shared.getCurrentUserIdentifiers(req);
+        let {userId} = shared.getCurrentUserIdentifiers(req);
         if (userId) {
             // TODO flyt til klient før python script og send med
             const key = `watsonc_profile_` + uuid();
@@ -32,7 +31,8 @@ const createProfile = (req, res) => {
                 try {
                     let localParsedBody = JSON.parse(response.body);
                     parsedBody = localParsedBody;
-                } catch (e) {}
+                } catch (e) {
+                }
 
                 if (parsedBody) {
                     if (parsedBody.success) {
@@ -41,7 +41,7 @@ const createProfile = (req, res) => {
                         shared.throwError(res, parsedBody.message);
                     }
                 } else {
-                    shared.throwError(res, 'INVALID_OR_EMPTY_EXTERNAL_API_REPLY', { body: response.body });
+                    shared.throwError(res, 'INVALID_OR_EMPTY_EXTERNAL_API_REPLY', {body: response.body});
                 }
             });
         } else {
@@ -53,7 +53,7 @@ const createProfile = (req, res) => {
 };
 
 const getAllProfiles = (req, res) => {
-    let { userId } = shared.getCurrentUserIdentifiers(req);
+    let {userId} = shared.getCurrentUserIdentifiers(req);
 
     request({
         method: 'GET',
@@ -61,7 +61,7 @@ const getAllProfiles = (req, res) => {
         uri: API_LOCATION + `/` + req.params.dataBase + `?like=watsonc_profile_%&filter='{userId}'='${userId}'`
     }, (error, response) => {
         if (error) {
-            shared.throwError(res, 'INVALID_OR_EMPTY_EXTERNAL_API_REPLY', { error });
+            shared.throwError(res, 'INVALID_OR_EMPTY_EXTERNAL_API_REPLY', {error});
             return;
         }
 
@@ -69,7 +69,8 @@ const getAllProfiles = (req, res) => {
         try {
             let localParsedBody = JSON.parse(response.body);
             parsedBody = localParsedBody;
-        } catch (e) {}
+        } catch (e) {
+        }
 
         if (parsedBody && parsedBody.data) {
             // Filter by user ownership
@@ -92,7 +93,7 @@ const getAllProfiles = (req, res) => {
 };
 
 const deleteProfile = (req, res) => {
-    let { userId } = shared.getCurrentUserIdentifiers(req);
+    let {userId} = shared.getCurrentUserIdentifiers(req);
 
     // Get the specified profile
     request({
@@ -107,7 +108,8 @@ const deleteProfile = (req, res) => {
             try {
                 let localParsedBody = JSON.parse(response.body);
                 parsedBody = localParsedBody;
-            } catch (e) {}
+            } catch (e) {
+            }
 
             if (parsedBody && parsedBody.data.value) {
                 let parsedSnapshotData = JSON.parse(parsedBody.data.value);
@@ -117,13 +119,13 @@ const deleteProfile = (req, res) => {
                         encoding: 'utf8',
                         uri: API_LOCATION + `/` + req.params.dataBase + `/` + req.params.id,
                     }, (error, response) => {
-                        res.send({ status: 'success' });
+                        res.send({status: 'success'});
                     });
                 } else {
                     shared.throwError(res, 'ACCESS_DENIED');
                 }
             } else {
-                shared.throwError(res, 'INVALID_OR_EMPTY_EXTERNAL_API_REPLY', { body: response.body });
+                shared.throwError(res, 'INVALID_OR_EMPTY_EXTERNAL_API_REPLY', {body: response.body});
             }
         }
     });
