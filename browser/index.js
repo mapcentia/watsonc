@@ -93,8 +93,6 @@ let names = {};
 
 let currentRasterLayer = null;
 
-let profileMenu = false;
-
 /**
  *
  * @type {{set: module.exports.set, init: module.exports.init}}
@@ -152,6 +150,14 @@ module.exports = module.exports = {
       $("#watsonc-licens-btn1").html("Valgt");
       $("#watsonc-licens-btn2").html("Vælg");
     }
+
+    $(document).on("click", "#profile_models", (e) => {
+      if (e.target.checked) {
+        useDashboardStore.getState().setGeologicalLayerChecked(true);
+      } else {
+        useDashboardStore.getState().setGeologicalLayerChecked(false);
+      }
+    });
 
     $("#btn-plan").on("click", () => {
       $("#watsonc-limits-reached-text").hide();
@@ -225,7 +231,6 @@ module.exports = module.exports = {
         var elem = document.getElementById("state-snapshots");
         elem.style.pointerEvents = "none";
       }
-
       //$(`[href="#state-snapshots-content"]`).trigger(`click`);
     });
 
@@ -242,8 +247,12 @@ module.exports = module.exports = {
       "click",
       "#module-container .modal-header button",
       function (e) {
-        if (profileMenu) {
+        if (
+          _self.hasActiveLayer(GEOLOGICAL_LAYER_NAME) &&
+          $("#profile-drawing-content").hasClass("tab-pane fade active in")
+        ) {
           _self.disableActiveGeologicalLayer(GEOLOGICAL_LAYER_NAME);
+          switchLayer.uncheckLayerControl("calypso_layers.profile_models");
         }
 
         e.preventDefault();
@@ -368,8 +377,6 @@ module.exports = module.exports = {
         layerTree.setOnEachFeature(
           layerName,
           (clickedFeature, layer) => {
-            console.log("clickedFeature", clickedFeature);
-            console.log("layer", layer);
             layer.on("click", (e) => {
               $("#" + FEATURE_CONTAINER_ID).animate(
                 {
@@ -587,6 +594,8 @@ module.exports = module.exports = {
             }
           });
         }, 500);
+        const active = _self.hasActiveLayer(GEOLOGICAL_LAYER_NAME);
+        useDashboardStore.getState().setGeologicalLayerChecked(active);
       }, 100);
 
       const proceedWithInitialization = () => {
@@ -679,19 +688,16 @@ module.exports = module.exports = {
                   onProfileAdd={dashboardComponentInstance.handleAddProfile}
                   onProfileShow={dashboardComponentInstance.handleShowProfile}
                   onProfileHide={dashboardComponentInstance.handleHideProfile}
+                  layerTree={layerTree}
+                  applyGeologicalLayer={_self.applyGeologicalLayer}
+                  disableActiveGeologicalLayer={
+                    _self.disableActiveGeologicalLayer
+                  }
                 />
               </Provider>,
               document.getElementById(`profile-drawing-content`)
             );
 
-            profileMenu = true;
-            if (
-              !layerTree
-                .getActiveLayers()
-                .includes("calypso_layers.profile_models")
-            ) {
-              _self.applyGeologicalLayer("calypso_layers.profile_models");
-            }
             backboneEvents
               .get()
               .on(`reset:all reset:profile-drawing off:all`, () => {
@@ -992,15 +998,25 @@ module.exports = module.exports = {
     }
   },
 
+  hasActiveLayer: (layerName) => {
+    const layer = layerTree
+      .getActiveLayers()
+      .find((layer) => layer.startsWith(layerName));
+    return layer ? true : false;
+  },
+
   disableActiveGeologicalLayer: (layersToDisable) => {
     layerTree.getActiveLayers().map((layer) => {
-      if (layer.startsWith(layersToDisable)) switchLayer.init(layer, false);
+      if (layer.startsWith(layersToDisable)) {
+        switchLayer.init(layer, false);
+        useDashboardStore.getState().setGeologicalLayerChecked(false);
+      }
     });
-    profileMenu = false;
   },
 
   applyGeologicalLayer: (layerToActivate) => {
     switchLayer.init(layerToActivate, true);
+    useDashboardStore.getState().setGeologicalLayerChecked(true);
   },
 
   onApplyLayersAndChemical: (parameters) => {
@@ -1438,6 +1454,7 @@ module.exports = module.exports = {
 
       async function loop() {
         let allPlots = [];
+        if (!newState.dashboardItems) return allPlots;
         for (let u = 0; u < newState.dashboardItems.length; u++) {
           let plot = newState.dashboardItems[u];
           if (!!plot?.id) {
@@ -1456,29 +1473,31 @@ module.exports = module.exports = {
               const relation = plot.relations[measurement];
               const res = await fetchTimeSeries(loc_id, relation);
               const json = await res.json();
-              const props = json.features[0].properties;
-              plotData.measurements.push(measurement);
-              plotData.relations[measurement] = relation;
-              plotData.measurementsCachedData[measurement] = {
-                data: {
-                  properties: {
-                    _0: JSON.stringify({
-                      unit: props.unit[i],
-                      title: props.ts_name[i],
-                      locname: props.locname,
-                      intakes: [1],
+              if (json && json.features && json.features.length > 0) {
+                const props = json.features[0].properties;
+                plotData.measurements.push(measurement);
+                plotData.relations[measurement] = relation;
+                plotData.measurementsCachedData[measurement] = {
+                  data: {
+                    properties: {
+                      _0: JSON.stringify({
+                        unit: props.unit[i],
+                        title: props.ts_name[i],
+                        locname: props.locname,
+                        intakes: [1],
+                        boreholeno: loc_id,
+                        data: props.data,
+                        trace: props.trace,
+                        parameter: props.parameter[i],
+                        ts_id: props.ts_id,
+                        ts_name: props.ts_name,
+                      }),
                       boreholeno: loc_id,
-                      data: props.data,
-                      trace: props.trace,
-                      parameter: props.parameter[i],
-                      ts_id: props.ts_id,
-                      ts_name: props.ts_name,
-                    }),
-                    boreholeno: loc_id,
-                    numofintakes: 1,
+                      numofintakes: 1,
+                    },
                   },
-                },
-              };
+                };
+              }
             }
             allPlots.push(plotData);
           } else {
@@ -1491,17 +1510,21 @@ module.exports = module.exports = {
         return allPlots;
       }
 
-      loop().then((plots) => {
-        useDashboardStore.getState().setDashboardItems(
-          plots.map((plot, index) => {
-            return {
-              type: plot.id ? 0 : 1,
-              item: plot,
-              plotsIndex: index,
-            };
-          })
-        );
-      });
+      loop()
+        .then((plots) => {
+          useDashboardStore.getState().setDashboardItems(
+            plots.map((plot, index) => {
+              return {
+                type: plot.id ? 0 : 1,
+                item: plot,
+                plotsIndex: index,
+              };
+            })
+          );
+        })
+        .catch((e) => {
+          console.log("error", e);
+        });
     }, 2000);
   },
 };

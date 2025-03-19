@@ -135,21 +135,19 @@ class DashboardComponent extends React.Component {
 
   componentDidMount() {
     // this.nextDisplayType();
-    this.profileManager.getAll().then((response) => {
-      this.setState({ profiles: response });
-      /**TODO: Deprecated */
-      // this.props.setProfiles({ profiles: response });
-    });
-    this.props.backboneEvents.get().on("refresh:meta", () => {
-      this.profileManager.getAll().then((response) => {
-        this.setState({ profiles: response });
-        /**TODO: Deprecated */
-        // this.props.setProfiles({ profiles: response });
-      });
-    });
+    this.fetchProfiles();
+    this.props.backboneEvents
+      .get()
+      .on("refresh:meta", () => this.fetchProfiles());
 
     this.unsub = useDashboardStore.subscribe((state) => {
       this.setState({ dashboardItems: state.dashboardItems });
+    });
+  }
+
+  fetchProfiles() {
+    this.profileManager.getAll().then((response) => {
+      this.setState({ profiles: response });
     });
   }
 
@@ -203,7 +201,6 @@ class DashboardComponent extends React.Component {
       .then((newProfile) => {
         let profilesCopy = JSON.parse(JSON.stringify(_self.state.profiles));
         profilesCopy.unshift(newProfile);
-
         if (activateOnCreate) {
           let activeProfilesCopy = JSON.parse(
             JSON.stringify(_self.state.activeProfiles)
@@ -212,7 +209,7 @@ class DashboardComponent extends React.Component {
             activeProfilesCopy.push(newProfile.key);
 
           let dashboardItemsCopy = JSON.parse(
-            JSON.stringify(_self.state.dashboardItems)
+            JSON.stringify(useDashboardStore.getState().dashboardItems)
           );
           dashboardItemsCopy.push({
             type: DASHBOARD_ITEM_PROFILE,
@@ -225,18 +222,25 @@ class DashboardComponent extends React.Component {
             activeProfiles: activeProfilesCopy,
           });
 
+          useDashboardStore.getState().setDashboardItems(dashboardItemsCopy);
           _self.props.onActiveProfilesChange(
             activeProfilesCopy,
             profilesCopy,
             _self.context
           );
+          _self.setState({ profiles: profilesCopy });
         } else {
           _self.setState({ profiles: profilesCopy });
         }
 
-        if (callback) callback();
-
         _self.props.onProfilesChange(_self.getProfiles());
+
+        if (reduxStore.getState().global.dashboardMode === "minimized") {
+          reduxStore.dispatch(setDashboardMode("half"));
+        }
+
+        this.fetchProfiles();
+        if (callback) callback(profilesCopy);
       })
       .catch((error) => {
         console.error(`Error occured while creating profile (${error})`);
@@ -402,6 +406,7 @@ class DashboardComponent extends React.Component {
         var dashboardItemsCopy = JSON.parse(
           JSON.stringify(useDashboardStore.getState().dashboardItems)
         );
+
         dashboardItemsCopy = dashboardItemsCopy.filter((item) => {
           if (item.type === DASHBOARD_ITEM_PROFILE) {
             if (item.key === profileKey) {
@@ -421,8 +426,6 @@ class DashboardComponent extends React.Component {
           return true;
         });
 
-        if (callback) callback();
-
         this.setState({
           profiles: profilesCopy,
           activeProfiles: activeProfilesCopy,
@@ -434,6 +437,8 @@ class DashboardComponent extends React.Component {
           profilesCopy,
           this.context
         );
+
+        if (callback) callback(profilesCopy);
       })
       .catch((error) => {
         console.error(`Error occured while deleting profile (${error})`);
@@ -476,8 +481,6 @@ class DashboardComponent extends React.Component {
     if (reduxStore.getState().global.dashboardMode === "minimized") {
       reduxStore.dispatch(setDashboardMode("half"));
     }
-
-    document.getElementById("chartsContainer").scrollTop = 0;
 
     this.setState(
       {
@@ -908,7 +911,7 @@ DashboardComponent.propTypes = {
   initialPlots: PropTypes.array.isRequired,
   //onOpenBorehole: PropTypes.func.isRequired,
   onPlotsChange: PropTypes.func.isRequired,
-  onActivePlotsChange: PropTypes.func.isRequired,
+  // onActivePlotsChange: PropTypes.func.isRequired,
   onHighlightedPlotChange: PropTypes.func.isRequired,
 };
 
