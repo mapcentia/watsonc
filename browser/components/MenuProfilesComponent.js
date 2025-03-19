@@ -8,6 +8,7 @@ import { connect } from "react-redux";
 import {
   SELECT_CHEMICAL_DIALOG_PREFIX,
   FREE_PLAN_MAX_PROFILES_COUNT,
+  GEOLOGICAL_LAYER_NAME,
 } from "./../constants";
 import TitleFieldComponent from "./../../../../browser/modules/shared/TitleFieldComponent";
 import LoadingOverlay from "./../../../../browser/modules/shared/LoadingOverlay";
@@ -22,6 +23,7 @@ import { showSubscriptionIfFree } from "../helpers/show_subscriptionDialogue";
 import { text } from "body-parser";
 import color from "@material-ui/core/colors/amber";
 import { useDashboardStore } from "../zustand/store";
+import { use } from "react";
 
 const utils = require("./../utils");
 
@@ -71,6 +73,11 @@ class MenuProfilesComponent extends React.Component {
       newTitle: "",
       profilesSearchTerm: "",
       dashboardItems: useDashboardStore.getState().dashboardItems,
+      layerTree: props.layerTree,
+      applyGeologicalLayer: props.applyGeologicalLayer,
+      disableActiveGeologicalLayer: props.disableActiveGeologicalLayer,
+      geologicalLayerChecked:
+        useDashboardStore.getState().geologicalLayerChecked,
     };
 
     this.search = this.search.bind(this);
@@ -107,6 +114,14 @@ class MenuProfilesComponent extends React.Component {
 
   componentWillUnmount() {
     this.unsub();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.dashboardItems.length !== prevState.dashboardItems.length) {
+      document.getElementById("chartsContainer").scrollTop =
+        useDashboardStore.getState().dashboardItems.length * 400;
+      $("#watsonc-plots-dialog-form").css("z-index", "1000");
+    }
   }
 
   canCreateProfile() {
@@ -146,7 +161,10 @@ class MenuProfilesComponent extends React.Component {
       showSubscription();
       return;
     }
-    this.setState({ newTitle, step: STEP_NOT_READY });
+    this.setState({
+      newTitle,
+      step: STEP_NOT_READY,
+    });
   }
 
   getProjectProfilesLength() {
@@ -190,7 +208,7 @@ class MenuProfilesComponent extends React.Component {
         layers,
       },
       true,
-      () => {
+      (profilesCopy) => {
         this.stopDrawing();
         this.setState({
           step: STEP_ENTER_NAME,
@@ -199,16 +217,23 @@ class MenuProfilesComponent extends React.Component {
           buffer: 100,
           newTitle: "",
           loading: false,
+          profiles: profilesCopy ? profilesCopy : this.state.initialProfiles,
         });
       }
     );
+
+    if (this.state.geologicalLayerChecked !== false)
+      this.state.disableActiveGeologicalLayer(GEOLOGICAL_LAYER_NAME);
   }
 
   handleProfileDelete(item) {
     if (confirm(__(`Delete`) + " " + item.profile.title + "?")) {
       this.setState({ loading: true });
       this.props.onProfileDelete(item.key, () => {
-        this.setState({ loading: false });
+        const filteredProfiles = this.state.profiles.filter(
+          (profile) => profile.key !== item.key
+        );
+        this.setState({ loading: false, profiles: filteredProfiles });
       });
     }
   }
@@ -225,7 +250,6 @@ class MenuProfilesComponent extends React.Component {
       }
     }
 
-    console.log("layers", layesrCopy);
     this.setState({ selectedLayers: layesrCopy });
   }
 
@@ -272,6 +296,8 @@ class MenuProfilesComponent extends React.Component {
 
   startDrawing() {
     this.clearDrawnLayers();
+    if (this.state.geologicalLayerChecked !== true)
+      this.state.applyGeologicalLayer("calypso_layers.profile_models");
 
     if (embedDrawControl) embedDrawControl.disable();
     embedDrawControl = new L.Draw.Polyline(this.props.cloud.get().map);
@@ -401,9 +427,19 @@ class MenuProfilesComponent extends React.Component {
         plotsIndex: this.state.dashboardItems.length,
       },
     ]);
+    this.props.onProfileAdd(item);
   }
 
   render() {
+    if (
+      this.state.geologicalLayerChecked !==
+      useDashboardStore.getState().geologicalLayerChecked
+    )
+      this.setState({
+        geologicalLayerChecked:
+          useDashboardStore.getState().geologicalLayerChecked,
+      });
+
     let overlay = false;
     if (this.state.loading) {
       overlay = <LoadingOverlay />;
@@ -818,6 +854,11 @@ class MenuProfilesComponent extends React.Component {
                             href="javascript:void(0)"
                             className="btn btn-primary"
                             onClick={() => {
+                              if (this.state.geologicalLayerChecked !== false) {
+                                this.state.disableActiveGeologicalLayer(
+                                  GEOLOGICAL_LAYER_NAME
+                                );
+                              }
                               this.setState(
                                 {
                                   step: STEP_NOT_READY,
@@ -837,9 +878,19 @@ class MenuProfilesComponent extends React.Component {
                             href="javascript:void(0)"
                             className="btn btn-primary"
                             onClick={() => {
-                              this.setState({ step: STEP_BEING_DRAWN }, () => {
-                                this.startDrawing();
-                              });
+                              if (this.state.geologicalLayerChecked !== true)
+                                this.state.applyGeologicalLayer(
+                                  "calypso_layers.profile_models"
+                                );
+
+                              this.setState(
+                                {
+                                  step: STEP_BEING_DRAWN,
+                                },
+                                () => {
+                                  this.startDrawing();
+                                }
+                              );
                             }}
                           >
                             <i className="material-icons">linear_scale</i>{" "}
@@ -892,8 +943,14 @@ class MenuProfilesComponent extends React.Component {
               false
             )}
           </div>
-          <div className="container">
-            <div className="row">
+          <div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
               <div className="col-md-6">
                 <SearchFieldComponent
                   id="measurements-search-control"
@@ -901,6 +958,35 @@ class MenuProfilesComponent extends React.Component {
                     this.setState({ profilesSearchTerm });
                   }}
                 />
+              </div>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <div className="checkbox" style={{ width: "34px" }}>
+                  <label>
+                    <input
+                      className="js-show-layer-control"
+                      id="show-geological-layers"
+                      type="checkbox"
+                      checked={this.state.geologicalLayerChecked}
+                      onChange={(e) => {
+                        console.log(e.target.checked);
+                        if (e.target.checked) {
+                          this.state.applyGeologicalLayer(
+                            "calypso_layers.profile_models"
+                          );
+                        } else {
+                          this.state.disableActiveGeologicalLayer(
+                            GEOLOGICAL_LAYER_NAME
+                          );
+                        }
+                      }}
+                      style={{ verticalAlign: "middle", opacity: 0 }}
+                    />
+                    <span className="check"></span>
+                  </label>
+                </div>
+                <span style={{ verticalAlign: "middle" }}>
+                  {__(`Vis geologiske lag`)}
+                </span>
               </div>
             </div>
           </div>
