@@ -10,7 +10,6 @@ const options = [
   { index: 0, text: "Døgnmiddel", window: "day", func: "mean" },
   { index: 1, text: "Ugemiddel", window: "week", func: "mean" },
   { index: 2, text: "Månedmiddel", window: "month", func: "mean" },
-
   { index: 3, text: "Døgnsum", window: "day", func: "sum" },
   { index: 4, text: "Ugesum", window: "week", func: "sum" },
   { index: 5, text: "Månedsum", window: "month", func: "sum" },
