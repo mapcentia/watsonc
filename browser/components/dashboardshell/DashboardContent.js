@@ -312,9 +312,10 @@ function DashboardContent(props) {
       const index = dashboardItems.findIndex((plot) => plot.id === id);
       if (index < 0) return;
 
-      dashboardItems.find(
-        (dashboardItem) => dashboardItem.item.id === id
-      ).title = title;
+      const newDashboardItems = [...dashboardItems];
+
+      newDashboardItems[index].item.title = title;
+      setDashboardItems(newDashboardItems);
     };
   };
 

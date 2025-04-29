@@ -1389,6 +1389,7 @@ module.exports = module.exports = {
    * Returns current module state
    */
   getState: () => {
+    console.log("Getting state");
     let sources = [];
 
     const boreholeFeatureClone = JSON.parse(
@@ -1403,18 +1404,18 @@ module.exports = module.exports = {
       p.properties.relation = i.properties.relation;
       sources.push(p);
     });
-    const plotsClone = JSON.parse(
-      JSON.stringify(dashboardComponentInstance.state.plots)
-    ).map((o) => {
-      delete o.measurementsCachedData;
-      return o;
-    });
-    const profilesClone = JSON.parse(
-      JSON.stringify(dashboardComponentInstance.state.profiles)
-    ).map((o) => {
-      delete o.data;
-      return o;
-    });
+    // const plotsClone = JSON.parse(
+    //   JSON.stringify(dashboardComponentInstance.state.plots)
+    // ).map((o) => {
+    //   delete o.measurementsCachedData;
+    //   return o;
+    // });
+    // const profilesClone = JSON.parse(
+    //   JSON.stringify(dashboardComponentInstance.state.profiles)
+    // ).map((o) => {
+    //   delete o.data;
+    //   return o;
+    // });
     let dashboardItemsClone = JSON.parse(
       JSON.stringify(dashboardComponentInstance.getDashboardItems())
     );
