@@ -62,7 +62,7 @@ function DashboardHeader(props) {
         )
       );
     });
-  }, []);
+  }, [dashboardTitle]);
 
   useEffect(() => {
     if (addingNew) {
@@ -146,9 +146,13 @@ function DashboardHeader(props) {
       state.map = props.anchor.getCurrentMapParameters();
       state.meta = getSnapshotMeta();
 
-      // state.modules.watsonc.dashboardItems = dashboardItems.map(
-      //   (dashboardItem) => dashboardItem.item
-      // );
+      state.modules.watsonc.dashboardItems = dashboardItems
+        .map((e) => e.item)
+        .map((o) => {
+          if (o?.profile?.data?.data) delete o.profile.data.data;
+          if (o?.measurementsCachedData) delete o.measurementsCachedData;
+          return o;
+        });
 
       let data = {
         title: title,
@@ -158,6 +162,7 @@ function DashboardHeader(props) {
         schema: vidiConfig.appSchema,
         host: props.urlparser.hostname,
       };
+
       $.ajax({
         url: `/api/state-snapshots` + "/" + vidiConfig.appDatabase,
         method: "POST",
@@ -183,14 +188,20 @@ function DashboardHeader(props) {
     });
   };
 
-  const updateSnapShot = (clearItems) => {
+  const updateSnapShot = () => {
     setSaving(true);
     props.state.getState().then((state) => {
       state.map = props.anchor.getCurrentMapParameters();
       state.meta = getSnapshotMeta();
-      // state.modules.watsonc.dashboardItems = clearItems
-      //   ? clearItems
-      //   : dashboardItems.map((dashboardItem) => dashboardItem.item);
+
+      state.modules.watsonc.dashboardItems = dashboardItems
+        .map((e) => e.item)
+        .map((o) => {
+          if (o?.profile?.data?.data) delete o.profile.data.data;
+          if (o?.measurementsCachedData) delete o.measurementsCachedData;
+          return o;
+        });
+
       let data = {
         title: dashboardTitle,
         snapshot: state,
