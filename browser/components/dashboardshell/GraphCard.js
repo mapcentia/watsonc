@@ -35,6 +35,12 @@ function GraphCard(props) {
     };
   }, []);
 
+  useEffect(() => {
+    setGraphName(
+      props.cardType === "profile" ? props.plot.profile.title : props.plot.title
+    );
+  }, [props.plot]);
+
   const download = () => {
     const regexExp =
       /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i;

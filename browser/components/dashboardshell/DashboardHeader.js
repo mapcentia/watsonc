@@ -62,7 +62,7 @@ function DashboardHeader(props) {
         )
       );
     });
-  }, []);
+  }, [dashboardTitle]);
 
   useEffect(() => {
     if (addingNew) {
@@ -134,7 +134,8 @@ function DashboardHeader(props) {
     if (confirm("Er du sikker på, at du vil fjerne alt fra Dashboard?")) {
       reduxStore.dispatch(clearBoreholeFeatures());
       setDashboardItems([]);
-      updateSnapShot();
+      setDashboardId();
+      setDashboardTitle();
       props.backboneEvents.get().trigger("watsonc:clearChemicalList");
     }
   };
@@ -144,9 +145,15 @@ function DashboardHeader(props) {
     props.state.getState().then((state) => {
       state.map = props.anchor.getCurrentMapParameters();
       state.meta = getSnapshotMeta();
-      state.modules.watsonc.dashboardItems = dashboardItems.map(
-        (dashboardItem) => dashboardItem.item
-      );
+
+      state.modules.watsonc.dashboardItems = dashboardItems
+        .map((e) => e.item)
+        .map((o) => {
+          if (o?.profile?.data?.data) delete o.profile.data.data;
+          if (o?.measurementsCachedData) delete o.measurementsCachedData;
+          return o;
+        });
+
       let data = {
         title: title,
         anonymous: false,
@@ -155,6 +162,7 @@ function DashboardHeader(props) {
         schema: vidiConfig.appSchema,
         host: props.urlparser.hostname,
       };
+
       $.ajax({
         url: `/api/state-snapshots` + "/" + vidiConfig.appDatabase,
         method: "POST",
@@ -180,14 +188,20 @@ function DashboardHeader(props) {
     });
   };
 
-  const updateSnapShot = (clearItems) => {
+  const updateSnapShot = () => {
     setSaving(true);
     props.state.getState().then((state) => {
       state.map = props.anchor.getCurrentMapParameters();
       state.meta = getSnapshotMeta();
-      state.modules.watsonc.dashboardItems = clearItems
-        ? clearItems
-        : dashboardItems.map((dashboardItem) => dashboardItem.item);
+
+      state.modules.watsonc.dashboardItems = dashboardItems
+        .map((e) => e.item)
+        .map((o) => {
+          if (o?.profile?.data?.data) delete o.profile.data.data;
+          if (o?.measurementsCachedData) delete o.measurementsCachedData;
+          return o;
+        });
+
       let data = {
         title: dashboardTitle,
         snapshot: state,
@@ -205,8 +219,6 @@ function DashboardHeader(props) {
         data: base64url(JSON.stringify(data)),
       })
         .then((response) => {
-          setDashboardId();
-          setDashboardTitle();
           props.backboneEvents.get().trigger("statesnapshot:refresh");
           setSaving(false);
         })

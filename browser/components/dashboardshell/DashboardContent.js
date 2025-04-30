@@ -309,12 +309,13 @@ function DashboardContent(props) {
 
   const handleTitleChange = (id) => {
     return (title) => {
-      const index = dashboardItems.findIndex((plot) => plot.id === id);
+      const index = dashboardItems.findIndex((plot) => plot.item.id === id);
       if (index < 0) return;
 
-      dashboardItems.find(
-        (dashboardItem) => dashboardItem.item.id === id
-      ).title = title;
+      const newDashboardItems = [...dashboardItems];
+
+      newDashboardItems[index].item.title = title;
+      setDashboardItems(newDashboardItems);
     };
   };
 

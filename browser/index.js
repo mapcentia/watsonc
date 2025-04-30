@@ -110,7 +110,6 @@ module.exports = module.exports = {
     if (o.extensions && o.extensions.session) {
       session = o.extensions.session.index;
     }
-
     _self = this;
     return this;
   },
@@ -1403,21 +1402,8 @@ module.exports = module.exports = {
       p.properties.relation = i.properties.relation;
       sources.push(p);
     });
-    const plotsClone = JSON.parse(
-      JSON.stringify(dashboardComponentInstance.state.plots)
-    ).map((o) => {
-      delete o.measurementsCachedData;
-      return o;
-    });
-    const profilesClone = JSON.parse(
-      JSON.stringify(dashboardComponentInstance.state.profiles)
-    ).map((o) => {
-      delete o.data;
-      return o;
-    });
-    let dashboardItemsClone = JSON.parse(
-      JSON.stringify(dashboardComponentInstance.getDashboardItems())
-    );
+
+    let dashboardItemsClone = dashboardComponentInstance.getDashboardItems();
     //debugger
     return (state = {
       dashboardItems: dashboardItemsClone
@@ -1428,6 +1414,7 @@ module.exports = module.exports = {
           return o;
         }),
       sources: sources,
+      debug: true,
     });
   },
 
