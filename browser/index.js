@@ -1403,7 +1403,9 @@ module.exports = module.exports = {
       sources.push(p);
     });
 
-    let dashboardItemsClone = dashboardComponentInstance.getDashboardItems();
+    let dashboardItemsClone = JSON.parse(
+      JSON.stringify(dashboardComponentInstance.getDashboardItems())
+    );
     //debugger
     return (state = {
       dashboardItems: dashboardItemsClone
