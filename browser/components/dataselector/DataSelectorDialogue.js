@@ -37,6 +37,9 @@ DataSelectorDialogue.propTypes = {
 const session = require("./../../../../session/browser/index");
 
 function DataSelectorDialogue(props) {
+  console.log("DataSelectorDialogue props", props.state.getState());
+  console.log("DataSelectorDialogue props", props.state);
+  console.log("map Parameters", props.anchor.getCurrentMapParameters());
   const [allParameters, setAllParameters] = useState([]);
   const [showProjectsList, setShowProjectsList] = useState(false);
   const [parameters, setParameters] = useState([]);
@@ -88,8 +91,13 @@ function DataSelectorDialogue(props) {
           datasources.push(elem);
         }
       });
-      console.log(datasources);
       setDataSources(datasources);
+      const selectedLayers = response.filter((elem) => {
+        return props.anchor
+          .getCurrentMapParameters()
+          .layers.includes(elem.value);
+      });
+      setSelectedDataSources(selectedLayers);
     });
   };
   const applyLayer = (layer, chem = false) => {
@@ -103,7 +111,18 @@ function DataSelectorDialogue(props) {
 
   useEffect(() => {
     loadDataSources();
-    props.backboneEvents.get().on("refresh:meta", () => loadDataSources());
+    props.backboneEvents.get().on("refresh:meta", () => {
+      loadDataSources();
+    });
+    props.backboneEvents.get().on("statesnapshot:apply", (snapshot) => {
+      const api = new MetaApi();
+      api.getMetaData("calypso_stationer").then((response) => {
+        const selectedLayers = response.filter((elem) => {
+          return snapshot.snapshot.map.layers.includes(elem.value);
+        });
+        setSelectedDataSources(selectedLayers);
+      });
+    });
   }, []);
 
   useEffect(() => {
