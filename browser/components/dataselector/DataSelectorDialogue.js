@@ -37,6 +37,9 @@ DataSelectorDialogue.propTypes = {
 const session = require("./../../../../session/browser/index");
 
 function DataSelectorDialogue(props) {
+  console.log("DataSelectorDialogue props", props.state.getState());
+  console.log("DataSelectorDialogue props", props.state);
+  console.log("map Parameters", props.anchor.getCurrentMapParameters());
   const [allParameters, setAllParameters] = useState([]);
   const [showProjectsList, setShowProjectsList] = useState(false);
   const [rerendered, setRendered] = useState(false);
