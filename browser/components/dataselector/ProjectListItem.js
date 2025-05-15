@@ -21,6 +21,8 @@ function ProjectListItem(props) {
     props.state.applyState(props.project.snapshot).then(() => {
       setDisableStateApply(false);
     });
+
+    props.setSelectedDataSources(props.project.snapshot.map.layers);
   };
 
   return (

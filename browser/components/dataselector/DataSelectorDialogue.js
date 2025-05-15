@@ -37,9 +37,6 @@ DataSelectorDialogue.propTypes = {
 const session = require("./../../../../session/browser/index");
 
 function DataSelectorDialogue(props) {
-  console.log("DataSelectorDialogue props", props.state.getState());
-  console.log("DataSelectorDialogue props", props.state);
-  console.log("map Parameters", props.anchor.getCurrentMapParameters());
   const [allParameters, setAllParameters] = useState([]);
   const [showProjectsList, setShowProjectsList] = useState(false);
   const [parameters, setParameters] = useState([]);
@@ -115,15 +112,9 @@ function DataSelectorDialogue(props) {
       loadDataSources();
     });
     props.backboneEvents.get().on("statesnapshot:apply", (snapshot) => {
-      const api = new MetaApi();
-      api.getMetaData("calypso_stationer").then((response) => {
-        const selectedLayers = response.filter((elem) => {
-          return snapshot.snapshot.map.layers.includes(elem.value);
-        });
-        setSelectedDataSources(selectedLayers);
-      });
+      setSelectedDataSources(snapshot.snapshot.map.layers);
     });
-  }, []);
+  }, [showProjectsList]);
 
   useEffect(() => {
     $.ajax({
@@ -198,6 +189,7 @@ function DataSelectorDialogue(props) {
         {showProjectsList ? (
           <ProjectList
             onStateSnapshotApply={props.onCloseButtonClick}
+            setSelectedDataSources={setSelectedDataSources}
             {...props}
           />
         ) : (
@@ -266,14 +258,10 @@ function DataSelectorDialogue(props) {
             />
             <Button
               text={__("Start")}
-              variant={
-                selectedDataSources.length === 0
-                  ? Variants.PrimaryDisabled
-                  : Variants.Primary
-              }
+              variant={Variants.Primary}
               onClick={() => applyParameter()}
               size={Size.Large}
-              disabled={selectedDataSources.length === 0}
+              // disabled={selectedDataSources.length === 0}
             />
           </ButtonGroup>
         )}
