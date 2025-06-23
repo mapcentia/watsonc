@@ -39,6 +39,7 @@ const session = require("./../../../../session/browser/index");
 function DataSelectorDialogue(props) {
   const [allParameters, setAllParameters] = useState([]);
   const [showProjectsList, setShowProjectsList] = useState(false);
+  const [rerendered, setRendered] = useState(false);
   const [parameters, setParameters] = useState([]);
   const [selectedDataSources, setSelectedDataSources] = useState([]);
   const [selectedParameter, setSelectedParameter] = useState();
@@ -112,9 +113,11 @@ function DataSelectorDialogue(props) {
       loadDataSources();
     });
     props.backboneEvents.get().on("statesnapshot:apply", (snapshot) => {
+      setRendered(true);
       setSelectedDataSources(snapshot.snapshot.map.layers);
     });
-  }, [showProjectsList]);
+    setRendered(false);
+  }, [showProjectsList, rerendered == true]);
 
   useEffect(() => {
     $.ajax({
