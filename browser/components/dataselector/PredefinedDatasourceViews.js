@@ -51,6 +51,20 @@ function PredefinedDatasourceViews(props) {
           ]);
         }}
       />
+      <IconButton
+        icon="terrain_near-groundwater"
+        label={"Terrænnært grundvand"}
+        onClick={() => {
+          props.applyLayer("analyser.terrain_near_groundwater");
+          props.setSelectedDataSources([
+            {
+              label: "VUDP Terrænnærgrundvand",
+              group: "Særskilte",
+              value: "analyser.terrain_near_groundwater",
+            },
+          ]);
+        }}
+      />
       {/*<IconButton icon="lab-flask-experiment" label={__('Mine favoritter')}/>*/}
     </div>
   );
