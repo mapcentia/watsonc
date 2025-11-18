@@ -3,7 +3,12 @@ import { LAYER_NAMES } from "../../constants";
 
 function PredefinedDatasourceViews(props) {
   return (
-    <div>
+    <div
+      style={{
+        display: "flex",
+        paddingTop: "1rem",
+      }}
+    >
       <IconButton
         icon="cleaning-spray"
         label={__("Pesticider")}
