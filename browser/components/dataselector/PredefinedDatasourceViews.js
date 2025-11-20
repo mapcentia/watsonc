@@ -3,7 +3,12 @@ import { LAYER_NAMES } from "../../constants";
 
 function PredefinedDatasourceViews(props) {
   return (
-    <div>
+    <div
+      style={{
+        display: "flex",
+        paddingTop: "1rem",
+      }}
+    >
       <IconButton
         icon="cleaning-spray"
         label={__("Pesticider")}
@@ -51,6 +56,21 @@ function PredefinedDatasourceViews(props) {
           ]);
         }}
       />
+      <IconButton
+        icon="terrain-near-groundwater"
+        label={"Terrænnært grundvand"}
+        onClick={() => {
+          props.applyLayer("analyser.terrain_near_groundwater_layer");
+          props.setSelectedDataSources([
+            {
+              label: "VUDP Terrænnærgrundvand",
+              group: "Særskilte",
+              value: "analyser.terrain_near_groundwater_layer",
+            },
+          ]);
+        }}
+      />
+
       {/*<IconButton icon="lab-flask-experiment" label={__('Mine favoritter')}/>*/}
     </div>
   );
