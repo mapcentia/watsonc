@@ -39,7 +39,6 @@ const session = require("./../../../../session/browser/index");
 function DataSelectorDialogue(props) {
   const [allParameters, setAllParameters] = useState([]);
   const [showProjectsList, setShowProjectsList] = useState(false);
-  const [rerendered, setRendered] = useState(false);
   const [parameters, setParameters] = useState([]);
   const [selectedDataSources, setSelectedDataSources] = useState([]);
   const [selectedParameter, setSelectedParameter] = useState();
@@ -89,13 +88,8 @@ function DataSelectorDialogue(props) {
           datasources.push(elem);
         }
       });
+      console.log(datasources);
       setDataSources(datasources);
-      const selectedLayers = response.filter((elem) => {
-        return props.anchor
-          .getCurrentMapParameters()
-          .layers.includes(elem.value);
-      });
-      setSelectedDataSources(selectedLayers);
     });
   };
   const applyLayer = (layer, chem = false) => {
@@ -109,15 +103,8 @@ function DataSelectorDialogue(props) {
 
   useEffect(() => {
     loadDataSources();
-    props.backboneEvents.get().on("refresh:meta", () => {
-      loadDataSources();
-    });
-    props.backboneEvents.get().on("statesnapshot:apply", (snapshot) => {
-      setRendered(true);
-      setSelectedDataSources(snapshot.snapshot.map.layers);
-    });
-    setRendered(false);
-  }, [showProjectsList, rerendered == true]);
+    props.backboneEvents.get().on("refresh:meta", () => loadDataSources());
+  }, []);
 
   useEffect(() => {
     $.ajax({
@@ -192,7 +179,6 @@ function DataSelectorDialogue(props) {
         {showProjectsList ? (
           <ProjectList
             onStateSnapshotApply={props.onCloseButtonClick}
-            setSelectedDataSources={setSelectedDataSources}
             {...props}
           />
         ) : (
@@ -261,10 +247,14 @@ function DataSelectorDialogue(props) {
             />
             <Button
               text={__("Start")}
-              variant={Variants.Primary}
+              variant={
+                selectedDataSources.length === 0
+                  ? Variants.PrimaryDisabled
+                  : Variants.Primary
+              }
               onClick={() => applyParameter()}
               size={Size.Large}
-              // disabled={selectedDataSources.length === 0}
+              disabled={selectedDataSources.length === 0}
             />
           </ButtonGroup>
         )}
