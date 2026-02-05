@@ -36,7 +36,7 @@ class ProfileManager {
         (jqXHR) => {
           console.error(`Error occured while refreshing profiles list`);
           reject(`Error occured while refreshing profiles list`);
-        }
+        },
       );
     });
   }
@@ -52,6 +52,7 @@ class ProfileManager {
               .post(`${this.apiUrl}`, savedProfile)
               .then((response) => {
                 let data = JSON.parse(response.data.data.value);
+
                 resolve(data);
               })
               .catch((error) => {
