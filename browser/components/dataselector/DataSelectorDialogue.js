@@ -79,7 +79,7 @@ function DataSelectorDialogue(props) {
         if (elem.group == CUSTOM_LAYER_NAME) {
           if (
             elem.privileges.hasOwnProperty(
-              session.getProperties()?.organisation.id
+              session.getProperties()?.organisation.id,
             )
           ) {
             datasources.push({ ...elem, group: USER_LAYER_NAME });
@@ -205,7 +205,7 @@ function DataSelectorDialogue(props) {
                 </Grid>
                 <Grid container item md={6}>
                   {selectedDataSources.findIndex(
-                    (item) => item.value == "v:system.all"
+                    (item) => item.value == "v:system.all",
                   ) > -1 ? (
                     <Card>
                       <Searchbox
@@ -246,15 +246,10 @@ function DataSelectorDialogue(props) {
               size={Size.Large}
             />
             <Button
-              text={__("Start")}
-              variant={
-                selectedDataSources.length === 0
-                  ? Variants.PrimaryDisabled
-                  : Variants.Primary
-              }
+              text={__("Anvend valgte datakilder")}
+              variant={Variants.Primary}
               onClick={() => applyParameter()}
               size={Size.Large}
-              disabled={selectedDataSources.length === 0}
             />
           </ButtonGroup>
         )}
@@ -290,5 +285,5 @@ const mapDispatchToProps = (dispatch) => ({
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(DataSelectorDialogue);
