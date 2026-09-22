@@ -63,9 +63,9 @@ function PredefinedDatasourceViews(props) {
           props.applyLayer("analyser.terrain_near_groundwater_layer");
           props.setSelectedDataSources([
             {
-              label: "VUDP Terrænnærgrundvand",
-              group: "Særskilte",
-              value: "analyser.terrain_near_groundwater_layer",
+              label: "TGV Dybde",
+              group: "Terrænnært grundvand",
+              value: "analyser.tngl_depth_styling",
             },
           ]);
         }}
