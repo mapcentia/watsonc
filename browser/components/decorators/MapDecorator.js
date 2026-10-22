@@ -12,7 +12,7 @@ import Icon from "../shared/icons/Icon";
 import ProjectContext from "../../contexts/project/ProjectContext";
 import reduxStore from "../../redux/store";
 import { addBoreholeFeature } from "../../redux/actions";
-import { getNewPlotId } from "../../helpers/common";
+import { getNewPlotId, parseJsonProperties } from "../../helpers/common";
 import ImageCarousel from "../shared/images/ImageCarousel";
 import { showSubscriptionIfFree } from "../../helpers/show_subscriptionDialogue";
 import InfoComponent from "./InfoComponent";
@@ -39,12 +39,14 @@ function MapDecorator(props) {
       dataType: "json",
     }).then(
       (response) => {
-        let data = response.features[0].properties;
+        if (!response.features?.length) return;
+        let data = parseJsonProperties(response.features[0].properties);
+        if (!Array.isArray(data.ts_info)) return;
 
         setMoreInfo((prev) => [
           ...prev,
           { type: "header", value: "Tidsserie info" },
-          ...JSON.parse(data.ts_info),
+          ...data.ts_info,
         ]);
       },
       (jqXHR) => {
@@ -73,7 +75,7 @@ function MapDecorator(props) {
       dataType: "json",
     }).then(
       (response) => {
-        let data = response.features[0].properties;
+        let data = parseJsonProperties(response.features[0].properties);
         var indices = [];
         if (typeof plot.compound_list != "undefined") {
           let idx = plot.compound_list.indexOf(plot.compound);
