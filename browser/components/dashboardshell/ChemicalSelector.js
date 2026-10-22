@@ -7,6 +7,7 @@ import ChemicalsListItem from "./ChemicalsListItem";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Grid from "@material-ui/core/Grid";
 import { DarkTheme } from "../../themes/DarkTheme";
+import { parseJsonProperties } from "../../helpers/common";
 
 function ChemicalSelector(props) {
   const [chemicalsList, setChemicalsList] = useState([]);
@@ -47,8 +48,13 @@ function ChemicalSelector(props) {
             res.json().then((json) => {
               if (!res.ok) {
                 reject(json);
+                return;
               }
-              let properties = json.features[0].properties;
+              if (!json.features?.length) {
+                resolve([]);
+                return;
+              }
+              let properties = parseJsonProperties(json.features[0].properties);
               let controls = [];
               if (properties.ts_name.length < 10) {
                 controls.push(
