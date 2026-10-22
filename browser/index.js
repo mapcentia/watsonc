@@ -19,6 +19,7 @@ import DashboardWrapper from "./components/DashboardWrapper";
 import TopBar from "./components/TopBar";
 import LoginModal from "./components/LoginModal";
 import { showSubscriptionIfFree } from "./helpers/show_subscriptionDialogue";
+import { parseJsonProperties } from "./helpers/common";
 
 import reduxStore from "./redux/store";
 import {
@@ -1424,6 +1425,7 @@ module.exports = module.exports = {
    * Applies externally provided state
    */
   applyState: (newState) => {
+    console.log("newState", newState)
     setTimeout(() => {
       reduxStore.dispatch(clearBoreholeFeatures());
       if (newState?.sources) {
@@ -1463,7 +1465,7 @@ module.exports = module.exports = {
               const res = await fetchTimeSeries(loc_id, relation);
               const json = await res.json();
               if (json && json.features && json.features.length > 0) {
-                const props = json.features[0].properties;
+                const props = parseJsonProperties(json.features[0].properties);
                 plotData.measurements.push(measurement);
                 plotData.relations[measurement] = relation;
                 plotData.measurementsCachedData[measurement] = {

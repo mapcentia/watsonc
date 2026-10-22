@@ -17,7 +17,7 @@ import ChemicalSelector from "./ChemicalSelector";
 import ProjectContext from "../../contexts/project/ProjectContext";
 import ProjectList from "../dataselector/ProjectList";
 import MapDecorator from "../decorators/MapDecorator";
-import { getNewPlotId } from "../../helpers/common";
+import { getNewPlotId, parseJsonProperties } from "../../helpers/common";
 import Collapse from "@material-ui/core/Collapse";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
@@ -129,7 +129,8 @@ function DashboardContent(props) {
                   locname: item.feature.locname,
                   intakes: [1],
                   boreholeno: item.feature.loc_id,
-                  data: response.features[0].properties.data,
+                  data: parseJsonProperties(response.features[0].properties)
+                    .data,
                   trace: item.feature.trace,
                   relation: item.feature.relation,
                   parameter: item.feature.parameter[itidx],
@@ -162,6 +163,7 @@ function DashboardContent(props) {
   useEffect(() => {
     window.Calypso = {
       render: (id, popupType, trace, data) => {
+        data = { ...data, properties: parseJsonProperties(data.properties) };
         data.properties.relation = popupType; // add relation name to feature properties
         ReactDOM.render(
           <ThemeProvider>
@@ -205,7 +207,9 @@ function DashboardContent(props) {
         var myStations = [];
 
         features.forEach((element) => {
-          myStations = myStations.concat(getArray(element.properties));
+          myStations = myStations.concat(
+            getArray(parseJsonProperties(element.properties))
+          );
         });
 
         myStations = _.uniqWith(myStations, _.isEqual);
