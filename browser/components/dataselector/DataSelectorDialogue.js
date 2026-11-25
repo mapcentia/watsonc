@@ -127,7 +127,7 @@ function DataSelectorDialogue(props) {
           {
             fieldname: "loc_id",
             expression: "=",
-            value: "ANY( ARRAY[" + myStations.join(", ") + "])",
+            value: "ANY( ARRAY[" + myStations.flat().join(", ") + "])",
             restriction: false,
           },
         ],
