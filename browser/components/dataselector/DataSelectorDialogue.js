@@ -118,7 +118,7 @@ function DataSelectorDialogue(props) {
       var myStations = [];
 
       features.forEach((element) => {
-        myStations = myStations.concat(json.parse(element.properties.loc_id));
+        myStations = myStations.concat(JSON.parse(element.properties.loc_id));
       });
 
       let filter = {
